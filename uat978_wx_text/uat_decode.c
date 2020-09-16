@@ -152,10 +152,14 @@ static const char *address_qualifier_names[8] = {
 
 static void uat_display_hdr(const struct uat_adsb_mdb *mdb, FILE *to)
 {
-    fprintf(to,"HDR:\n"
-            " ICAO:    %06X    (%s)\n",
-            mdb->address,
-            address_qualifier_names[mdb->address_qualifier]);
+    fprintf(to,"HDR:");
+
+    time_t current_time = time(NULL);
+    	struct tm *tm = localtime(&current_time);
+    	fprintf(to,"   Time: %s", asctime(tm));
+    	fprintf(to," ICAO:    %06X    (%s)\n",
+		mdb->address,
+		address_qualifier_names[mdb->address_qualifier]);
 }
 
 static double dimensions_widths[16] = {
@@ -1352,7 +1356,7 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 }
 void uat_display_uplink_mdb(const struct uat_uplink_mdb *mdb, FILE *to)
 {
-    fprintf(to,"UPLINK:\n");
+    fprintf(to,"UPLINK:  ");
 
     fprintf(to," Site: %u" , mdb->tisb_site_id);
     fprintf(to," SLat:  %+.4f%s"
