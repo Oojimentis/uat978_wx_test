@@ -933,6 +933,40 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     	recf = apdu->data[0];
     	fprintf(fileairmet," Record Fmt : %d \n",recf >> 4);
+
+// apdu->data
+    	if ((recf >> 4) == 8){
+    		uint16_t record_length=0; 	uint16_t report_number=0;uint16_t report_year=0;
+    		int overlay_record_identifier=0; int object_label=0; int object_label_flag=0;
+    		const char * object_labelt;
+
+    		record_length = ((apdu->data[6]) << 2) | (((apdu->data[7]) & 0xC0) >> 6);
+    		fprintf(to,"Record Length: %d ",record_length);
+
+// Report identifier = report number + report year.
+    		report_number = (((apdu->data[7]) & 0x3F) << 8) | (apdu->data[8]);
+    		fprintf(to,"Report Number: %d ",report_number);
+
+    		report_year = ((apdu->data[9]) & 0xFE) >> 1;
+    		fprintf(to,"Report Year: %d ",report_year);
+
+    		overlay_record_identifier = (((apdu->data[10]) & 0x1E) >> 1) + 1; // Document instructs to add 1.
+ 			fprintf(to, "overlay_record_identifier %d ", overlay_record_identifier);
+ 			object_label_flag = (apdu->data[10] & 0x01);
+ 			fprintf(to, "object_label_flag %d ", object_label_flag);
+ 			if (object_label_flag == 0) { // Numeric index.
+ 				object_label = ((apdu->data[11]) << 8) | (apdu->data[12]);
+				fprintf(to, "object_labelzero %d\n", object_label);
+ 			} else {
+ 				object_labelt = decode_dlac(apdu->data, 9,11);
+ 			    fprintf(to, "object_labelelse %s \n", object_labelt);
+ 			}
+
+
+
+
+    	}
+
     	if ((recf >> 4) == 2 ) {             // text
 
     		while (report) {
@@ -1145,6 +1179,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fprintf(to," woof-15:       %s\n",report);
     }
     break;
+
 
     case 70:
     {
@@ -1368,7 +1403,14 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
         			fprintf(to,"%02x%02x%02x ",frame->data[i],frame->data[i+1],frame->data[i+2]);
         			i = i +4;
         		}
+        		fprintf(to,"\n");
         	}
+//        	else if (frame->type == 14){
+//            	int moo=0;
+//            	const char *fourteen = decode_dlac(frame->data, frame->length,moo);
+//            	fprintf(to,"type 14: %s",fourteen);
+//
+ //       	}
         	else
         		display_generic_data(frame->data, frame->length, to);
         }
