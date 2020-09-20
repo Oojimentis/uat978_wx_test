@@ -46,6 +46,8 @@ FILE * filesua;      	// 13
 FILE * filesigmet;    	// 12
 FILE * fileairmet;		// 11
 FILE * filegairmet;		// 14
+FILE * filepirep;		// PIREP
+
 int reccount;
 
 

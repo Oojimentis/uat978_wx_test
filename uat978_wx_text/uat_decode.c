@@ -49,17 +49,17 @@ static void get_pirep(char *Word, FILE *to){
 
     char *token;
     char pirep_stn[5];
-    char pirep_OV[20];
-    char pirep_TM[10]; char pirep_hr[5]; char pirep_mn[3];
-    char pirep_FL[5];
-    char pirep_TP[6];
-    char pirep_SK[20];
-    char pirep_WX[20];
-    char pirep_TA[5];
-    char pirep_WV[10];
-    char pirep_TB[20];
-    char pirep_IC[20];
-    char pirep_RM[50];
+    char pirep_OV[20];		// Location
+    char pirep_TM[10]; char pirep_hr[5]; char pirep_mn[3];		// DateTime
+    char pirep_FL[5];		// Flight Level
+    char pirep_TP[6];		// a/c type
+    char pirep_SK[20];		// Cloud
+    char pirep_WX[20];		// Weather
+    char pirep_TA[5];		// Temperature
+    char pirep_WV[10];		// Wind Speed Direction
+    char pirep_TB[30];  	// Turbulence
+    char pirep_IC[20];		// Icing
+    char pirep_RM[50]; 		// Remarks
 
 	token = strtok(Word," ");
 	strcpy(pirep_stn,"K");
@@ -70,15 +70,22 @@ static void get_pirep(char *Word, FILE *to){
     fprintf(to,"PIREP REPORT:\n");
     fprintf(to," Station:      %s - %s\n",pirep_stn, gs_ret);
 
+    fprintf(filepirep,"PIREP REPORT:\n");
+    fprintf(filepirep," Station:      %s - %s\n",pirep_stn, gs_ret);
+
     token = strtok(0," ");
 
     if( strcmp(token,"UUA") == 0 ){
-    	fprintf(to," URGENT REPORT\n");}
+    	fprintf(to," URGENT REPORT\n");
+    	fprintf(filepirep," URGENT REPORT\n");
+    }
         else if  ( strcmp(token,"UA") == 0 ){
         	fprintf(to," Routine Report\n");
+        	fprintf(filepirep," Routine Report\n");
         }
     else {
     	fprintf(to," Unknown Report\n");
+    	fprintf(filepirep," Unknown Report\n");
     }
 
     while ((token = strtok(0, "/"))) {
@@ -86,50 +93,61 @@ static void get_pirep(char *Word, FILE *to){
     	if (strncmp(token,"OV",2) == 0) {
     		 strcpy(pirep_OV,token+3);
     		 fprintf(to," Location:     %s\n",pirep_OV);
+    		 fprintf(filepirep," Location:     %s\n",pirep_OV);
     	 }
     	 else if (strncmp(token,"TM",2) == 0) {
     		 strcpy(pirep_TM,token);
     		 snprintf(pirep_hr, 3, "%s",pirep_TM+3);
     		 snprintf(pirep_mn, 3,"%s", pirep_TM+5);
     		 fprintf(to," Time:         %s:%sz\n",pirep_hr,pirep_mn);
+    		 fprintf(filepirep," Time:         %s:%sz\n",pirep_hr,pirep_mn);
     	 }
     	 else if (strncmp(token,"FL",2) == 0) {
     		 strcpy(pirep_FL,token+2);
     	     fprintf(to," Flight Level: %s\n",pirep_FL);
+    	     fprintf(filepirep," Flight Level: %s\n",pirep_FL);
     	 }
     	 else if (strncmp(token,"TP",2) == 0) {
     		 strcpy(pirep_TP,token+3);
     		 fprintf(to," A/C Type:     %s\n",pirep_TP);
+    		 fprintf(filepirep," A/C Type:     %s\n",pirep_TP);
     	 }
     	 else if (strncmp(token,"SK",2) == 0) {
     		 strcpy(pirep_SK,token+3);
     	     fprintf(to," Cloud Layers: %s\n",pirep_SK);
+    	     fprintf(filepirep," Cloud Layers: %s\n",pirep_SK);
     	 }
     	 else if (strncmp(token,"WX",2) == 0) {
  	     	 strcpy(pirep_WX,token+3);
     	     fprintf(to," Weather:      %s\n",pirep_WX);
+    	     fprintf(filepirep," Weather:      %s\n",pirep_WX);
     	 }
        	 else if (strncmp(token,"TA",2) == 0) {
     	     strcpy(pirep_TA,token+3);
         	 fprintf(to," Temperature:  %s(c)\n",pirep_TA);
+        	 fprintf(filepirep," Temperature:  %s(c)\n",pirep_TA);
        	 }
          else if (strncmp(token,"WV",2) == 0) {
         	 strcpy(pirep_WV,token+3);
              fprintf(to," WndSpdDir:    %s\n",pirep_WV);
+             fprintf(filepirep," WndSpdDir:    %s\n",pirep_WV);
          }
          else if (strncmp(token,"TB",2) == 0) {
     		 strcpy(pirep_TB,token+3);
     	     fprintf(to," Turbulence:   %s\n",pirep_TB);
+    	     fprintf(filepirep," Turbulence:   %s\n",pirep_TB);
          }
          else if (strncmp(token,"IC",2) == 0) {
     		 strcpy(pirep_IC,token+3);
-    	     fprintf(to," Icing:        %s\n",pirep_IC);
+    	     fprintf(filepirep," Icing:        %s\n",pirep_IC);
          }
     	 else if (strncmp(token,"RM",2) == 0) {
     		 strcpy(pirep_RM,token+3);
     	     fprintf(to," Remarks:      %s\n",pirep_RM);
+    	     fprintf(filepirep," Remarks:      %s\n",pirep_RM);
     	 }
     }
+    fflush(filepirep);
 }
 
 static void uat_decode_hdr(uint8_t *frame, struct uat_adsb_mdb *mdb)
@@ -744,6 +762,7 @@ static const char *get_fisb_product_name(uint16_t product_id)
     case 81:   	return "Radar echo tops graphic, scheme 1: 16-level";
     case 82:   	return "Radar echo tops graphic, scheme 2: 8-level";
     case 83:   	return "Storm tops and velocity";
+    case 84:   	return "Cloud tops";
     case 90:   	return "Turbulence Forecast - Low";
     case 91:   	return "Turbulence Forecast - High";
     case 101:  	return "Lightning strike type 1 (pixel level)";
@@ -780,7 +799,7 @@ static const char *get_fisb_product_format(uint16_t product_id)
     case 402: case 405:
         return "Text";
 
-    case 8: case 9: case 10: case 11: case 12: case 13:        
+    case 8: case 9: case 10: case 11: case 12: case 13 :case 14:
         return "Text/Graphic";
        
     case 20: case 21: case 22: case 23: case 24: case 25: case 26: case 27: 
@@ -788,9 +807,10 @@ static const char *get_fisb_product_format(uint16_t product_id)
         return "Text (DLAC)";
 
     case 51: 	case 52: case 53: case 54: case 55: case 56: case 57: case 58:
-    case 59: 	case 60: case 61: case 62: case 63: case 64:
-    case 81: 	case 82: case 83:
-    case 101: 	case 102:
+    case 59: 	case 60: case 61: case 62: case 63: case 64: case 70: case 71:
+    case 81: 	case 82: case 83: case 84:
+    case 90:    case 91:
+    case 101: 	case 102: case 104:
     case 151:
     case 201: 	case 202:
     case 254:
@@ -1363,7 +1383,7 @@ void uat_display_uplink_mdb(const struct uat_uplink_mdb *mdb, FILE *to)
             "  SLon:  %+.4f%s ",
             mdb->lat, mdb->position_valid ? "" : " (pos invld)",
             mdb->lon, mdb->position_valid ? "" : " (pos invld)");
-    
+
     if (mdb->app_data_valid) {
         unsigned i;
         for (i = 0; i < mdb->num_info_frames; ++i)

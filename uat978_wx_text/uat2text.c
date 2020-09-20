@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 	fprintf(stdout, "%d  Records read\n",reccount);
    	fclose(filehandle);
 
-	fprintf(stdout, "\nOpening file: metar.out\n");
+	fprintf(stdout, "Opening file: metar.out\n");
 		filemetar = fopen("metar.out","w");
 		if (filemetar == 0)
 		{
@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 				exit (1) ;
 		}
 
-		fprintf(stdout, "\nOpening file: notam.out\n");
+		fprintf(stdout, "Opening file: notam.out\n");
 		filenotam = fopen("notam.out","w");
 			if (filenotam == 0)
 			{
@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 					exit (1) ;
 			}
 
-		fprintf(stdout, "\nOpening file: sua.out\n");
+		fprintf(stdout, "Opening file: sua.out\n");
 		filesua = fopen("sua.out","w");
 			if (filesua == 0)
 			{
@@ -95,7 +95,7 @@ int main(int argc, char **argv)
 				exit (1) ;
 			}
 
-		fprintf(stdout, "\nOpening file: sigmet.out\n");
+		fprintf(stdout, "Opening file: sigmet.out\n");
 		filesigmet = fopen("sigmet.out","w");
 			if (filesigmet == 0)
 			{
@@ -103,7 +103,7 @@ int main(int argc, char **argv)
 				exit (1) ;
 			}
 
-		fprintf(stdout, "\nOpening file: airmet.out\n");
+		fprintf(stdout, "Opening file: airmet.out\n");
 		fileairmet = fopen("airmet.out","w");
 			if (fileairmet == 0)
 			{
@@ -111,13 +111,23 @@ int main(int argc, char **argv)
 				exit (1) ;
 			}
 
-		fprintf(stdout, "\nOpening file: gairmet.out\n");
+		fprintf(stdout, "Opening file: gairmet.out\n");
 		filegairmet = fopen("gairmet.out","w");
 			if (filegairmet == 0)
 			{
 				fprintf(stdout,"Error--file could not be opened. \n") ;
 				exit (1) ;
 			}
+
+		fprintf(stdout, "Opening file: pirep.out\n");
+		filepirep = fopen("pirep.out","w");
+			if (filepirep == 0)
+			{
+				fprintf(stdout,"Error--file could not be opened. \n") ;
+				exit (1) ;
+			}
+
+
 
 	 // TJH
 
