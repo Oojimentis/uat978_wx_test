@@ -1418,13 +1418,18 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 }
 void uat_display_uplink_mdb(const struct uat_uplink_mdb *mdb, FILE *to)
 {
-    fprintf(to,"UPLINK:  ");
+    fprintf(to,"UPLINK: ");
 
-    fprintf(to," Site: %u" , mdb->tisb_site_id);
-    fprintf(to," SLat:  %+.4f%s"
-            "  SLon:  %+.4f%s ",
-            mdb->lat, mdb->position_valid ? "" : " (pos invld)",
-            mdb->lon, mdb->position_valid ? "" : " (pos invld)");
+    fprintf(to," Site: %u  " , mdb->tisb_site_id);
+    fprintf(to," Lat: %+.4f%s"
+            " Lon: %+.4f%s ",
+            mdb->lat, mdb->position_valid ? "" : " ",
+            mdb->lon, mdb->position_valid ? "" : " ");
+
+ 	time_t current_time = time(NULL);
+ 	char * tm=ctime(&current_time);
+    tm[strlen(tm)-6] = '\0';
+    fprintf(to," Time: %s",tm);
 
     if (mdb->app_data_valid) {
         unsigned i;
