@@ -42,6 +42,151 @@ static void get_gs_name(char *Word,int len){
 	 }
      return;
 }
+static void get_sua_text(char *Word, FILE *to);
+static void get_sua_text(char *Word, FILE *to){
+
+	char *token;
+	char sua_sch_id[10];
+	char sua_aspc_id[7];
+	char sua_sch_stat[2];
+	char sua_aspc_ty[2];
+	char sua_aspc_nm[50];
+
+	char sua_st_tm[11];char sua_st_yy[3];char sua_st_mm[3];char sua_st_dd[3];
+	char sua_st_hh[3]; char sua_st_mn[3];
+
+	char sua_en_tm[11];char sua_en_yy[3];char sua_en_mm[3];char sua_en_dd[3];
+	char sua_en_hh[3]; char sua_en_mn[3];
+
+	char sua_low_alt[10];
+	char sua_hg_alt[10];
+	char sua_sep_rl[2];
+	char sua_shp_ind[2];
+	char sua_nfdc_id[10];
+	char sua_nfcd_nm[50];
+	char sua_dafif_id[10];
+	char sua_dafif_nm[50];
+
+	token = strsep(&Word,"|");
+	strcpy(sua_sch_id,token);
+	fprintf(filesua," Schedule ID    : %s ",sua_sch_id);
+	token = strsep(&Word,"|");
+	strcpy(sua_aspc_id,token);
+	fprintf(filesua," Airspace ID: %s\n",sua_aspc_id);
+	token = strsep(&Word,"|");
+	strcpy(sua_sch_stat,token);
+	if (strcmp(sua_sch_stat,"W") ==0){
+		fprintf(filesua," Schedule Status: %s Waiting to Start\n",sua_sch_stat);}
+	else if (strcmp(sua_sch_stat,"P")==0){
+		fprintf(filesua," Schedule Status: %s Pending Approval\n",sua_sch_stat);}
+	else if (strcmp(sua_sch_stat,"H")==0){
+			fprintf(filesua," Schedule Status: %s Activated for Use\n",sua_sch_stat);}
+
+	token = strsep(&Word,"|");
+	strcpy(sua_aspc_ty,token);
+	if (strcmp(sua_aspc_ty,"W") ==0){
+		fprintf(filesua," Airspace Type  : %s Warning Area\n",sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty,"R") ==0){
+		fprintf(filesua," Airspace Type  : %s Restricted Area\n",sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty,"M") ==0){
+		fprintf(filesua," Airspace Type  : %s Military Operations Area\n",sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty,"P") ==0){
+		fprintf(filesua," Airspace Type  : %s Prohibited Area\n",sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty,"L") ==0){
+		fprintf(filesua," Airspace Type  : %s Alert Area\n",sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty,"A") ==0){
+		fprintf(filesua," Airspace Type  : %s ATCAA\n",sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty,"I") ==0){
+		fprintf(filesua," Airspace Type  : %s Instrument Route\n",sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty,"V") ==0){
+		fprintf(filesua," Airspace Type  : %s Visual Route\n",sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty,"S") ==0){
+		fprintf(filesua," Airspace Type  : %s Slow Route\n",sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty,"B") ==0){
+		fprintf(filesua," Airspace Type  : %s Military Route (Refueling)\n",sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty,"O") ==0){
+		fprintf(filesua," Airspace Type  : %s Other\n",sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty,"T") ==0){
+		fprintf(filesua," Airspace Type  : %s Refueling Track\n",sua_aspc_ty);}
+
+	token = strsep(&Word,"|");
+	strcpy(sua_aspc_nm,token);
+	fprintf(filesua," Airspace Name  : %s\n",sua_aspc_nm);
+	token = strsep(&Word,"|");
+
+	strcpy(sua_st_tm,token);
+	 snprintf(sua_st_yy, 3,"%s",sua_st_tm);
+	 snprintf(sua_st_mm, 3,"%s",sua_st_tm+2);
+	 snprintf(sua_st_dd, 3,"%s",sua_st_tm+4);
+	 snprintf(sua_st_hh, 3,"%s",sua_st_tm+6);
+	 snprintf(sua_st_mn, 3,"%s",sua_st_tm+8);
+
+	fprintf(filesua," Start Time     : %s/%s/20%s %s:%s",
+			 sua_st_mm,sua_st_dd,sua_st_yy,sua_st_hh, sua_st_mn);
+
+	token = strsep(&Word,"|");
+	strcpy(sua_en_tm,token);
+	 snprintf(sua_en_yy, 3,"%s",sua_en_tm);
+	 snprintf(sua_en_mm, 3,"%s",sua_en_tm+2);
+	 snprintf(sua_en_dd, 3,"%s",sua_en_tm+4);
+	 snprintf(sua_en_hh, 3,"%s",sua_en_tm+6);
+	 snprintf(sua_en_mn, 3,"%s",sua_en_tm+8);
+
+	fprintf(filesua," End Time: %s/%s/20%s %s:%s\n",
+			 sua_en_mm,sua_en_dd,sua_en_yy,sua_en_hh,sua_en_mn);
+
+	token = strsep(&Word,"|");
+	strcpy(sua_low_alt,token);
+	fprintf(filesua," Low Altitude   : %s ",sua_low_alt);
+
+	token = strsep(&Word,"|");
+	strcpy(sua_hg_alt,token);
+	fprintf(filesua," High Altitude: %s\n",sua_hg_alt);
+
+	token = strsep(&Word,"|");
+	strcpy(sua_sep_rl,token);
+	if (strcmp(sua_sep_rl,"A") ==0){
+		fprintf(filesua," Separation Rule: %s Aircraft Rule ",sua_sep_rl);}
+	else if (strcmp(sua_sep_rl,"O") ==0){
+		fprintf(filesua," Separation Rule: %s Other Rule ",sua_sep_rl);}
+	else {
+		fprintf(filesua," Separation Rule:    Unspecified ");
+	}
+
+	token = strsep(&Word,"|");
+	if (token){
+		strcpy(sua_shp_ind,token);     //13
+		if (strcmp(sua_shp_ind,"N") ==0){
+			fprintf(filesua," Shape Indicator: %s No Shape Defined\n",sua_shp_ind);}
+		else if	(strcmp(sua_shp_ind,"Y") ==0){
+			fprintf(filesua," Shape Indicator: %s Has Shape Defined\n",sua_shp_ind);}
+
+	}
+	token = strsep(&Word,"|");
+	if (token){
+		strcpy(sua_nfdc_id,token);      //14
+		fprintf(filesua," NFDC ID        : %s",sua_nfdc_id);
+	}
+
+	token = strsep(&Word,"|");
+	if (token) {
+		strcpy(sua_nfcd_nm,token);      //15
+		fprintf(filesua," NFCD Name: %s\n",sua_nfcd_nm);
+	}
+	token = strsep(&Word,"|");
+	if (token) {
+		strcpy(sua_dafif_id,token);       //16
+		fprintf(filesua," DAFIF ID       : %s",sua_dafif_id);
+	}
+	token = strsep(&Word,"|");
+	if (token) {
+		strcpy(sua_dafif_nm,token);      //17
+		fprintf(filesua," DAFIF Name: %s\n",sua_dafif_nm);
+	}
+
+	fflush(filesua);
+
+}
 
 static void get_pirep(char *Word, FILE *to);
 
@@ -68,10 +213,14 @@ static void get_pirep(char *Word, FILE *to){
     get_gs_name(pirep_stn,reccount);
 
     fprintf(to,"PIREP REPORT:\n");
-    fprintf(to," Station:      %s - %s\n",pirep_stn, gs_ret);
-
     fprintf(filepirep,"PIREP REPORT:\n");
-    fprintf(filepirep," Station:      %s - %s\n",pirep_stn, gs_ret);
+ 	time_t current_time = time(NULL);
+ 	char * tm=ctime(&current_time);
+    tm[strlen(tm)-1] = '\0';
+	fprintf(to," Time           : %s\n", tm);
+	fprintf(filepirep," Time           : %s\n", tm);
+    fprintf(to," Station        : %s - %s\n",pirep_stn, gs_ret);
+    fprintf(filepirep," Station        : %s - %s\n",pirep_stn, gs_ret);
 
     token = strtok(0," ");
 
@@ -91,60 +240,66 @@ static void get_pirep(char *Word, FILE *to){
     while ((token = strtok(0, "/"))) {
 
     	if (strncmp(token,"OV",2) == 0) {
-    		 strcpy(pirep_OV,token+3);
-    		 fprintf(to," Location:     %s\n",pirep_OV);
-    		 fprintf(filepirep," Location:     %s\n",pirep_OV);
+    		strcpy(pirep_OV,token+3);
+    		fprintf(to," Location       : %s\n",pirep_OV);
+    		fprintf(filepirep," Location       : %s\n",pirep_OV);
     	 }
     	 else if (strncmp(token,"TM",2) == 0) {
     		 strcpy(pirep_TM,token);
-    		 snprintf(pirep_hr, 3, "%s",pirep_TM+3);
-    		 snprintf(pirep_mn, 3,"%s", pirep_TM+5);
-    		 fprintf(to," Time:         %s:%sz\n",pirep_hr,pirep_mn);
-    		 fprintf(filepirep," Time:         %s:%sz\n",pirep_hr,pirep_mn);
+    		 snprintf(pirep_hr, 3,"%s",pirep_TM+3);
+    		 snprintf(pirep_mn, 3,"%s",pirep_TM+5);
+    		 fprintf(to," Time           : %s:%sz\n",pirep_hr,pirep_mn);
+    		 fprintf(filepirep," Time           : %s:%sz\n",pirep_hr,pirep_mn);
     	 }
     	 else if (strncmp(token,"FL",2) == 0) {
     		 strcpy(pirep_FL,token+2);
-    	     fprintf(to," Flight Level: %s\n",pirep_FL);
-    	     fprintf(filepirep," Flight Level: %s\n",pirep_FL);
+    	     fprintf(to," Flight Level   : %s\n",pirep_FL);
+    	     fprintf(filepirep," Flight Level   : %s\n",pirep_FL);
     	 }
     	 else if (strncmp(token,"TP",2) == 0) {
     		 strcpy(pirep_TP,token+3);
-    		 fprintf(to," A/C Type:     %s\n",pirep_TP);
-    		 fprintf(filepirep," A/C Type:     %s\n",pirep_TP);
+    		 fprintf(to," A/C Type       : %s\n",pirep_TP);
+    		 fprintf(filepirep," A/C Type       : %s\n",pirep_TP);
     	 }
     	 else if (strncmp(token,"SK",2) == 0) {
     		 strcpy(pirep_SK,token+3);
-    	     fprintf(to," Cloud Layers: %s\n",pirep_SK);
-    	     fprintf(filepirep," Cloud Layers: %s\n",pirep_SK);
+    	     fprintf(to," Cloud Layers   : %s\n",pirep_SK);
+    	     fprintf(filepirep," Cloud Layers   : %s\n",pirep_SK);
     	 }
     	 else if (strncmp(token,"WX",2) == 0) {
  	     	 strcpy(pirep_WX,token+3);
-    	     fprintf(to," Weather:      %s\n",pirep_WX);
-    	     fprintf(filepirep," Weather:      %s\n",pirep_WX);
+    	     fprintf(to," Weather        : %s\n",pirep_WX);
+    	     fprintf(filepirep," Weather        : %s\n",pirep_WX);
     	 }
        	 else if (strncmp(token,"TA",2) == 0) {
     	     strcpy(pirep_TA,token+3);
-        	 fprintf(to," Temperature:  %s(c)\n",pirep_TA);
-        	 fprintf(filepirep," Temperature:  %s(c)\n",pirep_TA);
+        	 fprintf(to," Temperature    : %s(c)\n",pirep_TA);
+        	 fprintf(filepirep," Temperature    : %s(c)\n",pirep_TA);
        	 }
          else if (strncmp(token,"WV",2) == 0) {
         	 strcpy(pirep_WV,token+3);
-             fprintf(to," WndSpdDir:    %s\n",pirep_WV);
-             fprintf(filepirep," WndSpdDir:    %s\n",pirep_WV);
+             fprintf(to," WndSpdDir      : %s\n",pirep_WV);
+             fprintf(filepirep," WndSpdDir      : %s\n",pirep_WV);
          }
          else if (strncmp(token,"TB",2) == 0) {
     		 strcpy(pirep_TB,token+3);
-    	     fprintf(to," Turbulence:   %s\n",pirep_TB);
-    	     fprintf(filepirep," Turbulence:   %s\n",pirep_TB);
+    	     fprintf(to," Turbulence     : %s\n",pirep_TB);
+    	     fprintf(filepirep," Turbulence     : %s\n",pirep_TB);
          }
          else if (strncmp(token,"IC",2) == 0) {
     		 strcpy(pirep_IC,token+3);
-    	     fprintf(filepirep," Icing:        %s\n",pirep_IC);
+    	     fprintf(to," Icing          : %s\n",pirep_IC);
+    	     fprintf(filepirep," Icing          : %s\n",pirep_IC);
          }
     	 else if (strncmp(token,"RM",2) == 0) {
     		 strcpy(pirep_RM,token+3);
-    	     fprintf(to," Remarks:      %s\n",pirep_RM);
-    	     fprintf(filepirep," Remarks:      %s\n",pirep_RM);
+    	     fprintf(to," Remarks        : %s\n",pirep_RM);
+    	     fprintf(filepirep," Remarks        : %s\n",pirep_RM);
+    	     token = strtok(0, "/");
+    	     if (token){
+    	     fprintf(to," Remarks2       : %s\n",token);
+       	     fprintf(filepirep," Remarks2       : %s\n",token);}
+
     	 }
     }
     fflush(filepirep);
@@ -863,7 +1018,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     	recf = apdu->data[0];
     	fprintf(to," Record Format: %d \n",recf >> 4);
-    	fprintf(filenotam," Record Fmt : %d \n",recf >> 4);
+ //   	fprintf(filenotam," Record Fmt : %d \n",recf >> 4);
 
     	const char *text = decode_dlac(apdu->data, apdu->length,moo);
        	const char *report = text;
@@ -914,7 +1069,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 	              struct tm *tm = localtime(&current_time);
 	              fprintf(filenotam," Time       : %s\n", asctime(tm));
 	              fprintf(to,"\n%s \n",r);
-	              fprintf(filenotam,"Data:  %s \n",r);
+	              fprintf(filenotam,"Data:\n%s\n",r);
 	              fflush(filenotam);
 	          }
           }
@@ -932,7 +1087,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	const char *report = text;
 
     	recf = apdu->data[0];
-    	fprintf(fileairmet," Record Fmt : %d \n",recf >> 4);
+//    	fprintf(fileairmet," Record Fmt : %d \n",recf >> 4);
 
 // apdu->data
     	if ((recf >> 4) == 8){
@@ -961,10 +1116,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  				object_labelt = decode_dlac(apdu->data, 9,11);
  			    fprintf(to, "object_labelelse %s \n", object_labelt);
  			}
-
-
-
-
     	}
 
     	if ((recf >> 4) == 2 ) {             // text
@@ -1014,7 +1165,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			fprintf(fileairmet," Time       : %s", asctime(tm));
 
     			fprintf(to,"\n%s \n",r);
-    			fprintf(fileairmet," Data:\n\n");
+    			fprintf(fileairmet," Data:\n");
     			fprintf(fileairmet,"%s\n",r);
     			fflush(fileairmet);
     		}
@@ -1102,6 +1253,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		char report_buf[1024];
     		const char *next_report;
     		char *p, *r;
+    		char *sua_text;
 
     		next_report = strchr(report, '\x1e'); // RS
     		if (!next_report)
@@ -1122,8 +1274,13 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		p = strchr(r, ' ');
     		if (p) {
     			*p = 0;
+    		 	time_t current_time = time(NULL);
+    		 	char * tm=ctime(&current_time);
+    		    tm[strlen(tm)-1] = '\0';
+        		fprintf(filesua," Time           : %s\n", tm);
+
     			fprintf(to," Report Type:       %s\n",r);
-    			fprintf(filesua," Report Type:  %s\n",r);
+    			fprintf(filesua," Report Type    : %s\n",r);
     			r = p+1;
     		}
 
@@ -1131,15 +1288,17 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		if (p) {
     			*p = 0;
     			fprintf(to," Report time:       %sZ\n",r);
-    			fprintf(filesua," Report time:  %sZ\n",r);
+    			fprintf(filesua," Report time    : %sZ\n",r);
     			r = p+1;
     		}
-    		time_t current_time = time(NULL);
-    		struct tm *tm = localtime(&current_time);
-    		fprintf(filesua," Time       :  %s\n", asctime(tm));
+
+			sua_text = (char *)malloc(strlen(r) + 1);
+			strcpy(sua_text,r);
+
+			get_sua_text(sua_text,to);
+
     		fprintf(to,"\n%s \n",r);
-    		fprintf(filesua,"Data: %s \n",r);
-    		fflush(filesua);
+
     	}
     }
 
@@ -1240,7 +1399,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	while (report) {
     		char report_buf[1024];
     		const char *next_report;
-    		char mtype[8];
+    		char mtype[9];
     		char *p, *r;
     		char observation[900];
     		char gstn[5];
@@ -1269,7 +1428,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		if (p) {
     			*p = 0;
     			strcpy(observation,r);
-    			strncpy(mtype,r,7);
+    			strncpy(mtype,r,8);
     			fprintf(to," RType: %s\n", r);
     			r = p+1;
     		}
@@ -1297,6 +1456,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				}
     				else if (strcmp(mtype,"TAF.AMD") == 0) {
     					strncpy(gstn,r,5);
+    					fprintf(to," RLoc:  %s - %s\n",gstn, gs_ret);
     				}
 
     				get_gs_name(gstn,reccount);
@@ -1304,13 +1464,13 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				fprintf(to," RLoc:  %s - %s\n",gstn, gs_ret);
     			}
 
-    			if( strcmp(mtype,"METAR") == 0 ||
-    					strcmp(mtype,"SPECI") == 0   ){
+//    			if( strcmp(mtype,"METAR") == 0 ||
+//    					strcmp(mtype,"SPECI") == 0   ){
     				time_t current_time = time(NULL);
     				struct tm *tm = localtime(&current_time);
     				fprintf(filemetar,"Time                 : %s", asctime(tm));
-    				fprintf(filemetar,"WX Station           : %s - %s\n",r,gs_ret);
-    			}
+    				fprintf(filemetar,"WX Station           : %s - %s\n",gstn,gs_ret);
+ //   			}
     			r = p+1;
     		}
                 
@@ -1323,6 +1483,14 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     					strcmp(mtype,"SPECI") != 0   )
     				fprintf(to," RTime: %s\n", r);
     			r = p+1;
+    		}
+
+    		if (strcmp(mtype,"TAF") == 0 ||
+   		    			strcmp(mtype,"TAF.AMD") == 0   ||
+						strcmp(mtype,"WINDS") == 0){
+
+    			fprintf(filemetar," Report Name         : %s\n",mtype);
+    			fprintf(filemetar," Data:\n%s\n", r);    // *** Text ***
     		}
 
     		fprintf(to," Text:\n%s\n", r);    // *** Text ***
