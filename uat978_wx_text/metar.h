@@ -2,7 +2,7 @@
 #define MDSPLIB_METAR_H__
 
 /* ref: http://limulus.net/mdsplib */
-/*
+/* ..
 METAR Decoder Software Package Library: Parses Aviation Routine Weather Reports
 Copyright (C) 2003  Eric McCarthy
 

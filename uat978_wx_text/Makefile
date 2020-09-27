@@ -1,6 +1,6 @@
 CFLAGS+=-O2 -g -Wall -Werror -Ifec
 LDFLAGS=
-LIBS=-lm libmetar.a
+LIBS=-lm libmetar.a 
 CC=gcc
 
 all: dump978 uat2json uat2text uat2esnt extract_nexrad
