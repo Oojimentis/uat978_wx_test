@@ -1,5 +1,5 @@
 // Part of dump978, a UAT decoder.
-//
+//..
 // Copyright 2015, Oliver Jowett <oliver@mutability.co.uk>
 //
 // This file is free software: you may copy, redistribute and/or modify it  
