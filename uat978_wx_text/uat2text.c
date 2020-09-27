@@ -51,7 +51,6 @@ void handle_frame(frame_type_t type, uint8_t *frame, int len, void *extra)
 
 int main(int argc, char **argv)
 {
-
 	//  TJH
 	char lyne[80];
 	char *item;
@@ -73,62 +72,45 @@ int main(int argc, char **argv)
 
 	fprintf(stdout, "Opening file: metar.out\n");
 		filemetar = fopen("metar.out","w");
-		if (filemetar == 0)
-		{
+		if (filemetar == 0)		{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
-				exit (1) ;
-		}
+				exit (1) ;		}
 
 		fprintf(stdout, "Opening file: notam.out\n");
 		filenotam = fopen("notam.out","w");
-			if (filenotam == 0)
-			{
+			if (filenotam == 0)			{
 				fprintf(stdout,"Error--file could not be opened. \n") ;
-					exit (1) ;
-			}
+					exit (1) ;			}
 
 		fprintf(stdout, "Opening file: sua.out\n");
 		filesua = fopen("sua.out","w");
-			if (filesua == 0)
-			{
+			if (filesua == 0)			{
 				fprintf(stdout,"Error--file could not be opened. \n") ;
-				exit (1) ;
-			}
+				exit (1) ;			}
 
 		fprintf(stdout, "Opening file: sigmet.out\n");
 		filesigmet = fopen("sigmet.out","w");
-			if (filesigmet == 0)
-			{
+			if (filesigmet == 0)			{
 				fprintf(stdout,"Error--file could not be opened. \n") ;
-				exit (1) ;
-			}
+				exit (1) ;			}
 
 		fprintf(stdout, "Opening file: airmet.out\n");
 		fileairmet = fopen("airmet.out","w");
-			if (fileairmet == 0)
-			{
+			if (fileairmet == 0)			{
 				fprintf(stdout,"Error--file could not be opened. \n") ;
-				exit (1) ;
-			}
+				exit (1) ;			}
 
 		fprintf(stdout, "Opening file: gairmet.out\n");
 		filegairmet = fopen("gairmet.out","w");
-			if (filegairmet == 0)
-			{
+			if (filegairmet == 0)			{
 				fprintf(stdout,"Error--file could not be opened. \n") ;
-				exit (1) ;
-			}
+				exit (1) ;			}
 
 		fprintf(stdout, "Opening file: pirep.out\n");
 		filepirep = fopen("pirep.out","w");
-			if (filepirep == 0)
-			{
+			if (filepirep == 0)			{
 				fprintf(stdout,"Error--file could not be opened. \n") ;
-				exit (1) ;
-			}
-
-
-
+				exit (1) ;			}
 	 // TJH
 
 	struct dump978_reader *reader;
@@ -137,7 +119,6 @@ int main(int argc, char **argv)
     if (!reader) {
         perror("dump978_reader_new");
         return 1;
-
     }
     
     while ((framecount = dump978_read_frames(reader, handle_frame, NULL)) > 0)
