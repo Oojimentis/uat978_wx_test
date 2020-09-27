@@ -1067,9 +1067,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
 	              time_t current_time = time(NULL);
 	              struct tm *tm = localtime(&current_time);
-	              fprintf(filenotam," Time       : %s\n", asctime(tm));
+	              fprintf(filenotam," Time       : %s", asctime(tm));
 	              fprintf(to,"\n%s \n",r);
-	              fprintf(filenotam,"Data:\n%s\n",r);
+	              fprintf(filenotam," Data:\n%s\n",r);
 	              fflush(filenotam);
 	          }
           }
@@ -1094,7 +1094,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		uint16_t record_length=0; 	uint16_t report_number=0;uint16_t report_year=0;
     		int overlay_record_identifier=0; int object_label=0; int object_label_flag=0;
     		const char * object_labelt;
-
+    		fprintf(to," Record Fmt : %d \n",recf >> 4);
     		record_length = ((apdu->data[6]) << 2) | (((apdu->data[7]) & 0xC0) >> 6);
     		fprintf(to,"Record Length: %d ",record_length);
 
@@ -1184,7 +1184,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	const char *report = text;
 
     	recf = apdu->data[0];
-    	fprintf(filesigmet," Record Fmt  : %d \n",recf >> 4);
+    	fprintf(to," Record Fmt  : %d \n",recf >> 4);
     	if ((recf >> 4) == 2 ) {             // text
     		while (report) {
     			char report_buf[1024];
@@ -1229,7 +1229,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			struct tm *tm = localtime(&current_time);
     			fprintf(filesigmet," Time        : %s", asctime(tm));
     			fprintf(to,"\n%s \n",r);
-    			fprintf(filesigmet," Data:\n\n");
+    			fprintf(filesigmet," Data:\n");
     			fprintf(filesigmet,"%s\n",r);
     			fflush(filesigmet);
     		}
@@ -1320,7 +1320,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     	fprintf(to," woof-14:       %s\n",report);
     	fprintf(filegairmet," Report Type: G-Airmet:\n");
-    	fprintf(filegairmet," Data:\n\n");
+    	fprintf(filegairmet," Data:\n");
     	fprintf(filegairmet,"%s\n",report);
     	fflush(filegairmet);
 
