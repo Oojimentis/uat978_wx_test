@@ -1,5 +1,5 @@
 /* User include file for libfec
- * Copyright 2004, Phil Karn, KA9Q
+ * Copyright 2004, Phil Karn, KA9Q..
  * May be used under the terms of the GNU Lesser General Public License (LGPL)
  */
 

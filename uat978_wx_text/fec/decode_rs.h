@@ -23,7 +23,7 @@
 
  * The memset(), memmove(), and memcpy() functions are used. The appropriate header
  * file declaring these functions (usually <string.h>) must be included by the calling
- * program.
+ * program..
  */
 
 
