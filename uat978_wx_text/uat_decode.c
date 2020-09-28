@@ -1088,16 +1088,16 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	char gstn[5]; int recf;
     	const char *text = decode_dlac(apdu->data, apdu->length,moo);
     	const char *report = text;
-
+		uint16_t record_length=0; 	uint16_t report_number=0;uint16_t report_year=0;
+		int overlay_record_identifier=0; int object_label=0; int object_label_flag=0;
+		uint8_t object_type; uint8_t object_element;
+		uint8_t object_status;
+		const char * object_labelt;
     	recf = apdu->data[0];
 //    	fprintf(fileairmet," Record Fmt : %d \n",recf >> 4);
 
     	if ((recf >> 4) == 8){
-    		uint16_t record_length=0; 	uint16_t report_number=0;uint16_t report_year=0;
-    		int overlay_record_identifier=0; int object_label=0; int object_label_flag=0;
-    		uint8_t object_type; uint8_t object_element;
-    		uint8_t object_status;
-    		const char * object_labelt;
+
     		fprintf(to," Record Fmt : %d \n",recf >> 4);
     		record_length = ((apdu->data[6]) << 2) | (((apdu->data[7]) & 0xC0) >> 6);
     		fprintf(to,"Record Length: %d ",record_length);
@@ -1177,6 +1177,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			time_t current_time = time(NULL);
     			struct tm *tm = localtime(&current_time);
     			fprintf(fileairmet," Time       : %s", asctime(tm));
+    			report_number = (apdu->data[8] << 6) | (apdu->data[9] & 0xFC >> 2);
+    			    		fprintf(to,"Report Number: %d  ",report_number);
 
     			fprintf(to,"\n%s \n",r);
     			fprintf(fileairmet," Data:\n");
