@@ -198,13 +198,13 @@ static void get_pirep(char *Word, FILE *to){
     char pirep_TM[10]; char pirep_hr[5]; char pirep_mn[3];		// DateTime
     char pirep_FL[5];		// Flight Level
     char pirep_TP[6];		// a/c type
-    char pirep_SK[20];		// Cloud
+    char pirep_SK[50];		// Cloud
     char pirep_WX[20];		// Weather
     char pirep_TA[5];		// Temperature
     char pirep_WV[10];		// Wind Speed Direction
     char pirep_TB[30];  	// Turbulence
     char pirep_IC[20];		// Icing
-    char pirep_RM[50]; 		// Remarks
+    char pirep_RM[100]; 	// Remarks
 
 	token = strtok(Word," ");
 	strcpy(pirep_stn,"K");
@@ -293,13 +293,16 @@ static void get_pirep(char *Word, FILE *to){
          }
     	 else if (strncmp(token,"RM",2) == 0) {
     		 strcpy(pirep_RM,token+3);
-    	     fprintf(to," Remarks        : %s\n",pirep_RM);
-    	     fprintf(filepirep," Remarks        : %s\n",pirep_RM);
-    	     token = strtok(0, "/");
-    	     if (token){
-    	     fprintf(to," Remarks2       : %s\n",token);
-       	     fprintf(filepirep," Remarks2       : %s\n",token);}
-
+    		 token = strtok(0, "/");
+    		 if (token){
+    			 fprintf(to," Remarks        : %s",pirep_RM);
+    			 fprintf(filepirep," Remarks        : %s",pirep_RM);
+    			 fprintf(to,"/%s\n",token);
+    			 fprintf(filepirep,"/%s\n",token);}
+    		   	   else {
+    		   		   fprintf(to," Remarks        : %s\n",pirep_RM);
+    		   		   fprintf(filepirep," Remarks        : %s\n",pirep_RM);
+    		   	   }
     	 }
     }
     fflush(filepirep);
@@ -1089,10 +1092,11 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	recf = apdu->data[0];
 //    	fprintf(fileairmet," Record Fmt : %d \n",recf >> 4);
 
-// apdu->data
     	if ((recf >> 4) == 8){
     		uint16_t record_length=0; 	uint16_t report_number=0;uint16_t report_year=0;
     		int overlay_record_identifier=0; int object_label=0; int object_label_flag=0;
+    		uint8_t object_type; uint8_t object_element;
+    		uint8_t object_status;
     		const char * object_labelt;
     		fprintf(to," Record Fmt : %d \n",recf >> 4);
     		record_length = ((apdu->data[6]) << 2) | (((apdu->data[7]) & 0xC0) >> 6);
@@ -1100,22 +1104,32 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
 // Report identifier = report number + report year.
     		report_number = (((apdu->data[7]) & 0x3F) << 8) | (apdu->data[8]);
-    		fprintf(to,"Report Number: %d ",report_number);
+    		fprintf(to,"Report Number: %d  ",report_number);
 
     		report_year = ((apdu->data[9]) & 0xFE) >> 1;
-    		fprintf(to,"Report Year: %d ",report_year);
+    		fprintf(to,"Report Year: %d\n ",report_year);
 
     		overlay_record_identifier = (((apdu->data[10]) & 0x1E) >> 1) + 1; // Document instructs to add 1.
  			fprintf(to, "overlay_record_identifier %d ", overlay_record_identifier);
  			object_label_flag = (apdu->data[10] & 0x01);
- 			fprintf(to, "object_label_flag %d ", object_label_flag);
+ 			fprintf(to, "object_label_flag %d \n", object_label_flag);
  			if (object_label_flag == 0) { // Numeric index.
  				object_label = ((apdu->data[11]) << 8) | (apdu->data[12]);
-				fprintf(to, "object_labelzero %d\n", object_label);
+ 				fprintf(to, "object_labelzero %d\n", object_label);
  			} else {
  				object_labelt = decode_dlac(apdu->data, 9,11);
  			    fprintf(to, "object_labelelse %s \n", object_labelt);
  			}
+
+ 			object_element = (apdu->data[13]) & 0x1F;
+ 			fprintf(to, "object_element %d  ", object_element);
+ 			object_status = (apdu->data[14]) & 0x0F;
+ 			fprintf(to, "object_status %d ", object_status);
+ 			object_type = (apdu->data[14] & 0xF0) >> 4;
+ 			fprintf(to, "object_type %d \n", object_type);
+
+
+
     	}
 
     	if ((recf >> 4) == 2 ) {             // text
