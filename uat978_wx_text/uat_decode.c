@@ -1091,7 +1091,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		report_number = (((apdu->data[7]) & 0x3F) << 8) | (apdu->data[8]);
     		fprintf(to," Report Num : %d  ",report_number);
     		fprintf(filenotam," Report Num : %d  ",report_number);
-
+//
     		record_length = ((apdu->data[6]) << 2) | (((apdu->data[7]) & 0xC0) >> 6);
     		fprintf(to,"Record Length: %d ",record_length);
     		fprintf(filenotam,"Record Length: %d ",record_length);
