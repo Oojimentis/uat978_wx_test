@@ -1112,7 +1112,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  				fprintf(to, " Ob Lbl Num : %d  ", object_label);
  				fprintf(filenotam, " Ob Lbl Num : %d  ", object_label);
  			} else {
- 				object_labelt = decode_dlac(apdu->data, 9,11);
+ 				object_labelt = decode_dlac(apdu->data, 9,9);
  			    fprintf(to, " Ob Lbl Alph: %s ", object_labelt);
  			    fprintf(filenotam, " Ob Lbl Alph: %s ", object_labelt);
  			}
