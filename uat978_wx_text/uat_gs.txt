@@ -721,3 +721,15 @@ KMIA$Miami International Airport, FL                                        $
 K2XG$Gulf of Mexico?                                                        $
 KKCI$Kansas City International Airport, MO                                  $
 KDFW$Dallas-Ft Worth International Airport, TX                              $
+KZAB$Albuquerque Center Weather Service Unit                                $
+KZMP$Minneapolis Center Weather Service Unit                                $
+KSTE$Stevens Point Municipal Airport - Stevens Point, WI                    $
+KCNO$Chino Airport - Chino, CA                                              $
+KMKC$Charles B. Wheeler Downtown Airport - Kansas City, MO                  $
+KSDL$Scottsdale Airport - Scottsdale, AZ                                    $
+KSEA$Seattle-Tacoma International, WA                                       $
+KRBD$Dallas Executive Airport - Dallas, TX                                  $
+KHUF$Terre Haute Regional Airport - Terre Haute, IN                         $
+K06A$Moton Field Municipal Airport - Tuskegee, AL                           $
+KBWG$Bowling Green-Warren County Regional Airport - Bowling Green, KY       $
+KSQL$San Carlos Airport - San Carlos, CA                                    $
