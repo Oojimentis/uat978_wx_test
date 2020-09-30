@@ -1026,16 +1026,16 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 		uint8_t param_flag; uint8_t record_applicability_options;
 		uint8_t date_time_format; uint8_t element_flag;
 		const char * object_labelt;
-
-    	const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
-       	const char *report = text;
+        char gstn[5];
 
         if ((recf >> 4) == 2 ) {             // text
+        	rec_offset =11;
+        	const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
+           	const char *report = text;
 	          while (report) {
 	        	  char report_buf[1024];
 	              const char *next_report;
 	              char *p, *r;
-	              char gstn[5];
 
 	              next_report = strchr(report, '\x1e'); // RS
 	              if (!next_report)
@@ -1080,74 +1080,97 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 	              fflush(filenotam);
 	          }
           }
-          else {
-  	          display_generic_data(apdu->data, apdu->length, to);
-	       }
 
-    	if ((recf >> 4) == 8){ //graphic
-			fprintf(to," Report Type:       NOTAM\n");
+
+        if ((recf >> 4) == 8){ //graphic
+        	int datoff=6;
+        	fprintf(to," Report Type:       NOTAM\n");
 			fprintf(filenotam," Report Type: NOTAM\n");
 
-    		report_number = (((apdu->data[7]) & 0x3F) << 8) | (apdu->data[8]);
+        	rec_offset =2;
+        	const char *text = decode_dlac(apdu->data,5 ,rec_offset);
+            strncpy(gstn,text,5);
+            get_gs_name(gstn,reccount);
+
+            fprintf(to," RLoc:  %s - %s\n",gstn, gs_ret);
+            fprintf(filenotam," RLoc       : %s - %s\n",gstn, gs_ret);
+
+    		report_number = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]);
     		fprintf(to," Report Num : %d  ",report_number);
     		fprintf(filenotam," Report Num : %d  ",report_number);
 //
-    		record_length = ((apdu->data[6]) << 2) | (((apdu->data[7]) & 0xC0) >> 6);
+    		record_length = ((apdu->data[datoff + 0]) << 2) | (((apdu->data[datoff + 1]) & 0xC0) >> 6);
     		fprintf(to,"Record Length: %d ",record_length);
     		fprintf(filenotam,"Record Length: %d ",record_length);
 
-    		report_year = ((apdu->data[9]) & 0xFE) >> 1;
+    		report_year = ((apdu->data[datoff + 3]) & 0xFE) >> 1;
     		fprintf(to,"Report Year: %d\n ",report_year);
     		fprintf(filenotam,"Report Year: %d\n ",report_year);
 
-    		overlay_record_identifier = (((apdu->data[10]) & 0x1E) >> 1) + 1; // Document instructs to add 1.
+    		overlay_record_identifier = (((apdu->data[datoff + 4]) & 0x1E) >> 1) + 1; // Document instructs to add 1.
     		fprintf(to,"Ovrlay RcID: %d  ",overlay_record_identifier);
  			fprintf(filenotam,"Ovrlay RcID: %d  ",overlay_record_identifier);
 
- 			object_label_flag = (apdu->data[10] & 0x01);
+ 			object_label_flag = (apdu->data[datoff + 4] & 0x01);
  			fprintf(to, "Ob Lbl Fl: %d \n", object_label_flag);
  			fprintf(filenotam, "Ob Lbl Fl: %d \n", object_label_flag);
+
  			if (object_label_flag == 0) { // Numeric index.
- 				object_label = ((apdu->data[11]) << 8) | (apdu->data[12]);
+ 				object_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);
  				fprintf(to, " Ob Lbl Num : %d  ", object_label);
  				fprintf(filenotam, " Ob Lbl Num : %d  ", object_label);
+ 				datoff = datoff +7;
  			} else {
- 				object_labelt = decode_dlac(apdu->data, 9,9);
+ 				object_labelt = decode_dlac(apdu->data,5, 2);
  			    fprintf(to, " Ob Lbl Alph: %s ", object_labelt);
  			    fprintf(filenotam, " Ob Lbl Alph: %s ", object_labelt);
+ 			   datoff = datoff + 14;
  			}
 
- 			element_flag = ((apdu->data[13]) & 0x80) >> 7;
+ 			element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;
  			fprintf(to," Elmnt Flag  : %d ", element_flag);
  			fprintf(filenotam, " Elmnt Flag  : %d  ", element_flag);
 
- 			object_element = (apdu->data[13]) & 0x1F;
+ 			object_element = (apdu->data[datoff + 0]) & 0x1F;
  			fprintf(to, "Object Ele: %d\n", object_element);
  			fprintf(filenotam, "Object Ele: %d\n", object_element);
 
- 			object_status = (apdu->data[14]) & 0x0F;
+ 			object_status = (apdu->data[datoff +1]) & 0x0F;
  			fprintf(to, " Object Stat: %d\n", object_status);
  			fprintf(filenotam, " Object Stat: %d\n", object_status);
- 			object_type = (apdu->data[14] & 0xF0) >> 4;
+
+ 			object_type = (apdu->data[datoff +1] & 0xF0) >> 4;
  			fprintf(to, " Object Type: %d \n", object_type);
  			fprintf(filenotam, " Object Type: %d \n", object_type);
 
- 			qualifier_flag = ((apdu->data[13]) & 0x40) >> 6;
+ 			qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;
  			fprintf(to, " Qualif Flag: %d  ", qualifier_flag);
  			fprintf(filenotam, " Qualif Flag: %d  ", qualifier_flag);
- 			param_flag = ((apdu->data[13]) & 0x20) >> 5;
+
+ 			param_flag = ((apdu->data[datoff + 0]) & 0x20) >> 5;
  			fprintf(to, "Param Flag: %d \n", param_flag);
  			fprintf(filenotam, "Param Flag: %d \n", param_flag);
 
- 			record_applicability_options = ((apdu->data[14]) & 0xC0) >> 6;
- 			date_time_format = ((apdu->data[14]) & 0x30) >> 4;
+
+
+ 			if (qualifier_flag == 0){
+ 				datoff = datoff + 2;
+ 			}
+
+ 			record_applicability_options = ((apdu->data[datoff + 0]) & 0xC0) >> 6;
+ 			date_time_format = ((apdu->data[datoff + 0]) & 0x30) >> 4;
 
  			fprintf(to, " Rec App Opt: %d  ", record_applicability_options);
  			fprintf(filenotam, " Rec App Opt: %d  ", record_applicability_options);
 
  			fprintf(to, "Rec App Date: %d \n", date_time_format );
  			fprintf(filenotam, "Rec App Date: %d \n", date_time_format );
-    	}
+
+
+ 			fprintf(to, "\n");
+ 			fprintf(filenotam,"\n");
+ 			display_generic_data(apdu->data, apdu->length, to);
+        }
     }
     break;
 
