@@ -1914,6 +1914,7 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
             	fprintf(to,"(14)prod type : %d %d %d %d %d %d %d %d\n",
             			moose,tfr,lidflag,prod_range,num_crl,
 						rep_yr,txt,grph);
+            	fprintf(to," Product %s\n",get_fisb_product_name(moose));
 
        	}
         	else
