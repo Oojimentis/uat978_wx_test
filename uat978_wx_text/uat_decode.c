@@ -896,37 +896,37 @@ static const char *get_fisb_product_name(uint16_t product_id)
     case 11:   	return "Aerodrome and Airspace - AIRMET";
     case 12:   	return "Aerodrome and Airspace - SIGMET/Convective SIGMET";
     case 13:   	return "Aerodrome and Airspace - SUA Status";
-    case 14:   	return "G-AIRMET?";
+    case 14:   	return "G-AIRMET";
     case 15:   	return "Center Weather Advisory (CWAG)";
-    case 51:   	return "National NEXRAD, Type 0 - 4 level";
-    case 52:   	return "National NEXRAD, Type 1 - 8 level (quasi 6-level VIP)";
-    case 53:   	return "National NEXRAD, Type 2 - 8 level";
-    case 54:   	return "National NEXRAD, Type 3 - 16 level";
-    case 55:   	return "Regional NEXRAD, Type 0 - low dynamic range";
-    case 56:   	return "Regional NEXRAD, Type 1 - 8 level (quasi 6-level VIP)";
-    case 57:   	return "Regional NEXRAD, Type 2 - 8 level";
-    case 58:   	return "Regional NEXRAD, Type 3 - 16 level";
-    case 59:   	return "Individual NEXRAD, Type 0 - low dynamic range";
-    case 60:   	return "Individual NEXRAD, Type 1 - 8 level (quasi 6-level VIP)";
-    case 61:   	return "Individual NEXRAD, Type 2 - 8 level";
-    case 62:   	return "Individual NEXRAD, Type 3 - 16 level";
-    case 63:   	return "Global Block Representation - Regional NEXRAD, Type 4 - 8 level";
-    case 64:   	return "Global Block Representation - CONUS NEXRAD, Type 4 - 8 level";
+    case 51:   	return "National NEXRAD, Type 0 - 4 Level";
+    case 52:   	return "National NEXRAD, Type 1 - 8 Level (Quasi 6-Level VIP)";
+    case 53:   	return "National NEXRAD, Type 2 - 8 Level";
+    case 54:   	return "National NEXRAD, Type 3 - 16 Level";
+    case 55:   	return "Regional NEXRAD, Type 0 - Low Dynamic Range";
+    case 56:   	return "Regional NEXRAD, Type 1 - 8 Level (Quasi 6-Level VIP)";
+    case 57:   	return "Regional NEXRAD, Type 2 - 8 Level";
+    case 58:   	return "Regional NEXRAD, Type 3 - 16 Level";
+    case 59:   	return "Individual NEXRAD, Type 0 - Low Dynamic Range";
+    case 60:   	return "Individual NEXRAD, Type 1 - 8 Level (quasi 6-Level VIP)";
+    case 61:   	return "Individual NEXRAD, Type 2 - 8 Level";
+    case 62:   	return "Individual NEXRAD, Type 3 - 16 Level";
+    case 63:   	return "Global Block Representation - Regional NEXRAD, Type 4 - 8 Level";
+    case 64:   	return "Global Block Representation - CONUS NEXRAD, Type 4 - 8 Level";
     case 70:   	return "Icing Forecast - Low";
     case 71:   	return "Icing Forecast - High";
-    case 81:   	return "Radar echo tops graphic, scheme 1: 16-level";
-    case 82:   	return "Radar echo tops graphic, scheme 2: 8-level";
-    case 83:   	return "Storm tops and velocity";
-    case 84:   	return "Cloud tops";
+    case 81:   	return "Radar Echo Tops Graphic, Scheme 1: 16-Level";
+    case 82:   	return "Radar Echo Tops Graphic, Scheme 2: 8-Level";
+    case 83:   	return "Storm Tops and Velocity";
+    case 84:   	return "Cloud Tops";
     case 90:   	return "Turbulence Forecast - Low";
     case 91:   	return "Turbulence Forecast - High";
-    case 101:  	return "Lightning strike type 1 (pixel level)";
-    case 102:  	return "Lightning strike type 2 (grid element level)";
+    case 101:  	return "Lightning Strike Type 1 (Pixel Level)";
+    case 102:  	return "Lightning Strike Type 2 (Grid Element Level)";
     case 103:  	return "Lightning";
-    case 151:  	return "Point phenomena, vector format";
-    case 201:  	return "Surface conditions/winter precipitation graphic";
-    case 202:  	return "Surface weather systems";
-    case 254:  	return "AIRMET, SIGMET: Bitmap encoding";
+    case 151:  	return "Point Phenomena, Vector Format";
+    case 201:  	return "Surface Conditions/Winter Precipitation Graphic";
+    case 202:  	return "Surface Weather Systems";
+    case 254:  	return "AIRMET, SIGMET: Bitmap Encoding";
     case 351:  	return "System Time";
     case 352:  	return "Operational Status";
     case 353:	return "Ground Station Status";
@@ -942,7 +942,7 @@ static const char *get_fisb_product_name(uint16_t product_id)
     case 2003: 	return "FAA/FIS-B Product 4 – Developmental";
     case 2004: 	return "WSI Products - Proprietary Encoding";
     case 2005: 	return "WSI Developmental Products";
-    default: 	return "unknown";
+    default: 	return "Unknown";
     }
 }
 
@@ -984,7 +984,7 @@ static const char *get_fisb_product_format(uint16_t product_id)
         return "Developmental";
 
     default:
-        return "unknown";
+        return "Unknown";
     }
 }
 
@@ -1889,7 +1889,6 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 
         			if (j % 10 == 0)
         				fprintf(to,"\n");
-
         			j++;
         			fprintf(to,"%02x%02x%02x ",frame->data[i],frame->data[i+1],frame->data[i+2]);
         			i = i +4;
@@ -1899,23 +1898,32 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
         	else if (frame->type == 14){      // report list
         		int tfr;  int lidflag;
         		int prod_range; int num_crl; int rep_yr;
-        		int txt; int grph;
-        		uint16_t prodt;  // ;uint16_t repid;
+        		int txt; int grph; int i;
+        		uint16_t prodt;  uint16_t repid=0;
 
-        		display_generic_data(frame->data, frame->length, to);
         		prodt=frame->data[0] <<3 | frame->data[1] >>5;
         		tfr=(frame->data[1] >> 3) & 1;
         		lidflag=(frame->data[1] >> 8) & 1;
         		prod_range = frame->data[2] * 5;
         		num_crl = frame->data[3];
-        		rep_yr = (frame->data[4] & (~( 1<< 0))) ;
-        		txt = (frame->data[5] >> 7) & 1;
-        		grph = (frame->data[5] >> 6) & 1;
 
-            	fprintf(to,"(14)prod type : %d %d %d %d %d %d %d %d\n",
-            			prodt,tfr,lidflag,prod_range,num_crl,
-						rep_yr,txt,grph);
-            	fprintf(to," Product %s\n",get_fisb_product_name(prodt));
+            	fprintf(to,"\n Current Report List\n");
+            	fprintf(to," Product: %d -  %s\n",prodt,get_fisb_product_name(prodt));
+            	fprintf(to," TFR: %d LID Flag: %d",tfr,lidflag);
+    	      	fprintf(to," Number of reports: %d  Range(nm): %d\n",num_crl,prod_range);
+
+        		int j = 4;
+        		 for (i = 0; i < num_crl; ++i) {
+        			 rep_yr = (frame->data[j] & (~( 1<< 0))) ;
+        			 txt = (frame->data[j+1] >> 7) & 1;
+        			 grph = (frame->data[j+1] >> 6) & 1;
+        			 repid = (frame->data[j+1] & ((1<<6)-1)) << 8 |  frame->data[j+2];
+        			 fprintf(to," Report(%d) Year: %d Text: %d Graphic: %d  Report ID: %d \n",
+							 i+1,rep_yr,txt,grph,repid);
+        			 j=j+3;
+        		 }
+        		 fprintf(to,"\n");
+        	     display_generic_data(frame->data, frame->length, to);
 
        	}
         	else
