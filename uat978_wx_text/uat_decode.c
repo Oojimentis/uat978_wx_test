@@ -1027,6 +1027,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 		uint8_t date_time_format; uint8_t element_flag;
 		const char * object_labelt;
         char gstn[5];
+		char ob_type_text[35]; char  ob_ele_text[35];
 
         if ((recf >> 4) == 2 ) {             // text
         	rec_offset =11;
@@ -1080,7 +1081,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 	              fflush(filenotam);
 	          }
           }
-
 
         if ((recf >> 4) == 8){ //graphic
         	int datoff=6;
@@ -1151,8 +1151,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  			fprintf(to, "Param Flag: %d \n", param_flag);
  			fprintf(filenotam, "Param Flag: %d \n", param_flag);
 
-
-
  			if (qualifier_flag == 0){
  				datoff = datoff + 2;
  			}
@@ -1166,6 +1164,47 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  			fprintf(to, "Rec App Date: %d \n", date_time_format );
  			fprintf(filenotam, "Rec App Date: %d \n", date_time_format );
 
+ 			strcpy(ob_type_text,"Unknown object");
+ 			strcpy(ob_ele_text,"Unknown Element");
+ 			if (object_label_flag == 0 && object_type==14){
+ 			 				strcpy(ob_type_text,"Airspace");
+ 			 				if (element_flag==1){
+ 			 					switch (object_element){
+ 			 					case 0: 	strcpy(ob_ele_text,"Temporary Flight Restriction");
+ 			 					break;
+ 			 					case 1: 	strcpy(ob_ele_text,"Parachute Jumping /Sky Diving");
+ 			 					break;
+ 			 					case 2: 	strcpy(ob_ele_text,"Terminal Radar Service Area");
+ 			 					break;
+ 			 					case 3: 	strcpy(ob_ele_text,"Airport Advisory Area");
+ 			 					break;
+ 			 					case 4: 	strcpy(ob_ele_text,"VFR Flyway");
+ 			 					break;
+ 			 					case 5: 	strcpy(ob_ele_text,"VFR Corridor");
+ 			 					break;
+ 			 					case 6: 	strcpy(ob_ele_text,"VFR Transition Route");
+ 			 					break;
+ 			 					case 7: 	strcpy(ob_ele_text,"Terminal Area VFR Route");
+ 			 					break;
+ 			 					case 8: 	strcpy(ob_ele_text,"Prohibited Area ");
+ 			 					break;
+ 			 					case 9: 	strcpy(ob_ele_text,"Restricted Area ");
+ 			 					break;
+ 			 					case 10: 	strcpy(ob_ele_text,"Military Operations Area");
+ 			 					break;
+ 			 					case 11: 	strcpy(ob_ele_text,"Warning Area");
+ 			 					break;
+ 			 					case 12: 	strcpy(ob_ele_text,"Military Training Route");
+ 			 					break;
+ 			 					case 13: 	strcpy(ob_ele_text,"Air Defense Identification Zone");
+ 			 					break;
+ 			 					default: strcpy(ob_ele_text,"Undefined");
+ 			 					break;
+ 			 					}
+ 			 				}
+ 			 			}
+ 			 			fprintf(to, " Object Type: %s  Object Element: %s\n",ob_type_text,ob_ele_text);
+ 			 			fprintf(filenotam, " Object Type: %s  Object Element: %s\n",ob_type_text,ob_ele_text);
 
  			fprintf(to, "\n");
  			fprintf(filenotam,"\n");
@@ -1187,74 +1226,126 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 		uint8_t param_flag; uint8_t record_applicability_options;
 		uint8_t date_time_format; uint8_t element_flag;
 		const char * object_labelt;
+		char ob_type_text[35]; char  ob_ele_text[35];
 
 		recf = apdu->data[0];
     	fprintf(to,"\n Record Fmt : %d \n",recf >> 4);
     	fprintf(fileairmet,"\n Record Fmt : %d \n",recf >> 4);
 
     	if ((recf >> 4) == 8){ //graphic
+
+    		int datoff=6;
+
 			fprintf(to," Report Type:       AIRMET\n");
 			fprintf(fileairmet," Report Type: AIRMET\n");
 
-    		report_number = (((apdu->data[7]) & 0x3F) << 8) | (apdu->data[8]);
+    		report_number = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]);
     		fprintf(to," Report Num : %d  ",report_number);
     		fprintf(fileairmet," Report Num : %d  ",report_number);
 
-    		record_length = ((apdu->data[6]) << 2) | (((apdu->data[7]) & 0xC0) >> 6);
+    		record_length = ((apdu->data[datoff + 0]) << 2) | (((apdu->data[datoff + 1]) & 0xC0) >> 6);
     		fprintf(to,"Record Length: %d ",record_length);
     		fprintf(fileairmet,"Record Length: %d ",record_length);
 
-    		report_year = ((apdu->data[9]) & 0xFE) >> 1;
+    		report_year = ((apdu->data[datoff + 3]) & 0xFE) >> 1;
     		fprintf(to,"Report Year: %d\n ",report_year);
     		fprintf(fileairmet,"Report Year: %d\n ",report_year);
 
-    		overlay_record_identifier = (((apdu->data[10]) & 0x1E) >> 1) + 1; // Document instructs to add 1.
+    		overlay_record_identifier = (((apdu->data[datoff + 4]) & 0x1E) >> 1) + 1; // Document instructs to add 1.
     		fprintf(to,"Ovrlay RcID: %d  ",overlay_record_identifier);
  			fprintf(fileairmet,"Ovrlay RcID: %d  ",overlay_record_identifier);
 
- 			object_label_flag = (apdu->data[10] & 0x01);
+ 			object_label_flag = (apdu->data[datoff + 4] & 0x01);
  			fprintf(to, "Ob Lbl Fl: %d \n", object_label_flag);
  			fprintf(fileairmet, "Ob Lbl Fl: %d \n", object_label_flag);
  			if (object_label_flag == 0) { // Numeric index.
- 				object_label = ((apdu->data[11]) << 8) | (apdu->data[12]);
+ 				object_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);
  				fprintf(to, " Ob Lbl Num : %d  ", object_label);
  				fprintf(fileairmet, " Ob Lbl Num : %d  ", object_label);
+ 				datoff = datoff +7;
  			} else {
- 				object_labelt = decode_dlac(apdu->data, 9,11);
+ 				object_labelt = decode_dlac(apdu->data,5, 2);
  			    fprintf(to, " Ob Lbl Alph: %s ", object_labelt);
  			    fprintf(fileairmet, " Ob Lbl Alph: %s ", object_labelt);
+ 			    datoff = datoff + 14;
  			}
 
- 			element_flag = ((apdu->data[13]) & 0x80) >> 7;
+ 			element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;
  			fprintf(to," Elmnt Flag  : %d ", element_flag);
  			fprintf(fileairmet, " Elmnt Flag  : %d  ", element_flag);
 
- 			object_element = (apdu->data[13]) & 0x1F;
+ 			object_element = (apdu->data[datoff + 0]) & 0x1F;
  			fprintf(to, "Object Ele: %d\n", object_element);
  			fprintf(fileairmet, "Object Ele: %d\n", object_element);
 
- 			object_status = (apdu->data[14]) & 0x0F;
+ 			object_status = (apdu->data[datoff +1]) & 0x0F;
  			fprintf(to, " Object Stat: %d\n", object_status);
  			fprintf(fileairmet, " Object Stat: %d\n", object_status);
- 			object_type = (apdu->data[14] & 0xF0) >> 4;
+ 			object_type = (apdu->data[datoff +1] & 0xF0) >> 4;
  			fprintf(to, " Object Type: %d \n", object_type);
  			fprintf(fileairmet, " Object Type: %d \n", object_type);
 
- 			qualifier_flag = ((apdu->data[13]) & 0x40) >> 6;
+ 			qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;
  			fprintf(to, " Qualif Flag: %d  ", qualifier_flag);
  			fprintf(fileairmet, " Qualif Flag: %d  ", qualifier_flag);
- 			param_flag = ((apdu->data[13]) & 0x20) >> 5;
+ 			param_flag = ((apdu->data[datoff + 0]) & 0x20) >> 5;
  			fprintf(to, "Param Flag: %d \n", param_flag);
  			fprintf(fileairmet, "Param Flag: %d \n", param_flag);
 
- 			record_applicability_options = ((apdu->data[14]) & 0xC0) >> 6;
- 			date_time_format = ((apdu->data[14]) & 0x30) >> 4;
+ 			if (qualifier_flag == 0){
+ 				datoff = datoff + 2;
+ 			}
+
+ 			record_applicability_options = ((apdu->data[datoff + 0]) & 0xC0) >> 6;
+ 			date_time_format = ((apdu->data[datoff + 0]) & 0x30) >> 4;
 
  			fprintf(to, " Rec App Opt: %d  ", record_applicability_options);
  			fprintf(fileairmet, " Rec App Opt: %d  ", record_applicability_options);
 
  			fprintf(to, "Rec App Date: %d \n", date_time_format );
  			fprintf(fileairmet, "Rec App Date: %d \n", date_time_format );
+ 			strcpy(ob_type_text,"Unknown object");
+ 			strcpy(ob_ele_text,"Unknown Element");
+ 			if (object_label_flag == 0 && object_type==14){
+ 				strcpy(ob_type_text,"Airspace");
+ 				if (element_flag==1){
+
+ 					switch (object_element){
+ 					case 0: 	strcpy(ob_ele_text,"Temporary Flight Restriction");
+ 					break;
+ 					case 1: 	strcpy(ob_ele_text,"Parachute Jumping /Sky Diving");
+ 					break;
+ 					case 2: 	strcpy(ob_ele_text,"Terminal Radar Service Area");
+ 					break;
+ 					case 3: 	strcpy(ob_ele_text,"Airport Advisory Area");
+ 					break;
+ 					case 4: 	strcpy(ob_ele_text,"VFR Flyway");
+ 					break;
+ 					case 5: 	strcpy(ob_ele_text,"VFR Corridor");
+ 					break;
+ 					case 6: 	strcpy(ob_ele_text,"VFR Transition Route");
+ 					break;
+ 					case 7: 	strcpy(ob_ele_text,"Terminal Area VFR Route");
+ 					break;
+ 					case 8: 	strcpy(ob_ele_text,"Prohibited Area ");
+ 					break;
+ 					case 9: 	strcpy(ob_ele_text,"Restricted Area ");
+ 					break;
+ 					case 10: 	strcpy(ob_ele_text,"Military Operations Area");
+ 					break;
+ 					case 11: 	strcpy(ob_ele_text,"Warning Area");
+ 					break;
+ 					case 12: 	strcpy(ob_ele_text,"Military Training Route");
+ 					break;
+ 					case 13: 	strcpy(ob_ele_text,"Air Defense Identification Zone");
+ 					break;
+ 					default: strcpy(ob_ele_text,"Undefined");
+ 					break;
+ 					}
+ 				}
+ 			}
+ 			fprintf(to, " Object Type: %s  Object Element: %s\n",ob_type_text,ob_ele_text);
+ 			fprintf(fileairmet, " Object Type: %s  Object Element: %s\n",ob_type_text,ob_ele_text);
     	}
 
     	if ((recf >> 4) == 2 ) {             // text
@@ -1456,7 +1547,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fprintf(to," Record Fmt : %d \n",recf >> 4);
 
     	if ((recf >> 4) == 8){ //graphic
-
+        	int datoff=6;
     		fprintf(to,"\n Report Type:       G-AIRMET\n");
     		fprintf(filegairmet,"\n Report Type: G-AIRMET\n");
 
@@ -1464,68 +1555,75 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		struct tm *tm = localtime(&current_time);
     		fprintf(filegairmet," Time       : %s", asctime(tm));
 
-    		report_number = (((apdu->data[7]) & 0x3F) << 8) | (apdu->data[8]);
+    		report_number = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]);
     		fprintf(to," Report Num : %d  ",report_number);
     		fprintf(filegairmet," Report Num : %d  ",report_number);
 
-    		record_length = ((apdu->data[6]) << 2) | (((apdu->data[7]) & 0xC0) >> 6);
+    		record_length = ((apdu->data[datoff + 0]) << 2) | (((apdu->data[datoff + 1]) & 0xC0) >> 6);
     		fprintf(to,"Record Length: %d ",record_length);
     		fprintf(filegairmet,"Record Length: %d ",record_length);
 
-    		report_year = ((apdu->data[9]) & 0xFE) >> 1;
+    		report_year = ((apdu->data[datoff + 3]) & 0xFE) >> 1;
     		fprintf(to,"Report Year: %d\n ",report_year);
     		fprintf(filegairmet,"Report Year: %d\n ",report_year);
 
-    		overlay_record_identifier = (((apdu->data[10]) & 0x1E) >> 1) + 1; // Document instructs to add 1.
+    		overlay_record_identifier = (((apdu->data[datoff + 4]) & 0x1E) >> 1) + 1; // Document instructs to add 1.
     		fprintf(to,"Ovrlay RcID: %d  ",overlay_record_identifier);
  			fprintf(filegairmet,"Ovrlay RcID: %d  ",overlay_record_identifier);
 
- 			object_label_flag = (apdu->data[10] & 0x01);
+ 			object_label_flag = (apdu->data[datoff + 4] & 0x01);
  			fprintf(to, "Ob Lbl Fl: %d \n", object_label_flag);
  			fprintf(filegairmet, "Ob Lbl Fl: %d \n", object_label_flag);
  			if (object_label_flag == 0) { // Numeric index.
- 				object_label = ((apdu->data[11]) << 8) | (apdu->data[12]);
+ 				object_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);
  				fprintf(to, " Ob Lbl Num : %d  ", object_label);
  				fprintf(filegairmet, " Ob Lbl Num : %d  ", object_label);
+ 				datoff = datoff +7;
  			} else {
- 				object_labelt = decode_dlac(apdu->data, 9,11);
+ 				object_labelt = decode_dlac(apdu->data,5, 2);
  				fprintf(to, " Ob Lbl Alph: %s ", object_labelt);
  			    fprintf(filegairmet, " Ob Lbl Alph: %s ", object_labelt);
+ 			   datoff = datoff + 14;
  			}
 
- 			element_flag = ((apdu->data[13]) & 0x80) >> 7;
+ 			element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;
  			fprintf(to," Elmnt Flag  : %d ", element_flag);
  			fprintf(filegairmet, " Elmnt Flag  : %d  ", element_flag);
 
- 			object_element = (apdu->data[13]) & 0x1F;
+ 			object_element = (apdu->data[datoff + 0]) & 0x1F;
  			fprintf(to, "Object Ele: %d\n", object_element);
  			fprintf(filegairmet, "Object Ele: %d\n", object_element);
 
- 			object_status = (apdu->data[14]) & 0x0F;
+ 			object_status = (apdu->data[datoff +1]) & 0x0F;
  			fprintf(to, " Object Stat: %d\n", object_status);
  			fprintf(filegairmet, " Object Stat: %d\n", object_status);
 
- 			object_type = (apdu->data[14] & 0xF0) >> 4;
+ 			object_type = (apdu->data[datoff +1] & 0xF0) >> 4;
  			fprintf(to, " Object Type: %d \n", object_type);;
  			fprintf(filegairmet, " Object Type: %d \n", object_type);
 
- 			qualifier_flag = ((apdu->data[13]) & 0x40) >> 6;
+ 			qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;
  			fprintf(to, " Qualif Flag: %d  ", qualifier_flag);
  			fprintf(filegairmet, " Qualif Flag: %d  ", qualifier_flag);
 
- 			param_flag = ((apdu->data[13]) & 0x20) >> 5;
+ 			param_flag = ((apdu->data[datoff + 0]) & 0x20) >> 5;
  			fprintf(to, "Param Flag: %d \n", param_flag);
  			fprintf(filegairmet, "Param Flag: %d \n", param_flag);
 
- 			record_applicability_options = ((apdu->data[14]) & 0xC0) >> 6;
+ 			if (qualifier_flag == 0){
+ 				datoff = datoff + 2;
+ 			}
+
+ 			record_applicability_options = ((apdu->data[datoff + 0]) & 0xC0) >> 6;
+ 			date_time_format = ((apdu->data[datoff + 0]) & 0x30) >> 4;
+
  			fprintf(to, " Rec App Opt: %d  ", record_applicability_options);
  			fprintf(filegairmet, " Rec App Opt: %d  ", record_applicability_options);
 
- 			date_time_format = ((apdu->data[14]) & 0x30) >> 4;
-
  			fprintf(to, "Rec App Date: %d \n", date_time_format );
  			fprintf(filegairmet, "Rec App Date: %d \n", date_time_format );
-
+ 			strcpy(ob_type_text,"Unknown object");
+ 			strcpy(ob_ele_text,"Unknown Element");
  			if (object_label_flag == 0 && object_type==14){
  				strcpy(ob_type_text,"Airspace");
  				if (element_flag==1){
@@ -1562,10 +1660,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  					default: strcpy(ob_ele_text,"Undefined");
  					break;
  					}
- 				}
- 				else{
- 					strcpy(ob_type_text,"Unknown Ob type");
- 					strcpy(ob_ele_text,"Unknown Ob Element");
  				}
  			}
  			fprintf(to, " Object Type: %s  Object Element: %s\n",ob_type_text,ob_ele_text);
@@ -1802,12 +1896,26 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
         		}
         		fprintf(to,"\n");
         	}
-//        	else if (frame->type == 14){
-//            	int rec_offset=0;
-//            	const char *fourteen = decode_dlac(frame->data, frame->length,rec_offset);
-//            	fprintf(to,"type 14: %s",fourteen);
-//
- //       	}
+        	else if (frame->type == 14){      // report list
+        		int tfr;  int lidflag;
+        		int prod_range; int num_crl; int rep_yr;
+        		int txt; int grph;
+        		uint16_t moose;  // ;uint16_t repid;
+        		display_generic_data(frame->data, frame->length, to);
+        		moose=frame->data[0] <<3 | frame->data[1] >>5;
+        		tfr=(frame->data[1] >> 3) & 1;
+        		lidflag=(frame->data[1] >> 8) & 1;
+        		prod_range = frame->data[2] * 5;
+        		num_crl = frame->data[3];
+        		rep_yr = (frame->data[4] & (~( 1<< 0))) ;
+        		txt = (frame->data[5] >> 7) & 1;
+        		grph = (frame->data[5] >> 6) & 1;
+
+            	fprintf(to,"(14)prod type : %d %d %d %d %d %d %d %d\n",
+            			moose,tfr,lidflag,prod_range,num_crl,
+						rep_yr,txt,grph);
+
+       	}
         	else
         		display_generic_data(frame->data, frame->length, to);
         }
@@ -1834,3 +1942,4 @@ void uat_display_uplink_mdb(const struct uat_uplink_mdb *mdb, FILE *to)
             uat_display_uplink_info_frame(&mdb->info_frames[i], to);
     }
 }
+
