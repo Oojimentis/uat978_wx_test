@@ -733,3 +733,7 @@ KHUF$Terre Haute Regional Airport - Terre Haute, IN                         $
 K06A$Moton Field Municipal Airport - Tuskegee, AL                           $
 KBWG$Bowling Green-Warren County Regional Airport - Bowling Green, KY       $
 KSQL$San Carlos Airport - San Carlos, CA                                    $
+K1M5$Portland Municipal Airport - Portland, TN                              $
+KSRQ$Sarasota-Bradenton - Sarasota,FL                                       $
+KAJO$Corona Municipal Airport - Corona, CA                                  $
+KRAP$Rapid City Regional Airport - Rapid City, SD                           $
