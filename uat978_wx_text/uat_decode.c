@@ -1900,9 +1900,10 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
         		int tfr;  int lidflag;
         		int prod_range; int num_crl; int rep_yr;
         		int txt; int grph;
-        		uint16_t moose;  // ;uint16_t repid;
+        		uint16_t prodt;  // ;uint16_t repid;
+
         		display_generic_data(frame->data, frame->length, to);
-        		moose=frame->data[0] <<3 | frame->data[1] >>5;
+        		prodt=frame->data[0] <<3 | frame->data[1] >>5;
         		tfr=(frame->data[1] >> 3) & 1;
         		lidflag=(frame->data[1] >> 8) & 1;
         		prod_range = frame->data[2] * 5;
@@ -1912,9 +1913,9 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
         		grph = (frame->data[5] >> 6) & 1;
 
             	fprintf(to,"(14)prod type : %d %d %d %d %d %d %d %d\n",
-            			moose,tfr,lidflag,prod_range,num_crl,
+            			prodt,tfr,lidflag,prod_range,num_crl,
 						rep_yr,txt,grph);
-            	fprintf(to," Product %s\n",get_fisb_product_name(moose));
+            	fprintf(to," Product %s\n",get_fisb_product_name(prodt));
 
        	}
         	else
@@ -1943,4 +1944,3 @@ void uat_display_uplink_mdb(const struct uat_uplink_mdb *mdb, FILE *to)
             uat_display_uplink_info_frame(&mdb->info_frames[i], to);
     }
 }
-
