@@ -737,3 +737,10 @@ K1M5$Portland Municipal Airport - Portland, TN                              $
 KSRQ$Sarasota-Bradenton - Sarasota,FL                                       $
 KAJO$Corona Municipal Airport - Corona, CA                                  $
 KRAP$Rapid City Regional Airport - Rapid City, SD                           $
+KPIA$General Downing - Peoria International Airport, Peoria, IL             $
+KCHI$Chicago-WSFO, IL                                                       $
+KSAT$San Antonio International Airport, TX                                  $
+KMCX$Montcello/White, IN                                                    $
+KAUW$Wausau, WI                                                             $
+KP20$Avi Suquilla - Parker, AZ                                              $
+K0A3$Smithville Municipal Airport - Smithville, TN                          $

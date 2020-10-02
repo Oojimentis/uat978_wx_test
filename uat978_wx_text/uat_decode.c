@@ -1866,7 +1866,7 @@ static const char *info_frame_type_names[16] = {
 		"Reserved for Future Use (11)",
 		"Reserved for Future Use (12)",
 		"Reserved for Future Use (13)",
-		"Reserved for Future Use (14)",
+		"Current Report List (14)    ",
 		"TIS-B/ADS-R Service Status"
 };
 
@@ -1902,7 +1902,7 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
         		uint16_t prodt;  uint16_t repid=0;
 
         		prodt=frame->data[0] <<3 | frame->data[1] >>5;
-        		tfr=(frame->data[1] >> 3) & 1;
+        		tfr=(frame->data[1] >> 4) & 1;
         		lidflag=(frame->data[1] >> 8) & 1;
         		prod_range = frame->data[2] * 5;
         		num_crl = frame->data[3];
