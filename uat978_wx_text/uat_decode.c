@@ -1617,6 +1617,14 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 		char ob_type_text[35]; char  ob_ele_text[35];
 
 		const char * object_labelt;
+
+		int product_version;int record_count; int record_reference;
+		const char * location_identifier;
+		int geometry_overlay_options;
+		int overlay_operator; int overlay_vertices_count;
+		int d1;int d2;int d3;int d4;
+
+
     	recf = apdu->data[0];
 
     	fprintf(to," Record Fmt : %d \n",recf >> 4);
@@ -1625,6 +1633,30 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
         	int datoff=6;
     		fprintf(to,"\n Report Type:       G-AIRMET\n");
     		fprintf(filegairmet,"\n Report Type: G-AIRMET\n");
+
+    		product_version = ((apdu->data[0]) & 0x0F);
+    		fprintf(to," Prod ver: %d \n",product_version);
+    		fprintf(filegairmet," Prod ver: %d \n",product_version);
+
+    		record_count = ((apdu->data[1]) & 0xF0) >> 4;
+    		fprintf(to," record_count: %d \n",record_count);
+    		fprintf(filegairmet," Prrecord_count: %d \n",record_count);
+
+    		location_identifier = decode_dlac(apdu->data, 3, 2);
+
+//		decode_dlac(apdu->data,5, 2);
+
+    		fprintf(to," location id: %s \n",location_identifier);
+    		fprintf(filegairmet," location id: %s \n",location_identifier);
+
+    		record_reference = ((apdu->data[5]));
+    				//FIXME: Special values. 0x00 means "use location_identifier".
+    		//0xFF means "use different reference". (4-3).
+       		fprintf(to," record_reference : %d \n",record_reference);
+        		fprintf(filegairmet," record_reference: %d \n",record_reference);
+
+
+
 
     		time_t current_time = time(NULL);
     		struct tm *tm = localtime(&current_time);
@@ -1649,6 +1681,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  			object_label_flag = (apdu->data[datoff + 4] & 0x01);
  			fprintf(to, "Ob Lbl Fl: %d \n", object_label_flag);
  			fprintf(filegairmet, "Ob Lbl Fl: %d \n", object_label_flag);
+
+
  			if (object_label_flag == 0) { // Numeric index.
  				object_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);
  				fprintf(to, " Ob Lbl Num : %d  ", object_label);
@@ -1689,6 +1723,18 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  				datoff = datoff + 2;
  			}
 
+			geometry_overlay_options = (apdu->data[datoff + 0]) & 0x0F;
+ 			fprintf(to, "geometry_overlay_options: %d \n", geometry_overlay_options);
+ 			fprintf(filegairmet, "geometry_overlay_options: %d \n", geometry_overlay_options);
+
+ 			overlay_operator = ((apdu->data[datoff +1]) & 0xC0) >> 6;
+ 			fprintf(to, "overlay_operator: %d \n", overlay_operator);
+ 			fprintf(filegairmet, "overlay_operator: %d \n", overlay_operator);
+
+			overlay_vertices_count = ((apdu->data[datoff +1]) & 0x3F) + 1; // Document instructs to add 1. (6.20).
+ 			fprintf(to, "overlay_vertices_count: %d \n", overlay_vertices_count);
+ 			fprintf(filegairmet, "overlay_vertices_count: %d \n", overlay_vertices_count);
+
  			record_applicability_options = ((apdu->data[datoff + 0]) & 0xC0) >> 6;
  			date_time_format = ((apdu->data[datoff + 0]) & 0x30) >> 4;
 
@@ -1697,6 +1743,15 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
  			fprintf(to, "Rec App Date: %d \n", date_time_format );
  			fprintf(filegairmet, "Rec App Date: %d \n", date_time_format );
+
+ 			d1 = apdu->data[datoff + 2];
+ 			d2 = apdu->data[datoff + 3];
+ 			d3 = apdu->data[datoff + 4];
+ 			d4 = apdu->data[datoff + 5];
+
+ 			fprintf(to, "Date: %d %d %d %d \n",d1,d2,d3,d4);
+ 			fprintf(filegairmet, "Date: %d %d %d %d \n",d1,d2,d3,d4);
+
  			strcpy(ob_type_text,"Unknown object");
  			strcpy(ob_ele_text,"Unknown Element");
  			if (object_label_flag == 0 && object_type==14){
