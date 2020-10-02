@@ -1227,17 +1227,43 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 		uint8_t date_time_format; uint8_t element_flag;
 		const char * object_labelt;
 		char ob_type_text[35]; char  ob_ele_text[35];
+		int product_version;int record_count; int record_reference;
+		const char * location_identifier;
+		int geometry_overlay_options;
+		int overlay_operator; int overlay_vertices_count;
+	int d1;int d2;int d3;int d4;
+
 
 		recf = apdu->data[0];
     	fprintf(to,"\n Record Fmt : %d \n",recf >> 4);
     	fprintf(fileairmet,"\n Record Fmt : %d \n",recf >> 4);
 
     	if ((recf >> 4) == 8){ //graphic
-
     		int datoff=6;
 
 			fprintf(to," Report Type:       AIRMET\n");
 			fprintf(fileairmet," Report Type: AIRMET\n");
+
+    		product_version = ((apdu->data[0]) & 0x0F);
+    		fprintf(to," Prod ver: %d \n",product_version);
+    		fprintf(fileairmet," Prod ver: %d \n",product_version);
+
+    		record_count = ((apdu->data[1]) & 0xF0) >> 4;
+    		fprintf(to," record_count: %d \n",record_count);
+    		fprintf(fileairmet," Prrecord_count: %d \n",record_count);
+
+    		location_identifier = decode_dlac(apdu->data, 3, 2);
+
+//		decode_dlac(apdu->data,5, 2);
+
+    		fprintf(to," location id: %s \n",location_identifier);
+    		fprintf(fileairmet," location id: %s \n",location_identifier);
+
+    		record_reference = ((apdu->data[5]));
+    				//FIXME: Special values. 0x00 means "use location_identifier".
+    		//0xFF means "use different reference". (4-3).
+       		fprintf(to," record_reference : %d \n",record_reference);
+        		fprintf(fileairmet," record_reference: %d \n",record_reference);
 
     		report_number = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]);
     		fprintf(to," Report Num : %d  ",report_number);
@@ -1281,6 +1307,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  			object_status = (apdu->data[datoff +1]) & 0x0F;
  			fprintf(to, " Object Stat: %d\n", object_status);
  			fprintf(fileairmet, " Object Stat: %d\n", object_status);
+
  			object_type = (apdu->data[datoff +1] & 0xF0) >> 4;
  			fprintf(to, " Object Type: %d \n", object_type);
  			fprintf(fileairmet, " Object Type: %d \n", object_type);
@@ -1288,6 +1315,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  			qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;
  			fprintf(to, " Qualif Flag: %d  ", qualifier_flag);
  			fprintf(fileairmet, " Qualif Flag: %d  ", qualifier_flag);
+
  			param_flag = ((apdu->data[datoff + 0]) & 0x20) >> 5;
  			fprintf(to, "Param Flag: %d \n", param_flag);
  			fprintf(fileairmet, "Param Flag: %d \n", param_flag);
@@ -1295,6 +1323,18 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  			if (qualifier_flag == 0){
  				datoff = datoff + 2;
  			}
+
+ 			geometry_overlay_options = (apdu->data[datoff + 0]) & 0x0F;
+ 			fprintf(to, "geometry_overlay_options: %d \n", geometry_overlay_options);
+ 			fprintf(fileairmet, "geometry_overlay_options: %d \n", geometry_overlay_options);
+
+ 			overlay_operator = ((apdu->data[datoff +1]) & 0xC0) >> 6;
+ 			fprintf(to, "overlay_operator: %d \n", overlay_operator);
+ 			fprintf(fileairmet, "overlay_operator: %d \n", overlay_operator);
+
+			overlay_vertices_count = ((apdu->data[datoff +1]) & 0x3F) + 1; // Document instructs to add 1. (6.20).
+ 			fprintf(to, "overlay_vertices_count: %d \n", overlay_vertices_count);
+ 			fprintf(fileairmet, "overlay_vertices_count: %d \n", overlay_vertices_count);
 
  			record_applicability_options = ((apdu->data[datoff + 0]) & 0xC0) >> 6;
  			date_time_format = ((apdu->data[datoff + 0]) & 0x30) >> 4;
@@ -1304,6 +1344,41 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
  			fprintf(to, "Rec App Date: %d \n", date_time_format );
  			fprintf(fileairmet, "Rec App Date: %d \n", date_time_format );
+
+ 			d1 = apdu->data[datoff + 2];
+ 			d2 = apdu->data[datoff + 3];
+ 			d3 = apdu->data[datoff + 4];
+ 			d4 = apdu->data[datoff + 5];
+
+ 			fprintf(to, "Date: %d %d %d %d \n",d1,d2,d3,d4);
+ 			fprintf(fileairmet, "Date: %d %d %d %d \n",d1,d2,d3,d4);
+
+/* 			switch record_applicability_options {
+ 			case 0: // No times given. UFN.  (record_data[2:], date_time_format)
+ 				datoff = datoff +2;
+ 				break;
+ 			case 1: // Start time only. WEF.
+ 				f.ReportStart = airmetParseDate(apdu->data[datoff +[2:], date_time_format)
+
+										  datoff = datoff + 6;
+ 			break;
+
+ 			case 2: // End time only. TIL.
+ 				f.ReportEnd = airmetParseDate(apdu->data[datoff +[2:], date_time_format)
+
+										  datoff = datoff + 6;
+
+ 				break;
+ 			case 3: // Both start and end times. WEF.
+ 				f.ReportStart = airmetParseDate(apdu->data[datoff +[2:], date_time_format)
+ 				f.ReportEnd = airmetParseDate(apdu->data[datoff +[6:], date_time_format)
+
+										  datoff = datoff + 10;
+ 				break;
+ 			}
+*/
+
+
  			strcpy(ob_type_text,"Unknown object");
  			strcpy(ob_ele_text,"Unknown Element");
  			if (object_label_flag == 0 && object_type==14){
