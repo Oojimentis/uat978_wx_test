@@ -20,6 +20,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <stdint.h>
 
 //#include "uat.h"
 
@@ -49,7 +50,6 @@ FILE * filegairmet;		// 14
 FILE * filepirep;		// PIREP
 
 int reccount;
-
 
 struct uat_adsb_mdb {
     // presence bits

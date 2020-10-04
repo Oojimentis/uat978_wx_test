@@ -1031,98 +1031,48 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     case 8:                //NOTAM
     {
-    	int rec_offset =11; int recf;
-
-    	recf = apdu->data[0];
-    	fprintf(to," Record Format: %d \n",recf >> 4);
- //   	fprintf(filenotam," Record Fmt : %d \n",recf >> 4);
+    	int rec_offset=11; char gstn[5]; int recf; int datoff=6;
 		uint16_t record_length=0; uint16_t report_number=0; uint16_t report_year=0;
 		int overlay_record_identifier=0; int object_label=0; int object_label_flag=0;
-		uint8_t object_type; uint8_t object_element;
-		uint8_t object_status; uint8_t qualifier_flag;
-		uint8_t param_flag; uint8_t record_applicability_options;
-		uint8_t date_time_format; uint8_t element_flag;
+		uint8_t object_type; uint8_t object_element; uint8_t object_status;
+		uint8_t qualifier_flag;	uint8_t param_flag;
+		uint8_t record_applicability_options; uint8_t date_time_format; uint8_t element_flag;
 		const char * object_labelt;
-        char gstn[5];
 		char ob_type_text[35]; char  ob_ele_text[35];
-		int product_version;int record_count; int record_reference;
+		int product_version; int record_count; int record_reference;
 		const char * location_identifier;
-		int geometry_overlay_options;
-		int overlay_operator; int overlay_vertices_count;
+		int geometry_overlay_options; int overlay_operator; int overlay_vertices_count;
 		int d1;int d2;int d3;int d4;
+	    uint32_t lat_raw ;  uint32_t lng_raw;  uint32_t alt_raw;  int alt;
+	    float lat ;  float lng;
+	    float fct_f =0.000687; // float_t fct_t =0.001373;
 
-        if ((recf >> 4) == 2 ) {             // text
-        	rec_offset =11;
-        	const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
-           	const char *report = text;
-           	while (report) {
-           		char report_buf[1024];
-           		const char *next_report;
-           		char *p, *r;
+       	const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
+       	const char *report = text;
 
-           		next_report = strchr(report, '\x1e'); // RS
-           		if (!next_report)
-           			next_report = strchr(report, '\x03'); // ETX
-           		if (next_report) {
-           			memcpy(report_buf, report, next_report - report);
-           			report_buf[next_report - report] = 0;
-           			report = next_report + 1;
-           		} else {
-           			strcpy(report_buf, report);
-           			report = NULL;
-           		}
-
-           		if (!report_buf[0])
-           			continue;
-
-           		r = report_buf;
-           		p = strchr(r, ' ');
-           		if (p) {
-           			*p = 0;
-           			fprintf(to," Report Type:       %s\n",r);
-           			fprintf(filenotam," Report Type: %s\n",r);
-           			r = p+1;
-           		}
-
-           		p = strchr(r, '.');
-           		if (p) {
-           			*p = 0;
-
-           			strncpy(gstn,r,5);
-           			get_gs_name(gstn,reccount);
-           			fprintf(to," RLoc:  %s - %s\n",gstn, gs_ret);
-           			fprintf(filenotam," RLoc       : %s - %s\n",gstn, gs_ret);
-           			r = p+1;
-           		}
-
-           		time_t current_time = time(NULL);
-           		struct tm *tm = localtime(&current_time);
-           		fprintf(filenotam," Time       : %s", asctime(tm));
-           		fprintf(to,"\n%s \n",r);
-           		fprintf(filenotam," Data:\n%s\n",r);
-           		fflush(filenotam);
-           	}
-        }
+    	recf = apdu->data[0];
+       	fprintf(to," Record Format   : %d \n",recf >> 4);
+    	fprintf(filenotam," Record Format   : %d \n",recf >> 4);
 
         if ((recf >> 4) == 8){ //graphic
-        	int datoff=6;
-        	fprintf(to," Report Type:       NOTAM\n");
-			fprintf(filenotam," Report Type: NOTAM\n");
+
+        	fprintf(to," Report Type     :  NOTAM\n");
+			fprintf(filenotam," Report Type     : NOTAM\n");
 
     		product_version = ((apdu->data[0]) & 0x0F);
-    		fprintf(to," Product Version: %d \n",product_version);
-    		fprintf(filenotam," Product Version: %d \n",product_version);
+    		fprintf(to," Product Version : %d \n",product_version);
+    		fprintf(filenotam," Product Version : %d \n",product_version);
 
     		record_count = ((apdu->data[1]) & 0xF0) >> 4;
-    		fprintf(to," Record Count: %d \n",record_count);
-    		fprintf(filenotam," Record Count: %d \n",record_count);
+    		fprintf(to," Record Count    : %d \n",record_count);
+    		fprintf(filenotam," Record Count    : %d \n",record_count);
 
     		location_identifier = decode_dlac(apdu->data, 3, 2);
-    		fprintf(to," Location ID: %s \n",location_identifier);
-    		fprintf(filenotam," Location ID: %s \n",location_identifier);
+    		fprintf(to," Location ID     : %s \n",location_identifier);
+    		fprintf(filenotam," Location ID     : %s \n",location_identifier);
 
     		record_reference = ((apdu->data[5]));
-       		fprintf(to," Record Reference: %d \n",record_reference);
+    		fprintf(to," Record Reference : %d \n",record_reference);
         	fprintf(filenotam," Record Reference: %d \n",record_reference);
 
         	rec_offset =2;
@@ -1130,89 +1080,88 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
             strncpy(gstn,text,5);
             get_gs_name(gstn,reccount);
 
-            fprintf(to," RLoc:  %s - %s\n",gstn, gs_ret);
-            fprintf(filenotam," RLoc       : %s - %s\n",gstn, gs_ret);
-
+            fprintf(to," RLoc     :  %s - %s\n",gstn, gs_ret);
+            fprintf(filenotam," RLoc            : %s - %s\n",gstn, gs_ret);
     		report_number = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]);
-    		fprintf(to," Report Num : %d  ",report_number);
-    		fprintf(filenotam," Report Num : %d  ",report_number);
+    		fprintf(to," Report Number   : %d  ",report_number);
+    		fprintf(filenotam," Report Number   : %d",report_number);
 
     		record_length = ((apdu->data[datoff + 0]) << 2) | (((apdu->data[datoff + 1]) & 0xC0) >> 6);
-    		fprintf(to,"Record Length: %d  ",record_length);
-    		fprintf(filenotam,"Record Length: %d  ",record_length);
+    		fprintf(to,"        Record Length    : %03d ",record_length);
+    		fprintf(filenotam,"        Record Length    : %03d ",record_length);
 
     		report_year = ((apdu->data[datoff + 3]) & 0xFE) >> 1;
-    		fprintf(to,"Report Year: %d\n ",report_year);
-    		fprintf(filenotam,"Report Year: %d\n ",report_year);
+    		fprintf(to,"     Report Year       : %d\n ",report_year);
+    		fprintf(filenotam,"     Report Year       : %d\n ",report_year);
 
     		overlay_record_identifier = (((apdu->data[datoff + 4]) & 0x1E) >> 1) + 1; // Document instructs to add 1.
-    		fprintf(to,"Ovrlay RcID: %d  ",overlay_record_identifier);
- 			fprintf(filenotam,"Ovrlay RcID: %d  ",overlay_record_identifier);
+    		fprintf(to,"Ovrlay RcID     : %d",overlay_record_identifier);
+ 			fprintf(filenotam,"Ovrlay RcID     : %d",overlay_record_identifier);
 
- 			object_label_flag = (apdu->data[datoff + 4] & 0x01);
- 			fprintf(to, "Ob Lbl Fl: %d \n", object_label_flag);
- 			fprintf(filenotam, "Ob Lbl Fl: %d \n", object_label_flag);
+ 		 	object_label_flag = (apdu->data[datoff + 4] & 0x01);
+ 		 	fprintf(to, "            Object Label Flag: %d \n", object_label_flag);
+ 		 		fprintf(filenotam, "            Object Label Flag: %d \n", object_label_flag);
 
- 			if (object_label_flag == 0) { // Numeric index.
- 				object_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);
- 				fprintf(to, " Ob Lbl Num : %d  ", object_label);
- 				fprintf(filenotam, " Ob Lbl Num : %d  ", object_label);
- 				datoff = datoff +7;
- 			} else {
- 				object_labelt = decode_dlac(apdu->data,5, 2);
- 			    fprintf(to, " Ob Lbl Alph: %s ", object_labelt);
- 			    fprintf(filenotam, " Ob Lbl Alph: %s ", object_labelt);
- 			    datoff = datoff + 14;
- 			}
+ 				if (object_label_flag == 0) { // Numeric index.
+ 					object_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);
+ 					fprintf(to, " Ob Lbl Num      : %d  ", object_label);
+ 					fprintf(filenotam, " Ob Lbl Num      : %d  ", object_label);
+ 					datoff = datoff +7;
+ 				} else {
+ 					object_labelt = decode_dlac(apdu->data,5, 2);
+ 					fprintf(to, " Ob Lbl Alph     : %s ", object_labelt);
+ 					fprintf(filenotam, " Ob Lbl Alph     : %s ", object_labelt);
+ 		 			datoff = datoff + 14;
+ 		 		}
 
  			element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;
- 			fprintf(to," Elmnt Flag  : %d ", element_flag);
- 			fprintf(filenotam, " Elmnt Flag  : %d  ", element_flag);
+ 			fprintf(to,"        Element Flag     : %d ", element_flag);
+ 			fprintf(filenotam, "        Element Flag     : %d  ", element_flag);
 
  			object_element = (apdu->data[datoff + 0]) & 0x1F;
- 			fprintf(to, "Object Ele: %d\n", object_element);
- 			fprintf(filenotam, "Object Ele: %d\n", object_element);
+ 			fprintf(to, "      Object Element   : %d\n", object_element);
+ 			fprintf(filenotam, "      Object Element    : %d\n", object_element);
 
  			object_status = (apdu->data[datoff +1]) & 0x0F;
- 			fprintf(to, " Object Stat: %d  ", object_status);
- 			fprintf(filenotam, " Object Stat: %d ", object_status);
+ 			fprintf(to, " Object Status   : %d  ", object_status);
+ 			fprintf(filenotam, " Object Status   : %d  ", object_status);
 
- 			object_type = (apdu->data[datoff +1] & 0xF0) >> 4;
- 			fprintf(to, " Object Type: %d \n", object_type);
- 			fprintf(filenotam, " Object Type: %d \n", object_type);
+ 		 	object_type = (apdu->data[datoff +1] & 0xF0) >> 4;
+ 		 	fprintf(to, "         Object Type      : %d \n", object_type);;
+ 		 	fprintf(filenotam, "         Object Type      : %d \n", object_type);
 
- 			qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;
- 			fprintf(to, " Qualif Flag: %d  ", qualifier_flag);
- 			fprintf(filenotam, " Qualif Flag: %d  ", qualifier_flag);
+ 		 	qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;
+ 		 	fprintf(to, " Qualifier Flag  : %d  ", qualifier_flag);
+ 		 	fprintf(filenotam, " Qualifier Flag  : %d  ", qualifier_flag);
 
- 			param_flag = ((apdu->data[datoff + 0]) & 0x20) >> 5;
- 			fprintf(to, "Param Flag: %d \n", param_flag);
- 			fprintf(filenotam, "Param Flag: %d \n", param_flag);
+ 		 	param_flag = ((apdu->data[datoff + 0]) & 0x20) >> 5;
+ 		 	fprintf(to, "          Parameter Flag   : %d \n", param_flag);
+ 		 	fprintf(filenotam, "          Parameter Flag   : %d \n", param_flag);
 
- 			if (qualifier_flag == 0){
- 				datoff = datoff + 2;
- 			}
+ 		 	if (qualifier_flag == 0){
+ 		 		datoff = datoff + 2;
+ 		 	}
 
-			geometry_overlay_options = (apdu->data[datoff + 0]) & 0x0F;
- 			fprintf(to, " Geo Overlay Options: %d  ", geometry_overlay_options);
- 			fprintf(filenotam, " Geo Overlay Options: %d  ", geometry_overlay_options);
+ 			geometry_overlay_options = (apdu->data[datoff + 0]) & 0x0F;
+ 	 		fprintf(to, " Geo Overlay Opts: %02d  ", geometry_overlay_options);
+ 	 		fprintf(filenotam, " Geo Overlay Opts: %02d  ", geometry_overlay_options);
 
- 			overlay_operator = ((apdu->data[datoff +1]) & 0xC0) >> 6;
- 			fprintf(to, "Overlay Operator: %d  ", overlay_operator);
- 			fprintf(filenotam, "Overlay Operator: %d  ", overlay_operator);
+ 	 		overlay_operator = ((apdu->data[datoff +1]) & 0xC0) >> 6;
+ 	 		fprintf(to, "         Overlay Operator : %d  ", overlay_operator);
+ 	 		fprintf(filenotam, "         Overlay Operator : %d  ", overlay_operator);
 
-			overlay_vertices_count = ((apdu->data[datoff +1]) & 0x3F) + 1; // Document instructs to add 1. (6.20).
- 			fprintf(to, "Overlay vertices count: %d \n", overlay_vertices_count);
- 			fprintf(filenotam, "Overlay vertices count: %d \n", overlay_vertices_count);
+ 			overlay_vertices_count = ((apdu->data[datoff +1]) & 0x3F) + 1; // Document instructs to add 1. (6.20).
+ 	 		fprintf(to, "      Overlay Vertices #: %d \n", overlay_vertices_count);
+ 	 		fprintf(filenotam, "      Overlay Vertices #: %d \n", overlay_vertices_count);
 
- 			record_applicability_options = ((apdu->data[datoff + 0]) & 0xC0) >> 6;
- 			date_time_format = ((apdu->data[datoff + 0]) & 0x30) >> 4;
+ 	 		record_applicability_options = ((apdu->data[datoff + 0]) & 0xC0) >> 6;
+ 	 		date_time_format = ((apdu->data[datoff + 0]) & 0x30) >> 4;
 
- 			fprintf(to, " Rec App Opt: %d  ", record_applicability_options);
- 			fprintf(filenotam, " Rec App Opt: %d  ", record_applicability_options);
+ 	 		fprintf(to, " Rec App Option  : %d  ", record_applicability_options);
+ 	 		fprintf(filenotam, " Rec App Option  : %d  ", record_applicability_options);
 
- 			fprintf(to, "Rec App Date: %d \n", date_time_format );
- 			fprintf(filenotam, "Rec App Date: %d \n", date_time_format );
+ 	 		fprintf(to, "          Rec App Date     : %d \n", date_time_format );
+ 	 		fprintf(filenotam, "          Rec App Date     : %d \n", date_time_format );
 
  			switch (record_applicability_options) {
  			case 0:  // No times given. UFN.  (record_data[2:], date_time_format)
@@ -1246,14 +1195,17 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  	 			d2 = apdu->data[datoff + 3];
  	 			d3 = apdu->data[datoff + 4];
  	 			d4 = apdu->data[datoff + 5];
- 	 			fprintf(to, " Start Date : %02d/%02d %02d:%02d  ",d1,d2,d3,d4);
- 	 			fprintf(filenotam, " Start Date : %02d/%02d %02d:%02d  ",d1,d2,d3,d4);
- 				d1 = apdu->data[datoff + 6];
+ 	 	 		fprintf(to, " Start Date      : %02d/%02d %02d:%02d  ",d1,d2,d3,d4);
+ 	 	 		fprintf(filenotam, " Start Date      : %02d/%02d %02d:%02d  ",d1,d2,d3,d4);
+
+ 	 			d1 = apdu->data[datoff + 6];
  	 			d2 = apdu->data[datoff + 7];
  	 			d3 = apdu->data[datoff + 8];
  	 			d4 = apdu->data[datoff + 9];
- 	 			fprintf(to, "End Date:%02d/%02d %02d:%02d \n",d1,d2,d3,d4);
- 	 			fprintf(filenotam, "End Date: %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
+
+ 	 			fprintf(to, "End Date         : %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
+ 	 	 		fprintf(filenotam, "End Date         : %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
+
  	 			datoff = datoff + 10;
  				break;
  			}
@@ -1268,9 +1220,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  				}
  			}
 
- 		    uint32_t lat_raw ;  uint32_t lng_raw;  uint32_t alt_raw;  int alt;
- 		    float lat ;  float lng;
- 		    float fct_f =0.000687; // float_t fct_t =0.001373;
  			switch (geometry_overlay_options) {
 
  			case 9: // Extended Range 3D Point (AGL). p.47.
@@ -1292,70 +1241,121 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
  					alt = alt_raw * 100;
 
- 					fprintf(to, " Coord      : %f,%f\n", lat, lng);
- 					fprintf(filenotam, " Coord      : %f,%f  Alt: %d\n", lat, lng, alt);
+ 		 			fprintf(to, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
+ 		 			fprintf(filenotam, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng, alt);
+
  					}
  				}
  				break;
  			}
 
- 			fprintf(to, " Object Type: %s  Object Element: %s\n",ob_type_text,ob_ele_text);
- 			fprintf(filenotam, " Object Type: %s  Object Element: %s\n",ob_type_text,ob_ele_text);
+ 	 		fprintf(to, " Object Type     : %s\n Object Element   : %s\n\n",ob_type_text,ob_ele_text);
+ 	 		fprintf(filenotam, " Object Type     : %s\n Object Element  : %s\n\n",ob_type_text,ob_ele_text);
  			fprintf(to, "\n");
  			fprintf(filenotam,"\n");
  			display_generic_data(apdu->data, apdu->length, to);
         }
+
+    if ((recf >> 4) == 2 ) {             // text
+
+       	while (report) {
+       		char report_buf[1024];
+       		const char *next_report;
+       		char *p, *r;
+
+       		next_report = strchr(report, '\x1e'); // RS
+       		if (!next_report)
+       			next_report = strchr(report, '\x03'); // ETX
+       		if (next_report) {
+       			memcpy(report_buf, report, next_report - report);
+       			report_buf[next_report - report] = 0;
+       			report = next_report + 1;
+       		} else {
+       			strcpy(report_buf, report);
+       			report = NULL;
+       		}
+
+       		if (!report_buf[0])
+       			continue;
+
+       		r = report_buf;
+       		p = strchr(r, ' ');
+       		if (p) {
+       			*p = 0;
+       			fprintf(to," Report Type     :       %s\n",r);
+       			fprintf(filenotam," Report Type     : %s\n",r);
+       			r = p+1;
+       		}
+
+       		p = strchr(r, '.');
+       		if (p) {
+       			*p = 0;
+
+       			strncpy(gstn,r,5);
+       			get_gs_name(gstn,reccount);
+       			fprintf(to," RLoc     :  %s - %s\n",gstn, gs_ret);
+       			fprintf(filenotam," RLoc            : %s - %s\n",gstn, gs_ret);
+       			r = p+1;
+       		}
+
+       		time_t current_time = time(NULL);
+       		struct tm *tm = localtime(&current_time);
+       		fprintf(filenotam," Time            : %s", asctime(tm));
+       		fprintf(to,"\n%s \n",r);
+       		fprintf(filenotam," Data:\n%s\n",r);
+       		fflush(filenotam);
+       	}
     }
+	else {
+		display_generic_data(apdu->data, apdu->length, to);   }
+
+	fflush(filenotam);
+}
+
     break;
 
     case 11:                      //AIRMET
     {
-    	int rec_offset=11;
-    	char gstn[5]; int recf;
-    	const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
-    	const char *report = text;
+    	int rec_offset=11; char gstn[5]; int recf; int datoff=6;
 		uint16_t record_length=0; uint16_t report_number=0; uint16_t report_year=0;
 		int overlay_record_identifier=0; int object_label=0; int object_label_flag=0;
-		uint8_t object_type; uint8_t object_element;
-		uint8_t object_status; uint8_t qualifier_flag;
-		uint8_t param_flag; uint8_t record_applicability_options;
-		uint8_t date_time_format; uint8_t element_flag;
+		uint8_t object_type; uint8_t object_element; uint8_t object_status;
+		uint8_t qualifier_flag; uint8_t param_flag;
+		uint8_t record_applicability_options; uint8_t date_time_format; uint8_t element_flag;
 		const char * object_labelt;
 		char ob_type_text[35]; char  ob_ele_text[35];
-		int product_version;int record_count; int record_reference;
+		int product_version; int record_count; int record_reference;
 		const char * location_identifier;
-		int geometry_overlay_options;
-		int overlay_operator; int overlay_vertices_count;
+		int geometry_overlay_options; int overlay_operator; int overlay_vertices_count;
 		int d1;int d2;int d3;int d4;
+		uint32_t lat_raw ;  uint32_t lng_raw;  uint32_t alt_raw;  int alt;
+		float lat ;  float lng; float fct_f =0.000687;  // float_t fct_t =0.001373;
+
+		const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
+    	const char *report = text;
 
 		recf = apdu->data[0];
-    	fprintf(to,"\n Record Fmt : %d \n",recf >> 4);
-    	fprintf(fileairmet,"\n Record Fmt : %d \n",recf >> 4);
+    	fprintf(to," Record Format   : %d \n",recf >> 4);
+    	fprintf(fileairmet," Record Format   : %d \n",recf >> 4);
 
     	if ((recf >> 4) == 8){ //graphic
-    		int datoff=6;
 
-			fprintf(to," Report Type:       AIRMET\n");
-			fprintf(fileairmet," Report Type: AIRMET\n");
+			fprintf(to," Report Type     :       AIRMET\n");
+			fprintf(fileairmet," Report Type     : AIRMET\n");
 
     		product_version = ((apdu->data[0]) & 0x0F);
-    		fprintf(to," Product Version: %d \n",product_version);
-    		fprintf(fileairmet," Product Version: %d \n",product_version);
+    		fprintf(to," Product Version : %d \n",product_version);
+    		fprintf(fileairmet," Product Version : %d \n",product_version);
 
     		record_count = ((apdu->data[1]) & 0xF0) >> 4;
-    		fprintf(to," Record Count: %d \n",record_count);
-    		fprintf(fileairmet," Record Count: %d \n",record_count);
+    		fprintf(to," Record Count    : %d \n",record_count);
+    		fprintf(fileairmet," Record Count    : %d \n",record_count);
 
     		location_identifier = decode_dlac(apdu->data, 3, 2);
-
-//		decode_dlac(apdu->data,5, 2);
-
-    		fprintf(to," Location ID: %s \n",location_identifier);
-    		fprintf(fileairmet," Location ID: %s \n",location_identifier);
+    		fprintf(to," Location ID     : %s \n",location_identifier);
+    		fprintf(fileairmet," Location ID     : %s \n",location_identifier);
 
     		record_reference = ((apdu->data[5]));
-    				//FIXME: Special values. 0x00 means "use location_identifier".
-    		//0xFF means "use different reference". (4-3).
        		fprintf(to," Record Reference: %d \n",record_reference);
        		fprintf(fileairmet," Record Reference: %d \n",record_reference);
 
@@ -1364,88 +1364,89 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
             strncpy(gstn,text,5);
             get_gs_name(gstn,reccount);
 
-            fprintf(to," RLoc:  %s - %s\n",gstn, gs_ret);
-            fprintf(fileairmet," RLoc       : %s - %s\n",gstn, gs_ret);
+            fprintf(to," RLoc     :  %s - %s\n",gstn, gs_ret);
+            fprintf(fileairmet," RLoc            : %s - %s\n",gstn, gs_ret);
 
     		report_number = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]);
-    		fprintf(to," Report Num : %d  ",report_number);
-    		fprintf(fileairmet," Report Num : %d  ",report_number);
+    		fprintf(to," Report Number   : %d  ",report_number);
+    		fprintf(fileairmet," Report Number   : %d  ",report_number);
 
     		record_length = ((apdu->data[datoff + 0]) << 2) | (((apdu->data[datoff + 1]) & 0xC0) >> 6);
-    		fprintf(to,"Record Length: %d ",record_length);
-    		fprintf(fileairmet,"Record Length: %d ",record_length);
+    		    	fprintf(to,"       Record Length    : %03d ",record_length);
+    		    	fprintf(fileairmet,"       Record Length    : %03d ",record_length);
 
-    		report_year = ((apdu->data[datoff + 3]) & 0xFE) >> 1;
-    		fprintf(to,"Report Year: %d\n ",report_year);
-    		fprintf(fileairmet,"Report Year: %d\n ",report_year);
+    		    	report_year = ((apdu->data[datoff + 3]) & 0xFE) >> 1;
+    		    	fprintf(to,"     Report Year       : %d\n ",report_year);
+    		    	fprintf(fileairmet,"     Report Year       : %d\n ",report_year);
 
-    		overlay_record_identifier = (((apdu->data[datoff + 4]) & 0x1E) >> 1) + 1; // Document instructs to add 1.
-    		fprintf(to,"Ovrlay RcID: %d  ",overlay_record_identifier);
- 			fprintf(fileairmet,"Ovrlay RcID: %d  ",overlay_record_identifier);
+    		    	overlay_record_identifier = (((apdu->data[datoff + 4]) & 0x1E) >> 1) + 1; // Document instructs to add 1.
+    		    	fprintf(to,"Ovrlay RcID     : %d",overlay_record_identifier);
+    		 	fprintf(fileairmet,"Ovrlay RcID     : %d",overlay_record_identifier);
 
- 			object_label_flag = (apdu->data[datoff + 4] & 0x01);
- 			fprintf(to, "Ob Lbl Fl: %d \n", object_label_flag);
- 			fprintf(fileairmet, "Ob Lbl Fl: %d \n", object_label_flag);
- 			if (object_label_flag == 0) { // Numeric index.
- 				object_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);
- 				fprintf(to, " Ob Lbl Num : %d  ", object_label);
- 				fprintf(fileairmet, " Ob Lbl Num : %d  ", object_label);
- 				datoff = datoff +7;
- 			} else {
- 				object_labelt = decode_dlac(apdu->data,5, 2);
- 			    fprintf(to, " Ob Lbl Alph: %s ", object_labelt);
- 			    fprintf(fileairmet, " Ob Lbl Alph: %s ", object_labelt);
- 			    datoff = datoff + 14;
- 			}
+    		 	object_label_flag = (apdu->data[datoff + 4] & 0x01);
+    		 	fprintf(to, "            Object Label Flag: %d \n", object_label_flag);
+    		 		fprintf(fileairmet, "            Object Label Flag: %d \n", object_label_flag);
 
- 			element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;
- 			fprintf(to," Elmnt Flag  : %d ", element_flag);
- 			fprintf(fileairmet, " Elmnt Flag  : %d  ", element_flag);
+    				if (object_label_flag == 0) { // Numeric index.
+    					object_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);
+    					fprintf(to, " Ob Lbl Num      : %d  ", object_label);
+    					fprintf(fileairmet, " Ob Lbl Num      : %d  ", object_label);
+    					datoff = datoff +7;
+    				} else {
+    					object_labelt = decode_dlac(apdu->data,5, 2);
+    					fprintf(to, " Ob Lbl Alph      : %s ", object_labelt);
+    					fprintf(fileairmet, " Ob Lbl Alph      : %s ", object_labelt);
+    		 			datoff = datoff + 14;
+    		 		}
 
- 			object_element = (apdu->data[datoff + 0]) & 0x1F;
- 			fprintf(to, "Object Ele: %d\n", object_element);
- 			fprintf(fileairmet, "Object Ele: %d\n", object_element);
+    				element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;
+    				fprintf(to,"          Element Flag     : %d ", element_flag);
+    				fprintf(fileairmet, "          Element Flag     : %d  ", element_flag);
 
- 			object_status = (apdu->data[datoff +1]) & 0x0F;
- 			fprintf(to, " Object Stat: %d  ", object_status);
- 			fprintf(fileairmet, " Object Stat: %d  ", object_status);
+    				object_element = (apdu->data[datoff + 0]) & 0x1F;
+    				fprintf(to, "      Object Element   : %d\n", object_element);
+    				fprintf(fileairmet, "      Object Element    : %d\n", object_element);
 
- 			object_type = (apdu->data[datoff +1] & 0xF0) >> 4;
- 			fprintf(to, " Object Type: %d \n", object_type);
- 			fprintf(fileairmet, " Object Type: %d \n", object_type);
+    				object_status = (apdu->data[datoff +1]) & 0x0F;
+    				fprintf(to, " Object Status   : %d  ", object_status);
+    				fprintf(fileairmet, " Object Status   : %d  ", object_status);
 
- 			qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;
- 			fprintf(to, " Qualif Flag: %d  ", qualifier_flag);
- 			fprintf(fileairmet, " Qualif Flag: %d  ", qualifier_flag);
+    		 		object_type = (apdu->data[datoff +1] & 0xF0) >> 4;
+    		 		fprintf(to, "         Object Type      : %d \n", object_type);;
+    		 		fprintf(fileairmet, "         Object Type      : %d \n", object_type);
 
- 			param_flag = ((apdu->data[datoff + 0]) & 0x20) >> 5;
- 			fprintf(to, "Param Flag: %d \n", param_flag);
- 			fprintf(fileairmet, "Param Flag: %d \n", param_flag);
+    		 		qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;
+    		 		fprintf(to, " Qualifier Flag  : %d  ", qualifier_flag);
+    		 		fprintf(fileairmet, " Qualifier Flag  : %d  ", qualifier_flag);
 
- 			if (qualifier_flag == 0){
- 				datoff = datoff + 2;
- 			}
+    		 		param_flag = ((apdu->data[datoff + 0]) & 0x20) >> 5;
+    		 		fprintf(to, "          Parameter Flag   : %d \n", param_flag);
+    		 		fprintf(fileairmet, "          Parameter Flag   : %d \n", param_flag);
 
- 			geometry_overlay_options = (apdu->data[datoff + 0]) & 0x0F;
- 			fprintf(to, " Geo Overlay Options: %d  ", geometry_overlay_options);
- 			fprintf(fileairmet, " Geo Overlay Options: %d  ", geometry_overlay_options);
+    				if (qualifier_flag == 0){
+    					datoff = datoff + 2;
+    		 		}
 
- 			overlay_operator = ((apdu->data[datoff +1]) & 0xC0) >> 6;
- 			fprintf(to, "Overlay Operator: %d  ", overlay_operator);
- 			fprintf(fileairmet, "Overlay Operator: %d  ", overlay_operator);
+    				geometry_overlay_options = (apdu->data[datoff + 0]) & 0x0F;
+    		 		fprintf(to, " Geo Overlay Opts: %02d  ", geometry_overlay_options);
+    		 		fprintf(fileairmet, " Geo Overlay Opts: %02d  ", geometry_overlay_options);
 
-			overlay_vertices_count = ((apdu->data[datoff +1]) & 0x3F) + 1; // Document instructs to add 1. (6.20).
- 			fprintf(to, "Overlay vertices count: %d \n", overlay_vertices_count);
- 			fprintf(fileairmet, "Overlay vertices count: %d \n", overlay_vertices_count);
+    		 		overlay_operator = ((apdu->data[datoff +1]) & 0xC0) >> 6;
+    		 		fprintf(to, "         Overlay Operator : %d  ", overlay_operator);
+    		 		fprintf(fileairmet, "         Overlay Operator : %d  ", overlay_operator);
 
- 			record_applicability_options = ((apdu->data[datoff + 0]) & 0xC0) >> 6;
- 			date_time_format = ((apdu->data[datoff + 0]) & 0x30) >> 4;
+    				overlay_vertices_count = ((apdu->data[datoff +1]) & 0x3F) + 1; // Document instructs to add 1. (6.20).
+    		 		fprintf(to, "      Overlay Vertices #: %d \n", overlay_vertices_count);
+    		 		fprintf(fileairmet, "      Overlay Vertices #: %d \n", overlay_vertices_count);
 
- 			fprintf(to, " Rec App Opt: %d  ", record_applicability_options);
- 			fprintf(fileairmet, " Rec App Opt: %d  ", record_applicability_options);
+    		 		record_applicability_options = ((apdu->data[datoff + 0]) & 0xC0) >> 6;
+    		 		date_time_format = ((apdu->data[datoff + 0]) & 0x30) >> 4;
 
- 			fprintf(to, "Rec App Date: %d \n", date_time_format );
- 			fprintf(fileairmet, "Rec App Date: %d \n", date_time_format );
+    		 		fprintf(to, " Rec App Option  : %d  ", record_applicability_options);
+    		 		fprintf(fileairmet, " Rec App Option  : %d  ", record_applicability_options);
+
+    		 		fprintf(to, "          Rec App Date     : %d \n", date_time_format );
+    		 		fprintf(fileairmet, "          Rec App Date     : %d \n", date_time_format );
 
  			switch (record_applicability_options) {
  			case 0:  // No times given. UFN.  (record_data[2:], date_time_format)
@@ -1478,27 +1479,26 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
  				break;
 
- 			case 3: // Both start and end times. WEF.
- 				d1 = apdu->data[datoff + 2];
+ 	 		case 3: // Both start and end times. WEF.
+ 	 			d1 = apdu->data[datoff + 2];
  	 			d2 = apdu->data[datoff + 3];
  	 			d3 = apdu->data[datoff + 4];
  	 			d4 = apdu->data[datoff + 5];
 
- 	 			fprintf(to, " Start Date : %02d/%02d %02d:%02d  ",d1,d2,d3,d4);
- 	 			fprintf(fileairmet, " Start Date : %02d/%02d %02d:%02d  ",d1,d2,d3,d4);
+ 	 	 		fprintf(to, " Start Date      : %02d/%02d %02d:%02d  ",d1,d2,d3,d4);
+ 	 	 		fprintf(fileairmet, " Start Date      : %02d/%02d %02d:%02d  ",d1,d2,d3,d4);
 
- 				d1 = apdu->data[datoff + 6];
+ 	 			d1 = apdu->data[datoff + 6];
  	 			d2 = apdu->data[datoff + 7];
  	 			d3 = apdu->data[datoff + 8];
  	 			d4 = apdu->data[datoff + 9];
 
- 	 			fprintf(to, "End Date: %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
- 	 			fprintf(fileairmet, "End Date: %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
+ 	 			fprintf(to, "End Date         : %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
+ 	 	 		fprintf(fileairmet, "End Date         : %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
 
  	 			datoff = datoff + 10;
- 				break;
+ 	 			break;
  			}
-
  			strcpy(ob_type_text,"Unknown object");
  			strcpy(ob_ele_text,"Unknown Element");
  			if (object_label_flag == 0 && object_type==14){
@@ -1507,22 +1507,16 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  					strcpy(ob_ele_text,object_element_names[object_element]);
  				}
  			}
- 		    uint32_t lat_raw ;  uint32_t lng_raw;  uint32_t alt_raw;  int alt;
- 		    float lat ;  float lng;  float fct_f =0.000687;     // float_t fct_t =0.001373;
 
  			switch (geometry_overlay_options) {
+
  			case 3: // Extended Range 3D Polygon (MSL).
-// 				points = make([]GeoPoint, 0) // Slice containing all of the points.
-// 				fmt.Fprintf(ioutil.Discard, "%d\n", len(record_data))
  				for (int i = 0; i < overlay_vertices_count; i++) {
  					lng_raw = ((apdu->data[datoff + i]) << 11) | ((apdu->data[datoff +i+1]) << 3) | ((apdu->data[datoff +i+2]) & 0xE0 >> 5);
  					lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+3]) << 6) | (((apdu->data[datoff +i+4]) & 0xFC) >> 2);
  					alt_raw = (((apdu->data[datoff +i+4]) & 0x03) << 8) | (apdu->data[datoff +i+5]);
 
  					datoff = datoff + 5;
-
-// 					fprintf(to,"lat_raw=%d, lng_raw=%d, alt_raw=%d\n", lat_raw, lng_raw, alt_raw);
-// 					fprintf(fileairmet,"lat_raw=%d, lng_raw=%d, alt_raw=%d\n", lat_raw, lng_raw, alt_raw);
 
  					lat = fct_f * lat_raw;
  					lng = fct_f * lng_raw;
@@ -1532,10 +1526,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  						lng = lng - 360.0;
 	}
  					alt = alt_raw * 100;
- //					fprintf(to, "lat=%f,lng=%f,alt=%f\n", lat, lng, alt);
- 					fprintf(to, " Coord: %f,%f  Alt: %d\n", lat, lng,alt);
- //					fprintf(fileairmet, "lat=%f,lng=%f,alt=%f\n", lat, lng, alt);
- 					fprintf(fileairmet, " Coord: %f,%f  Alt: %d\n", lat, lng,alt);
+ 					fprintf(to, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
+ 					fprintf(fileairmet, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
 
  }
 // 					var point GeoPoint
@@ -1557,9 +1549,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  					lat_raw = (((apdu->data[datoff +2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) | (((apdu->data[datoff + 4]) & 0xFC) >> 2);
  					alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
 
- //					fprintf(to, "lat_raw=%d, lng_raw=%d, alt_raw=%d\n", lat_raw, lng_raw, alt_raw);
-// 					fprintf(fileairmet, "lat_raw=%d, lng_raw=%d, alt_raw=%d\n", lat_raw, lng_raw, alt_raw);
-
  					lat = fct_f * lat_raw;
  					lng = fct_f * lng_raw;
  					if (lat > 90.0) {
@@ -1568,8 +1557,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  						lng = lng - 360.0;
 
  					alt = alt_raw * 100;
- //					fprintf(to, "lat=%f,lng=%f,alt=%f\n", lat, lng, alt);
-// 					fprintf(fileairmet, "lat=%f,lng=%f,alt=%f\n", lat, lng, alt);
  					fprintf(to, " Coord: %f,%f  Alt: %d\n", lat, lng,alt);
  					fprintf(fileairmet, " Coord: %f,%f  Alt: %d\n", lat, lng,alt);
  					}
@@ -1578,6 +1565,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  			}
  			fprintf(to, " Object Type: %s  Object Element: %s\n",ob_type_text,ob_ele_text);
  			fprintf(fileairmet, " Object Type: %s  Object Element: %s\n",ob_type_text,ob_ele_text);
+ 			fprintf(to, "\n");
+ 			fprintf(fileairmet,"\n");
+ 			display_generic_data(apdu->data, apdu->length, to);
     	}
 
     	if ((recf >> 4) == 2 ) {             // text
@@ -1604,8 +1594,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			p = strchr(r, ' ');
     			if (p) {
     				*p = 0;
-    				fprintf(to," Report Type:       %s\n",r);
-    				fprintf(fileairmet," Report Type: %s\n",r);
+    				fprintf(to," Report Type     : %s\n",r);
+    				fprintf(fileairmet," Report Type     : %s\n",r);
     				r = p+1;
     			}
     			p = strchr(r, ' ');
@@ -1613,17 +1603,17 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				*p = 0;
     				strncpy(gstn,r,5);
     				get_gs_name(gstn,reccount);
-    				fprintf(to," RLoc:  %s - %s\n",gstn, gs_ret);
-    				fprintf(fileairmet," RLoc       : %s - %s\n",gstn, gs_ret);
+    				fprintf(to," RLoc     :  %s - %s\n",gstn, gs_ret);
+    				fprintf(fileairmet," RLoc            : %s - %s\n",gstn, gs_ret);
     				r = p+1;
     			}
 
     			time_t current_time = time(NULL);
     			struct tm *tm = localtime(&current_time);
-    			fprintf(fileairmet," Time       : %s", asctime(tm));
+    			fprintf(fileairmet," Time            : %s", asctime(tm));
     			report_number = (apdu->data[8] << 6) | (apdu->data[9] & 0xFC >> 2);
-    			fprintf(to," Report Num : %d \n",report_number);
-    			fprintf(fileairmet," Report Num : %d \n",report_number);
+    			fprintf(to," Report Number   : %d \n",report_number);
+    			fprintf(fileairmet," Report Number   : %d \n",report_number);
 
     			fprintf(to,"\n%s \n",r);
     			fprintf(fileairmet," Data:\n");
@@ -1757,138 +1747,132 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     case 14:     //G-AIRMET
     {
-
-//    	int rec_offset=11;
-//    	char gstn[5];
-    	int recf;
-		uint16_t record_length=0; 	uint16_t report_number=0;uint16_t report_year=0;
+    	int rec_offset=11; char gstn[5]; int recf; int datoff=6;
+		uint16_t record_length=0; uint16_t report_number=0; uint16_t report_year=0;
 		int overlay_record_identifier=0; int object_label=0; int object_label_flag=0;
-		uint8_t object_type; uint8_t object_element;
-		uint8_t object_status; uint8_t qualifier_flag;
-		uint8_t param_flag;
-		uint8_t record_applicability_options;
-		uint8_t date_time_format; uint8_t element_flag;
-		char ob_type_text[35]; char  ob_ele_text[35];
-
+		uint8_t object_type; uint8_t object_element; uint8_t object_status;
+		uint8_t qualifier_flag; uint8_t param_flag;
+		uint8_t record_applicability_options; uint8_t date_time_format; uint8_t element_flag;
 		const char * object_labelt;
-
-		int product_version;int record_count; int record_reference;
+		char ob_type_text[35]; char  ob_ele_text[35];
+		int product_version; int record_count; int record_reference;
 		const char * location_identifier;
-		int geometry_overlay_options;
-		int overlay_operator; int overlay_vertices_count;
+		int geometry_overlay_options; int overlay_operator; int overlay_vertices_count;
 		int d1;int d2;int d3;int d4;
+	    uint32_t lat_raw ;  uint32_t lng_raw;  uint32_t alt_raw;  int alt;
+	    float lat ;  float lng; float fct_f =0.000687;  // float_t fct_t =0.001373;
 
     	recf = apdu->data[0];
-
-    	fprintf(to," Record Fmt : %d \n",recf >> 4);
+    	fprintf(to," Record Format   : %d \n",recf >> 4);
+    	fprintf(filegairmet," Record Format   : %d \n",recf >> 4);
 
     	if ((recf >> 4) == 8){ //graphic
-        	int datoff=6;
-    		fprintf(to,"\n Report Type:       G-AIRMET\n");
-    		fprintf(filegairmet,"\n Report Type: G-AIRMET\n");
+    		fprintf(to," Report Type     :  G-AIRMET\n");
+    		fprintf(filegairmet," Report Type     : G-AIRMET\n");
 
     		product_version = ((apdu->data[0]) & 0x0F);
-    		fprintf(to," Product Version %d \n",product_version);
-    		fprintf(filegairmet," Product Version %d \n",product_version);
+    		fprintf(to," Product Version : %d \n",product_version);
+    		fprintf(filegairmet," Product Version : %d \n",product_version);
 
     		record_count = ((apdu->data[1]) & 0xF0) >> 4;
-    		fprintf(to," Record Count: %d \n",record_count);
-    		fprintf(filegairmet," Rrecord Count: %d \n",record_count);
+    		fprintf(to," Record Count    : %d \n",record_count);
+    		fprintf(filegairmet," Record Count    : %d \n",record_count);
 
     		location_identifier = decode_dlac(apdu->data, 3, 2);
-    		fprintf(to," Location ID: %s \n",location_identifier);
-    		fprintf(filegairmet," Location ID: %s \n",location_identifier);
+    		fprintf(to," Location ID     : %s \n",location_identifier);
+    		fprintf(filegairmet," Location ID     : %s \n",location_identifier);
 
     		record_reference = ((apdu->data[5]));
-    				//FIXME: Special values. 0x00 means "use location_identifier".
-    				//0xFF means "use different reference". (4-3).
        		fprintf(to," Record Reference : %d \n",record_reference);
        		fprintf(filegairmet," Record Reference: %d \n",record_reference);
 
-    		time_t current_time = time(NULL);
-    		struct tm *tm = localtime(&current_time);
-    		fprintf(filegairmet," Time       : %s", asctime(tm));
+        	rec_offset =2;
+            const char *text = decode_dlac(apdu->data,5 ,rec_offset);
+            strncpy(gstn,text,5);
+            get_gs_name(gstn,reccount);
 
+            fprintf(to," RLoc     :  %s - %s\n",gstn, gs_ret);
+            fprintf(filegairmet," RLoc            : %s - %s\n",gstn, gs_ret);
     		report_number = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]);
-    		fprintf(to," Report Num : %d  ",report_number);
-    		fprintf(filegairmet," Report Num : %d  ",report_number);
+    		fprintf(to," Report Number   : %d  ",report_number);
+    		fprintf(filegairmet," Report Number   : %d",report_number);
 
     		record_length = ((apdu->data[datoff + 0]) << 2) | (((apdu->data[datoff + 1]) & 0xC0) >> 6);
-    		fprintf(to,"Record Length: %d ",record_length);
-    		fprintf(filegairmet,"Record Length: %d ",record_length);
+    		fprintf(to,"         Record Length    : %03d ",record_length);
+    		fprintf(filegairmet,"         Record Length    : %03d ",record_length);
 
     		report_year = ((apdu->data[datoff + 3]) & 0xFE) >> 1;
-    		fprintf(to,"Report Year: %d\n ",report_year);
-    		fprintf(filegairmet,"Report Year: %d\n ",report_year);
+    		fprintf(to,"     Report Year       : %d\n ",report_year);
+    		fprintf(filegairmet,"     Report Year       : %d\n ",report_year);
 
     		overlay_record_identifier = (((apdu->data[datoff + 4]) & 0x1E) >> 1) + 1; // Document instructs to add 1.
-    		fprintf(to,"Ovrlay RcID: %d  ",overlay_record_identifier);
- 			fprintf(filegairmet,"Ovrlay RcID: %d  ",overlay_record_identifier);
+    		fprintf(to,"Ovrlay RcID     : %d",overlay_record_identifier);
+ 			fprintf(filegairmet,"Ovrlay RcID     : %d",overlay_record_identifier);
 
  			object_label_flag = (apdu->data[datoff + 4] & 0x01);
- 			fprintf(to, "Ob Lbl Fl: %d \n", object_label_flag);
- 			fprintf(filegairmet, "Ob Lbl Fl: %d \n", object_label_flag);
+ 			fprintf(to, "            Object Label Flag: %d \n", object_label_flag);
+ 			fprintf(filegairmet, "            Object Label Flag: %d \n", object_label_flag);
 
  			if (object_label_flag == 0) { // Numeric index.
  				object_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);
- 				fprintf(to, " Ob Lbl Num : %d  ", object_label);
- 				fprintf(filegairmet, " Ob Lbl Num : %d  ", object_label);
+ 				fprintf(to, " Ob Lbl Num      : %d  ", object_label);
+ 				fprintf(filegairmet, " Ob Lbl Num      : %d  ", object_label);
  				datoff = datoff +7;
  			} else {
  				object_labelt = decode_dlac(apdu->data,5, 2);
- 				fprintf(to, " Ob Lbl Alph: %s ", object_labelt);
- 			    fprintf(filegairmet, " Ob Lbl Alph: %s ", object_labelt);
+ 				fprintf(to, " Ob Lbl Alph      : %s ", object_labelt);
+ 			    fprintf(filegairmet, " Ob Lbl Alph      : %s ", object_labelt);
  			   datoff = datoff + 14;
  			}
 
  			element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;
- 			fprintf(to," Elmnt Flag  : %d ", element_flag);
- 			fprintf(filegairmet, " Elmnt Flag  : %d  ", element_flag);
+ 			fprintf(to,"          Element Flag     : %d ", element_flag);
+ 			fprintf(filegairmet, "          Element Flag     : %d  ", element_flag);
 
  			object_element = (apdu->data[datoff + 0]) & 0x1F;
- 			fprintf(to, "Object Ele: %d\n", object_element);
- 			fprintf(filegairmet, "Object Ele: %d\n", object_element);
+ 			fprintf(to, "      Object Element   : %d\n", object_element);
+ 			fprintf(filegairmet, "      Object Element    : %d\n", object_element);
 
  			object_status = (apdu->data[datoff +1]) & 0x0F;
- 			fprintf(to, " Object Stat: %d  ", object_status);
- 			fprintf(filegairmet, " Object Stat: %d  ", object_status);
+ 			fprintf(to, " Object Status   : %d  ", object_status);
+ 			fprintf(filegairmet, " Object Status   : %d  ", object_status);
 
  			object_type = (apdu->data[datoff +1] & 0xF0) >> 4;
- 			fprintf(to, " Object Type: %d \n", object_type);;
- 			fprintf(filegairmet, " Object Type: %d \n", object_type);
+ 			fprintf(to, "         Object Type      : %d \n", object_type);;
+ 			fprintf(filegairmet, "         Object Type      : %d \n", object_type);
 
  			qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;
- 			fprintf(to, " Qualif Flag: %d  ", qualifier_flag);
- 			fprintf(filegairmet, " Qualif Flag: %d  ", qualifier_flag);
+ 			fprintf(to, " Qualifier Flag  : %d  ", qualifier_flag);
+ 			fprintf(filegairmet, " Qualifier Flag  : %d  ", qualifier_flag);
 
  			param_flag = ((apdu->data[datoff + 0]) & 0x20) >> 5;
- 			fprintf(to, "Param Flag: %d \n", param_flag);
- 			fprintf(filegairmet, "Param Flag: %d \n", param_flag);
+ 			fprintf(to, "          Parameter Flag   : %d \n", param_flag);
+ 			fprintf(filegairmet, "          Parameter Flag   : %d \n", param_flag);
 
  			if (qualifier_flag == 0){
  				datoff = datoff + 2;
  			}
 
 			geometry_overlay_options = (apdu->data[datoff + 0]) & 0x0F;
- 			fprintf(to, " Geo Overlay Options: %d  ", geometry_overlay_options);
- 			fprintf(filegairmet, " Geo Overlay Options: %d  ", geometry_overlay_options);
+ 			fprintf(to, " Geo Overlay Opts: %02d  ", geometry_overlay_options);
+ 			fprintf(filegairmet, " Geo Overlay Opts: %02d  ", geometry_overlay_options);
 
  			overlay_operator = ((apdu->data[datoff +1]) & 0xC0) >> 6;
- 			fprintf(to, "Overlay Operator: %d  ", overlay_operator);
- 			fprintf(filegairmet, "Overlay Operator: %d  ", overlay_operator);
+ 			fprintf(to, "         Overlay Operator : %d  ", overlay_operator);
+ 			fprintf(filegairmet, "         Overlay Operator : %d  ", overlay_operator);
 
 			overlay_vertices_count = ((apdu->data[datoff +1]) & 0x3F) + 1; // Document instructs to add 1. (6.20).
- 			fprintf(to, "Overlay vertices count: %d \n", overlay_vertices_count);
- 			fprintf(filegairmet, "Overlay vertices count: %d \n", overlay_vertices_count);
+ 			fprintf(to, "      Overlay Vertices #: %d \n", overlay_vertices_count);
+ 			fprintf(filegairmet, "      Overlay Vertices #: %d \n", overlay_vertices_count);
 
  			record_applicability_options = ((apdu->data[datoff + 0]) & 0xC0) >> 6;
  			date_time_format = ((apdu->data[datoff + 0]) & 0x30) >> 4;
 
- 			fprintf(to, " Rec App Opt: %d  ", record_applicability_options);
- 			fprintf(filegairmet, " Rec App Opt: %d  ", record_applicability_options);
+ 			fprintf(to, " Rec App Option  : %d  ", record_applicability_options);
+ 			fprintf(filegairmet, " Rec App Option  : %d  ", record_applicability_options);
 
- 			fprintf(to, "Rec App Date: %d \n", date_time_format );
- 			fprintf(filegairmet, "Rec App Date: %d \n", date_time_format );
+ 			fprintf(to, "          Rec App Date     : %d \n", date_time_format );
+ 			fprintf(filegairmet, "          Rec App Date     : %d \n", date_time_format );
 
  			switch (record_applicability_options) {
  			case 0:  // No times given. UFN.  (record_data[2:], date_time_format)
@@ -1927,16 +1911,16 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  	 			d3 = apdu->data[datoff + 4];
  	 			d4 = apdu->data[datoff + 5];
 
- 	 			fprintf(to, " Start Date : %02d/%02d %02d:%02d  ",d1,d2,d3,d4);
- 	 			fprintf(filegairmet, " Start Date : %02d/%02d %02d:%02d  ",d1,d2,d3,d4);
+ 	 			fprintf(to, " Start Date      : %02d/%02d %02d:%02d  ",d1,d2,d3,d4);
+ 	 			fprintf(filegairmet, " Start Date      : %02d/%02d %02d:%02d  ",d1,d2,d3,d4);
 
  				d1 = apdu->data[datoff + 6];
  	 			d2 = apdu->data[datoff + 7];
  	 			d3 = apdu->data[datoff + 8];
  	 			d4 = apdu->data[datoff + 9];
 
- 	 			fprintf(to, "End Date: %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
- 	 			fprintf(filegairmet, "End Date: %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
+ 	 			fprintf(to, "End Date         : %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
+ 	 			fprintf(filegairmet, "End Date         : %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
 
  	 			datoff = datoff + 10;
  				break;
@@ -1950,9 +1934,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  					strcpy(ob_ele_text,object_element_names[object_element]);
  				}
  			}
- 		    uint32_t lat_raw ;  uint32_t lng_raw;  uint32_t alt_raw;  int alt;
- 		    float lat ;  float lng;
- 		    float fct_f =0.000687; // float_t fct_t =0.001373;
 
  		    switch (geometry_overlay_options) {
 
@@ -1966,9 +1947,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
  					datoff = datoff + 5;
 
-// 					fprintf(to,"lat_raw=%d, lng_raw=%d, alt_raw=%d\n", lat_raw, lng_raw, alt_raw);
-// 					fprintf(fileairmet,"lat_raw=%d, lng_raw=%d, alt_raw=%d\n", lat_raw, lng_raw, alt_raw);
-
  					lat = fct_f * lat_raw;
  					lng = fct_f * lng_raw;
  					if (lat > 90.0) {
@@ -1977,10 +1955,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  						lng = lng - 360.0;
 	}
  					alt = alt_raw * 100;
- //					fprintf(to, "lat=%f,lng=%f,alt=%f\n", lat, lng, alt);
- 					fprintf(to, " Coord: %f,%f  Alt: %d\n", lat, lng,alt);
- //					fprintf(fileairmet, "lat=%f,lng=%f,alt=%f\n", lat, lng, alt);
- 					fprintf(filegairmet, " Coord: %f,%f  Alt: %d\n", lat, lng,alt);
+  					fprintf(to, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
+ 					fprintf(filegairmet, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng, alt);
 
  }
 // 					var point GeoPoint
@@ -2002,9 +1978,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  					lat_raw = (((apdu->data[datoff +2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) | (((apdu->data[datoff + 4]) & 0xFC) >> 2);
  					alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
 
-// 					fprintf(to, "lat_raw=%d, lng_raw=%d, alt_raw=%d\n", lat_raw, lng_raw, alt_raw);
-// 					fprintf(filegairmet, "lat_raw=%d, lng_raw=%d, alt_raw=%d\n", lat_raw, lng_raw, alt_raw);
-
  					lat = fct_f * lat_raw;
  					lng = fct_f * lng_raw;
  					if (lat > 90.0) {
@@ -2013,16 +1986,15 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  						lng = lng - 360.0;
 
  					alt = alt_raw * 100;
- //					fprintf(to, "lat=%f,lng=%f,alt=%f\n", lat, lng, alt);
- 					fprintf(to, " Coord: %f,%f  Alt: %d\n", lat, lng,alt);
-// 					fprintf(filegairmet, "lat=%f,lng=%f,alt=%f\n", lat, lng, alt);
- 					fprintf(filegairmet, " Coord: %f,%f  Alt: %d\n", lat, lng, alt);
+
+ 					fprintf(to, "      Coordinates: %f,%f  Alt: %d\n", lat, lng,alt);
+ 					fprintf(filegairmet, "      Coordinates: %f,%f  Alt: %d\n", lat, lng, alt);
  					}
  				}
  				break;
  			}
- 			fprintf(to, " Object Type: %s  Object Element: %s\n",ob_type_text,ob_ele_text);
- 			fprintf(filegairmet, " Object Type: %s  Object Element: %s\n",ob_type_text,ob_ele_text);
+ 			fprintf(to, " Object Type     : %s     Object Element   : %s\n\n",ob_type_text,ob_ele_text);
+ 			fprintf(filegairmet, " Object Type     : %s     Object Element   : %s\n\n",ob_type_text,ob_ele_text);
        	}
 
     	display_generic_data(apdu->data, apdu->length, to);
