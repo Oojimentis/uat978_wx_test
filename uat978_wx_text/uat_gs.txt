@@ -744,3 +744,12 @@ KMCX$Montcello/White, IN                                                    $
 KAUW$Wausau, WI                                                             $
 KP20$Avi Suquilla - Parker, AZ                                              $
 K0A3$Smithville Municipal Airport - Smithville, TN                          $
+KAUS$Austin/Bergstrom International Airport, TX                             $
+KCMX$Houghton County Memorial Airport - Hancock, MI                         $
+KCOU$Columbia Regional Airport - Columbia, MO                               $
+KGEE$Unknown                                                                $
+KOCN$Concord Municipal Airport - Concord, NH                                $
+KRKR$Robert S. Kerr Airport - Poteau, OK                                    $
+KSAF$Santa Fe Regional Airport - Santa Fe, NM                               $
+KSFB$Orlando Sanford International Airport - Orlando, FL                    $
+PACV$Merle K. (Mudhole) Smith Airport - Cordova, AK                         $
