@@ -48,6 +48,7 @@ FILE * filesigmet;    	// 12
 FILE * fileairmet;		// 11
 FILE * filegairmet;		// 14
 FILE * filepirep;		// PIREP
+FILE * fileconus;		// Graphics output
 
 int reccount;
 

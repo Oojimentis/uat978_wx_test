@@ -50,7 +50,7 @@ void handle_frame(frame_type_t type, uint8_t *frame, int len, void *extra)
 }
 
 int main(int argc, char **argv)
-{
+ {
 	//  TJH
 	char lyne[80];
 	char *item;
@@ -111,6 +111,13 @@ int main(int argc, char **argv)
 			if (filepirep == 0)			{
 				fprintf(stdout,"Error--file could not be opened. \n") ;
 				exit (1) ;			}
+
+		fprintf(stdout, "Opening file: conus.out\n");
+		fileconus = fopen("conus.out","w");
+		if (fileconus == 0)			{
+			fprintf(stdout,"Error--file could not be opened. \n") ;
+			exit (1) ;			}
+
 	 // TJH
 
 	struct dump978_reader *reader;
