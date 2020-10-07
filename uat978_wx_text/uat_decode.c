@@ -1871,8 +1871,8 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 				}
 
 				alt = alt_raw * 100;
-				fprintf(to, " Coord: %f,%f  Alt: %d\n", lat, lng,alt);
-				fprintf(fnm, " Coord: %f,%f  Alt: %d\n", lat, lng,alt);
+				fprintf(to, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
+				fprintf(fnm, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
 
 			}
 		break;
