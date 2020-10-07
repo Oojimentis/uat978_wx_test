@@ -1412,6 +1412,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				if( strcmp(mtype,"WINDS") == 0) {
     					strcpy(gstn,"K");
     					strcat(gstn,r);
+    					int i = 5;
+    					fprintf(to," RLoc:  See Below %d\n",i);
     				}
     				else if (strcmp(mtype,"METAR") == 0 || strcmp(mtype,"SPECI") == 0   ) {
     					strncpy(gstn,r,5); }
@@ -1448,6 +1450,24 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			fprintf(filemetar," Report Name         : %s\n",mtype);
     			fprintf(filemetar," Data:\n%s\n", r);    // *** Text ***
     		}
+
+    		if (strcmp(mtype,"WINDS") == 0){
+    			char *tok1; char winds[100];
+    			char *tok2;
+    			char *q;
+    			strncpy(winds,r,90);
+    			q=winds;
+
+    			(tok1 = strsep(&q,"\n"));
+    			while ( (tok2 = strsep(&tok1," ")) != NULL ){
+    				if (tok2){
+    		        fprintf(to,"%7s  ",tok2); }
+    				else {
+    					fprintf(to,"moose %7s  ",tok2); }
+    			}
+
+    			fprintf(to," tok1: %s tok2: %s\n",tok1,q);
+   		}
     		fprintf(to," Text:\n%s\n", r);    // *** Text ***
 
 //   *** METAR ***
