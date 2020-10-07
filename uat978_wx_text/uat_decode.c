@@ -1043,7 +1043,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     switch (apdu->product_id) {
 
-    case 8:                //NOTAM
+    case 8:             //NOTAM **************
     {
     	int recf;
     	recf = apdu->data[0];
@@ -1051,7 +1051,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fprintf(to," Record Format   : %d \n",recf >> 4);
     	fprintf(filenotam," Record Format   : %d \n",recf >> 4);
 
-        if ((recf >> 4) == 8){ //graphic
+        if ((recf >> 4) == 8){ 				//graphic
 
         	fprintf(to," Report Type     : NOTAM\n");
 			fprintf(filenotam," Report Type     : NOTAM\n");
@@ -1059,7 +1059,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 			get_graphic(apdu, filenotam,to);
         }
 
-        if ((recf >> 4) == 2 ) {             // text
+        else if ((recf >> 4) == 2 ) {       // text
 
         	get_text(apdu, filenotam,to);
         }
@@ -1070,7 +1070,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 }
     break;
 
-    case 11:    //AIRMET
+    case 11:            //AIRMET **************
     {
     	int recf;
     	recf = apdu->data[0];
@@ -1078,7 +1078,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fprintf(to," Record Format   : %d \n",recf >> 4);
     	fprintf(fileairmet," Record Format   : %d \n",recf >> 4);
 
-    	if ((recf >> 4) == 8){ //graphic
+    	if ((recf >> 4) == 8){ 				//graphic
 
 			fprintf(to," Report Type     : AIRMET\n");
 			fprintf(fileairmet," Report Type     : AIRMET\n");
@@ -1086,7 +1086,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 			get_graphic(apdu, fileairmet,to);
     	}
 
-    	if ((recf >> 4) == 2 ) {             // text
+    	else if ((recf >> 4) == 2 ) {       // text
 
         	get_text(apdu, fileairmet,to);
    	    }
@@ -1097,7 +1097,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 12:                      //SIGMET
+    case 12:            //SIGMET **************
     {
     	int recf;
     	recf = apdu->data[0];
@@ -1105,7 +1105,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fprintf(to," Record Format   : %d \n",recf >> 4);
     	fprintf(filesigmet," Record Format   : %d \n",recf >> 4);
 
-    	if ((recf >> 4) == 8){ //graphic
+    	if ((recf >> 4) == 8){ 				//graphic
 
     		fprintf(to," Report Type     : SIGMET\n");
     		fprintf(filesigmet," Report Type     : SIGMET\n");
@@ -1113,7 +1113,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		get_graphic(apdu, filesigmet,to);
      	}
 
-        if ((recf >> 4) == 2 ) {             // text
+    	else if ((recf >> 4) == 2 ) {       // text
 
         	get_text(apdu, filesigmet,to);
         }
@@ -1122,7 +1122,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 13:                  //SUA
+    case 13:            //SUA **************
     {
     	int recf;
     	recf = apdu->data[0];
@@ -1130,7 +1130,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fprintf(to," Record Format   : %d \n",recf >> 4);
     	fprintf(filesua," Record Format   : %d \n",recf >> 4);
 
-        if ((recf >> 4) == 2 ) {             // text
+        if ((recf >> 4) == 2 ) {            // text
 
         	get_text(apdu, filesua,to);
         }
@@ -1139,7 +1139,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 14:     //G-AIRMET
+    case 14:            //G-AIRMET **************
     {
     	int recf;
     	recf = apdu->data[0];
@@ -1147,7 +1147,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fprintf(to," Record Format   : %d \n",recf >> 4);
     	fprintf(filegairmet," Record Format   : %d \n",recf >> 4);
 
-    	if ((recf >> 4) == 8){ //graphic
+    	if ((recf >> 4) == 8){ 				//graphic
 
     		fprintf(to," Report Type     : G-AIRMET\n");
     		fprintf(filegairmet," Report Type     : G-AIRMET\n");
@@ -1161,69 +1161,83 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 700: // Icing Low
+    case 70:            // Icing Low **************
     {
-    	int rec_offset=0;
-    	const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
-    	const char *report = text;
+    	int recf;
+    	recf = apdu->data[0];
+
+    	fprintf(to," Record Format   : %d \n",recf >> 4);
+//    	fprintf(filesua," Record Format   : %d \n",recf >> 4);
 
     	display_generic_data(apdu->data, apdu->length, to);
 
-    	fprintf(to," woof-70:       %s\n",report);
     }
     break;
 
-    case 710:  // Icing High
+    case 71:            // Icing High **************
     {
-    	int rec_offset=0;
-    	const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
-    	const char *report = text;
+    	int recf;
+    	recf = apdu->data[0];
+
+    	fprintf(to," Record Format   : %d \n",recf >> 4);
+//    	fprintf(filesua," Record Format   : %d \n",recf >> 4);
 
     	display_generic_data(apdu->data, apdu->length, to);
 
-    	fprintf(to," woof-71:       %s\n",report);
+
     }
     break;
 
-    case 840:  // CLoud Tops
+    case 84:  			// Cloud Tops **************
     {
-    	int rec_offset=0;
-    	const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
-    	const char *report = text;
+    	int recf;
+    	recf = apdu->data[0];
+
+    	fprintf(to," Record Format   : %d \n",recf >> 4);
+ //   	fprintf(filesua," Record Format   : %d \n",recf >> 4);
 
     	display_generic_data(apdu->data, apdu->length, to);
 
-    	fprintf(to," woof-84:       %s\n",report);
     }
     break;
 
 
 
-    case 900:   // Turbulence Low
+    case 90:   			// Turbulence Low **************
     {
-    	int rec_offset=0;
-    	const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
-    	const char *report = text;
+    	int recf;
+    	recf = apdu->data[0];
+
+    	fprintf(to," Record Format   : %d \n",recf >> 4);
+ //   	fprintf(filesua," Record Format   : %d \n",recf >> 4);
 
     	display_generic_data(apdu->data, apdu->length, to);
 
-    	fprintf(to," woof-90:       %s\n",report);
+
     }
     break;
 
-    case 910:  // Turbulence High
+    case 91:  			// Turbulence High **************
     {
-    	int rec_offset=0;
-    	const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
-    	const char *report = text;
+
+    	int recf;
+    	recf = apdu->data[0];
+
+    	fprintf(to," Record Format   : %d \n",recf >> 4);
+//    	fprintf(filesua," Record Format   : %d \n",recf >> 4);
 
     	display_generic_data(apdu->data, apdu->length, to);
-    	fprintf(to," woof-91:       %s\n",report);
+
     }
     break;
 
-    case 103:   // Lightning
+    case 103:   		// Lightning **************
     {
+    	int recf;
+    	recf = apdu->data[0];
+
+    	fprintf(to," Record Format   : %d \n",recf >> 4);
+ //   	fprintf(filesua," Record Format   : %d \n",recf >> 4);
     	int ele_id;
  //   	int hrm;
     	int scale;
@@ -1412,8 +1426,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				if( strcmp(mtype,"WINDS") == 0) {
     					strcpy(gstn,"K");
     					strcat(gstn,r);
-    					int i = 5;
-    					fprintf(to," RLoc:  See Below %d\n",i);
     				}
     				else if (strcmp(mtype,"METAR") == 0 || strcmp(mtype,"SPECI") == 0   ) {
     					strncpy(gstn,r,5); }
@@ -1444,30 +1456,52 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				fprintf(to," RTime: %s\n", r);
     			r = p+1;
     		}
-    		if (strcmp(mtype,"TAF") == 0 || strcmp(mtype,"TAF.AMD") == 0 ||
-    				strcmp(mtype,"WINDS") == 0){
+    		if (strcmp(mtype,"TAF") == 0 || strcmp(mtype,"TAF.AMD") == 0){
 
     			fprintf(filemetar," Report Name         : %s\n",mtype);
     			fprintf(filemetar," Data:\n%s\n", r);    // *** Text ***
     		}
 
     		if (strcmp(mtype,"WINDS") == 0){
-    			char *tok1; char winds[100];
-    			char *tok2;
-    			char *q;
-    			strncpy(winds,r,90);
-    			q=winds;
+    			char *tok1;  char *tok2; char *tok3; char *tok4;
+    			char winds[100];
+    			char *q; char *u;
 
-    			(tok1 = strsep(&q,"\n"));
+    			strncpy(winds,r,90);
+
+    			q=winds;
+      			tok1 = strsep(&q,"\0");
+
+    			fprintf(filemetar," Report Name         : %s\n",mtype);
+    			fprintf(filemetar," Data:\n");
+    			fprintf(to," Data:\n");
+
+
     			while ( (tok2 = strsep(&tok1," ")) != NULL ){
-    				if (tok2){
-    		        fprintf(to,"%7s  ",tok2); }
-    				else {
-    					fprintf(to,"moose %7s  ",tok2); }
+    				if (strcmp(tok2,"") != 0){
+    		        fprintf(to,"%-10s",tok2);
+    		        fprintf(filemetar,"%-10s",tok2);
+    				}
     			}
 
-    			fprintf(to," tok1: %s tok2: %s\n",tok1,q);
-   		}
+    			fprintf(to,"\n          ");
+    			fprintf(filemetar,"\n          ");
+
+    			u = strchr(r, '\n');
+    			u =u+2;
+    			tok3 = strsep(&u,"\0");
+
+    			while ( (tok4 = strsep(&tok3," ")) != NULL ){
+    				if (strcmp(tok4,"") != 0){
+    		        fprintf(to,"%-10s",tok4);
+    		        fprintf(filemetar,"%-10s",tok4);
+    				}
+    			}
+
+    			fprintf(to,"\n");
+    			fprintf(filemetar,"\n          ");
+    		}
+    		else
     		fprintf(to," Text:\n%s\n", r);    // *** Text ***
 
 //   *** METAR ***
