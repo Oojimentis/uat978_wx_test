@@ -1237,7 +1237,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	recf = apdu->data[0];
 
     	fprintf(to," Record Format   : %d \n",recf >> 4);
- //   	fprintf(filesua," Record Format   : %d \n",recf >> 4);
     	int ele_id;
  //   	int hrm;
     	int scale;
@@ -1290,12 +1289,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
            fprintf(fileconus, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
         		   apdu->product_id == 63 ? "Regional" : "CONUS",
                 		   apdu->hours,
-				   apdu->minutes,
-                   scale_factor,
-                   latN * 60,
-                   lonW * 60,
-                   latSize * 60,
-                   lonSize * 60);
+				   apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
            for (i = 3; i < apdu->length; ++i) {
                int intensity = apdu->data[i] & 7;
@@ -1341,13 +1335,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
                        fprintf(fileconus, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
                     		   apdu->product_id == 63 ? "Regional" : "CONUS",
-                    				   apdu->hours,
-									   apdu->minutes,
-                               scale_factor,
-                               latN * 60,
-                               lonW * 60,
-                               latSize * 60,
-                               lonSize * 60);
+                    				   apdu->hours,apdu->minutes,
+                               scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
                        for (k = 0; k < 128; ++k)
                            fprintf(fileconus, "%d", (apdu->product_id == 103 ? 0 : 1));
                        fprintf(fileconus, "\n");
@@ -1358,8 +1347,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
       	blk_num = (apdu->data[0] << 16)| apdu->data[1] << 8 | apdu->data[2]  ;
 
-       	fprintf(to," ele_id: %d  scale: %d\n",ele_id,scale);
-       	fprintf(to," blk_num: %d\n",blk_num);
+       	fprintf(to," ele_id: %d  scale: %d  ",ele_id,scale);
+       	fprintf(to," blk_num: %d ",blk_num);
 
        	bitmap = (apdu->data[3] >>4 );
        	bitlen = apdu->data[3] & 0xF ;
@@ -1978,7 +1967,7 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 }
 void block_location_new(int bn, int ns, int sf, double *latN, double *lonW, double *latSize, double *lonSize)
 {
-       double raw_lat, raw_lon;
+	double raw_lat, raw_lon;
     double scale;
 
     if (sf == 1)
