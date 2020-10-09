@@ -18,7 +18,10 @@ intensities = {
     4: colorsys.hls_to_rgb(120.0/360.0, 0.5, 1.0),
     5: colorsys.hls_to_rgb(80.0/360.0, 0.5, 1.0),
     6: colorsys.hls_to_rgb(40.0/360.0, 0.6, 1.0),
-    7: colorsys.hls_to_rgb(0.0/360.0, 0.7, 1.0)
+    7: colorsys.hls_to_rgb(0.0/360.0, 0.7, 1.0),
+    8: colorsys.hls_to_rgb(80.0/360.0, 0.5, 1.0),
+    9: colorsys.hls_to_rgb(40.0/360.0, 0.6, 1.0),
+    10: colorsys.hls_to_rgb(0.0/360.0, 0.7, 1.0)
 }
 
 def color_for(intensity):    
