@@ -1205,7 +1205,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     case 90:   			// Turbulence Low **************
     {
-    	int recf;
+    	int recf;int cnt=0;
     	recf = apdu->data[0];
 
     	fprintf(to," Record Format   : %d \n",recf >> 4);
@@ -1232,18 +1232,20 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     						apdu->hours,
 							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-    		for (i = 3; i < apdu->length; ++i) {
+    		for (i = 3; i < apdu->length+1; ++i) {
     			int edr_enc = apdu->data[i] & 15;
     			int num_bins = (apdu->data[i] >> 4) + 1;
     			if (num_bins == 15){
     				i = i+1;
-    				num_bins = (apdu->data[i]);
+    				num_bins = (apdu->data[i])+1;
 
     			}
-
+    				cnt = cnt+num_bins;
+    	    		fprintf(to,"\ncount: %d  bins: %d\n",cnt,num_bins);
     			while (num_bins-- > 0)
     				fprintf(fileconus, "%d", edr_enc);
     		}
+    		fprintf(to,"\ncount: %d\n",cnt);
     		fprintf(fileconus, "\n");
     	}
 
