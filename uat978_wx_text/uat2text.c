@@ -112,11 +112,48 @@ int main(int argc, char **argv)
 				fprintf(stdout,"Error--file could not be opened. \n") ;
 				exit (1) ;			}
 
-		fprintf(stdout, "Opening file: conus.out\n");
-		fileconus = fopen("conus.out","w");
-		if (fileconus == 0)			{
+		fprintf(stdout, "Opening file: nexradc.out\n");
+		filenexradc = fopen("nexradc.out","w");
+		if (filenexradc == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;			}
+
+		fprintf(stdout, "Opening file: icingl.out\n");
+		fileicingl = fopen("icingl.out","w");
+		if (fileicingl == 0)			{
+			fprintf(stdout,"Error--file could not be opened. \n") ;
+			exit (1) ;			}
+
+		fprintf(stdout, "Opening file: icingh.out\n");
+		fileicingh = fopen("icingh.out","w");
+		if (fileicingh == 0)			{
+			fprintf(stdout,"Error--file could not be opened. \n") ;
+			exit (1) ;			}
+
+		fprintf(stdout, "Opening file: cloudt.out\n");
+		filecloudt = fopen("cloudt.out","w");
+		if (filecloudt == 0)			{
+			fprintf(stdout,"Error--file could not be opened. \n") ;
+			exit (1) ;			}
+
+		fprintf(stdout, "Opening file: turbl.out\n");
+		fileturbl = fopen("turbl.out","w");
+		if (fileturbl == 0)			{
+			fprintf(stdout,"Error--file could not be opened. \n") ;
+			exit (1) ;			}
+
+		fprintf(stdout, "Opening file: turbh.out\n");
+		fileturbh = fopen("turbh.out","w");
+		if (fileturbh == 0)			{
+			fprintf(stdout,"Error--file could not be opened. \n") ;
+			exit (1) ;			}
+
+		fprintf(stdout, "Opening file: lightng.out\n");
+		filelightng = fopen("lightng.out","w");
+		if (filelightng == 0)			{
+			fprintf(stdout,"Error--file could not be opened. \n") ;
+			exit (1) ;			}
+
 
 	 // TJH
 

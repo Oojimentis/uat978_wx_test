@@ -48,7 +48,13 @@ FILE * filesigmet;    	// 12
 FILE * fileairmet;		// 11
 FILE * filegairmet;		// 14
 FILE * filepirep;		// PIREP
-FILE * fileconus;		// Graphics output
+FILE * filenexradc;		// NEXRAD Graphics output
+FILE * fileicingl;		// ICING LOW Graphics output
+FILE * fileicingh;		// ICING HIGH Graphics output
+FILE * filecloudt;		// CLOUD TOPS Graphics output
+FILE * fileturbl;		// TURBULENCE LOW Graphics output
+FILE * fileturbh;		// TURBULENCE HIGH Graphics output
+FILE * filelightng;		// LIGHTNING Graphics output
 
 int reccount;
 
