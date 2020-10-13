@@ -1171,10 +1171,10 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	display_generic_data(apdu->data, apdu->length, to);
 
     	int rle_flag = (apdu->data[0] & 0x80) != 0;
-    	int ns_flag = (apdu->data[0] & 0x40) != 0;
+    	int ns_flag = 0;
     	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
     	int scale_factor = 1;
-    	int icel_alt = (apdu->data[0] & 0x70) >> 4;
+     	int icel_alt = (apdu->data[0] & 0x70) >> 4;
 
         fprintf(to," rle_fl: %d  scale: %d ns-flag: %d ",rle_flag,scale_factor,ns_flag);
         fprintf(to," blk_num: %d icel alt: %d",block_num,icel_alt);
@@ -1224,7 +1224,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	display_generic_data(apdu->data, apdu->length, to);
 
     	int rle_flag = (apdu->data[0] & 0x80) != 0;
-    	int ns_flag = (apdu->data[0] & 0x40) != 0;
+    	int ns_flag = 0;
     	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
     	int scale_factor = 1;
     	int iceh_alt = (apdu->data[0] & 0x70) >> 4;
@@ -1354,7 +1354,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	display_generic_data(apdu->data, apdu->length, to);
 
     	int rle_flag = (apdu->data[0] & 0x80) != 0;
-    	int ns_flag = (apdu->data[0] & 0x40) != 0;
+    	int ns_flag = 0;
     	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
     	int scale_factor = 1;
     	int turb_alt = (apdu->data[0] & 0x70) >> 4;
@@ -1433,7 +1433,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	display_generic_data(apdu->data, apdu->length, to);
 
     	int rle_flag = (apdu->data[0] & 0x80) != 0;
-    	int ns_flag = (apdu->data[0] & 0x40) != 0;
+    	int ns_flag = 0;
     	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
     	int scale_factor = 1;
     	int turb_alt = (apdu->data[0] & 0x70) >> 4;
@@ -1585,7 +1585,12 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     						apdu->hours,
 							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-    		for (i = 3; i < apdu->length+1; ++i) {
+    		fprintf(to, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+    				apdu->product_id == 63 ? "Regional" : "CONUS",
+    						apdu->hours,
+							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+
+    		for (i = 3; i < apdu->length; ++i) {
     			int intensity = apdu->data[i] & 7;
     			int runlength = (apdu->data[i] >> 3) + 1;
 
