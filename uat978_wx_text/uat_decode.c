@@ -1043,7 +1043,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     switch (apdu->product_id) {
 
-    case 8:             //NOTAM **************
+    case 18:             //NOTAM **************
     {
     	int recf;
     	recf = apdu->data[0];
@@ -1070,7 +1070,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 }
     break;
 
-    case 11:            //AIRMET **************
+    case 111:            //AIRMET **************
     {
     	int recf;
     	recf = apdu->data[0];
@@ -1097,7 +1097,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 12:            //SIGMET **************
+    case 112:            //SIGMET **************
     {
     	int recf;
     	recf = apdu->data[0];
@@ -1122,7 +1122,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 13:            //SUA **************
+    case 113:            //SUA **************
     {
     	int recf;
     	recf = apdu->data[0];
@@ -1139,7 +1139,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 14:            //G-AIRMET **************
+    case 114:            //G-AIRMET **************
     {
     	int recf;
     	recf = apdu->data[0];
@@ -1176,8 +1176,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	int scale_factor = 1;
      	int icel_alt = (apdu->data[0] & 0x70) >> 4;
 
-        fprintf(to," rle_fl: %d  scale: %d ns-flag: %d ",rle_flag,scale_factor,ns_flag);
-        fprintf(to," blk_num: %d icel alt: %d",block_num,icel_alt);
+        fprintf(to," rle_fl: %d   icel alt: %d  block: %d\n",rle_flag,icel_alt,block_num);
+
     	// now decode the bins
     	if (rle_flag) {
     		// One bin, 128 values, RLE-encoded
@@ -1209,7 +1209,53 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		fprintf(fileicingl, "\n");
     		fflush(fileicingl);
     	}
+    	else {    // Empty
+    		int L = apdu->data[3] & 15;
+    		int i;
+    		int row_start, row_offset, row_size;
 
+    		if (block_num >= 405000) {
+    			row_start = block_num - ((block_num - 405000) % 225);
+    			row_size = 225;
+    		} else {
+    			row_start = block_num - (block_num % 450);
+    			row_size = 450;
+    		}
+
+    		row_offset = block_num - row_start;
+
+    		for (i = 0; i < L; ++i) {
+    			int bb;
+    			int j;
+
+    			if (i == 0)
+    				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
+    			else
+    				bb = (apdu->data[i+3]);
+
+    			for (j = 0; j < 8; ++j) {
+    				if (bb & (1 << j)) {
+    					// find the relevant block for this bit, limited
+    					// to the same row as the original block.
+    					int row_x = (row_offset + 8*i + j - 3) % row_size;
+    					int bn = row_start + row_x;
+    					double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
+    					int k;
+    					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
+
+    					fprintf(fileicingl, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+    							apdu->product_id == 70 ? "Regional" : "CONUS",
+    									apdu->hours,apdu->minutes,
+										scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+    					for (k = 0; k < 128; ++k)
+    						fprintf(fileicingl, "%d", (apdu->product_id == 63 ? 0 : 1));
+
+    					fprintf(fileicingl, "\n");
+    					fprintf(to,"bollocks\n");
+                   }
+               }
+           }
+    	}
         fflush(to);
     }
     break;
@@ -1229,8 +1275,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	int scale_factor = 1;
     	int iceh_alt = (apdu->data[0] & 0x70) >> 4;
 
-        fprintf(to," rle_fl: %d  scale: %d ns-flag: %d ",rle_flag,scale_factor,ns_flag);
-        fprintf(to," blk_num: %d iceh alt: %d",block_num,iceh_alt);
+        fprintf(to," rle_fl: %d   iceh alt: %d block: %d\n",rle_flag,iceh_alt,block_num);
+
     	// now decode the bins
     	if (rle_flag) {
     		// One bin, 128 values, RLE-encoded
@@ -1267,7 +1313,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 884:  			// Cloud Tops **************
+    case 84:  			// Cloud Tops **************
     {
        	int recf;int cnt=0;
         	recf = apdu->data[0];
@@ -1281,8 +1327,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
         	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
         	int scale_factor = (apdu->data[0] & 0x30) >> 4;
 
-            fprintf(to," rle_fl: %d  scale: %d ns-flag: %d ",rle_flag,scale_factor,ns_flag);
-            fprintf(to," blk_num: %d",block_num);
+            fprintf(to," rle_fl: %d  scale: %d ns-flag: %d blk_num %d\n",
+            		rle_flag,scale_factor,ns_flag,block_num);
+
         	// now decode the bins
         	if (rle_flag) {
         		// One bin, 128 values, RLE-encoded
@@ -1359,8 +1406,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	int scale_factor = 1;
     	int turb_alt = (apdu->data[0] & 0x70) >> 4;
 
-        fprintf(to," rle_fl: %d  scale: %d ns-flag: %d ",rle_flag,scale_factor,ns_flag);
-        fprintf(to," blk_num: %d Turb alt: %d",block_num,turb_alt);
+    	fprintf(to," rle_fl: %d  turbl alt: %d   block: %d\n",rle_flag,turb_alt,block_num);
+
     	// now decode the bins
     	if (rle_flag) {
     		// One bin, 128 values, RLE-encoded
@@ -1438,8 +1485,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	int scale_factor = 1;
     	int turb_alt = (apdu->data[0] & 0x70) >> 4;
 
-        fprintf(to," rle_fl: %d  scale: %d ns-flag: %d ",rle_flag,scale_factor,ns_flag);
-        fprintf(to," blk_num: %d Turb alt: %d",block_num,turb_alt);
+    	fprintf(to," rle_fl: %d  turbl alt: %d   block: %d\n",rle_flag,turb_alt,block_num);
+
     	// now decode the bins
     	if (rle_flag) {
     		// One bin, 128 values, RLE-encoded
@@ -1515,8 +1562,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
         	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
         	int scale_factor = (apdu->data[0] & 0x30) >> 4;
 
-            fprintf(to," rle_fl: %d  scale: %d ns-flag: %d ",rle_flag,scale_factor,ns_flag);
-            fprintf(to," blk_num: %d",block_num);
+            fprintf(to," rle_fl: %d  scale: %d ns-flag: %d Block: %d ",
+            		 rle_flag,scale_factor,ns_flag,block_num);
+
         	// now decode the bins
         	if (rle_flag) {
         		// One bin, 128 values, RLE-encoded
@@ -1539,9 +1587,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
         			}
 
         			cnt = cnt+num_bins;
-        			fprintf(to,"\n count: %d  bins: %d\n",cnt,num_bins);
-        			fprintf(to,"\n pol: %d  lgt_cnt: %d\n",lgt_pol,lgt_cnt);
-
+        			fprintf(to,"\n count: %d  bins: %d ",cnt,num_bins);
+        			fprintf(to,"pol: %d  lgt_cnt: %d\n",lgt_pol,lgt_cnt);
 
         			while (num_bins-- > 0){
         				fprintf(filelightng, "%d", lgt_cnt);}
@@ -1659,7 +1706,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     }
     break;
-    case 413:
+    case 4413:
     {
     	// Generic text, DLAC
     	int rec_offset=0;
@@ -1814,7 +1861,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     break;
 
     default:
-    	display_generic_data(apdu->data, apdu->length, to);
+    	//display_generic_data(apdu->data, apdu->length, to);
     break;
     }                
 }            
