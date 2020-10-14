@@ -1165,7 +1165,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     {
     	int recf;int cnt=0;
     	recf = apdu->data[0];
-
+    	FILE * fileicinglow;
     	fprintf(to," Record Format   : %d \n",recf >> 4);
 
     	display_generic_data(apdu->data, apdu->length, to);
@@ -1178,6 +1178,36 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
         fprintf(to," rle_fl: %d   icel alt: %d  block: %d\n",rle_flag,icel_alt,block_num);
 
+        switch(icel_alt){
+            	case 0:
+            		fileicinglow = fileicingl2;
+            		break;
+            	case 1:
+            		fileicinglow = fileicingl4;
+            		break;
+            	case 2:
+            		fileicinglow = fileicingl6;
+            		break;
+            	case 3:
+            		fileicinglow = fileicingl8;
+            		break;
+            	case 4:
+            		fileicinglow = fileicingl10;
+            		break;
+            	case 5:
+            		fileicinglow = fileicingl12;
+            		break;
+            	case 6:
+            		fileicinglow = fileicingl14;
+            		break;
+            	case 7:
+            		fileicinglow = fileicingl16;
+            		break;
+            	default:
+            		fileicinglow = fileicingl16;
+            		break;
+            	}
+
     	// now decode the bins
     	if (rle_flag) {
     		// One bin, 128 values, RLE-encoded
@@ -1185,7 +1215,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
-    		fprintf(fileicingl, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+    		fprintf(fileicinglow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
     				apdu->product_id == 70 ? "Regional" : "CONUS",
     				apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
@@ -1202,12 +1232,12 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     					     cnt,num_bins,sld,ice_sev,ice_prob);
 
     			while (num_bins-- > 0){
-    				fprintf(fileicingl, "%d", ice_prob);}
+    				fprintf(fileicinglow, "%d", ice_prob);}
     		}
 
     		fprintf(to,"\n count: %d\n",cnt);
-    		fprintf(fileicingl, "\n");
-    		fflush(fileicingl);
+    		fprintf(fileicinglow, "\n");
+    		fflush(fileicinglow);
     	}
     	else {    // Empty
     		int L = apdu->data[3] & 15;
@@ -1243,14 +1273,14 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     					int k;
     					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
-    					fprintf(fileicingl, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+    					fprintf(fileicinglow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
     							apdu->product_id == 70 ? "Regional" : "CONUS",
     									apdu->hours,apdu->minutes,
 										scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
     					for (k = 0; k < 128; ++k)
-    						fprintf(fileicingl, "%d", (apdu->product_id == 63 ? 0 : 1));
+    						fprintf(fileicinglow, "%d", (apdu->product_id == 63 ? 0 : 1));
 
-    					fprintf(fileicingl, "\n");
+    					fprintf(fileicinglow, "\n");
     					fprintf(to,"bollocks\n");
                    }
                }
@@ -1264,7 +1294,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     {
     	int recf;int cnt=0;
     	recf = apdu->data[0];
-
+    	FILE * fileicinghigh;
     	fprintf(to," Record Format   : %d \n",recf >> 4);
 
     	display_generic_data(apdu->data, apdu->length, to);
@@ -1275,6 +1305,24 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	int scale_factor = 1;
     	int iceh_alt = (apdu->data[0] & 0x70) >> 4;
 
+    	switch(iceh_alt){
+    	case 0:
+    		fileicinghigh = fileicingh18;
+    		break;
+    	case 1:
+    		fileicinghigh = fileicingh20;
+    		break;
+    	case 2:
+    		fileicinghigh = fileicingh22;
+    		break;
+    	case 3:
+    		fileicinghigh = fileicingh24;
+    		break;
+    	default:
+    		fileicinghigh = fileicingh24;
+    		break;
+    	}
+
         fprintf(to," rle_fl: %d   iceh alt: %d block: %d\n",rle_flag,iceh_alt,block_num);
 
     	// now decode the bins
@@ -1284,7 +1332,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
-    		fprintf(fileicingh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+    		fprintf(fileicinghigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
     				apdu->product_id == 71 ? "Regional" : "CONUS",
     				apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
@@ -1301,12 +1349,12 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     					     cnt,num_bins,sld,ice_sev,ice_prob);
 
     			while (num_bins-- > 0){
-    				fprintf(fileicingh, "%d", ice_prob);}
+    				fprintf(fileicinghigh, "%d", ice_prob);}
     		}
 
     		fprintf(to,"\n count: %d\n",cnt);
-    		fprintf(fileicingh, "\n");
-    		fflush(fileicingh);
+    		fprintf(fileicinghigh, "\n");
+    		fflush(fileicinghigh);
     	}
 
         fflush(to);
@@ -1395,6 +1443,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     {
     	int recf;int cnt=0;
     	recf = apdu->data[0];
+    	FILE * fileturblow;
 
     	fprintf(to," Record Format   : %d \n",recf >> 4);
 
@@ -1408,6 +1457,36 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     	fprintf(to," rle_fl: %d  turbl alt: %d   block: %d\n",rle_flag,turb_alt,block_num);
 
+        switch(turb_alt){
+            	case 0:
+            		fileturblow = fileturbl2;
+            		break;
+            	case 1:
+            		fileturblow = fileturbl4;
+            		break;
+            	case 2:
+            		fileturblow = fileturbl6;
+            		break;
+            	case 3:
+            		fileturblow = fileturbl8;
+            		break;
+            	case 4:
+            		fileturblow = fileturbl10;
+            		break;
+            	case 5:
+            		fileturblow = fileturbl12;
+            		break;
+            	case 6:
+            		fileturblow = fileturbl14;
+            		break;
+            	case 7:
+            		fileturblow = fileturbl16;
+            		break;
+            	default:
+            		fileturblow = fileturbl16;
+            		break;
+            	}
+
     	// now decode the bins
     	if (rle_flag) {
     		// One bin, 128 values, RLE-encoded
@@ -1415,7 +1494,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
-    		fprintf(fileturbl, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+    		fprintf(fileturblow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
     				apdu->product_id == 91 ? "Regional" : "CONUS",
     				apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
@@ -1457,12 +1536,12 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			}
 
     			while (num_bins-- > 0){
-    				fprintf(fileturbl, "%c", enc);}
+    				fprintf(fileturblow, "%c", enc);}
     		}
 
     		fprintf(to,"\ncount: %d\n",cnt);
-    		fprintf(fileturbl, "\n");
-    		fflush(fileturbl);
+    		fprintf(fileturblow, "\n");
+    		fflush(fileturblow);
     	}
 
         fflush(to);
@@ -1474,6 +1553,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     	int recf;int cnt=0;
     	recf = apdu->data[0];
+    	FILE * fileturbhigh;
 
     	fprintf(to," Record Format   : %d \n",recf >> 4);
 
@@ -1487,6 +1567,24 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     	fprintf(to," rle_fl: %d  turbl alt: %d   block: %d\n",rle_flag,turb_alt,block_num);
 
+    	switch(turb_alt){
+    	    	case 0:
+    	    		fileturbhigh = fileturbh18;
+    	    		break;
+    	    	case 1:
+    	    		fileturbhigh = fileturbh20;
+    	    		break;
+    	    	case 2:
+    	    		fileturbhigh = fileturbh22;
+    	    		break;
+    	    	case 3:
+    	    		fileturbhigh = fileturbh24;
+    	    		break;
+    	    	default:
+					fileturbhigh = fileturbh24;
+					break;
+    	    	}
+
     	// now decode the bins
     	if (rle_flag) {
     		// One bin, 128 values, RLE-encoded
@@ -1494,7 +1592,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
-    		fprintf(fileturbh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+    		fprintf(fileturbhigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
     				apdu->product_id == 91 ? "Regional" : "CONUS",
     				apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
@@ -1536,12 +1634,12 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			}
 
     			while (num_bins-- > 0){
-    				fprintf(fileturbh, "%c", enc);}
+    				fprintf(fileturbhigh, "%c", enc);}
     		}
 
     		fprintf(to,"\ncount: %d\n",cnt);
-    		fprintf(fileturbh, "\n");
-    		fflush(fileturbh);
+    		fprintf(fileturbhigh, "\n");
+    		fflush(fileturbhigh);
     	}
 
         fflush(to);
@@ -1610,7 +1708,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     	fprintf(to," Record Format   : %d \n",recf >> 4);
     	int ele_id;
- //   	int hrm;
     	int scale;
     	int bitmap; int bitlen;
     	uint32_t blk_num;
