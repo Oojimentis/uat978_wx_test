@@ -498,7 +498,7 @@ static void uat_decode_sv(uint8_t *frame, struct uat_adsb_mdb *mdb)
 
     case AG_GROUND:
         {
-            int raw_gs, raw_track;
+        	int raw_gs, raw_track;
 
             raw_gs = ((frame[12] & 0x1f) << 6) | ((frame[13] & 0xfc) >> 2);
             if (raw_gs != 0) {
@@ -980,23 +980,23 @@ static const char *get_fisb_product_name(uint16_t product_id)
 static const char *get_fisb_product_format(uint16_t product_id)
 {
     switch (product_id) {
-    case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7: 
-    case 351: case 352: case 353:
-    case 402: case 405:
+    case 0: 	case 1: 	case 2:		case 3: case 4: case 5: case 6: case 7:
+    case 351: 	case 352: 	case 353:
+    case 402: 	case 405:
         return "Text";
 
-    case 8: case 9: case 10: case 11: case 12: case 13 :case 14:
+    case 8: 	case 9: 	case 10: case 11: case 12: case 13:	case 14:
         return "Text/Graphic";
        
-    case 20: case 21: case 22: case 23: case 24: case 25: case 26: case 27: 
-    case 411: case 413:
+    case 20: 	case 21: 	case 22: case 23: case 24: case 25: case 26: case 27:
+    case 411:	case 413:
         return "Text (DLAC)";
 
-    case 51: 	case 52: case 53: case 54: case 55: case 56: case 57: case 58:
-    case 59: 	case 60: case 61: case 62: case 63: case 64: case 70: case 71:
-    case 81: 	case 82: case 83: case 84:
+    case 51: 	case 52:	case 53: 	case 54: case 55: case 56: case 57: case 58:
+    case 59: 	case 60: 	case 61: 	case 62: case 63: case 64: case 70: case 71:
+    case 81: 	case 82: 	case 83: 	case 84:
     case 90:    case 91:
-    case 101: 	case 102: case 103: case 104:
+    case 101: 	case 102: 	case 103:	case 104:
     case 151:
     case 201: 	case 202:
     case 254:
@@ -1004,16 +1004,12 @@ static const char *get_fisb_product_format(uint16_t product_id)
     case 403:
     case 404:
         return "Graphic";
-
     case 412:
         return "Graphic (DLAC)";
-
     case 600: case 2004:
         return "Proprietary";
-
     case 2000: case 2001: case 2002: case 2003: case 2005: 
         return "Developmental";
-
     default:
         return "Unknown";
     }
@@ -1052,21 +1048,17 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fprintf(filenotam," Record Format   : %d \n",recf >> 4);
 
         if ((recf >> 4) == 8){ 				//graphic
-
         	fprintf(to," Report Type     : NOTAM\n");
 			fprintf(filenotam," Report Type     : NOTAM\n");
 
 			get_graphic(apdu, filenotam,to);
         }
-
         else if ((recf >> 4) == 2 ) {       // text
-
         	get_text(apdu, filenotam,to);
         }
-        else {
-        	display_generic_data(apdu->data, apdu->length, to);   }
+        else
+        	display_generic_data(apdu->data, apdu->length, to);
 
-        fflush(filenotam);
 }
     break;
 
@@ -1079,21 +1071,17 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fprintf(fileairmet," Record Format   : %d \n",recf >> 4);
 
     	if ((recf >> 4) == 8){ 				//graphic
-
 			fprintf(to," Report Type     : AIRMET\n");
 			fprintf(fileairmet," Report Type     : AIRMET\n");
 
 			get_graphic(apdu, fileairmet,to);
     	}
-
     	else if ((recf >> 4) == 2 ) {       // text
-
         	get_text(apdu, fileairmet,to);
    	    }
-    	else {
-    		display_generic_data(apdu->data, apdu->length, to);   }
+    	else
+    		display_generic_data(apdu->data, apdu->length, to);
 
-    	fflush(fileairmet);
     }
     break;
 
@@ -1106,19 +1094,17 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fprintf(filesigmet," Record Format   : %d \n",recf >> 4);
 
     	if ((recf >> 4) == 8){ 				//graphic
-
     		fprintf(to," Report Type     : SIGMET\n");
     		fprintf(filesigmet," Report Type     : SIGMET\n");
 
     		get_graphic(apdu, filesigmet,to);
      	}
-
     	else if ((recf >> 4) == 2 ) {       // text
-
         	get_text(apdu, filesigmet,to);
         }
         else
         	display_generic_data(apdu->data, apdu->length, to);
+
     }
     break;
 
@@ -1130,10 +1116,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fprintf(to," Record Format   : %d \n",recf >> 4);
     	fprintf(filesua," Record Format   : %d \n",recf >> 4);
 
-        if ((recf >> 4) == 2 ) {            // text
-
+        if ((recf >> 4) == 2 )             // text
         	get_text(apdu, filesua,to);
-        }
         else
         	display_generic_data(apdu->data, apdu->length, to);
     }
@@ -1148,7 +1132,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fprintf(filegairmet," Record Format   : %d \n",recf >> 4);
 
     	if ((recf >> 4) == 8){ 				//graphic
-
     		fprintf(to," Report Type     : G-AIRMET\n");
     		fprintf(filegairmet," Report Type     : G-AIRMET\n");
 
@@ -1157,7 +1140,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	else
     		display_generic_data(apdu->data, apdu->length, to);
 
-    	fflush(filegairmet);
     }
     break;
 
@@ -1179,34 +1161,34 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
         fprintf(to," rle_fl: %d   icel alt: %d  block: %d\n",rle_flag,icel_alt,block_num);
 
         switch(icel_alt){
-            	case 0:
-            		fileicinglow = fileicingl2;
-            		break;
-            	case 1:
-            		fileicinglow = fileicingl4;
-            		break;
-            	case 2:
-            		fileicinglow = fileicingl6;
-            		break;
-            	case 3:
-            		fileicinglow = fileicingl8;
-            		break;
-            	case 4:
-            		fileicinglow = fileicingl10;
-            		break;
-            	case 5:
-            		fileicinglow = fileicingl12;
-            		break;
-            	case 6:
-            		fileicinglow = fileicingl14;
-            		break;
-            	case 7:
-            		fileicinglow = fileicingl16;
-            		break;
-            	default:
-            		fileicinglow = fileicingl16;
-            		break;
-            	}
+        case 0:
+        	fileicinglow = fileicingl2;
+        	break;
+        case 1:
+        	fileicinglow = fileicingl4;
+        	break;
+        case 2:
+        	fileicinglow = fileicingl6;
+        	break;
+        case 3:
+        	fileicinglow = fileicingl8;
+        	break;
+        case 4:
+        	fileicinglow = fileicingl10;
+        	break;
+        case 5:
+        	fileicinglow = fileicingl12;
+        	break;
+        case 6:
+        	fileicinglow = fileicingl14;
+        	break;
+        case 7:
+        	fileicinglow = fileicingl16;
+        	break;
+        default:
+        	fileicinglow = fileicingl16;
+        	break;
+        }
 
     	// now decode the bins
     	if (rle_flag) {
@@ -1228,14 +1210,14 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			int ice_prob = (apdu->data[i]) & 7;
 
     			cnt = cnt+num_bins;
-    			fprintf(to,"\n count: %d  bins: %d sld: %d  sev: %d  prb: %d\n",
+    			fprintf(to,"count: %3d  bins: %3d sld: %d  sev: %3d  prb: %d\n",
     					     cnt,num_bins,sld,ice_sev,ice_prob);
 
     			while (num_bins-- > 0){
     				fprintf(fileicinglow, "%d", ice_prob);}
     		}
 
-    		fprintf(to,"\n count: %d\n",cnt);
+    		fprintf(to,"count: %d\n",cnt);
     		fprintf(fileicinglow, "\n");
     		fflush(fileicinglow);
     	}
@@ -1275,16 +1257,16 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     					fprintf(fileicinglow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
     							apdu->product_id == 70 ? "Regional" : "CONUS",
-    									apdu->hours,apdu->minutes,
-										scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+    							apdu->hours,apdu->minutes,
+								scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
     					for (k = 0; k < 128; ++k)
-    						fprintf(fileicinglow, "%d", (apdu->product_id == 63 ? 0 : 1));
+    						fprintf(fileicinglow, "%d", (apdu->product_id == 70 ? 0 : 1));
 
     					fprintf(fileicinglow, "\n");
     					fprintf(to,"bollocks\n");
-                   }
-               }
-           }
+    				}
+    			}
+    		}
     	}
         fflush(to);
     }
@@ -1345,97 +1327,189 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			int ice_prob = (apdu->data[i]) & 7;
 
     			cnt = cnt+num_bins;
-    			fprintf(to,"\n count: %d  bins: %d sld: %d  sev: %d  prb: %d\n",
+    			fprintf(to,"count: %3d  bins: %3d sld: %d  sev: %3d  prb: %d\n",
     					     cnt,num_bins,sld,ice_sev,ice_prob);
 
     			while (num_bins-- > 0){
     				fprintf(fileicinghigh, "%d", ice_prob);}
     		}
 
-    		fprintf(to,"\n count: %d\n",cnt);
+    		fprintf(to,"count: %d\n",cnt);
     		fprintf(fileicinghigh, "\n");
     		fflush(fileicinghigh);
     	}
+    	else {    // Empty
+    		int L = apdu->data[3] & 15;
+    		int i;
+    		int row_start, row_offset, row_size;
 
-        fflush(to);
+    		if (block_num >= 405000) {
+    			row_start = block_num - ((block_num - 405000) % 225);
+    			row_size = 225;
+    		} else {
+    			row_start = block_num - (block_num % 450);
+    			row_size = 450;
+    		}
+
+    		row_offset = block_num - row_start;
+
+    		for (i = 0; i < L; ++i) {
+    			int bb;
+    			int j;
+
+    			if (i == 0)
+    				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
+    			else
+    				bb = (apdu->data[i+3]);
+
+    			for (j = 0; j < 8; ++j) {
+    				if (bb & (1 << j)) {
+    					// find the relevant block for this bit, limited
+    					// to the same row as the original block.
+    					int row_x = (row_offset + 8*i + j - 3) % row_size;
+    					int bn = row_start + row_x;
+    					double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
+    					int k;
+    					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
+
+    					fprintf(fileicinghigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+    							apdu->product_id == 71 ? "Regional" : "CONUS",
+    							apdu->hours,apdu->minutes,
+								scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+    					for (k = 0; k < 128; ++k)
+    						fprintf(fileicinghigh, "%d", (apdu->product_id == 71 ? 0 : 1));
+
+    					fprintf(fileicinghigh, "\n");
+    					fprintf(to,"bollocks\n");
+    				}
+    			}
+    		}
+    	}
+    	fflush(to);
     }
     break;
 
     case 84:  			// Cloud Tops **************
     {
        	int recf;int cnt=0;
-        	recf = apdu->data[0];
+       	recf = apdu->data[0];
 
-        	fprintf(to," Record Format   : %d \n",recf >> 4);
+       	fprintf(to," Record Format   : %d \n",recf >> 4);
 
-        	display_generic_data(apdu->data, apdu->length, to);
+       	display_generic_data(apdu->data, apdu->length, to);
 
-        	int rle_flag = (apdu->data[0] & 0x80) != 0;
-        	int ns_flag = (apdu->data[0] & 0x40) != 0;
-        	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
-        	int scale_factor = (apdu->data[0] & 0x30) >> 4;
+       	int rle_flag = (apdu->data[0] & 0x80) != 0;
+       	int ns_flag = (apdu->data[0] & 0x40) != 0;
+       	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
+       	int scale_factor = (apdu->data[0] & 0x30) >> 4;
 
-            fprintf(to," rle_fl: %d  scale: %d ns-flag: %d blk_num %d\n",
-            		rle_flag,scale_factor,ns_flag,block_num);
+       	fprintf(to," rle_fl: %d  scale: %d ns-flag: %d blk_num %d\n",
+       			rle_flag,scale_factor,ns_flag,block_num);
 
-        	// now decode the bins
-        	if (rle_flag) {
-        		// One bin, 128 values, RLE-encoded
-        		int i;
-        		double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
-        		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
+       	// now decode the bins
+       	if (rle_flag) {
+       		// One bin, 128 values, RLE-encoded
+       		int i;
+       		double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
+       		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
-        		fprintf(filecloudt, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-        				apdu->product_id == 84 ? "Regional" : "CONUS",
-        				apdu->hours,
-    					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+       		fprintf(filecloudt, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+       				apdu->product_id == 84 ? "Regional" : "CONUS",
+       				apdu->hours,
+    				apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-        		for (i = 3; i < apdu->length; ++i) {
-        			char enc=' ';
-        			int cld_hgt = apdu->data[i] & 15;
-        			int num_bins = (apdu->data[i] >> 4) + 1;
-        			if (num_bins == 15){
-        				i = i+1;
-        				num_bins = (apdu->data[i])+1;
-        			}
+       		for (i = 3; i < apdu->length; ++i) {
+       			char enc=' ';
+       			int cld_hgt = apdu->data[i] & 15;
+       			int num_bins = (apdu->data[i] >> 4) + 1;
+       			if (num_bins == 15){
+       				i = i+1;
+       				num_bins = (apdu->data[i])+1;
+       			}
 
-        			cnt = cnt+num_bins;
-        			fprintf(to,"\ncount: %d  bins: %d encoding: %d\n",cnt,num_bins,cld_hgt);
+       			cnt = cnt+num_bins;
+       			fprintf(to,"count: %3d  bins: %3d encoding: %d\n",cnt,num_bins,cld_hgt);
 
-        			switch (cld_hgt){
-        			case 10:
-        				enc='a';
-        			break;
-        			case 11:
-        				enc='b';
+       			switch (cld_hgt){
+       			case 10:
+       				enc='a';
+       				break;
+        		case 11:
+        			enc='b';
         	    	break;
-        			case 12:
-        				enc='c';
+        		case 12:
+        			enc='c';
         			break;
-        			case 13:
-        				enc='d';
+        		case 13:
+        			enc='d';
         	   		break;
-        			case 14:
-        				enc='e';
+        		case 14:
+        			enc='e';
         	    	break;
-        			case 15:
-        				enc='f';
+        		case 15:
+        			enc='f';
         			break;
-        			default:
-        				enc = cld_hgt +'0';
+        		default:
+        			enc = cld_hgt +'0';
         			break;
-        			}
+       			}
 
-        			while (num_bins-- > 0){
-        				fprintf(filecloudt, "%c", enc);}
-        		}
+       			while (num_bins-- > 0){
+       				fprintf(filecloudt, "%c", enc);}
+       		}
 
-        		fprintf(to,"\n count: %d\n",cnt);
-        		fprintf(filecloudt, "\n");
-        		fflush(filecloudt);
-        	}
+       		fprintf(to,"count: %d\n",cnt);
+       		fprintf(filecloudt, "\n");
+       		fflush(filecloudt);
+       	}
+       	else {
+       		int L = apdu->data[3] & 15;
+       		int i;
+       		int row_start, row_offset, row_size;
 
-            fflush(to);
+       		if (block_num >= 405000) {
+       			row_start = block_num - ((block_num - 405000) % 225);
+       			row_size = 225;
+       		} else {
+       			row_start = block_num - (block_num % 450);
+       			row_size = 450;
+       		}
+
+       		row_offset = block_num - row_start;
+
+       		for (i = 0; i < L; ++i) {
+       			int bb;
+       			int j;
+
+       			if (i == 0)
+       				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
+       			else
+       				bb = (apdu->data[i+3]);
+
+       			for (j = 0; j < 8; ++j) {
+       				if (bb & (1 << j)) {
+       					// find the relevant block for this bit, limited
+       					// to the same row as the original block.
+       					int row_x = (row_offset + 8*i + j - 3) % row_size;
+       					int bn = row_start + row_x;
+       					double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
+       					int k;
+       					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
+
+       					fprintf(filecloudt, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+       							apdu->product_id == 84 ? "Regional" : "CONUS",
+       							apdu->hours,apdu->minutes,
+								scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+       					for (k = 0; k < 128; ++k)
+       						fprintf(filecloudt, "%d", (apdu->product_id == 84 ? 0 : 1));
+
+       					fprintf(filecloudt, "\n");
+       					fprintf(to,"bollocks\n");
+       				}
+       			}
+       		}
+       	}
+       	fflush(to);
     }
     break;
 
@@ -1458,34 +1532,34 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fprintf(to," rle_fl: %d  turbl alt: %d   block: %d\n",rle_flag,turb_alt,block_num);
 
         switch(turb_alt){
-            	case 0:
-            		fileturblow = fileturbl2;
-            		break;
-            	case 1:
-            		fileturblow = fileturbl4;
-            		break;
-            	case 2:
-            		fileturblow = fileturbl6;
-            		break;
-            	case 3:
-            		fileturblow = fileturbl8;
-            		break;
-            	case 4:
-            		fileturblow = fileturbl10;
-            		break;
-            	case 5:
-            		fileturblow = fileturbl12;
-            		break;
-            	case 6:
-            		fileturblow = fileturbl14;
-            		break;
-            	case 7:
-            		fileturblow = fileturbl16;
-            		break;
-            	default:
-            		fileturblow = fileturbl16;
-            		break;
-            	}
+        case 0:
+        	fileturblow = fileturbl2;
+        	break;
+        case 1:
+        	fileturblow = fileturbl4;
+        	break;
+        case 2:
+        	fileturblow = fileturbl6;
+        	break;
+        case 3:
+        	fileturblow = fileturbl8;
+        	break;
+        case 4:
+        	fileturblow = fileturbl10;
+        	break;
+        case 5:
+        	fileturblow = fileturbl12;
+        	break;
+        case 6:
+        	fileturblow = fileturbl14;
+        	break;
+        case 7:
+        	fileturblow = fileturbl16;
+        	break;
+        default:
+        	fileturblow = fileturbl16;
+        	break;
+        }
 
     	// now decode the bins
     	if (rle_flag) {
@@ -1495,7 +1569,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     		fprintf(fileturblow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    				apdu->product_id == 91 ? "Regional" : "CONUS",
+    				apdu->product_id == 90 ? "Regional" : "CONUS",
     				apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
@@ -1509,7 +1583,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			}
 
     			cnt = cnt+num_bins;
-    			fprintf(to,"\ncount: %d  bins: %d encoding: %d\n",cnt,num_bins,edr_enc);
+    			fprintf(to,"count: %3d  bins: %3d encoding: %d\n",cnt,num_bins,edr_enc);
 
     			switch (edr_enc){
     			case 10:
@@ -1539,18 +1613,63 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				fprintf(fileturblow, "%c", enc);}
     		}
 
-    		fprintf(to,"\ncount: %d\n",cnt);
+    		fprintf(to,"count: %d\n",cnt);
     		fprintf(fileturblow, "\n");
     		fflush(fileturblow);
     	}
+    	else {
+    		int L = apdu->data[3] & 15;
+    		int i;
+    		int row_start, row_offset, row_size;
 
+    		if (block_num >= 405000) {
+    			row_start = block_num - ((block_num - 405000) % 225);
+    			row_size = 225;
+    		} else {
+    			row_start = block_num - (block_num % 450);
+    			row_size = 450;
+    		}
+
+    		row_offset = block_num - row_start;
+
+    		for (i = 0; i < L; ++i) {
+    			int bb;
+    			int j;
+
+    			if (i == 0)
+    				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
+    			else
+    				bb = (apdu->data[i+3]);
+
+    			for (j = 0; j < 8; ++j) {
+    				if (bb & (1 << j)) {
+    					// find the relevant block for this bit, limited
+    					// to the same row as the original block.
+    					int row_x = (row_offset + 8*i + j - 3) % row_size;
+    					int bn = row_start + row_x;
+    					double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
+    					int k;
+    					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
+
+    					fprintf(fileturblow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+    							apdu->product_id == 90 ? "Regional" : "CONUS",
+    							apdu->hours,apdu->minutes,
+								scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+    					for (k = 0; k < 128; ++k)
+    						fprintf(fileturblow, "%d", (apdu->product_id == 90 ? 0 : 1));
+
+    					fprintf(fileturblow, "\n");
+    					fprintf(to,"bollocks\n");
+    				}
+    			}
+    		}
+    	}
         fflush(to);
     }
     break;
 
     case 91:  			// Turbulence High **************
     {
-
     	int recf;int cnt=0;
     	recf = apdu->data[0];
     	FILE * fileturbhigh;
@@ -1568,22 +1687,22 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fprintf(to," rle_fl: %d  turbl alt: %d   block: %d\n",rle_flag,turb_alt,block_num);
 
     	switch(turb_alt){
-    	    	case 0:
-    	    		fileturbhigh = fileturbh18;
-    	    		break;
-    	    	case 1:
-    	    		fileturbhigh = fileturbh20;
-    	    		break;
-    	    	case 2:
-    	    		fileturbhigh = fileturbh22;
-    	    		break;
-    	    	case 3:
-    	    		fileturbhigh = fileturbh24;
-    	    		break;
-    	    	default:
-					fileturbhigh = fileturbh24;
-					break;
-    	    	}
+    	case 0:
+    		fileturbhigh = fileturbh18;
+    		break;
+    	case 1:
+    		fileturbhigh = fileturbh20;
+    		break;
+    	case 2:
+    		fileturbhigh = fileturbh22;
+    		break;
+    	case 3:
+    		fileturbhigh = fileturbh24;
+    		break;
+    	default:
+    		fileturbhigh = fileturbh24;
+    		break;
+    	}
 
     	// now decode the bins
     	if (rle_flag) {
@@ -1607,7 +1726,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			}
 
     			cnt = cnt+num_bins;
-    			fprintf(to,"\ncount: %d  bins: %d encoding: %d\n",cnt,num_bins,edr_enc);
+    			fprintf(to,"count: %3d  bins: %3d encoding: %d\n",cnt,num_bins,edr_enc);
 
     			switch (edr_enc){
     			case 10:
@@ -1637,11 +1756,57 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				fprintf(fileturbhigh, "%c", enc);}
     		}
 
-    		fprintf(to,"\ncount: %d\n",cnt);
+    		fprintf(to,"count: %d\n",cnt);
     		fprintf(fileturbhigh, "\n");
     		fflush(fileturbhigh);
     	}
+    	else {
+    		int L = apdu->data[3] & 15;
+    		int i;
+    		int row_start, row_offset, row_size;
 
+    		if (block_num >= 405000) {
+    			row_start = block_num - ((block_num - 405000) % 225);
+    			row_size = 225;
+    		} else {
+    			row_start = block_num - (block_num % 450);
+    			row_size = 450;
+    		}
+
+    		row_offset = block_num - row_start;
+
+    		for (i = 0; i < L; ++i) {
+    			int bb;
+    			int j;
+
+    			if (i == 0)
+    				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
+    			else
+    				bb = (apdu->data[i+3]);
+
+    			for (j = 0; j < 8; ++j) {
+    				if (bb & (1 << j)) {
+    					// find the relevant block for this bit, limited
+    					// to the same row as the original block.
+    					int row_x = (row_offset + 8*i + j - 3) % row_size;
+    					int bn = row_start + row_x;
+    					double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
+    					int k;
+    					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
+
+    					fprintf(fileturbhigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+    							apdu->product_id == 91 ? "Regional" : "CONUS",
+    							apdu->hours,apdu->minutes,
+								scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+    					for (k = 0; k < 128; ++k)
+    						fprintf(fileturbhigh, "%d", (apdu->product_id == 91 ? 0 : 1));
+
+    					fprintf(fileturbhigh, "\n");
+    					fprintf(to,"bollocks\n");
+    				}
+    			}
+    		}
+    	}
         fflush(to);
     }
     break;
@@ -1649,68 +1814,112 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     case 103:  			// Lightning  **************
     {
        	int recf;int cnt=0;
-        	recf = apdu->data[0];
+       	recf = apdu->data[0];
 
-        	fprintf(to," Record Format   : %d \n",recf >> 4);
+       	fprintf(to," Record Format   : %d \n",recf >> 4);
 
-        	display_generic_data(apdu->data, apdu->length, to);
+       	display_generic_data(apdu->data, apdu->length, to);
 
-        	int rle_flag = (apdu->data[0] & 0x80) != 0;
-        	int ns_flag = (apdu->data[0] & 0x40) != 0;
-        	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
-        	int scale_factor = (apdu->data[0] & 0x30) >> 4;
+       	int rle_flag = (apdu->data[0] & 0x80) != 0;
+       	int ns_flag = (apdu->data[0] & 0x40) != 0;
+       	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
+       	int scale_factor = (apdu->data[0] & 0x30) >> 4;
 
-            fprintf(to," rle_fl: %d  scale: %d ns-flag: %d Block: %d ",
-            		 rle_flag,scale_factor,ns_flag,block_num);
+       	fprintf(to," rle_fl: %d  scale: %d ns-flag: %d Block: %d ",
+       			rle_flag,scale_factor,ns_flag,block_num);
 
-        	// now decode the bins
-        	if (rle_flag) {
-        		// One bin, 128 values, RLE-encoded
-        		int i;
-        		double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
-        		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
+       	// now decode the bins
+       	if (rle_flag) {
+       		// One bin, 128 values, RLE-encoded
+       		int i;
+       		double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
+       		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
-        		fprintf(filelightng, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-        				apdu->product_id == 84 ? "Regional" : "CONUS",
-        				apdu->hours,
-    					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+       		fprintf(filelightng, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+       				apdu->product_id == 103 ? "Regional" : "CONUS",
+       				apdu->hours,
+					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-        		for (i = 3; i < apdu->length; ++i) {
-        			int lgt_pol = apdu->data[i] & 8;
-        			int lgt_cnt = apdu->data[i] & 7;
-        			int num_bins = (apdu->data[i] >> 4) + 1;
-        			if (num_bins == 15){
-        				i = i+1;
-        				num_bins = (apdu->data[i])+1;
-        			}
+       		for (i = 3; i < apdu->length; ++i) {
+       			int lgt_pol = apdu->data[i] & 8;
+       			int lgt_cnt = apdu->data[i] & 7;
+       			int num_bins = (apdu->data[i] >> 4) + 1;
+       			if (num_bins == 15){
+       				i = i+1;
+       				num_bins = (apdu->data[i])+1;
+       			}
 
-        			cnt = cnt+num_bins;
-        			fprintf(to,"\n count: %d  bins: %d ",cnt,num_bins);
-        			fprintf(to,"pol: %d  lgt_cnt: %d\n",lgt_pol,lgt_cnt);
+       			cnt = cnt+num_bins;
+       			fprintf(to,"count: %3d  bins: %3d ",cnt,num_bins);
+       			fprintf(to,"pol: %d  lgt_cnt: %d\n",lgt_pol,lgt_cnt);
 
-        			while (num_bins-- > 0){
-        				fprintf(filelightng, "%d", lgt_cnt);}
-        		}
+       			while (num_bins-- > 0){
+       				fprintf(filelightng, "%d", lgt_cnt);}
+       		}
 
-        		fprintf(to,"\n count: %d\n",cnt);
-        		fprintf(filelightng, "\n");
-        		fflush(filelightng);
-        	}
+       		fprintf(to,"count: %d\n",cnt);
+       		fprintf(filelightng, "\n");
+       		fflush(filelightng);
+       	}
+       	else {
+       		int L = apdu->data[3] & 15;
+       		int i;
+       		int row_start, row_offset, row_size;
 
-            fflush(to);
+       		if (block_num >= 405000) {
+       			row_start = block_num - ((block_num - 405000) % 225);
+       			row_size = 225;
+       		} else {
+       			row_start = block_num - (block_num % 450);
+       			row_size = 450;
+       		}
+
+       		row_offset = block_num - row_start;
+
+       		for (i = 0; i < L; ++i) {
+       			int bb;
+       			int j;
+
+       			if (i == 0)
+       				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
+       			else
+       				bb = (apdu->data[i+3]);
+
+       			for (j = 0; j < 8; ++j) {
+       				if (bb & (1 << j)) {
+       					// find the relevant block for this bit, limited
+       					// to the same row as the original block.
+       					int row_x = (row_offset + 8*i + j - 3) % row_size;
+       					int bn = row_start + row_x;
+       					double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
+       					int k;
+       					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
+
+       					fprintf(filelightng, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+       							apdu->product_id == 103 ? "Regional" : "CONUS",
+       							apdu->hours,apdu->minutes,
+								scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+       					for (k = 0; k < 128; ++k)
+       						fprintf(filelightng, "%d", (apdu->product_id == 63 ? 0 : 1));
+
+       					fprintf(filelightng, "\n");
+       					fflush(filelightng);
+       					fprintf(to,"bollocks\n");
+       				}
+       			}
+       		}
+       	}
+       	fflush(to);
     }
     break;
 
     case 63: case 64:   		// NEXRAD **************
     {
-    	int recf;
-    	recf = apdu->data[0];
+ //   	int recf;
+ //   	recf = apdu->data[0];
 
-    	fprintf(to," Record Format   : %d \n",recf >> 4);
-    	int ele_id;
-    	int scale;
-    	int bitmap; int bitlen;
-    	uint32_t blk_num;
+   // 	fprintf(to," Record Format   : %d \n",recf >> 4);
+   // 	int ele_id; int scale; int bitmap; int bitlen; uint32_t blk_num;
 
     	int rle_flag = (apdu->data[0] & 0x80) != 0;
     	int ns_flag = (apdu->data[0] & 0x40) != 0;
@@ -1726,13 +1935,13 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     		fprintf(filenexradc, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
     				apdu->product_id == 63 ? "Regional" : "CONUS",
-    						apdu->hours,
-							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+    				apdu->hours,
+					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-    		fprintf(to, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    				apdu->product_id == 63 ? "Regional" : "CONUS",
-    						apdu->hours,
-							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+//    		fprintf(to, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+//    				apdu->product_id == 63 ? "Regional" : "CONUS",
+//    						apdu->hours,
+//							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
     		for (i = 3; i < apdu->length; ++i) {
     			int intensity = apdu->data[i] & 7;
@@ -1742,7 +1951,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				fprintf(filenexradc, "%d", intensity);
     		}
     		fprintf(filenexradc, "\n");
-    	} else {
+    	}
+    	else {
     		int L = apdu->data[3] & 15;
     		int i;
     		int row_start, row_offset, row_size;
@@ -1789,17 +1999,17 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
            }
        }
 
-       blk_num = (apdu->data[0] << 16)| apdu->data[1] << 8 | apdu->data[2]  ;
+ //      blk_num = (apdu->data[0] << 16)| apdu->data[1] << 8 | apdu->data[2]  ;
 
-       fprintf(to," ele_id: %d  scale: %d  ",ele_id,scale);
-       fprintf(to," blk_num: %d ",blk_num);
+//       fprintf(to," ele_id: %d  scale: %d  ",ele_id,scale);
+//       fprintf(to," blk_num: %d ",blk_num);
 
-       bitmap = (apdu->data[3] >>4 );
-       bitlen = apdu->data[3] & 0xF ;
+//       bitmap = (apdu->data[3] >>4 );
+//       bitlen = apdu->data[3] & 0xF ;
 
-       fprintf(to," bitmap: %d  bitlen: %d\n",bitmap,bitlen);
+//       fprintf(to," bitmap: %d  bitlen: %d\n",bitmap,bitlen);
 
-       display_generic_data(apdu->data, apdu->length, to);
+//       display_generic_data(apdu->data, apdu->length, to);
 
     }
     break;
@@ -2045,7 +2255,7 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 
 void uat_display_uplink_mdb(const struct uat_uplink_mdb *mdb, FILE *to)
 {
-    fprintf(to,"UPLINK: ");
+	fprintf(to,"UPLINK: ");
 
     fprintf(to," Site: %u  " , mdb->tisb_site_id);
     fprintf(to," Lat: %+.4f%s"
@@ -2309,6 +2519,8 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 	fprintf(fnm, " Object Type: %s  Object Element: %s\n",ob_type_text,ob_ele_text);
 	fprintf(to, "\n");
 	fprintf(fnm,"\n");
+
+	fflush(fnm);
 
 	display_generic_data(apdu->data, apdu->length, to);
 }
