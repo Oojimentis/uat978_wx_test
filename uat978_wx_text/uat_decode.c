@@ -238,7 +238,7 @@ static void get_sua_text(char *Word, FILE *to){
 	}
 	token = strsep(&Word,"|");
 	if (token){
-		strcpy(sua_shp_ind,token);     //13
+		strcpy(sua_shp_ind,token);     	//13
 		if (strcmp(sua_shp_ind,"N") ==0){
 			fprintf(filesua," Shape Indicator: %s No Shape Defined\n",sua_shp_ind);}
 		else if	(strcmp(sua_shp_ind,"Y") ==0){
@@ -256,12 +256,12 @@ static void get_sua_text(char *Word, FILE *to){
 	}
 	token = strsep(&Word,"|");
 	if (token) {
-		strcpy(sua_dafif_id,token);       //16
+		strcpy(sua_dafif_id,token);    	//16
 		fprintf(filesua," DAFIF ID        : %10s",sua_dafif_id);
 	}
 	token = strsep(&Word,"|");
 	if (token) {
-		strcpy(sua_dafif_nm,token);      //17
+		strcpy(sua_dafif_nm,token);    	//17
 		fprintf(filesua,"      DAFIF Name: %s\n",sua_dafif_nm);
 	}
 
@@ -913,67 +913,67 @@ static void display_generic_data(uint8_t *data, uint16_t length, FILE *to)
 static const char *get_fisb_product_name(uint16_t product_id)
 {
     switch (product_id) {
-    case 0:  case 20: return "METAR and SPECI";
-    case 1:  case 21: return "TAF and Amended TAF";
-    case 2:  case 22: return "SIGMET";
-    case 3:  case 23: return "Convective SIGMET";
-    case 4:  case 24: return "AIRMET";
-    case 5:  case 25: return "PIREP";
-    case 6:  case 26: return "AWW";
-    case 7:  case 27: return "Winds and Temperatures Aloft";
+    case 0:  case 20: return "METAR and SPECI ****";
+    case 1:  case 21: return "TAF and Amended TAF ****";
+    case 2:  case 22: return "SIGMET ****";
+    case 3:  case 23: return "Convective SIGMET ****";
+    case 4:  case 24: return "AIRMET ****";
+    case 5:  case 25: return "PIREP ****";
+    case 6:  case 26: return "AWW ****";
+    case 7:  case 27: return "Winds and Temperatures Aloft ****";
     case 8:    	return "NOTAM (Including TFRs) and Service Status";
-    case 9:    	return "Aerodrome and Airspace – D-ATIS";
-    case 10:	return "Aerodrome and Airspace - TWIP";
-    case 11:   	return "Aerodrome and Airspace - AIRMET";
+    case 9:    	return "Aerodrome and Airspace – D-ATIS ****";
+    case 10:	return "Aerodrome and Airspace - TWIP ****";
+    case 11:   	return "Aerodrome and Airspace - AIRME";
     case 12:   	return "Aerodrome and Airspace - SIGMET/Convective SIGMET";
     case 13:   	return "Aerodrome and Airspace - SUA Status";
     case 14:   	return "G-AIRMET";
-    case 15:   	return "Center Weather Advisory (CWAG)";
-    case 51:   	return "National NEXRAD, Type 0 - 4 Level";
-    case 52:   	return "National NEXRAD, Type 1 - 8 Level (Quasi 6-Level VIP)";
-    case 53:   	return "National NEXRAD, Type 2 - 8 Level";
-    case 54:   	return "National NEXRAD, Type 3 - 16 Level";
-    case 55:   	return "Regional NEXRAD, Type 0 - Low Dynamic Range";
-    case 56:   	return "Regional NEXRAD, Type 1 - 8 Level (Quasi 6-Level VIP)";
-    case 57:   	return "Regional NEXRAD, Type 2 - 8 Level";
-    case 58:   	return "Regional NEXRAD, Type 3 - 16 Level";
-    case 59:   	return "Individual NEXRAD, Type 0 - Low Dynamic Range";
-    case 60:   	return "Individual NEXRAD, Type 1 - 8 Level (quasi 6-Level VIP)";
-    case 61:   	return "Individual NEXRAD, Type 2 - 8 Level";
-    case 62:   	return "Individual NEXRAD, Type 3 - 16 Level";
+    case 15:   	return "Center Weather Advisory (CWAG) ****";
+    case 51:   	return "National NEXRAD, Type 0 - 4 Level ****";
+    case 52:   	return "National NEXRAD, Type 1 - 8 Level (Quasi 6-Level VIP) ****";
+    case 53:   	return "National NEXRAD, Type 2 - 8 Level ****";
+    case 54:   	return "National NEXRAD, Type 3 - 16 Level ****";
+    case 55:   	return "Regional NEXRAD, Type 0 - Low Dynamic Range ****";
+    case 56:   	return "Regional NEXRAD, Type 1 - 8 Level (Quasi 6-Level VIP) ****";
+    case 57:   	return "Regional NEXRAD, Type 2 - 8 Level ****";
+    case 58:   	return "Regional NEXRAD, Type 3 - 16 Level ****";
+    case 59:   	return "Individual NEXRAD, Type 0 - Low Dynamic Range ****";
+    case 60:   	return "Individual NEXRAD, Type 1 - 8 Level (quasi 6-Level VIP) ****";
+    case 61:   	return "Individual NEXRAD, Type 2 - 8 Level ****";
+    case 62:   	return "Individual NEXRAD, Type 3 - 16 Level ****";
     case 63:   	return "Global Block Representation - Regional NEXRAD, Type 4 - 8 Level";
     case 64:   	return "Global Block Representation - CONUS NEXRAD, Type 4 - 8 Level";
     case 70:   	return "Icing Forecast - Low";
     case 71:   	return "Icing Forecast - High";
-    case 81:   	return "Radar Echo Tops Graphic, Scheme 1: 16-Level";
-    case 82:   	return "Radar Echo Tops Graphic, Scheme 2: 8-Level";
-    case 83:   	return "Storm Tops and Velocity";
+    case 81:   	return "Radar Echo Tops Graphic, Scheme 1: 16-Level ****";
+    case 82:   	return "Radar Echo Tops Graphic, Scheme 2: 8-Level ****";
+    case 83:   	return "Storm Tops and Velocity ****";
     case 84:   	return "Cloud Tops";
     case 90:   	return "Turbulence Forecast - Low";
     case 91:   	return "Turbulence Forecast - High";
-    case 101:  	return "Lightning Strike Type 1 (Pixel Level)";
-    case 102:  	return "Lightning Strike Type 2 (Grid Element Level)";
+    case 101:  	return "Lightning Strike Type 1 (Pixel Level) ****";
+    case 102:  	return "Lightning Strike Type 2 (Grid Element Level) ****";
     case 103:  	return "Lightning";
-    case 151:  	return "Point Phenomena, Vector Format";
-    case 201:  	return "Surface Conditions/Winter Precipitation Graphic";
-    case 202:  	return "Surface Weather Systems";
-    case 254:  	return "AIRMET, SIGMET: Bitmap Encoding";
-    case 351:  	return "System Time";
-    case 352:  	return "Operational Status";
-    case 353:	return "Ground Station Status";
-    case 401:  	return "Generic Raster Scan Data Product APDU Payload Format Type 1";
-    case 402:  case 411: return "Generic Textual Data Product APDU Payload Format Type 1";
-    case 403:  	return "Generic Vector Data Product APDU Payload Format Type 1";
-    case 404:  case 412: return "Generic Symbolic Product APDU Payload Format Type 1";
+    case 151:  	return "Point Phenomena, Vector Format ****";
+    case 201:  	return "Surface Conditions/Winter Precipitation Graphic ****";
+    case 202:  	return "Surface Weather Systems ****";
+    case 254:  	return "AIRMET, SIGMET: Bitmap Encoding ****";
+    case 351:  	return "System Time ****";
+    case 352:  	return "Operational Status ****";
+    case 353:	return "Ground Station Status ****";
+    case 401:  	return "**** Generic Raster Scan Data Product APDU Payload Format Type 1";
+    case 402:  case 411: return "**** Generic Textual Data Product APDU Payload Format Type 1";
+    case 403:  	return "**** Generic Vector Data Product APDU Payload Format Type 1";
+    case 404:  case 412: return "**** Generic Symbolic Product APDU Payload Format Type 1";
     case 405:  case 413: return "Generic Textual Data Product APDU Payload Format Type 2";
-    case 600:  	return "FISDL Products – Proprietary Encoding";
-    case 2000: 	return "FAA/FIS-B Product 1 – Developmental";
-    case 2001: 	return "FAA/FIS-B Product 2 – Developmental";
-    case 2002: 	return "FAA/FIS-B Product 3 – Developmental";
-    case 2003: 	return "FAA/FIS-B Product 4 – Developmental";
-    case 2004: 	return "WSI Products - Proprietary Encoding";
-    case 2005: 	return "WSI Developmental Products";
-    default: 	return "Unknown";
+    case 600:  	return "**** FISDL Products – Proprietary Encoding";
+    case 2000: 	return "**** FAA/FIS-B Product 1 – Developmental";
+    case 2001: 	return "**** FAA/FIS-B Product 2 – Developmental";
+    case 2002: 	return "**** FAA/FIS-B Product 3 – Developmental";
+    case 2003: 	return "****FAA/FIS-B Product 4 – Developmental";
+    case 2004: 	return "****WSI Products - Proprietary Encoding";
+    case 2005: 	return "****WSI Developmental Products";
+    default: 	return "****Unknown";
     }
 }
 
@@ -1219,7 +1219,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     		fprintf(to,"count: %d\n",cnt);
     		fprintf(fileicinglow, "\n");
-    		fflush(fileicinglow);
     	}
     	else {    // Empty
     		int L = apdu->data[3] & 15;
@@ -1267,6 +1266,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			}
     		}
     	}
+    	fflush(fileicinglow);
         fflush(to);
     }
     break;
@@ -1335,7 +1335,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     		fprintf(to,"count: %d\n",cnt);
     		fprintf(fileicinghigh, "\n");
-    		fflush(fileicinghigh);
     	}
     	else {    // Empty
     		int L = apdu->data[3] & 15;
@@ -1383,6 +1382,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			}
     		}
     	}
+    	fflush(fileicinghigh);
     	fflush(to);
     }
     break;
@@ -1458,7 +1458,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
        		fprintf(to,"count: %d\n",cnt);
        		fprintf(filecloudt, "\n");
-       		fflush(filecloudt);
        	}
        	else {
        		int L = apdu->data[3] & 15;
@@ -1506,6 +1505,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        			}
        		}
        	}
+       	fflush(filecloudt);
        	fflush(to);
     }
     break;
@@ -1612,7 +1612,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     		fprintf(to,"count: %d\n",cnt);
     		fprintf(fileturblow, "\n");
-    		fflush(fileturblow);
     	}
     	else {
     		int L = apdu->data[3] & 15;
@@ -1660,6 +1659,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			}
     		}
     	}
+    	fflush(fileturblow);
         fflush(to);
     }
     break;
@@ -1754,7 +1754,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     		fprintf(to,"count: %d\n",cnt);
     		fprintf(fileturbhigh, "\n");
-    		fflush(fileturbhigh);
     	}
     	else {
     		int L = apdu->data[3] & 15;
@@ -1802,7 +1801,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			}
     		}
     	}
-        fflush(to);
+    	fflush(fileturbhigh);
+    	fflush(to);
     }
     break;
 
@@ -1854,7 +1854,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
        		fprintf(to,"count: %d\n",cnt);
        		fprintf(filelightng, "\n");
-       		fflush(filelightng);
        	}
        	else {
        		int L = apdu->data[3] & 15;
@@ -1898,11 +1897,11 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        						fprintf(filelightng, "%d", (apdu->product_id == 63 ? 0 : 1));
 
        					fprintf(filelightng, "\n");
-       					fflush(filelightng);
        				}
        			}
        		}
        	}
+   		fflush(filelightng);
        	fflush(to);
     }
     break;
@@ -2004,6 +2003,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 //       fprintf(to," bitmap: %d  bitlen: %d\n",bitmap,bitlen);
 
 //       display_generic_data(apdu->data, apdu->length, to);
+    	fflush(filenexradc);
+    	fflush(to);
 
     }
     break;

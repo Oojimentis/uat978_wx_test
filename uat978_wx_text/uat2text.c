@@ -118,71 +118,67 @@ int main(int argc, char **argv)
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;			}
 
-		fprintf(stdout, "Opening file: icingl.out\n");
+		fprintf(stdout, "Opening file: icingl2.out\n");
 		fileicingl2 = fopen("icingl2.out","w");
 		if (fileicingl2 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;			}
-		fprintf(stdout, "Opening file: icingl.out\n");
+		fprintf(stdout, "Opening file: icingl4.out\n");
 		fileicingl4 = fopen("icingl4.out","w");
 		if (fileicingl4 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;			}
-		fprintf(stdout, "Opening file: icingl.out\n");
+		fprintf(stdout, "Opening file: icingl6.out\n");
 		fileicingl6 = fopen("icingl6.out","w");
 		if (fileicingl6 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;			}
-		fprintf(stdout, "Opening file: icingl.out\n");
+		fprintf(stdout, "Opening file: icingl8.out\n");
 		fileicingl8 = fopen("icingl8.out","w");
 		if (fileicingl8 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;			}
-		fprintf(stdout, "Opening file: icingl.out\n");
+		fprintf(stdout, "Opening file: icingl10.out\n");
 		fileicingl10 = fopen("icingl10.out","w");
 		if (fileicingl10 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;			}
-		fprintf(stdout, "Opening file: icingl.out\n");
+		fprintf(stdout, "Opening file: icingl12.out\n");
 		fileicingl12 = fopen("icingl12.out","w");
 		if (fileicingl12 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;			}
-		fprintf(stdout, "Opening file: icingl.out\n");
+		fprintf(stdout, "Opening file: icingl14.out\n");
 		fileicingl14 = fopen("icingl14.out","w");
 		if (fileicingl14 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;			}
-		fprintf(stdout, "Opening file: icingl.out\n");
+		fprintf(stdout, "Opening file: icingl16.out\n");
 		fileicingl16 = fopen("icingl16.out","w");
 		if (fileicingl16 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;			}
 
-
-
-
-		fprintf(stdout, "Opening file: icingh.out\n");
+		fprintf(stdout, "Opening file: icingh18.out\n");
 		fileicingh18 = fopen("icingh18.out","w");
 		if (fileicingh18 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;			}
-		fprintf(stdout, "Opening file: icingh.out\n");
+		fprintf(stdout, "Opening file: icingh20.out\n");
 		fileicingh20 = fopen("icingh20.out","w");
 		if (fileicingh20 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;			}
-		fprintf(stdout, "Opening file: icingh.out\n");
+		fprintf(stdout, "Opening file: icingh22.out\n");
 		fileicingh22 = fopen("icingh22.out","w");
 		if (fileicingh22 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;			}
-		fprintf(stdout, "Opening file: icingh.out\n");
+		fprintf(stdout, "Opening file: icingh24.out\n");
 		fileicingh24 = fopen("icingh24.out","w");
 		if (fileicingh24 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;			}
-
 
 		fprintf(stdout, "Opening file: cloudt.out\n");
 		filecloudt = fopen("cloudt.out","w");
@@ -190,80 +186,73 @@ int main(int argc, char **argv)
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;			}
 
-		fprintf(stdout, "Opening file: turbl.out\n");
+		fprintf(stdout, "Opening file: turbl2.out\n");
 		fileturbl2 = fopen("turbl2.out","w");
 		if (fileturbl2 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;			}
-		fprintf(stdout, "Opening file: turbl.out\n");
+		fprintf(stdout, "Opening file: turbl4.out\n");
 		fileturbl4 = fopen("turbl4.out","w");
 		if (fileturbl4 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;}
-		fprintf(stdout, "Opening file: turbl.out\n");
+		fprintf(stdout, "Opening file: turbl6.out\n");
 		fileturbl6 = fopen("turbl6.out","w");
 		if (fileturbl6 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;}
-		fprintf(stdout, "Opening file: turbl.out\n");
+		fprintf(stdout, "Opening file: turbl8.out\n");
 		fileturbl8 = fopen("turbl8.out","w");
 		if (fileturbl8 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;}
-		fprintf(stdout, "Opening file: turbl.out\n");
+		fprintf(stdout, "Opening file: turbl10.out\n");
 		fileturbl10 = fopen("turbl10.out","w");
 		if (fileturbl10 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;}
-		fprintf(stdout, "Opening file: turbl.out\n");
+		fprintf(stdout, "Opening file: turbl12.out\n");
 		fileturbl12 = fopen("turbl12.out","w");
 		if (fileturbl12 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;}
-		fprintf(stdout, "Opening file: turbl.out\n");
+		fprintf(stdout, "Opening file: turbl14.out\n");
 		fileturbl14 = fopen("turbl14.out","w");
 		if (fileturbl14 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;}
-		fprintf(stdout, "Opening file: turbl.out\n");
+		fprintf(stdout, "Opening file: turbl16.out\n");
 		fileturbl16 = fopen("turbl16.out","w");
 		if (fileturbl16 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;}
 
-
-		fprintf(stdout, "Opening file: turbh.out\n");
+		fprintf(stdout, "Opening file: turbh18.out\n");
 		fileturbh18 = fopen("turbh18.out","w");
 		if (fileturbh18 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;			}
-		fprintf(stdout, "Opening file: turbh.out\n");
+		fprintf(stdout, "Opening file: turbh20.out\n");
 		fileturbh20 = fopen("turbh20.out","w");
 		if (fileturbh20 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;			}
-		fprintf(stdout, "Opening file: turbh.out\n");
+		fprintf(stdout, "Opening file: turbh22.out\n");
 		fileturbh22 = fopen("turbh22.out","w");
 		if (fileturbh22 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;			}
-		fprintf(stdout, "Opening file: turbh.out\n");
+		fprintf(stdout, "Opening file: turbh24.out\n");
 		fileturbh24 = fopen("turbh24.out","w");
 		if (fileturbh24 == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;			}
-
-
-
-
 
 		fprintf(stdout, "Opening file: lightng.out\n");
 		filelightng = fopen("lightng.out","w");
 		if (filelightng == 0)			{
 			fprintf(stdout,"Error--file could not be opened. \n") ;
 			exit (1) ;			}
-
-
 	 // TJH
 
 	struct dump978_reader *reader;
