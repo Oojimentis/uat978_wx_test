@@ -1039,7 +1039,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     switch (apdu->product_id) {
 
-    case 18:             //NOTAM **************
+    case 8:             //NOTAM **************
     {
     	int recf;
     	recf = apdu->data[0];
@@ -1062,7 +1062,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 }
     break;
 
-    case 111:            //AIRMET **************
+    case 11:            //AIRMET **************
     {
     	int recf;
     	recf = apdu->data[0];
@@ -1085,7 +1085,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 112:            //SIGMET **************
+    case 12:            //SIGMET **************
     {
     	int recf;
     	recf = apdu->data[0];
@@ -1108,7 +1108,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 113:            //SUA **************
+    case 13:            //SUA **************
     {
     	int recf;
     	recf = apdu->data[0];
@@ -1123,7 +1123,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 114:            //G-AIRMET **************
+    case 14:            //G-AIRMET **************
     {
     	int recf;
     	recf = apdu->data[0];
@@ -1263,7 +1263,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     						fprintf(fileicinglow, "%d", (apdu->product_id == 70 ? 0 : 1));
 
     					fprintf(fileicinglow, "\n");
-    					fprintf(to,"bollocks\n");
     				}
     			}
     		}
@@ -1380,7 +1379,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     						fprintf(fileicinghigh, "%d", (apdu->product_id == 71 ? 0 : 1));
 
     					fprintf(fileicinghigh, "\n");
-    					fprintf(to,"bollocks\n");
     				}
     			}
     		}
@@ -1504,7 +1502,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        						fprintf(filecloudt, "%d", (apdu->product_id == 84 ? 0 : 1));
 
        					fprintf(filecloudt, "\n");
-       					fprintf(to,"bollocks\n");
        				}
        			}
        		}
@@ -1659,7 +1656,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     						fprintf(fileturblow, "%d", (apdu->product_id == 90 ? 0 : 1));
 
     					fprintf(fileturblow, "\n");
-    					fprintf(to,"bollocks\n");
     				}
     			}
     		}
@@ -1802,7 +1798,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     						fprintf(fileturbhigh, "%d", (apdu->product_id == 91 ? 0 : 1));
 
     					fprintf(fileturbhigh, "\n");
-    					fprintf(to,"bollocks\n");
     				}
     			}
     		}
@@ -1904,7 +1899,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
        					fprintf(filelightng, "\n");
        					fflush(filelightng);
-       					fprintf(to,"bollocks\n");
        				}
        			}
        		}
@@ -2013,7 +2007,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     }
     break;
-    case 4413:
+    case 413:
     {
     	// Generic text, DLAC
     	int rec_offset=0;
