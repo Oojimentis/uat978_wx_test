@@ -29,7 +29,7 @@
 
 static char gs_ret[80];
 
-static const char *object_element_names[14] = {
+static const char *obj_element_names[14] = {
 		"Temporary Flight Restriction",
 		"Parachute Jumping /Sky Diving",
 		"Terminal Radar Service Area",
@@ -1143,9 +1143,10 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     case 70:            // Icing Low **************
     {
+    	FILE * fileicinglow;
     	int recf; // int cnt=0;
     	recf = apdu->data[0];
-    	FILE * fileicinglow;
+
     	fprintf(to," Record Format   : %d \n",recf >> 4);
 
     	display_generic_data(apdu->data, apdu->length, to);
@@ -1156,7 +1157,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	int scale_factor = 1;
      	int icel_alt = (apdu->data[0] & 0x70) >> 4;
 
-        fprintf(to," rle_fl: %d   icel alt: %d  block: %d\n",rle_flag,icel_alt,block_num);
+        fprintf(to," rle_flag: %d   Altitude: %d  block: %d\n",rle_flag,icel_alt,block_num);
 
         switch(icel_alt){
         case 0:
@@ -1270,9 +1271,10 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     case 71:            // Icing High **************
     {
+    	FILE * fileicinghigh;
     	int recf; // int cnt=0;
     	recf = apdu->data[0];
-    	FILE * fileicinghigh;
+
     	fprintf(to," Record Format   : %d \n",recf >> 4);
 
     	display_generic_data(apdu->data, apdu->length, to);
@@ -1301,7 +1303,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		break;
     	}
 
-        fprintf(to," rle_fl: %d   iceh alt: %d block: %d\n",rle_flag,iceh_alt,block_num);
+        fprintf(to," rle_flag: %d   Altitude: %d block: %d\n",rle_flag,iceh_alt,block_num);
     	// now decode the bins
     	if (rle_flag) {
     		// One bin, 128 values, RLE-encoded
@@ -1397,7 +1399,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
        	int scale_factor = (apdu->data[0] & 0x30) >> 4;
 
-       	fprintf(to," rle_fl: %d  scale: %d ns-flag: %d blk_num %d\n",
+       	fprintf(to," rle_fl: %d  scale: %d ns-flag: %d block: %d\n",
        			rle_flag,scale_factor,ns_flag,block_num);
 
        	// now decode the bins
@@ -1508,9 +1510,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     case 90:   			// Turbulence Low **************
     {
+    	FILE * fileturblow;
     	int recf;  //int cnt=0;
     	recf = apdu->data[0];
-    	FILE * fileturblow;
 
     	fprintf(to," Record Format   : %d \n",recf >> 4);
 
@@ -1522,7 +1524,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	int scale_factor = 1;
     	int turb_alt = (apdu->data[0] & 0x70) >> 4;
 
-    	fprintf(to," rle_fl: %d  turbl alt: %d   block: %d\n",rle_flag,turb_alt,block_num);
+    	fprintf(to," rle_flag: %d  Altitude: %d   Block: %d\n",rle_flag,turb_alt,block_num);
 
         switch(turb_alt){
         case 0:
@@ -1661,9 +1663,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     case 91:  			// Turbulence High **************
     {
+    	FILE * fileturbhigh;
     	int recf;  // int cnt=0;
     	recf = apdu->data[0];
-    	FILE * fileturbhigh;
 
     	fprintf(to," Record Format   : %d \n",recf >> 4);
 
@@ -1675,7 +1677,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	int scale_factor = 1;
     	int turb_alt = (apdu->data[0] & 0x70) >> 4;
 
-    	fprintf(to," rle_fl: %d  turbl alt: %d   block: %d\n",rle_flag,turb_alt,block_num);
+    	fprintf(to," rle_flag: %d  Altitude: %d   Block: %d\n",rle_flag,turb_alt,block_num);
 
     	switch(turb_alt){
     	case 0:
@@ -1814,7 +1816,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
        	int scale_factor = (apdu->data[0] & 0x30) >> 4;
 
-       	fprintf(to," rle_fl: %d  scale: %d ns-flag: %d Block: %d ",
+       	fprintf(to," rle_flag: %d  Scale: %d ns-flag: %d Block: %d ",
        			rle_flag,scale_factor,ns_flag,block_num);
 
        	// now decode the bins
@@ -1839,14 +1841,14 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        			}
 
        			cnt = cnt+num_bins;
-       			fprintf(to,"count: %3d  bins: %3d ",cnt,num_bins);
-       			fprintf(to,"pol: %d  lgt_cnt: %d\n",lgt_pol,lgt_cnt);
+       			fprintf(to,"Count: %3d  Bins: %3d ",cnt,num_bins);
+       			fprintf(to,"Polarity: %d  Count: %d\n",lgt_pol,lgt_cnt);
 
        			while (num_bins-- > 0){
        				fprintf(filelightng, "%d", lgt_cnt);}
        		}
 
-       		fprintf(to,"count: %d\n",cnt);
+       		fprintf(to,"Count: %d\n",cnt);
        		fprintf(filelightng, "\n");
        	}
        	else {
@@ -2188,10 +2190,10 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
         		fprintf(to,"\n");
         	}
         	else if (frame->type == 14){      // report list
-        		int tfr;  int lidflag;
-        		int prod_range; int num_crl; int rep_yr;
-        		int txt; int grph; int i;
-        		uint16_t prodt;  uint16_t repid=0;
+        		int tfr;  		int lidflag;
+        		int prod_range; int num_crl; 	int rep_yr;
+        		int txt; 		int grph; 		int i;
+        		uint16_t prodt; uint16_t repid=0;
 
         		prodt=frame->data[0] <<3 | frame->data[1] >>5;
         		tfr=(frame->data[1] >> 4) & 1;
@@ -2247,32 +2249,42 @@ void uat_display_uplink_mdb(const struct uat_uplink_mdb *mdb, FILE *to)
 
 static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
-	int rec_offset=11; 		int datoff=6;
-	int product_version; 	int record_count; 	int record_reference;
-	int overlay_record_identifier=0; 		int object_label=0; int object_label_flag=0;
-	char gstn[5]; char ob_type_text[35]; char ob_ele_text[35];
-	const char * object_labelt; const char * location_identifier;
-	uint16_t record_length=0; uint16_t report_number=0; uint16_t report_year=0;
-	uint8_t object_type; 	uint8_t object_element; uint8_t object_status;
-	uint8_t qualifier_flag; uint8_t param_flag;
-	uint8_t record_applicability_options; uint8_t date_time_format; uint8_t element_flag;
-	int geometry_overlay_options; int overlay_operator; int overlay_vertices_count;
+	int rec_offset=11;			int datoff=6;
+	int product_ver;
+	int rec_count;
+	int rec_ref;
+	int overlay_rec_id=0;
+	int obj_label=0;			int obj_label_flag=0;
+	char gstn[5];
+	char ob_type_text[35]; 		char ob_ele_text[35];
+	const char * obj_labelt; 	const char * location_id;
+	uint16_t rec_len=0; 		uint16_t rep_num=0;
+	uint16_t report_year=0;
+	uint8_t obj_type;
+	uint8_t obj_element; 		uint8_t obj_status;
+	uint8_t qualifier_flag; 	uint8_t param_flag;
+	uint8_t rec_app_opt;
+	uint8_t date_time_format; 	uint8_t element_flag;
+	int geo_overlay_opt; 		int overlay_op;
+	int overlay_vert_cnt;
 	int d1;	int d2;	int d3;	int d4;
-	uint32_t lat_raw;  	uint32_t 	lng_raw;  uint32_t alt_raw;  int alt;
-	float lat;  		float lng;	float fct_f =0.000687;  // float_t fct_t =0.001373;
+	uint32_t lat_raw; 			uint32_t lng_raw;
+	uint32_t alt_raw;  			int alt;
+	float lat;  				float lng;
+	float fct_f =0.000687;  // float_t fct_t =0.001373;
 
-	product_version = ((apdu->data[0]) & 0x0F);
-	fprintf(fnm," Product Version : %d ",product_version);
+	product_ver = ((apdu->data[0]) & 0x0F);
+	fprintf(fnm," Product Version : %d ",product_ver);
 
-	record_count = ((apdu->data[1]) & 0xF0) >> 4;
-	fprintf(fnm,"           Record Count     : %d \n",record_count);
+	rec_count = ((apdu->data[1]) & 0xF0) >> 4;
+	fprintf(fnm,"           Record Count     : %d \n",rec_count);
 
-	record_reference = ((apdu->data[5]));
-	fprintf(fnm," Record Reference: %d \n",record_reference);
+	rec_ref = ((apdu->data[5]));
+	fprintf(fnm," Record Reference: %d \n",rec_ref);
 
-	if (record_reference != 255){
-		location_identifier = decode_dlac(apdu->data, 3, 2);
-		fprintf(fnm," Location ID     : %s\n",location_identifier);
+	if (rec_ref != 255){
+		location_id = decode_dlac(apdu->data, 3, 2);
+		fprintf(fnm," Location ID     : %s\n",location_id);
 
 		rec_offset = 2;
 		const char *text = decode_dlac(apdu->data,5 ,rec_offset);
@@ -2281,42 +2293,42 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		fprintf(fnm," RLoc            : %s - %s\n",gstn, gs_ret);
 	}
 
-	report_number = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]);
-	fprintf(fnm," Report Number   : %6d  ",report_number);
+	rep_num = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]);
+	fprintf(fnm," Report Number   : %6d  ",rep_num);
 
-	record_length = ((apdu->data[datoff + 0]) << 2) | (((apdu->data[datoff + 1]) & 0xC0) >> 6);
-	fprintf(fnm,"     Record Length    : %03d ",record_length);
+	rec_len = ((apdu->data[datoff + 0]) << 2) | (((apdu->data[datoff + 1]) & 0xC0) >> 6);
+	fprintf(fnm,"     Record Length    : %03d ",rec_len);
 
 	report_year = ((apdu->data[datoff + 3]) & 0xFE) >> 1;
 	fprintf(fnm,"     Report Year        : %d\n ",report_year);
 
-	overlay_record_identifier = (((apdu->data[datoff + 4]) & 0x1E) >> 1) + 1; // Document instructs to add 1.
-	fprintf(fnm,"Ovrlay RcID     : %d",overlay_record_identifier);
+	overlay_rec_id = (((apdu->data[datoff + 4]) & 0x1E) >> 1) + 1; // Document instructs to add 1.
+	fprintf(fnm,"Ovrlay RcID     : %d",overlay_rec_id);
 
-	object_label_flag = (apdu->data[datoff + 4] & 0x01);
-	fprintf(fnm, "            Object Label Flag: %d \n", object_label_flag);
+	obj_label_flag = (apdu->data[datoff + 4] & 0x01);
+	fprintf(fnm, "            Object Label Flag: %d \n", obj_label_flag);
 
-	if (object_label_flag == 0) { // Numeric index.
-		object_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);
-		fprintf(fnm, " Ob Lbl Num      : %d    ", object_label);
+	if (obj_label_flag == 0) { // Numeric index.
+		obj_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);
+		fprintf(fnm, " Ob Lbl Num      : %d    ", obj_label);
 		datoff = datoff +7;	}
 	else {
-		object_labelt = decode_dlac(apdu->data,5, 2);
-		fprintf(fnm, " Ob Lbl Alph     : %s ",object_labelt);
+		obj_labelt = decode_dlac(apdu->data,5, 2);
+		fprintf(fnm, " Ob Lbl Alph     : %s ",obj_labelt);
 		datoff = datoff + 14;
 	}
 
 	element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;
 	fprintf(fnm, "        Element Flag     : %d  ", element_flag);
 
-	object_element = (apdu->data[datoff + 0]) & 0x1F;
-	fprintf(fnm, "      Object Element     : %d\n", object_element);
+	obj_element = (apdu->data[datoff + 0]) & 0x1F;
+	fprintf(fnm, "      Object Element     : %d\n", obj_element);
 
-	object_status = (apdu->data[datoff +1]) & 0x0F;
-	fprintf(fnm, " Object Status   : %d  ", object_status);
+	obj_status = (apdu->data[datoff +1]) & 0x0F;
+	fprintf(fnm, " Object Status   : %d  ", obj_status);
 
-	object_type = (apdu->data[datoff +1] & 0xF0) >> 4;
-	fprintf(fnm, "         Object Type      : %d \n", object_type);
+	obj_type = (apdu->data[datoff +1] & 0xF0) >> 4;
+	fprintf(fnm, "         Object Type      : %d \n", obj_type);
 
 	qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;
 	fprintf(fnm, " Qualifier Flag  : %d  ", qualifier_flag);
@@ -2328,22 +2340,22 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		datoff = datoff + 2;
 	}
 
-	geometry_overlay_options = (apdu->data[datoff + 0]) & 0x0F;
-	fprintf(fnm, " Geo Overlay Opts: %02d  ", geometry_overlay_options);
+	geo_overlay_opt = (apdu->data[datoff + 0]) & 0x0F;
+	fprintf(fnm, " Geo Overlay Opts: %02d  ", geo_overlay_opt);
 
-	overlay_operator = ((apdu->data[datoff +1]) & 0xC0) >> 6;
-	fprintf(fnm, "         Overlay Operator : %d  ", overlay_operator);
+	overlay_op = ((apdu->data[datoff +1]) & 0xC0) >> 6;
+	fprintf(fnm, "         Overlay Operator : %d  ", overlay_op);
 
-	overlay_vertices_count = ((apdu->data[datoff +1]) & 0x3F) + 1; // Document instructs to add 1. (6.20).
-	fprintf(fnm, "      Overlay Vertices # : %d \n", overlay_vertices_count);
+	overlay_vert_cnt = ((apdu->data[datoff +1]) & 0x3F) + 1; // Document instructs to add 1. (6.20).
+	fprintf(fnm, "      Overlay Vertices # : %d \n", overlay_vert_cnt);
 
-	record_applicability_options = ((apdu->data[datoff + 0]) & 0xC0) >> 6;
+	rec_app_opt = ((apdu->data[datoff + 0]) & 0xC0) >> 6;
 	date_time_format = ((apdu->data[datoff + 0]) & 0x30) >> 4;
 
-	fprintf(fnm, " Rec App Option  : %d  ", record_applicability_options);
+	fprintf(fnm, " Rec App Option  : %d  ", rec_app_opt);
 	fprintf(fnm, "          Rec App Date     : %d \n", date_time_format );
 
-	switch (record_applicability_options) {
+	switch (rec_app_opt) {
 
 		case 0:  // No times given. UFN.  (record_data[2:], date_time_format)
 			fprintf(fnm, "No Dates Given\n");
@@ -2392,18 +2404,18 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 	strcpy(ob_type_text,"Unknown object");
 	strcpy(ob_ele_text,"Unknown Element");
-	if (object_label_flag == 0 && object_type==14){
+	if (obj_label_flag == 0 && obj_type==14){
 		strcpy(ob_type_text,"Airspace");
 		if (element_flag==1){
-			strcpy(ob_ele_text,object_element_names[object_element]);
+			strcpy(ob_ele_text,obj_element_names[obj_element]);
 		}
 	}
 
-	switch (geometry_overlay_options) {
+	switch (geo_overlay_opt) {
 
 		case 3: // Extended Range 3D Polygon (MSL).
 
-			for (int i = 0; i < overlay_vertices_count; i++) {
+			for (int i = 0; i < overlay_vert_cnt; i++) {
 				lng_raw = ((apdu->data[datoff + i]) << 11) | ((apdu->data[datoff +i+1]) << 3) | ((apdu->data[datoff +i+2]) & 0xE0 >> 5);
 				lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+3]) << 6) | (((apdu->data[datoff +i+4]) & 0xFC) >> 2);
 				alt_raw = (((apdu->data[datoff +i+4]) & 0x03) << 8) | (apdu->data[datoff +i+5]);
@@ -2427,7 +2439,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 		case 9: // Extended Range 3D Point (AGL). p.47.
 
-			if (record_length < 6) {
+			if (rec_len < 6) {
 				fprintf(fnm,  "Too short\n");
 			}
 			else {
@@ -2470,7 +2482,7 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
    	while (report) {
    		char report_buf[1024];
    		const char *next_report; uint16_t report_year;
-   		uint16_t report_number=0;
+   		uint16_t rep_num=0;
    		char *p, *r;
 
    		next_report = strchr(report, '\x1e'); // RS
@@ -2523,9 +2535,9 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 			r = p+1;
 		}
 
-		report_number = ((apdu->data[8]  << 6) | (apdu->data[9] & 0xFC) >> 2);
-		fprintf(to," Report Number   : %6d  ",report_number);
-		fprintf(fnm," Report Number   : %6d  ",report_number);
+		rep_num = ((apdu->data[8]  << 6) | (apdu->data[9] & 0xFC) >> 2);
+		fprintf(to," Report Number   : %6d  ",rep_num);
+		fprintf(fnm," Report Number   : %6d  ",rep_num);
 
     	report_year = (((apdu->data[9]) & 0x03) << 5 | ((apdu->data[10])  & 0xF8) >> 3) ;
     	fprintf(to,"     Report Year       : %d\n ",report_year);
@@ -2551,8 +2563,7 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 
 void block_location_new(int bn, int ns, int sf, double *latN, double *lonW, double *latSize, double *lonSize)
 {
-	double raw_lat, raw_lon;
-    double scale;
+	double raw_lat; double raw_lon; double scale;
 
     if (sf == 1)
         scale = 5.0;
