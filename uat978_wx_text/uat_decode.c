@@ -2293,54 +2293,67 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		fprintf(fnm," RLoc            : %s - %s\n",gstn, gs_ret);
 	}
 
-	rep_num = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]);
+	rep_num = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]);   //7 8
 	fprintf(fnm," Report Number   : %6d  ",rep_num);
 
-	rec_len = ((apdu->data[datoff + 0]) << 2) | (((apdu->data[datoff + 1]) & 0xC0) >> 6);
+	rec_len = ((apdu->data[datoff + 0]) << 2) | (((apdu->data[datoff + 1]) & 0xC0) >> 6);    // 6 7
 	fprintf(fnm,"     Record Length    : %03d ",rec_len);
 
-	report_year = ((apdu->data[datoff + 3]) & 0xFE) >> 1;
+	report_year = ((apdu->data[datoff + 3]) & 0xFE) >> 1;    						// 9
 	fprintf(fnm,"     Report Year        : %d\n ",report_year);
 
 	overlay_rec_id = (((apdu->data[datoff + 4]) & 0x1E) >> 1) + 1; // Document instructs to add 1.
-	fprintf(fnm,"Ovrlay RcID     : %d",overlay_rec_id);
+	fprintf(fnm,"Ovrlay RcID     : %d",overlay_rec_id);                       //10
 
-	obj_label_flag = (apdu->data[datoff + 4] & 0x01);
+	obj_label_flag = (apdu->data[datoff + 4] & 0x01);                             ///10
 	fprintf(fnm, "            Object Label Flag: %d \n", obj_label_flag);
 
 	if (obj_label_flag == 0) { // Numeric index.
-		obj_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);
+		obj_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);   // 11 12
 		fprintf(fnm, " Ob Lbl Num      : %d    ", obj_label);
-		datoff = datoff +7;	}
+		datoff = datoff +7;	}                   //datoff=13
 	else {
 		obj_labelt = decode_dlac(apdu->data,5, 2);
 		fprintf(fnm, " Ob Lbl Alph     : %s ",obj_labelt);
 		datoff = datoff + 14;
 	}
 
-	element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;
+	element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;                 //13
 	fprintf(fnm, "        Element Flag     : %d  ", element_flag);
 
-	obj_element = (apdu->data[datoff + 0]) & 0x1F;
+	obj_element = (apdu->data[datoff + 0]) & 0x1F;                            //13
 	fprintf(fnm, "      Object Element     : %d\n", obj_element);
 
-	obj_status = (apdu->data[datoff +1]) & 0x0F;
+	obj_status = (apdu->data[datoff +1]) & 0x0F;                   //14
 	fprintf(fnm, " Object Status   : %d  ", obj_status);
 
-	obj_type = (apdu->data[datoff +1] & 0xF0) >> 4;
+	obj_type = (apdu->data[datoff +1] & 0xF0) >> 4;                  //14
 	fprintf(fnm, "         Object Type      : %d \n", obj_type);
 
-	qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;
+	qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;           //13
 	fprintf(fnm, " Qualifier Flag  : %d  ", qualifier_flag);
 
-	param_flag = ((apdu->data[datoff + 0]) & 0x20) >> 5;
+	param_flag = ((apdu->data[datoff + 0]) & 0x20) >> 5;                   //13
 	fprintf(fnm, "          Parameter Flag   : %d \n", param_flag);
 
 	if (qualifier_flag == 0){
-		datoff = datoff + 2;
+		datoff = datoff + 2;     // 13 > datoff=15
+	}
+	else {
+		int f15,f16,f17,f18,f19;
+
+		 f15= apdu->data[15];
+		 f16= apdu->data[16];
+		 f17= apdu->data[17];
+		 f18= apdu->data[18];
+		 f19= apdu->data[19];
+		 fprintf(to,"bonzo 15:%d  16:%d  17:%d  18:%d  19:%d\n",f15,f16,f17,f18,f19);
+		 fprintf(fnm,"bonzo 15:%d  16:%d  17:%d  18:%d  19:%d\n",f15,f16,f17,f18,f19);
+
+		 datoff = datoff+7;
 	}
 
-	geo_overlay_opt = (apdu->data[datoff + 0]) & 0x0F;
+	geo_overlay_opt = (apdu->data[datoff + 0]) & 0x0F;              //13
 	fprintf(fnm, " Geo Overlay Opts: %02d  ", geo_overlay_opt);
 
 	overlay_op = ((apdu->data[datoff +1]) & 0xC0) >> 6;
@@ -2461,6 +2474,67 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 			}
 		break;
+
+		case 7: case 8: // Extended Range Circular Prism (7 = MSL, 8 = AGL)
+			if (rec_len < 14) {
+				fprintf(to, "invalid data: Extended Range Circular Prism. Should be 14 bytes; %d seen.\n",rec_len);
+			} else {
+				uint32_t lng_bot_raw,lat_bot_raw,lng_top_raw,lat_top_raw;
+				uint32_t alt_bot_raw,alt_top_raw,r_lng_raw,r_lat_raw,alpha, alt_bot,alt_top;
+				float lat_bot,lng_bot,lat_top,lng_top,r_lng,r_lat;
+
+				lng_bot_raw = ((apdu->data[0]) << 10) | ((apdu->data[1]) << 2) | ((apdu->data[2]) & 0xC0 >> 6);
+				lat_bot_raw = (((apdu->data[2]) & 0x3F) << 12) | ((apdu->data[3]) << 4) | (((apdu->data[4]) & 0xF0) >> 4);
+				lng_top_raw = (((apdu->data[4]) & 0x0F) << 14) | ((apdu->data[5]) << 6) | (((apdu->data[6]) & 0xFC) >> 2);
+				lat_top_raw = (((apdu->data[6]) & 0x03) << 16) | ((apdu->data[7]) << 8) | (apdu->data[8]);
+
+				alt_bot_raw = ((apdu->data[9]) & 0xFE) >> 1;
+				alt_top_raw = (((apdu->data[9]) & 0x01) << 6) | (((apdu->data[10]) & 0xFC) >> 2);
+
+				r_lng_raw = (((apdu->data[10]) & 0x03) << 7) | (((apdu->data[11]) & 0xFE) >> 1);
+				r_lat_raw = (((apdu->data[11]) & 0x01) << 8) | (apdu->data[12]);
+				alpha = (apdu->data[13]);
+
+//				lat_bot, lng_bot = airmetLatLng(lat_bot_raw, lng_bot_raw, true);
+
+				lat_bot = fct_f * lat_bot_raw;
+				lng_bot = fct_f * lng_bot_raw;
+				if (lat_bot > 90.0) {
+					lat_bot = lat_bot - 180.0; }
+				if (lng_bot > 180.0) {
+					lng_bot = lng_bot - 360.0;
+				}
+
+//				lat_top, lng_top = airmetLatLng(lat_top_raw, lng_top_raw, true);
+
+				lat_top = fct_f * lat_top_raw;
+				lng_top = fct_f * lng_top_raw;
+				if (lat_top > 90.0) {
+					lat_top = lat_top - 180.0; }
+				if (lng_top > 180.0) {
+					lng_top = lng_top - 360.0;
+				}
+
+				alt_bot = alt_bot_raw * 5;
+				alt_top = alt_top_raw * 500;
+
+				r_lng = r_lng_raw * 0.2;
+				r_lat = r_lat_raw * 0.2;
+
+				fprintf(to,"lat_bot, lng_bot = %f, %f\n", lat_bot, lng_bot);
+				fprintf(to,"lat_top, lng_top = %f, %f\n", lat_top, lng_top);
+
+				if (geo_overlay_opt == 8) {
+					fprintf(to,"alt_bot, alt_top = %d AGL, %d AGL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
+				} else {
+					fprintf(to,"alt_bot, alt_top = %d MSL, %d MSL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
+				}
+				fprintf(to,"r_lng, r_lat = %f, %f\n", r_lng, r_lat);
+
+				fprintf(to,"alpha=%d\n", alpha);
+			}
+		break;
+
 	}
 
 	fprintf(fnm, " Object Type: %s  Object Element: %s\n",ob_type_text,ob_ele_text);
