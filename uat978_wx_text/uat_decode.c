@@ -29,23 +29,6 @@
 
 static char gs_ret[80];
 
-static const char *obj_element_names[14] = {
-		"Temporary Flight Restriction",
-		"Parachute Jumping /Sky Diving",
-		"Terminal Radar Service Area",
-		"Airport Advisory Area",
-		"VFR Flyway",
-		"VFR Corridor",
-		"VFR Transition Route",
-		"Terminal Area VFR Route",
-		"Prohibited Area ",
-		"Restricted Area ",
-		"Military Operations Area",
-		"Warning Area",
-		"Military Training Route",
-		"Air Defense Identification Zone"
-};
-
 void block_location_new(int bn, int ns, int sf, double *latN, double *lonW, double *latSize, double *lonSize);
 
 static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to);
@@ -403,6 +386,134 @@ static const char *address_qualifier_names[8] = {
 		"reserved (6)",
 		"reserved (7)"
 };
+
+static const char *object_types_text[16] = {
+		"Airport(or Heliport)",
+		"Runway(or Helipad)",
+		"Taxiway",
+		"Apron",
+		"Frequency Area",
+		"Signage",
+		"Approach Lighting",
+		"Airport Lighting",
+		"Obstruction OBST",
+		"Construction Area",
+		"Communication Equipment",
+		"Navigation Equipment",
+		"Surveillance Equipment" ,
+		"Weather Equipment",
+		"Airspace",
+		"Future Use"
+};
+
+static const char *object_status_text[16] = {
+		"Closed",
+		"Closed-Conditional",
+		"Arrival Only",
+		"Departure Only",
+		"Displaced",
+		"Braking Action",
+		"Obscured or Missing",
+		"Unmarked",
+		"Unlighted",
+		"In Service",
+		"Inoperative",
+		"Unavailable",
+		"Surface Condition",
+		"Cancelled",
+		"Unsafe",
+		"In Effect"
+};
+
+static const char *overlay_options_text[16] = {
+		"No Geometry",
+		"Low Resolution 2D Polygon",
+		"High Resolution 3D Polygon",
+		"Extended Range 3D Polygon (MSL)",
+		"Extended Range 3D Polygon (AGL)",
+		"Low Resolution 2D Ellipse",
+		"High Resolution 3D Ellipse",
+		"Extended Range Circular Prism (MSL)",
+		"Extended Range Circular Prism (AGL)",
+		"Extended Range 3D Point (AGL)",
+		"Future Use",
+		"Future Use",
+		"Future Use",
+		"Future Use",
+		"Future Use",
+		"Future Use"
+};
+
+static const char *airspace_element_names[14] = {
+		"Temporary Flight Restriction",
+		"Parachute Jumping /Sky Diving",
+		"Terminal Radar Service Area",
+		"Airport Advisory Area",
+		"VFR Flyway",
+		"VFR Corridor",
+		"VFR Transition Route",
+		"Terminal Area VFR Route",
+		"Prohibited Area ",
+		"Restricted Area ",
+		"Military Operations Area",
+		"Warning Area",
+		"Military Training Route",
+		"Air Defense Identification Zone"
+};
+
+static const char *gairspace_element_names[16] = {
+		"Temporary Flight Restriction",
+		"G-AIRMET Turbulence",
+		"G-AIRMET Low Level Wind Shear",
+		"G-AIRMET Surface Winds",
+		"G-AIRMET Icing",
+		"G-AIRMET Freezing Level",
+		"G-AIRMET IFR Conditions",
+		"G-AIRMET Mountain Obscuration",
+		"Future Use",
+		"Future Use",
+		"Future Use",
+		"Future Use",
+		"Future Use",
+		"Future Use",
+		"Future Use",
+		"Future Use"
+};
+
+static const char *obj_param_type_names[31] = {
+		"Reserved",
+		"Distance Nautical Miles",
+		"Distance Statute Miles",
+		"Length Feet",
+		"Length Meters",
+		"Height Feet (MSL)",
+		"Height Feet (AGL)",
+		"Height Meters",
+		"Width Feet",
+		"Width Meters",
+		"Depth Fractional Inches",
+		"Depth Inches",
+		"Depth Feet",
+		"Weight Pounds",
+		"Friction Measure (MU)",
+		"Direction (Magnetic)",
+		"Direction (True)",
+		"Visibility Feet",
+		"Visibility Meters",
+		"Visibility Statute Miles",
+		"Speed Knots",
+		"Speed Meters",
+		"Frequency in MHz (25)",
+		"Frequency in MHz (8.33)",
+		"Future Use",
+		"Future Use",
+		"Future Use",
+		"Future Use",
+		"Future Use",
+		"Future Use",
+		"Future Use"
+};
+
 
 static void uat_display_hdr(const struct uat_adsb_mdb *mdb, FILE *to)
 {
@@ -2256,7 +2367,8 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 	int overlay_rec_id=0;
 	int obj_label=0;			int obj_label_flag=0;
 	char gstn[5];
-	char ob_type_text[35]; 		char ob_ele_text[35];
+	char ob_type_text[35]; 		char ob_ele_text[35]; char ob_status_text[45];
+	char geo_overlay_text[45];	char obj_par_name_text[45];
 	const char * obj_labelt; 	const char * location_id;
 	uint16_t rec_len=0; 		uint16_t rep_num=0;
 	uint16_t report_year=0;
@@ -2272,6 +2384,9 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 	uint32_t alt_raw;  			int alt;
 	float lat;  				float lng;
 	float fct_f =0.000687;  // float_t fct_t =0.001373;
+	uint32_t object_qualifier;
+	int obj_param_type=0;
+	uint16_t ob_par_val;
 
 	product_ver = ((apdu->data[0]) & 0x0F);
 	fprintf(fnm," Product Version : %d ",product_ver);
@@ -2340,17 +2455,14 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		datoff = datoff + 2;     // 13 > datoff=15
 	}
 	else {
-		int f15,f16,f17,f18,f19;
+		object_qualifier = ((apdu->data[datoff + 2]) << 16) | ((apdu->data[datoff + 3]) << 8) | (apdu->data[datoff + 4]);
+		obj_param_type= apdu->data[18] >> 3;
+		ob_par_val = (apdu->data[18] & 0x7)<< 8 | apdu->data[19];
 
-		 f15= apdu->data[15];
-		 f16= apdu->data[16];
-		 f17= apdu->data[17];
-		 f18= apdu->data[18];
-		 f19= apdu->data[19];
-		 fprintf(to,"bonzo 15:%d  16:%d  17:%d  18:%d  19:%d\n",f15,f16,f17,f18,f19);
-		 fprintf(fnm,"bonzo 15:%d  16:%d  17:%d  18:%d  19:%d\n",f15,f16,f17,f18,f19);
+		fprintf(to, "Obj Qualfr: %d  Obj Prm Tp: %d  Obj Par Val: %d\n",object_qualifier,obj_param_type,ob_par_val);
+		fprintf(fnm,"Obj Qualfr: %d  Obj Prm Tp: %d  Obj Par Val: %d\n",object_qualifier,obj_param_type,ob_par_val);
 
-		 datoff = datoff+7;
+		datoff = datoff+7;
 	}
 
 	geo_overlay_opt = (apdu->data[datoff + 0]) & 0x0F;              //13
@@ -2415,14 +2527,27 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		break;
 	}
 
-	strcpy(ob_type_text,"Unknown object");
+	strcpy(ob_type_text,"Unknown Object");
 	strcpy(ob_ele_text,"Unknown Element");
-	if (obj_label_flag == 0 && obj_type==14){
-		strcpy(ob_type_text,"Airspace");
-		if (element_flag==1){
-			strcpy(ob_ele_text,obj_element_names[obj_element]);
-		}
-	}
+	strcpy(ob_status_text,"Unknown Status");
+	strcpy(ob_status_text,object_status_text[obj_status]);
+	strcpy(geo_overlay_text,overlay_options_text[geo_overlay_opt]);
+
+
+	if (qualifier_flag == 1)
+		strcpy(obj_par_name_text,obj_param_type_names[obj_param_type]);
+	else
+		strcpy(obj_par_name_text,"n/a");
+
+	if (obj_label_flag == 0)
+		strcpy(ob_type_text,object_types_text[obj_type]);
+
+	if (element_flag==1 && obj_type ==14)
+		strcpy(ob_ele_text,airspace_element_names[obj_element]);
+
+	if (element_flag==1 && obj_type ==14 && apdu->product_id == 14)
+			strcpy(ob_ele_text,gairspace_element_names[obj_element]);
+
 
 	switch (geo_overlay_opt) {
 
@@ -2538,6 +2663,9 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 	}
 
 	fprintf(fnm, " Object Type: %s  Object Element: %s\n",ob_type_text,ob_ele_text);
+	fprintf(fnm, " Object Status: %s Overlay type: %s\n",ob_status_text,geo_overlay_text);
+	fprintf(fnm, " obj_par_name_text: %s\n",obj_par_name_text);
+
 	fprintf(fnm,"\n");
 
 	fflush(fnm);
