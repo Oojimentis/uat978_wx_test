@@ -1566,7 +1566,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        		}
 
  //      		fprintf(to,"count: %d\n",cnt);
- //      		fprintf(filecloudt, "\n");
+       		fprintf(filecloudt, "\n");
        	}
        	else {
        		int L = apdu->data[3] & 15;
@@ -1719,7 +1719,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		}
 
 //    		fprintf(to,"count: %d\n",cnt);
-//    		fprintf(fileturblow, "\n");
+    		fprintf(fileturblow, "\n");
     	}
     	else {
     		int L = apdu->data[3] & 15;
@@ -1860,7 +1860,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		}
 
 //    		fprintf(to,"count: %d\n",cnt);
-//    		fprintf(fileturbhigh, "\n");
+    		fprintf(fileturbhigh, "\n");
     	}
     	else {
     		int L = apdu->data[3] & 15;
@@ -2183,6 +2183,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     			fprintf(filemetar," Report Name         : %s\n",mtype);
     			fprintf(filemetar," Data:\n%s\n", r);    // *** Text ***
+    			display_generic_data(apdu->data, apdu->length, to);
     		}
 
     		if (strcmp(mtype,"WINDS") == 0){
@@ -2408,61 +2409,94 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		fprintf(fnm," RLoc            : %s - %s\n",gstn, gs_ret);
 	}
 
-	rep_num = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]);   //7 8
+	rep_num = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]);   			//7 8
 	fprintf(fnm," Report Number   : %6d  ",rep_num);
 
-	rec_len = ((apdu->data[datoff + 0]) << 2) | (((apdu->data[datoff + 1]) & 0xC0) >> 6);    // 6 7
+	rec_len = ((apdu->data[datoff + 0]) << 2) | (((apdu->data[datoff + 1]) & 0xC0) >> 6);    	// 6 7
 	fprintf(fnm,"     Record Length    : %03d ",rec_len);
 
-	report_year = ((apdu->data[datoff + 3]) & 0xFE) >> 1;    						// 9
+	report_year = ((apdu->data[datoff + 3]) & 0xFE) >> 1;    									// 9
 	fprintf(fnm,"     Report Year        : %d\n ",report_year);
 
 	overlay_rec_id = (((apdu->data[datoff + 4]) & 0x1E) >> 1) + 1; // Document instructs to add 1.
-	fprintf(fnm,"Ovrlay RcID     : %d",overlay_rec_id);                       //10
+	fprintf(fnm,"Ovrlay RcID     : %d",overlay_rec_id);                       					//10
 
-	obj_label_flag = (apdu->data[datoff + 4] & 0x01);                             ///10
+	obj_label_flag = (apdu->data[datoff + 4] & 0x01);                             				//10
 	fprintf(fnm, "            Object Label Flag: %d \n", obj_label_flag);
 
 	if (obj_label_flag == 0) { // Numeric index.
-		obj_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);   // 11 12
+		obj_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);   				// 11 12
 		fprintf(fnm, " Ob Lbl Num      : %d    ", obj_label);
-		datoff = datoff +7;	}                   //datoff=13
+		datoff = datoff +7;	}                   												//datoff=13
 	else {
 		obj_labelt = decode_dlac(apdu->data,5, 2);
 		fprintf(fnm, " Ob Lbl Alph     : %s ",obj_labelt);
 		datoff = datoff + 14;
 	}
 
-	element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;                 //13
+	element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;                 						//13
 	fprintf(fnm, "        Element Flag     : %d  ", element_flag);
 
-	obj_element = (apdu->data[datoff + 0]) & 0x1F;                            //13
+	obj_element = (apdu->data[datoff + 0]) & 0x1F;                            					//13
 	fprintf(fnm, "      Object Element     : %d\n", obj_element);
 
-	obj_status = (apdu->data[datoff +1]) & 0x0F;                   //14
+	obj_status = (apdu->data[datoff +1]) & 0x0F;                   								//14
 	fprintf(fnm, " Object Status   : %d  ", obj_status);
 
-	obj_type = (apdu->data[datoff +1] & 0xF0) >> 4;                  //14
+	obj_type = (apdu->data[datoff +1] & 0xF0) >> 4;                  							//14
 	fprintf(fnm, "         Object Type      : %d \n", obj_type);
 
-	qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;           //13
+	qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;           							//13
 	fprintf(fnm, " Qualifier Flag  : %d  ", qualifier_flag);
 
-	param_flag = ((apdu->data[datoff + 0]) & 0x20) >> 5;                   //13
+	param_flag = ((apdu->data[datoff + 0]) & 0x20) >> 5;                  						//13
 	fprintf(fnm, "          Parameter Flag   : %d \n", param_flag);
 
 	if (qualifier_flag == 0){
-		datoff = datoff + 2;     // 13 > datoff=15
+		datoff = datoff + 2;     													// 13 > datoff=15
 	}
 	else {
 		object_qualifier = ((apdu->data[datoff + 2]) << 16) | ((apdu->data[datoff + 3]) << 8) | (apdu->data[datoff + 4]);
-		obj_param_type= apdu->data[18] >> 3;
-		ob_par_val = (apdu->data[18] & 0x7)<< 8 | apdu->data[19];
+
+		if (apdu->product_id == 14) {
+			if (apdu->data[datoff + 2] & (1 << 7))      //15
+				fprintf(fnm," Qualifier       : Unspecified\n");
+
+			if (apdu->data[datoff + 3] & (1 << 0))               //16
+				fprintf(fnm," Qualifier       : Ash\n");
+
+			if (apdu->data[datoff + 4] & (1 << 0))               //17
+				fprintf(fnm," Qualifier       : Precipitation\n");
+
+			if (apdu->data[datoff + 4] & (1 << 1))
+				fprintf(fnm," Qualifier       : Mist\n");
+
+			if (apdu->data[datoff + 4] & (1 << 2))
+				fprintf(fnm," Qualifier       : Fog\n");
+
+			if (apdu->data[datoff + 4] & (1 << 3))
+				fprintf(fnm," Qualifier       : Haze\n");
+
+			if (apdu->data[datoff + 4] & (1 << 4))
+				fprintf(fnm," Qualifier       : Smoke\n");
+
+			if (apdu->data[datoff + 4] & (1 << 5))
+				fprintf(fnm," Qualifier       : Blowing Snow\n");
+
+			if (apdu->data[datoff + 4] & (1 << 6))
+				fprintf(fnm," Qualifier       : Clouds\n");
+
+			if (apdu->data[datoff + 4] & (1 << 7))
+				fprintf(fnm," Qualifier      : Dust\n");
+		}
+
+		obj_param_type= apdu->data[18] >> 3;              					 //18
+		ob_par_val = (apdu->data[18] & 0x7)<< 8 | apdu->data[19];				//19
 
 		fprintf(to, "Obj Qualfr: %d  Obj Prm Tp: %d  Obj Par Val: %d\n",object_qualifier,obj_param_type,ob_par_val);
 		fprintf(fnm,"Obj Qualfr: %d  Obj Prm Tp: %d  Obj Par Val: %d\n",object_qualifier,obj_param_type,ob_par_val);
 
-		datoff = datoff+7;
+		datoff = datoff+7;                 //13 datogg =20
 	}
 
 	geo_overlay_opt = (apdu->data[datoff + 0]) & 0x0F;              //13
