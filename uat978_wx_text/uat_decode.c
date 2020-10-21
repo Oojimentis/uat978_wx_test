@@ -35,6 +35,8 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to);
 
 static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to);
 
+static void get_text_moo(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to);
+
 // The odd two-string-literals here is to avoid \0x3ABCDEF being interpreted as a single (very large valued) character
 static const char *dlac_alphabet = "\x03" "ABCDEFGHIJKLMNOPQRSTUVWXYZ\x1A\t\x1E\n| !\"#$%&'()*+,-./0123456789:;<=>?";
 
@@ -911,8 +913,15 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
         frame->fisb.day = ((frame->data[2] & 0x07) << 2) | (frame->data[3] >> 6);
         frame->fisb.hours = (frame->data[3] & 0x3e) >> 1;
         frame->fisb.minutes = ((frame->data[3] & 0x01) << 5) | (frame->data[4] >> 3);
+
+        if (frame->data[1] & 0x02){
+            frame->fisb.length = frame->length - 9; // ???
+            frame->fisb.data = frame->data + 9; }
+        else {
         frame->fisb.length = frame->length - 5; // ???
         frame->fisb.data = frame->data + 5;
+        }
+
         break;
 
     case 3: // Month, Day, Hours, Minutes, Seconds
@@ -936,6 +945,15 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
     frame->fisb.product_id = ((frame->data[0] & 0x1f) << 6) | (frame->data[1] >> 2);
     frame->fisb.s_flag = (frame->data[1] & 0x02) ? 1 : 0;
     frame->is_fisb = 1;
+
+    if (frame->fisb.s_flag){
+
+    	int i =0;
+        i= i+1;
+
+    fprintf(stderr," frame length: %d  prod: %d flen: %d  topt: %d  %d\n"
+    		,frame->fisb.length,frame->fisb.product_id, frame->length,t_opt,i );
+    }
 }
 
 void uat_decode_uplink_mdb(uint8_t *frame, struct uat_uplink_mdb *mdb)
@@ -1163,7 +1181,10 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 			get_graphic(apdu, filenotam,to);
         }
         else if ((recf >> 4) == 2 ) {       // text
-        	get_text(apdu, filenotam,to);
+        	if (apdu->s_flag){
+        		get_text_moo(apdu, filenotam,to);}
+        	else{
+        		get_text(apdu, filenotam,to);}
         }
         else
         	display_generic_data(apdu->data, apdu->length, to);
@@ -2709,7 +2730,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 
-	int rec_offset=11;
+	int rec_offset=11;     //was 11
 	char gstn[5]; char *sua_text;
 
 	const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
@@ -2795,6 +2816,103 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 
 		fflush(fnm);
    	}
+}
+
+static void get_text_moo(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
+
+	int rec_offset=5;     //was 11
+	char gstn[5];
+
+//	fprintf(to," Record Format   : %d \n",apdu->data[4] >> 4);
+
+	const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
+	const char *report = text;
+	fprintf(to,"moo: %s\n",text);
+	fprintf(fnm,"moo: %s\n",text);
+
+	const char *crun;
+	for(int i=0; i < 16; i++){
+
+		apdu->data[10] = apdu->data[10] >> 4;
+	crun= decode_dlac(apdu->data, apdu->length,i);
+	fprintf(to,"\n ogtext(%d): %s\n",i,crun);
+	}
+
+/*   	while (report) {
+   		char report_buf[1024];
+   		const char *next_report; uint16_t report_year; */
+   		uint16_t rep_num=0;  uint16_t report_year;
+   		char *p, *r;
+   		char report_buf[1024];
+
+/*   		next_report = strchr(report, '\x1e'); // RS
+   		if (!next_report)
+   			next_report = strchr(report, '\x03'); // ETX
+   		if (next_report) {
+   			memcpy(report_buf, report, next_report - report);
+   			report_buf[next_report - report] = 0;
+   			report = next_report + 1;
+   		} else {
+   			strcpy(report_buf, report);
+   			report = NULL;
+   		}
+*/
+//   		if (!report_buf[0])
+//   			continue;
+			strcpy(report_buf, report);
+   		r = report_buf;
+   		p = strchr(r, ' ');
+
+   		if (p) {
+   			*p = 0;
+   			fprintf(to," moo Report Type     : %s\n",r);
+   			fprintf(fnm," moo Report Type     : %s\n",r);
+   			r = p+1;
+   		}
+
+   		if (apdu->product_id == 8)
+   			p = strchr(r, '.');
+   		else
+   			p = strchr(r, ' ');
+
+   		if (apdu->product_id != 13){
+   			if (p) {
+   				*p = 0;
+
+   				strncpy(gstn,r,5);
+   				get_gs_name(gstn,reccount);
+   				fprintf(to," moo RLoc            : %s - %s\n",gstn, gs_ret);
+   				fprintf(fnm," moo RLoc            : %s - %s\n",gstn, gs_ret);
+   				r = p+1;
+   			}
+		}
+
+		p = strchr(r, ' ');   //  *** RTime ***
+		if (p) {
+			*p = 0;
+			fprintf(to," moo RTime           : %s\n", r);
+			fprintf(fnm," moo RTime           : %s\n", r);
+			r = p+1;
+		}
+
+		rep_num = ((apdu->data[8]  << 6) | (apdu->data[9] & 0xFC) >> 2);
+		fprintf(to," moo Report Number   : %6d  ",rep_num);
+		fprintf(fnm," moo Report Number   : %6d  ",rep_num);
+
+    	report_year = (((apdu->data[9]) & 0x03) << 5 | ((apdu->data[10])  & 0xF8) >> 3) ;
+    	fprintf(to,"     moo Report Year       : %d\n ",report_year);
+    	fprintf(fnm,"     moo Report Year       : %d\n ",report_year);
+
+   		time_t current_time = time(NULL);
+   		struct tm *tm = localtime(&current_time);
+   		fprintf(fnm,"moo Time            : %s", asctime(tm));
+
+		fprintf(to,"\n%s \n",r);
+		fprintf(fnm," moo Data:\n%s\n",r);
+		display_generic_data(apdu->data, apdu->length, to);
+
+		fflush(fnm);
+
 }
 
 void block_location_new(int bn, int ns, int sf, double *latN, double *lonW, double *latSize, double *lonSize)

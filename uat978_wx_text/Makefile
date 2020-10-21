@@ -1,4 +1,4 @@
-CFLAGS+=-O2 -g -Wall -Werror -Ifec
+CFLAGS+=-O0 -g -Wall -Werror -Ifec
 LDFLAGS=
 LIBS=-lm libmetar.a 
 CC=gcc
