@@ -915,8 +915,8 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
         frame->fisb.minutes = ((frame->data[3] & 0x01) << 5) | (frame->data[4] >> 3);
 
         if (frame->data[1] & 0x02){
-            frame->fisb.length = frame->length - 9; // ???
-            frame->fisb.data = frame->data + 9; }
+            frame->fisb.length = frame->length ; // ???
+            frame->fisb.data = frame->data ; }
         else {
         frame->fisb.length = frame->length - 5; // ???
         frame->fisb.data = frame->data + 5;
@@ -1051,7 +1051,7 @@ static const char *get_fisb_product_name(uint16_t product_id)
     case 8:    	return "NOTAM (Including TFRs) and Service Status";
     case 9:    	return "Aerodrome and Airspace – D-ATIS ****";
     case 10:	return "Aerodrome and Airspace - TWIP ****";
-    case 11:   	return "Aerodrome and Airspace - AIRME";
+    case 11:   	return "Aerodrome and Airspace - AIRMET";
     case 12:   	return "Aerodrome and Airspace - SIGMET/Convective SIGMET";
     case 13:   	return "Aerodrome and Airspace - SUA Status";
     case 14:   	return "G-AIRMET";
@@ -1169,26 +1169,28 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     case 8:             //NOTAM **************
     {
     	int recf;
-    	recf = apdu->data[0];
 
-    	fprintf(to," Record Format   : %d \n",recf >> 4);
-    	fprintf(filenotam," Record Format   : %d \n",recf >> 4);
+    	if ( apdu->s_flag){
+    		recf = apdu->data[9];}
+    	else {
+    		recf = apdu->data[0]; }
 
-        if ((recf >> 4) == 8){ 				//graphic
+    	fprintf(to," Record Format   : %d      apdu->s_flag %d\n",recf >> 4, apdu->s_flag);
+    	fprintf(filenotam," Record Format   : %d     apdu->s_flag %d\n",recf >> 4, apdu->s_flag);
+
+        if ((recf >> 4) == 115){ 				//graphic
         	fprintf(to," Report Type     : NOTAM\n");
 			fprintf(filenotam," Report Type     : NOTAM\n");
 
 			get_graphic(apdu, filenotam,to);
         }
-        else if ((recf >> 4) == 2 ) {       // text
-        	if (apdu->s_flag){
-        		get_text_moo(apdu, filenotam,to);}
-        	else{
-        		get_text(apdu, filenotam,to);}
-        }
-        else
-        	display_generic_data(apdu->data, apdu->length, to);
+        else if (((recf >> 4) == 2 ) && (apdu->s_flag))  {        // text
+        		get_text_moo(apdu, filenotam,to); }
+        	else if ((recf >> 4) == 113 ) {
+        	   		get_text(apdu, filenotam,to);}
 
+//        else
+//        	display_generic_data(apdu->data, apdu->length, to);
     }
     break;
 
@@ -2820,23 +2822,33 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 
 static void get_text_moo(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 
-	int rec_offset=5;     //was 11
+	int rec_offset=11;     //was 11
 	char gstn[5];
 
+	uint16_t prodid;
+	uint16_t prodfillen;
+	uint16_t apdunum;
+	int pod;
 //	fprintf(to," Record Format   : %d \n",apdu->data[4] >> 4);
 
 	const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
 	const char *report = text;
-	fprintf(to,"moo: %s\n",text);
-	fprintf(fnm,"moo: %s\n",text);
+//	fprintf(to,"moo: %s\n",text);
+//	fprintf(fnm,"moo: %s\n",text);
 
-	const char *crun;
-	for(int i=0; i < 16; i++){
+	prodid = ((apdu->data[4] & 0x7) >> 1) | (apdu->data[5] >> 1);
+	pod = (apdu->data[5] >> 1);
+	prodfillen= (apdu->data[5] & 0x1) | (apdu->data[6]);
+	apdunum= ((apdu->data[7]) << 1 ) | (apdu->data[8] >> 7);
 
-		apdu->data[10] = apdu->data[10] >> 4;
-	crun= decode_dlac(apdu->data, apdu->length,i);
-	fprintf(to,"\n ogtext(%d): %s\n",i,crun);
-	}
+	fprintf(fnm," moo Prodid : %d prodfillen: %d  apdunum: %d %d\n",prodid,prodfillen,apdunum,pod);
+
+//	const char *crun;
+//	for(int i=0; i < 16; i++){
+//		apdu->data[10] = apdu->data[10] >> 4;
+//		crun= decode_dlac(apdu->data, apdu->length,i);
+//		fprintf(to,"\n ogtext(%d): %s\n",i,crun);
+//	}
 
 /*   	while (report) {
    		char report_buf[1024];
