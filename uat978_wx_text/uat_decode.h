@@ -22,8 +22,13 @@
 #include <stdio.h>
 #include <stdint.h>
 
-//#include "uat.h"
+#include "uat.h"
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <unistd.h>
 
+#include "fec.h"
 //
 // Datatypes
 //
@@ -40,6 +45,16 @@ struct MyStruct{
 	char gs_call[5];
 	char gs_loc[75];
 	}  gs_list[900];
+
+struct MySegStruct{
+	uint16_t seg_prodid;
+	uint16_t seg_prolen;
+	uint16_t seg_segnum;
+	const char *seg_data;
+}  seg_list[50];
+
+int seg_count;
+
 
 FILE * filemetar;   		//413
 FILE * filenotam;   		// 8

@@ -44,7 +44,7 @@ static void handle_uplink_frame(uint64_t timestamp, uint8_t *frame, int rs);
 #ifdef USE_SIGNED_OVERFLOW
 #define phi_difference(from,to) ((int16_t)((to) - (from)))
 #else
-inline int16_t phi_difference(uint16_t from, uint16_t to)
+static inline int16_t phi_difference(uint16_t from, uint16_t to)
 {
     int32_t difference = to - from; // lies in the range -65535 .. +65535
     if (difference >= 32768)        //   +32768..+65535

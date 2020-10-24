@@ -55,6 +55,8 @@ int main(int argc, char **argv)
 	char lyne[80];
 	char *item;
 
+	seg_count=0;
+
 	fprintf(stdout, "\nOpening file: uat_gs.txt\n");
 
 	filehandle = fopen("uat_gs.txt","r");

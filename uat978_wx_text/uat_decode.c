@@ -2823,25 +2823,20 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 static void get_text_moo(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 
 	int rec_offset=11;     //was 11
-	char gstn[5];
 
 	uint16_t prodid;
 	uint16_t prodfillen;
 	uint16_t apdunum;
-	int pod;
-//	fprintf(to," Record Format   : %d \n",apdu->data[4] >> 4);
+
 
 	const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
 	const char *report = text;
-//	fprintf(to,"moo: %s\n",text);
-//	fprintf(fnm,"moo: %s\n",text);
 
 	prodid = ((apdu->data[4] & 0x7) >> 1) | (apdu->data[5] >> 1);
-	pod = (apdu->data[5] >> 1);
 	prodfillen= (apdu->data[5] & 0x1) | (apdu->data[6]);
 	apdunum= ((apdu->data[7]) << 1 ) | (apdu->data[8] >> 7);
 
-	fprintf(fnm," moo Prodid : %d prodfillen: %d  apdunum: %d %d\n",prodid,prodfillen,apdunum,pod);
+	fprintf(fnm," moo Prodid : %d prodfillen: %d  apdunum: %d\n",prodid,prodfillen,apdunum);
 
 //	const char *crun;
 //	for(int i=0; i < 16; i++){
@@ -2849,76 +2844,50 @@ static void get_text_moo(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 //		crun= decode_dlac(apdu->data, apdu->length,i);
 //		fprintf(to,"\n ogtext(%d): %s\n",i,crun);
 //	}
+	  int fg=0;
+	  for (int i = 0; i <= seg_count; ++i) {
 
-/*   	while (report) {
-   		char report_buf[1024];
-   		const char *next_report; uint16_t report_year; */
-   		uint16_t rep_num=0;  uint16_t report_year;
-   		char *p, *r;
-   		char report_buf[1024];
+		  if ((prodid == seg_list[i].seg_prodid) &&
+				  (prodfillen == seg_list[i].seg_prolen) &&
+				  (apdunum == seg_list[i].seg_segnum)){
+			  fprintf(fnm," item in list\n");
+			  ++fg;
+		  }
+	  }
+	  if (fg == 0){
 
-/*   		next_report = strchr(report, '\x1e'); // RS
-   		if (!next_report)
-   			next_report = strchr(report, '\x03'); // ETX
-   		if (next_report) {
-   			memcpy(report_buf, report, next_report - report);
-   			report_buf[next_report - report] = 0;
-   			report = next_report + 1;
-   		} else {
-   			strcpy(report_buf, report);
-   			report = NULL;
-   		}
-*/
-//   		if (!report_buf[0])
-//   			continue;
-			strcpy(report_buf, report);
+		 fprintf(fnm," item not in list\n");
+		 seg_list[seg_count].seg_prodid =prodid;
+		 seg_list[seg_count].seg_prolen=prodfillen;
+		 seg_list[seg_count].seg_segnum=apdunum;
+		 seg_list[seg_count].seg_data = report;
+
+			 ++seg_count;
+
+	  }
+
+	  fg=0;
+	  for (int i = 0; i <= seg_count; ++i) {
+		  for (int j = 1; j <= prodfillen; ++j) {
+			  if ((prodid == seg_list[i].seg_prodid) &&
+				 (prodfillen == seg_list[i].seg_prolen) &&
+				 (j == seg_list[i].seg_segnum)){
+				  ++fg;
+			  }
+		  }
+	  }
+
+	  if (fg == prodfillen){
+		  fprintf(fnm," all items in list\n");
+	  }
+
+	  char  *r;
+   		char report_buf[1024];
+   		int g = strlen(text);
+		strcpy(report_buf, report);
    		r = report_buf;
-   		p = strchr(r, ' ');
-
-   		if (p) {
-   			*p = 0;
-   			fprintf(to," moo Report Type     : %s\n",r);
-   			fprintf(fnm," moo Report Type     : %s\n",r);
-   			r = p+1;
-   		}
-
-   		if (apdu->product_id == 8)
-   			p = strchr(r, '.');
-   		else
-   			p = strchr(r, ' ');
-
-   		if (apdu->product_id != 13){
-   			if (p) {
-   				*p = 0;
-
-   				strncpy(gstn,r,5);
-   				get_gs_name(gstn,reccount);
-   				fprintf(to," moo RLoc            : %s - %s\n",gstn, gs_ret);
-   				fprintf(fnm," moo RLoc            : %s - %s\n",gstn, gs_ret);
-   				r = p+1;
-   			}
-		}
-
-		p = strchr(r, ' ');   //  *** RTime ***
-		if (p) {
-			*p = 0;
-			fprintf(to," moo RTime           : %s\n", r);
-			fprintf(fnm," moo RTime           : %s\n", r);
-			r = p+1;
-		}
-
-		rep_num = ((apdu->data[8]  << 6) | (apdu->data[9] & 0xFC) >> 2);
-		fprintf(to," moo Report Number   : %6d  ",rep_num);
-		fprintf(fnm," moo Report Number   : %6d  ",rep_num);
-
-    	report_year = (((apdu->data[9]) & 0x03) << 5 | ((apdu->data[10])  & 0xF8) >> 3) ;
-    	fprintf(to,"     moo Report Year       : %d\n ",report_year);
-    	fprintf(fnm,"     moo Report Year       : %d\n ",report_year);
-
-   		time_t current_time = time(NULL);
-   		struct tm *tm = localtime(&current_time);
-   		fprintf(fnm,"moo Time            : %s", asctime(tm));
-
+   		r= r+12;
+   		fprintf(to," g = %d\n",g);
 		fprintf(to,"\n%s \n",r);
 		fprintf(fnm," moo Data:\n%s\n",r);
 		display_generic_data(apdu->data, apdu->length, to);
