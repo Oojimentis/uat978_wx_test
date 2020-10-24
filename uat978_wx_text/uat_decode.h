@@ -50,7 +50,7 @@ struct MySegStruct{
 	uint16_t seg_prodid;
 	uint16_t seg_prolen;
 	uint16_t seg_segnum;
-	const char *seg_data;
+	uint8_t  seg_data[500];
 }  seg_list[50];
 
 int seg_count;

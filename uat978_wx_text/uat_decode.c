@@ -950,9 +950,6 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
 
     	int i =0;
         i= i+1;
-
-    fprintf(stderr," frame length: %d  prod: %d flen: %d  topt: %d  %d\n"
-    		,frame->fisb.length,frame->fisb.product_id, frame->length,t_opt,i );
     }
 }
 
@@ -1176,11 +1173,11 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		recf = apdu->data[0]; }
 
     	fprintf(to," Record Format   : %d      apdu->s_flag %d\n",recf >> 4, apdu->s_flag);
-    	fprintf(filenotam," Record Format   : %d     apdu->s_flag %d\n",recf >> 4, apdu->s_flag);
+//    	fprintf(filenotam," Record Format   : %d     apdu->s_flag %d\n",recf >> 4, apdu->s_flag);
 
         if ((recf >> 4) == 115){ 				//graphic
         	fprintf(to," Report Type     : NOTAM\n");
-			fprintf(filenotam," Report Type     : NOTAM\n");
+//			fprintf(filenotam," Report Type     : NOTAM\n");
 
 			get_graphic(apdu, filenotam,to);
         }
@@ -2824,10 +2821,7 @@ static void get_text_moo(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 
 	int rec_offset=11;     //was 11
 
-	uint16_t prodid;
-	uint16_t prodfillen;
-	uint16_t apdunum;
-
+	uint16_t prodid;	uint16_t prodfillen;	uint16_t apdunum;
 
 	const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
 	const char *report = text;
@@ -2836,6 +2830,8 @@ static void get_text_moo(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 	prodfillen= (apdu->data[5] & 0x1) | (apdu->data[6]);
 	apdunum= ((apdu->data[7]) << 1 ) | (apdu->data[8] >> 7);
 
+
+	char report_buf[1024];
 	fprintf(fnm," moo Prodid : %d prodfillen: %d  apdunum: %d\n",prodid,prodfillen,apdunum);
 
 //	const char *crun;
@@ -2846,7 +2842,6 @@ static void get_text_moo(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 //	}
 	  int fg=0;
 	  for (int i = 0; i <= seg_count; ++i) {
-
 		  if ((prodid == seg_list[i].seg_prodid) &&
 				  (prodfillen == seg_list[i].seg_prolen) &&
 				  (apdunum == seg_list[i].seg_segnum)){
@@ -2855,23 +2850,23 @@ static void get_text_moo(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 		  }
 	  }
 	  if (fg == 0){
-
 		 fprintf(fnm," item not in list\n");
 		 seg_list[seg_count].seg_prodid =prodid;
 		 seg_list[seg_count].seg_prolen=prodfillen;
 		 seg_list[seg_count].seg_segnum=apdunum;
-		 seg_list[seg_count].seg_data = report;
 
-			 ++seg_count;
-
+		 for (int x = 15; x <= apdu->length; ++x) {
+			 int c = apdu->data[x];
+			 seg_list[seg_count].seg_data[x-15] = c;
+		 }
+		 ++seg_count;
 	  }
-
 	  fg=0;
 	  for (int i = 0; i <= seg_count; ++i) {
 		  for (int j = 1; j <= prodfillen; ++j) {
 			  if ((prodid == seg_list[i].seg_prodid) &&
-				 (prodfillen == seg_list[i].seg_prolen) &&
-				 (j == seg_list[i].seg_segnum)){
+					  (prodfillen == seg_list[i].seg_prolen) &&
+					  (j == seg_list[i].seg_segnum)){
 				  ++fg;
 			  }
 		  }
@@ -2879,17 +2874,30 @@ static void get_text_moo(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 
 	  if (fg == prodfillen){
 		  fprintf(fnm," all items in list\n");
-	  }
+		  for (int i = 0; i <= seg_count; ++i) {
+			  if ((prodid == seg_list[i].seg_prodid) &&
+					  (prodfillen == seg_list[i].seg_prolen) &&
+					  (1 == seg_list[i].seg_segnum)){
 
+
+				  const char *goose = decode_dlac(seg_list[i].seg_data, 417,5);
+				  fprintf(fnm," goose: %s\n",goose);
+
+		  }
+		  for (int x= 1; x<=prodfillen; ++x) {
+
+		  }
+	  }
+	  }
 	  char  *r;
-   		char report_buf[1024];
+//   		char report_buf[1024];
    		int g = strlen(text);
 		strcpy(report_buf, report);
    		r = report_buf;
    		r= r+12;
-   		fprintf(to," g = %d\n",g);
+   		fprintf(fnm," text len = %d\n",g);
 		fprintf(to,"\n%s \n",r);
-		fprintf(fnm," moo Data:\n%s\n",r);
+//		fprintf(fnm," moo Data:\n%s\n",r);
 		display_generic_data(apdu->data, apdu->length, to);
 
 		fflush(fnm);
