@@ -46,11 +46,13 @@ struct MyStruct{
 	char gs_loc[75];
 	}  gs_list[900];
 
+// SEgmentation
 struct MySegStruct{
 	uint16_t seg_prodid;
 	uint16_t seg_prolen;
 	uint16_t seg_segnum;
-	uint8_t  seg_data[500];
+	int seg_text_len;
+	uint8_t  seg_data[1000];
 }  seg_list[50];
 
 int seg_count;
