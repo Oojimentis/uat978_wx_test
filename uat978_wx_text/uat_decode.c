@@ -2883,7 +2883,7 @@ static void get_text_moo(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 			if ((seg_list[i].seg_prodid == prodid) &&
 					(seg_list[i].seg_prolen == prodfillen) && (seg_list[i].seg_segnum == 2)){
 				for (int d = char_cnt; d  <= char_cnt + seg_list[i].seg_text_len; ++d) {
-					rep_all[d] = seg_list[i].seg_data[d-char_cnt];
+					rep_all[d] = seg_list[i].seg_data[(d-char_cnt) +15];
 				}
 				char_cnt = char_cnt + seg_list[i].seg_text_len;
 			}
@@ -2891,21 +2891,17 @@ static void get_text_moo(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 		for (int i = 0; i <= seg_count; ++i) {       // 3rd part
 			if ((seg_list[i].seg_prodid == prodid) &&
 					(seg_list[i].seg_prolen == prodfillen) && (seg_list[i].seg_segnum == 3)){
-				for (int d = char_cnt; d  <=  char_cnt + seg_list[i].seg_text_len; ++d) {
-					rep_all[d] = seg_list[i].seg_data[d-char_cnt];
+				for (int d = char_cnt-15; d  <=  char_cnt + seg_list[i].seg_text_len; ++d) {
+					rep_all[d] = seg_list[i].seg_data[(d-char_cnt)+15];
 				}
 				char_cnt = char_cnt + seg_list[i].seg_text_len;
 			}
 		}
-		fprintf(to,"mthisoo %d",rep_all[5]);
-
-		const char *goose = decode_dlac(rep_all, char_cnt ,14);
+		const char *goose = decode_dlac(rep_all, char_cnt-15 ,20);
 //	  	goose = decode_dlac(seg_list[i].seg_data, seg_list[i].seg_text_len ,14);
-
-		fprintf(to,"moo %s\n",goose);
-
+		fprintf(to,"moo: %s\n",goose);
+		fprintf(fnm,"%s\n",goose);
 	}
-
 	display_generic_data(apdu->data, apdu->length, to);
 	fflush(fnm);
 }
