@@ -35,7 +35,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to);
 
 static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to);
 
-static void get_text_moo(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to);
+static void get_seg_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to);
 
 // The odd two-string-literals here is to avoid \0x3ABCDEF being interpreted as a single (very large valued) character
 static const char *dlac_alphabet = "\x03" "ABCDEFGHIJKLMNOPQRSTUVWXYZ\x1A\t\x1E\n| !\"#$%&'()*+,-./0123456789:;<=>?";
@@ -1173,21 +1173,20 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		recf = apdu->data[0]; }
 
     	fprintf(to," Record Format   : %d      apdu->s_flag %d\n",recf >> 4, apdu->s_flag);
-//    	fprintf(filenotam," Record Format   : %d     apdu->s_flag %d\n",recf >> 4, apdu->s_flag);
+    	fprintf(filenotam," Record Format   : %d     apdu->s_flag %d\n",recf >> 4, apdu->s_flag);
 
-        if ((recf >> 4) == 115){ 				//graphic
+        if ((recf >> 4) == 8){ 				//graphic
         	fprintf(to," Report Type     : NOTAM\n");
-//			fprintf(filenotam," Report Type     : NOTAM\n");
+			fprintf(filenotam," Report Type     : NOTAM\n");
 
-			get_graphic(apdu, filenotam,to);
+        	get_graphic(apdu, filenotam,to);
         }
         else if (((recf >> 4) == 2 ) && (apdu->s_flag))  {        // text
-        		get_text_moo(apdu, filenotam,to); }
-        	else if ((recf >> 4) == 113 ) {
-        	   		get_text(apdu, filenotam,to);}
-
-//        else
-//        	display_generic_data(apdu->data, apdu->length, to);
+        	get_seg_text(apdu, filenotam,to); }
+        else if ((recf >> 4) == 2 ) {
+        	get_text(apdu, filenotam,to);}
+        else
+        	display_generic_data(apdu->data, apdu->length, to);
     }
     break;
 
@@ -1291,30 +1290,15 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
         fprintf(to," rle_flag: %d   Altitude: %d  block: %d\n",rle_flag,icel_alt,block_num);
 
         switch(icel_alt){
-        case 0:
-        	fileicinglow = fileicingl2;
-        	break;
-        case 1:
-        	fileicinglow = fileicingl4;
-        	break;
-        case 2:
-        	fileicinglow = fileicingl6;
-        	break;
-        case 3:
-        	fileicinglow = fileicingl8;
-        	break;
-        case 4:
-        	fileicinglow = fileicingl10;
-        	break;
-        case 5:
-        	fileicinglow = fileicingl12;
-        	break;
-        case 6:
-        	fileicinglow = fileicingl14;
-        	break;
-        case 7:
-        	fileicinglow = fileicingl16;
-        	break;
+
+        case 0:        	fileicinglow = fileicingl2;     break;
+        case 1:        	fileicinglow = fileicingl4;     break;
+        case 2:        	fileicinglow = fileicingl6;     break;
+        case 3:        	fileicinglow = fileicingl8;     break;
+        case 4:        	fileicinglow = fileicingl10;    break;
+        case 5:        	fileicinglow = fileicingl12;    break;
+        case 6:        	fileicinglow = fileicingl14;    break;
+        case 7:        	fileicinglow = fileicingl16;    break;
         default:
         	fileicinglow = fileicingl16;
         	break;
@@ -1417,18 +1401,11 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	int iceh_alt = (apdu->data[0] & 0x70) >> 4;
 
     	switch(iceh_alt){
-    	case 0:
-    		fileicinghigh = fileicingh18;
-    		break;
-    	case 1:
-    		fileicinghigh = fileicingh20;
-    		break;
-    	case 2:
-    		fileicinghigh = fileicingh22;
-    		break;
-    	case 3:
-    		fileicinghigh = fileicingh24;
-    		break;
+
+    	case 0:    		fileicinghigh = fileicingh18;  	break;
+    	case 1:    		fileicinghigh = fileicingh20;  	break;
+    	case 2:    		fileicinghigh = fileicingh22;   break;
+    	case 3:    		fileicinghigh = fileicingh24;   break;
     	default:
     		fileicinghigh = fileicingh24;
     		break;
@@ -1558,24 +1535,13 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  //      			fprintf(to,"count: %3d  bins: %3d encoding: %d\n",cnt,num_bins,cld_hgt);
 
        			switch (cld_hgt){
-       			case 10:
-       				enc='a';
-       				break;
-        		case 11:
-        			enc='b';
-        	    	break;
-        		case 12:
-        			enc='c';
-        			break;
-        		case 13:
-        			enc='d';
-        	   		break;
-        		case 14:
-        			enc='e';
-        	    	break;
-        		case 15:
-        			enc='f';
-        			break;
+
+       			case 10:    enc='a';  	break;
+        		case 11:    enc='b';    break;
+        		case 12:    enc='c';    break;
+        		case 13:    enc='d';    break;
+        		case 14:    enc='e';    break;
+        		case 15:    enc='f';    break;
         		default:
         			enc = cld_hgt +'0';
         			break;
@@ -1658,30 +1624,15 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fprintf(to," rle_flag: %d  Altitude: %d   Block: %d\n",rle_flag,turb_alt,block_num);
 
         switch(turb_alt){
-        case 0:
-        	fileturblow = fileturbl2;
-        	break;
-        case 1:
-        	fileturblow = fileturbl4;
-        	break;
-        case 2:
-        	fileturblow = fileturbl6;
-        	break;
-        case 3:
-        	fileturblow = fileturbl8;
-        	break;
-        case 4:
-        	fileturblow = fileturbl10;
-        	break;
-        case 5:
-        	fileturblow = fileturbl12;
-        	break;
-        case 6:
-        	fileturblow = fileturbl14;
-        	break;
-        case 7:
-        	fileturblow = fileturbl16;
-        	break;
+
+        case 0:    	fileturblow = fileturbl2;      	break;
+        case 1:   	fileturblow = fileturbl4;     	break;
+        case 2:    	fileturblow = fileturbl6;     	break;
+        case 3:    	fileturblow = fileturbl8;     	break;
+        case 4:    	fileturblow = fileturbl10;   	break;
+        case 5:    	fileturblow = fileturbl12;    	break;
+        case 6:   	fileturblow = fileturbl14;    	break;
+        case 7:   	fileturblow = fileturbl16;    	break;
         default:
         	fileturblow = fileturbl16;
         	break;
@@ -1711,24 +1662,13 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
   //  			fprintf(to,"count: %3d  bins: %3d encoding: %d\n",cnt,num_bins,edr_enc);
 
     			switch (edr_enc){
-    			case 10:
-    				enc='a';
-    			break;
-    			case 11:
-    				enc='b';
-    	    	break;
-    			case 12:
-    				enc='c';
-    			break;
-    			case 13:
-    				enc='d';
-    	   		break;
-    			case 14:
-    				enc='e';
-    	    	break;
-    			case 15:
-    				enc='f';
-    			break;
+
+    			case 10:   	enc='a';  	break;
+    			case 11:  	enc='b';    break;
+    			case 12:  	enc='c'; 	break;
+    			case 13:  	enc='d';  	break;
+    			case 14: 	enc='e';    break;
+    			case 15: 	enc='f';  	break;
     			default:
     				enc = edr_enc +'0';
     			break;
@@ -1811,18 +1751,11 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fprintf(to," rle_flag: %d  Altitude: %d   Block: %d\n",rle_flag,turb_alt,block_num);
 
     	switch(turb_alt){
-    	case 0:
-    		fileturbhigh = fileturbh18;
-    		break;
-    	case 1:
-    		fileturbhigh = fileturbh20;
-    		break;
-    	case 2:
-    		fileturbhigh = fileturbh22;
-    		break;
-    	case 3:
-    		fileturbhigh = fileturbh24;
-    		break;
+
+    	case 0:  	fileturbhigh = fileturbh18; 	break;
+    	case 1: 	fileturbhigh = fileturbh20; 	break;
+    	case 2: 	fileturbhigh = fileturbh22; 	break;
+    	case 3:  	fileturbhigh = fileturbh24; 	break;
     	default:
     		fileturbhigh = fileturbh24;
     		break;
@@ -1852,24 +1785,13 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  //   			fprintf(to,"count: %3d  bins: %3d encoding: %d\n",cnt,num_bins,edr_enc);
 
     			switch (edr_enc){
-    			case 10:
-    				enc='a';
-    			break;
-    			case 11:
-    				enc='b';
-    	    	break;
-    			case 12:
-    				enc='c';
-    			break;
-    			case 13:
-    				enc='d';
-    	   		break;
-    			case 14:
-    				enc='e';
-    	    	break;
-    			case 15:
-    				enc='f';
-    			break;
+
+    			case 10:    enc='a';    break;
+    			case 11:    enc='b';    break;
+    			case 12:    enc='c';    break;
+    			case 13:    enc='d';    break;
+    			case 14:    enc='e';    break;
+    			case 15:    enc='f';    break;
     			default:
     				enc = edr_enc +'0';
     			break;
@@ -2126,7 +2048,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	while (report) {
     		char report_buf[1024];
     		const char *next_report;
-    		char mtype[9];
+    		char mtype[9]; char taftype[9];
     		char *p, *r;
     		char observation[900];
     		char gstn[5];
@@ -2145,17 +2067,22 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			strcpy(report_buf, report);
     			report = NULL;
     			}
-
     		if (!report_buf[0])
     			continue;
 
     		r = report_buf;
+    		strncpy(taftype,report_buf,7);
+    		if (strcmp(taftype,"TAF COR")== 0){
+    			report_buf[3]='.';
+    		}
+
     		p = strchr(r, ' ');    // *** RType ***
     		if (p) {
     			*p = 0;
     			strcpy(observation,r);
     			strncpy(mtype,r,8);
-    			fprintf(to," RType: %s\n", r);
+
+    			fprintf(to," RType: %s\n", mtype);
     			r = p+1;
     		}
     		p = strchr(r, ' ');   // *** RLoc ***
@@ -2173,20 +2100,20 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				}
     				else if (strcmp(mtype,"METAR") == 0 || strcmp(mtype,"SPECI") == 0   ) {
     					strncpy(gstn,r,5); }
-    				else if (strcmp(mtype,"TAF") == 0 || strcmp(mtype,"SPECI") == 0   ) {
-    					strncpy(gstn,r,5); }
-    				else if (strcmp(mtype,"TAF.AMD") == 0) {
+    				else if (strcmp(mtype,"TAF") == 0 || strcmp(mtype,"TAF.AMD") == 0
+    						|| strcmp(mtype,"TAF.COR") == 0 ) {
     					strncpy(gstn,r,5); }
 
     				get_gs_name(gstn,reccount);
 
     				fprintf(to," RLoc:  %s - %s\n",gstn, gs_ret);
-    			}
 
-    			time_t current_time = time(NULL);
-    			struct tm *tm = localtime(&current_time);
-    			fprintf(filemetar,"Time                 : %s", asctime(tm));
-    			fprintf(filemetar,"WX Station           : %s - %s\n",gstn,gs_ret);
+    				time_t current_time = time(NULL);
+    				struct tm *tm = localtime(&current_time);
+    				fprintf(filemetar,"Time                 : %s", asctime(tm));
+    				fprintf(filemetar,"WX Station           : %s - %s\n",gstn,gs_ret);
+    				}
+
     			r = p+1;
     		}
 
@@ -2199,7 +2126,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				fprintf(to," RTime: %s\n", r);
     			r = p+1;
     		}
-    		if (strcmp(mtype,"TAF") == 0 || strcmp(mtype,"TAF.AMD") == 0){
+    		if (strcmp(mtype,"TAF") == 0 || strcmp(mtype,"TAF.AMD" )== 0 || strcmp(mtype,"TAF.COR") == 0){
 
     			fprintf(filemetar," Report Name         : %s\n",mtype);
     			fprintf(filemetar," Data:\n%s\n", r);    // *** Text ***
@@ -2208,10 +2135,11 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     		if (strcmp(mtype,"WINDS") == 0){
     			char *tok1;  char *tok2; char *tok3; char *tok4;
-    			char winds[100];
+    			char winds[91];
     			char *q; char *u;
 
     			strncpy(winds,r,90);
+    			winds[90]= '\0';
 
     			q=winds;
       			tok1 = strsep(&q,"\0");
@@ -2817,9 +2745,8 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
    	}
 }
 
-static void get_text_moo(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
+static void get_seg_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 
-	//int rec_offset=11;     //was 11
 	uint16_t prodid;	uint16_t prodfillen;	uint16_t apdunum;
 
 	prodid 	   = ((apdu->data[4] & 0x7) >> 1) | (apdu->data[5] >> 1);
@@ -2831,7 +2758,7 @@ static void get_text_moo(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 	uint16_t rep_num = ((apdu->data[17]  << 6) | (apdu->data[18] >> 2));   			//7 8
 	fprintf(fnm," Report Number   : %d\n",rep_num);
 
-	fprintf(fnm," moo Prodid : %d prodfillen: %d  apdunum: %d  ",prodid,prodfillen,apdunum);
+	fprintf(fnm,"Prodid: %d prodfillen: %d  apdunum: %d  ",prodid,prodfillen,apdunum);
 
 	int fg=0;       // Check if report part already stored
 	for (int i = 0; i <= seg_count; ++i) {
@@ -2898,8 +2825,7 @@ static void get_text_moo(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 			}
 		}
 		const char *goose = decode_dlac(rep_all, char_cnt-15 ,20);
-//	  	goose = decode_dlac(seg_list[i].seg_data, seg_list[i].seg_text_len ,14);
-		fprintf(to,"moo: %s\n",goose);
+		fprintf(to,"%s\n",goose);
 		fprintf(fnm,"%s\n",goose);
 	}
 	display_generic_data(apdu->data, apdu->length, to);
