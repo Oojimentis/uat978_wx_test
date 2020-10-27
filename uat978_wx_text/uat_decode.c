@@ -276,12 +276,12 @@ static void get_pirep(char *Word, FILE *to){
 
     get_gs_name(pirep_stn,reccount);
 
-    fprintf(to,"PIREP REPORT:\n");
+//    fprintf(to,"PIREP REPORT:\n");
     fprintf(filepirep,"PIREP REPORT:\n");
  	time_t current_time = time(NULL);
  	char * tm=ctime(&current_time);
     tm[strlen(tm)-1] = '\0';
-	fprintf(to," Time           : %s\n", tm);
+//	fprintf(to," Time           : %s\n", tm);
 	fprintf(filepirep," Time           : %s\n", tm);
     fprintf(to," Station        : %s - %s\n",pirep_stn, gs_ret);
     fprintf(filepirep," Station        : %s - %s\n",pirep_stn, gs_ret);
@@ -289,81 +289,81 @@ static void get_pirep(char *Word, FILE *to){
     token = strtok(0," ");
 
     if( strcmp(token,"UUA") == 0 ){
-    	fprintf(to," URGENT REPORT\n");
+//    	fprintf(to," URGENT REPORT\n");
     	fprintf(filepirep," URGENT REPORT\n");
     }
     else if  ( strcmp(token,"UA") == 0 ){
-    	fprintf(to," Routine Report\n");
+ //   	fprintf(to," Routine Report\n");
     	fprintf(filepirep," Routine Report\n");
     }
     else {
-    	fprintf(to," Unknown Report\n");
+ //   	fprintf(to," Unknown Report\n");
     	fprintf(filepirep," Unknown Report\n");
     }
 
     while ((token = strtok(0, "/"))) {
     	if (strncmp(token,"OV",2) == 0) {
     		strcpy(pirep_OV,token+3);
-    		fprintf(to," Location       : %s\n",pirep_OV);
+ //   		fprintf(to," Location       : %s\n",pirep_OV);
     		fprintf(filepirep," Location       : %s\n",pirep_OV);
     	 }
     	 else if (strncmp(token,"TM",2) == 0) {
     		 strcpy(pirep_TM,token);
     		 snprintf(pirep_hr, 3,"%s",pirep_TM+3);
     		 snprintf(pirep_mn, 3,"%s",pirep_TM+5);
-    		 fprintf(to," Time           : %s:%sz\n",pirep_hr,pirep_mn);
+//    		 fprintf(to," Time           : %s:%sz\n",pirep_hr,pirep_mn);
     		 fprintf(filepirep," Time           : %s:%sz\n",pirep_hr,pirep_mn);
     	 }
     	 else if (strncmp(token,"FL",2) == 0) {
     		 strcpy(pirep_FL,token+2);
-    	     fprintf(to," Flight Level   : %s\n",pirep_FL);
+//    	     fprintf(to," Flight Level   : %s\n",pirep_FL);
     	     fprintf(filepirep," Flight Level   : %s\n",pirep_FL);
     	 }
     	 else if (strncmp(token,"TP",2) == 0) {
     		 strcpy(pirep_TP,token+3);
-    		 fprintf(to," A/C Type       : %s\n",pirep_TP);
+ //   		 fprintf(to," A/C Type       : %s\n",pirep_TP);
     		 fprintf(filepirep," A/C Type       : %s\n",pirep_TP);
     	 }
     	 else if (strncmp(token,"SK",2) == 0) {
     		 strcpy(pirep_SK,token+3);
-    	     fprintf(to," Cloud Layers   : %s\n",pirep_SK);
+ //   	     fprintf(to," Cloud Layers   : %s\n",pirep_SK);
     	     fprintf(filepirep," Cloud Layers   : %s\n",pirep_SK);
     	 }
     	 else if (strncmp(token,"WX",2) == 0) {
  	     	 strcpy(pirep_WX,token+3);
-    	     fprintf(to," Weather        : %s\n",pirep_WX);
+ //   	     fprintf(to," Weather        : %s\n",pirep_WX);
     	     fprintf(filepirep," Weather        : %s\n",pirep_WX);
     	 }
        	 else if (strncmp(token,"TA",2) == 0) {
     	     strcpy(pirep_TA,token+3);
-        	 fprintf(to," Temperature    : %s(c)\n",pirep_TA);
+//        	 fprintf(to," Temperature    : %s(c)\n",pirep_TA);
         	 fprintf(filepirep," Temperature    : %s(c)\n",pirep_TA);
        	 }
          else if (strncmp(token,"WV",2) == 0) {
         	 strcpy(pirep_WV,token+3);
-             fprintf(to," WndSpdDir      : %s\n",pirep_WV);
+//             fprintf(to," WndSpdDir      : %s\n",pirep_WV);
              fprintf(filepirep," WndSpdDir      : %s\n",pirep_WV);
          }
          else if (strncmp(token,"TB",2) == 0) {
     		 strcpy(pirep_TB,token+3);
-    	     fprintf(to," Turbulence     : %s\n",pirep_TB);
+//    	     fprintf(to," Turbulence     : %s\n",pirep_TB);
     	     fprintf(filepirep," Turbulence     : %s\n",pirep_TB);
          }
          else if (strncmp(token,"IC",2) == 0) {
     		 strcpy(pirep_IC,token+3);
-    	     fprintf(to," Icing          : %s\n",pirep_IC);
+//    	     fprintf(to," Icing          : %s\n",pirep_IC);
     	     fprintf(filepirep," Icing          : %s\n",pirep_IC);
          }
     	 else if (strncmp(token,"RM",2) == 0) {
     		 strcpy(pirep_RM,token+3);
     		 token = strtok(0, "/");
     		 if (token){
-    			 fprintf(to," Remarks        : %s",pirep_RM);
+//    			 fprintf(to," Remarks        : %s",pirep_RM);
     			 fprintf(filepirep," Remarks        : %s",pirep_RM);
-    			 fprintf(to,"/%s\n",token);
+//    			 fprintf(to,"/%s\n",token);
     			 fprintf(filepirep,"/%s\n",token);}
     		 else {
-    			 fprintf(to," Remarks        : %s\n",pirep_RM);
+ //   			 fprintf(to," Remarks        : %s\n",pirep_RM);
     			 fprintf(filepirep," Remarks        : %s\n",pirep_RM);
     		 }
     	 }
@@ -1172,8 +1172,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	else {
     		recf = apdu->data[0]; }
 
-    	fprintf(to," Record Format   : %d      apdu->s_flag %d\n",recf >> 4, apdu->s_flag);
-    	fprintf(filenotam," Record Format   : %d     apdu->s_flag %d\n",recf >> 4, apdu->s_flag);
+//    	fprintf(to," Record Format   : %d      apdu->s_flag %d\n",recf >> 4, apdu->s_flag);
+    	fprintf(filenotam," Record Format   : %d\n",recf >> 4);
 
         if ((recf >> 4) == 8){ 				//graphic
         	fprintf(to," Report Type     : NOTAM\n");
@@ -2038,6 +2038,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fflush(to);
     }
     break;
+
     case 413:
     {
     	// Generic text, DLAC
@@ -2130,7 +2131,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     			fprintf(filemetar," Report Name         : %s\n",mtype);
     			fprintf(filemetar," Data:\n%s\n", r);    // *** Text ***
-    			display_generic_data(apdu->data, apdu->length, to);
+ //   			display_generic_data(apdu->data, apdu->length, to);
     		}
 
     		if (strcmp(mtype,"WINDS") == 0){
@@ -2146,16 +2147,16 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     			fprintf(filemetar," Report Name         : %s\n",mtype);
     			fprintf(filemetar," Data:\n");
-    			fprintf(to," Data:\n");
+ //   			fprintf(to," Data:\n");
 
     			while ( (tok2 = strsep(&tok1," ")) != NULL ){
     				if (strcmp(tok2,"") != 0){
-    					fprintf(to,"%-10s",tok2);
+   // 					fprintf(to,"%-10s",tok2);
     					fprintf(filemetar,"%-10s",tok2);
     				}
     			}
 
-    			fprintf(to,"\n          ");
+//    			fprintf(to,"\n          ");
     			fprintf(filemetar,"\n          ");
 
     			u = strchr(r, '\n');
@@ -2164,16 +2165,16 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     			while ( (tok4 = strsep(&tok3," ")) != NULL ){
     				if (strcmp(tok4,"") != 0){
-    					fprintf(to,"%-10s",tok4);
+    //					fprintf(to,"%-10s",tok4);
     					fprintf(filemetar,"%-10s",tok4);
     				}
     			}
 
-    			fprintf(to,"\n");
-    			fprintf(filemetar,"\n          ");
+  //  			fprintf(to,"\n");
+   			fprintf(filemetar,"\n");
     		}
-    		else
-    			fprintf(to," Text:\n%s", r);    // *** Text ***
+//    		else
+//    			fprintf(to," Text:\n%s", r);    // *** Text ***
 
 //   *** METAR ***
     		strcat(observation," ");
@@ -2266,17 +2267,22 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
             	fprintf(to," TFR: %d LID Flag: %d",tfr,lidflag);
     	      	fprintf(to," Number of reports: %d  Range(nm): %d\n",num_crl,prod_range);
 
-        		int j = 4;
+        		int j = 4; int q=0;
         		for (i = 0; i < num_crl; ++i) {
+
+        			if (q % 4 == 0)
+        					fprintf(to,"\n");
+        			q++;
+
         			rep_yr = (frame->data[j] & (~( 1<< 0))) ;
         			txt = (frame->data[j+1] >> 7) & 1;
         			grph = (frame->data[j+1] >> 6) & 1;
         			repid = (frame->data[j+1] & ((1<<6)-1)) << 8 |  frame->data[j+2];
-        			fprintf(to," #%3d Year:%d Text: %d Grph: %d  Rpt ID: %d \n",
+        			fprintf(to," #%3d Year: 20%d T%d G%d Rpt ID: %d",
         					i+1,rep_yr,txt,grph,repid);
         			j=j+3;
         		 }
-        		 fprintf(to,"\n");
+        		 fprintf(to,"\n\n");
         	     display_generic_data(frame->data, frame->length, to);
         	}
         	else
@@ -2509,6 +2515,8 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		break;
 	}
 
+	fprintf(fnm, "\n");
+
 	strcpy(ob_type_text,"Unknown Object");
 	strcpy(ob_ele_text,"Unknown Element");
 	strcpy(ob_status_text,"Unknown Status");
@@ -2552,7 +2560,6 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 				alt = alt_raw * 100;
 
 				fprintf(fnm, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
-
 			}
 
 		break;
@@ -2643,7 +2650,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		break;
 
 	}
-
+	fprintf(fnm, "\n");
 	fprintf(fnm, " Object Type: %s  Object Element: %s\n",ob_type_text,ob_ele_text);
 	fprintf(fnm, " Object Status: %s Overlay type: %s\n",ob_status_text,geo_overlay_text);
 	fprintf(fnm, " obj_par_name_text: %s\n",obj_par_name_text);
@@ -2738,7 +2745,7 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
    			get_sua_text(sua_text,to);
    		}
 
-		fprintf(to,"\n%s \n",r);
+//		fprintf(to,"\n%s \n",r);
 		fprintf(fnm," Data:\n%s\n",r);
 
 		fflush(fnm);
