@@ -7,19 +7,12 @@
 #define NULL   ((void *) 0)
 #endif
 
-#include <math.h>
-#include <string.h>
 #include <assert.h>
-
 #include <time.h>
 
 #include "uat.h"
 #include "uat_decode.h"
-
 #include "metar.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
 
 #define BLOCK_WIDTH (48.0/60.0)
 #define WIDE_BLOCK_WIDTH (96.0/60.0)
@@ -44,11 +37,12 @@ static const char *decode_dlac(uint8_t *data, unsigned bytelen, int rec_offset)
 
 {
     static char buf[2048];
-    bytelen = bytelen - rec_offset;
+
+    bytelen 	 = bytelen - rec_offset;
     uint8_t *end = data + bytelen;
-    char *p = buf;
+    char *p  = buf;
     int step = 0;
-    int tab = 0;
+    int tab  = 0;
 
     while (data < end) {
         int ch;
@@ -123,7 +117,6 @@ static void get_sua_text(char *Word, FILE *to){
 
 	char sua_st_tm[11];char sua_st_yy[3];char sua_st_mm[3];char sua_st_dd[3];
 	char sua_st_hh[3]; char sua_st_mn[3];
-
 	char sua_en_tm[11];char sua_en_yy[3];char sua_en_mm[3];char sua_en_dd[3];
 	char sua_en_hh[3]; char sua_en_mn[3];
 
@@ -139,11 +132,14 @@ static void get_sua_text(char *Word, FILE *to){
 	token = strsep(&Word,"|");
 	strcpy(sua_sch_id,token);
 	fprintf(filesua," Schedule ID     : %s ",sua_sch_id);
+
 	token = strsep(&Word,"|");
 	strcpy(sua_aspc_id,token);
 	fprintf(filesua,"     Airspace ID       : %s\n",sua_aspc_id);
+
 	token = strsep(&Word,"|");
 	strcpy(sua_sch_stat,token);
+
 	if (strcmp(sua_sch_stat,"W") ==0){
 		fprintf(filesua," Schedule Status : %s Waiting to Start\n",sua_sch_stat);}
 	else if (strcmp(sua_sch_stat,"P")==0){
@@ -153,6 +149,7 @@ static void get_sua_text(char *Word, FILE *to){
 
 	token = strsep(&Word,"|");
 	strcpy(sua_aspc_ty,token);
+
 	if (strcmp(sua_aspc_ty,"W") ==0){
 		fprintf(filesua," Airspace Type   : %s Warning Area\n",sua_aspc_ty);}
 	else if (strcmp(sua_aspc_ty,"R") ==0){
@@ -190,8 +187,7 @@ static void get_sua_text(char *Word, FILE *to){
 	snprintf(sua_st_hh, 3,"%s",sua_st_tm+6);
 	snprintf(sua_st_mn, 3,"%s",sua_st_tm+8);
 
-	fprintf(filesua," Start Time      : %s/%s/20%s %s:%s",
-			 sua_st_mm,sua_st_dd,sua_st_yy,sua_st_hh, sua_st_mn);
+	fprintf(filesua," Start Time      : %s/%s/20%s %s:%s",sua_st_mm,sua_st_dd,sua_st_yy,sua_st_hh, sua_st_mn);
 
 	token = strsep(&Word,"|");
 	strcpy(sua_en_tm,token);
@@ -201,8 +197,7 @@ static void get_sua_text(char *Word, FILE *to){
 	snprintf(sua_en_hh, 3,"%s",sua_en_tm+6);
 	snprintf(sua_en_mn, 3,"%s",sua_en_tm+8);
 
-	fprintf(filesua," End Time: %s/%s/20%s %s:%s\n",
-			 sua_en_mm,sua_en_dd,sua_en_yy,sua_en_hh,sua_en_mn);
+	fprintf(filesua," End Time: %s/%s/20%s %s:%s\n",sua_en_mm,sua_en_dd,sua_en_yy,sua_en_hh,sua_en_mn);
 
 	token = strsep(&Word,"|");
 	strcpy(sua_low_alt,token);
@@ -276,94 +271,77 @@ static void get_pirep(char *Word, FILE *to){
 
     get_gs_name(pirep_stn,reccount);
 
-//    fprintf(to,"PIREP REPORT:\n");
     fprintf(filepirep,"PIREP REPORT:\n");
  	time_t current_time = time(NULL);
  	char * tm=ctime(&current_time);
     tm[strlen(tm)-1] = '\0';
-//	fprintf(to," Time           : %s\n", tm);
 	fprintf(filepirep," Time           : %s\n", tm);
-    fprintf(to," Station        : %s - %s\n",pirep_stn, gs_ret);
+
+	fprintf(to," Station        : %s - %s\n",pirep_stn, gs_ret);
     fprintf(filepirep," Station        : %s - %s\n",pirep_stn, gs_ret);
 
     token = strtok(0," ");
 
     if( strcmp(token,"UUA") == 0 ){
-//    	fprintf(to," URGENT REPORT\n");
     	fprintf(filepirep," URGENT REPORT\n");
     }
     else if  ( strcmp(token,"UA") == 0 ){
- //   	fprintf(to," Routine Report\n");
     	fprintf(filepirep," Routine Report\n");
     }
     else {
- //   	fprintf(to," Unknown Report\n");
     	fprintf(filepirep," Unknown Report\n");
     }
 
     while ((token = strtok(0, "/"))) {
     	if (strncmp(token,"OV",2) == 0) {
     		strcpy(pirep_OV,token+3);
- //   		fprintf(to," Location       : %s\n",pirep_OV);
     		fprintf(filepirep," Location       : %s\n",pirep_OV);
     	 }
     	 else if (strncmp(token,"TM",2) == 0) {
     		 strcpy(pirep_TM,token);
     		 snprintf(pirep_hr, 3,"%s",pirep_TM+3);
     		 snprintf(pirep_mn, 3,"%s",pirep_TM+5);
-//    		 fprintf(to," Time           : %s:%sz\n",pirep_hr,pirep_mn);
     		 fprintf(filepirep," Time           : %s:%sz\n",pirep_hr,pirep_mn);
     	 }
     	 else if (strncmp(token,"FL",2) == 0) {
     		 strcpy(pirep_FL,token+2);
-//    	     fprintf(to," Flight Level   : %s\n",pirep_FL);
     	     fprintf(filepirep," Flight Level   : %s\n",pirep_FL);
     	 }
     	 else if (strncmp(token,"TP",2) == 0) {
     		 strcpy(pirep_TP,token+3);
- //   		 fprintf(to," A/C Type       : %s\n",pirep_TP);
     		 fprintf(filepirep," A/C Type       : %s\n",pirep_TP);
     	 }
     	 else if (strncmp(token,"SK",2) == 0) {
     		 strcpy(pirep_SK,token+3);
- //   	     fprintf(to," Cloud Layers   : %s\n",pirep_SK);
     	     fprintf(filepirep," Cloud Layers   : %s\n",pirep_SK);
     	 }
     	 else if (strncmp(token,"WX",2) == 0) {
  	     	 strcpy(pirep_WX,token+3);
- //   	     fprintf(to," Weather        : %s\n",pirep_WX);
     	     fprintf(filepirep," Weather        : %s\n",pirep_WX);
     	 }
        	 else if (strncmp(token,"TA",2) == 0) {
     	     strcpy(pirep_TA,token+3);
-//        	 fprintf(to," Temperature    : %s(c)\n",pirep_TA);
         	 fprintf(filepirep," Temperature    : %s(c)\n",pirep_TA);
        	 }
          else if (strncmp(token,"WV",2) == 0) {
         	 strcpy(pirep_WV,token+3);
-//             fprintf(to," WndSpdDir      : %s\n",pirep_WV);
              fprintf(filepirep," WndSpdDir      : %s\n",pirep_WV);
          }
          else if (strncmp(token,"TB",2) == 0) {
     		 strcpy(pirep_TB,token+3);
-//    	     fprintf(to," Turbulence     : %s\n",pirep_TB);
     	     fprintf(filepirep," Turbulence     : %s\n",pirep_TB);
          }
          else if (strncmp(token,"IC",2) == 0) {
     		 strcpy(pirep_IC,token+3);
-//    	     fprintf(to," Icing          : %s\n",pirep_IC);
     	     fprintf(filepirep," Icing          : %s\n",pirep_IC);
          }
     	 else if (strncmp(token,"RM",2) == 0) {
     		 strcpy(pirep_RM,token+3);
     		 token = strtok(0, "/");
     		 if (token){
-//    			 fprintf(to," Remarks        : %s",pirep_RM);
     			 fprintf(filepirep," Remarks        : %s",pirep_RM);
-//    			 fprintf(to,"/%s\n",token);
     			 fprintf(filepirep,"/%s\n",token);}
     		 else {
- //   			 fprintf(to," Remarks        : %s\n",pirep_RM);
     			 fprintf(filepirep," Remarks        : %s\n",pirep_RM);
     		 }
     	 }
@@ -524,9 +502,7 @@ static void uat_display_hdr(const struct uat_adsb_mdb *mdb, FILE *to)
 	time_t current_time = time(NULL);
 	struct tm *tm = localtime(&current_time);
 	fprintf(to,"   Time: %s", asctime(tm));
-	fprintf(to," ICAO:    %06X    (%s)\n",
-			mdb->address,
-			address_qualifier_names[mdb->address_qualifier]);
+	fprintf(to," ICAO:    %06X    (%s)\n",mdb->address,address_qualifier_names[mdb->address_qualifier]);
 }
 
 static double dimensions_widths[16] = {
@@ -654,30 +630,24 @@ static void uat_display_sv(const struct uat_adsb_mdb *mdb, FILE *to)
         return;
 
     if (mdb->position_valid)
-        fprintf(to, " Lat:   %+.4f    Lon:  %+.4f",
-        		mdb->lat,
-                mdb->lon);
+        fprintf(to, " Lat:   %+.4f    Lon:  %+.4f",mdb->lat,mdb->lon);
 
     switch (mdb->altitude_type) {
     case ALT_BARO:
-        fprintf(to, "  Alt:  %d ft (barometric)",
-                mdb->altitude);
+        fprintf(to, "  Alt:  %d ft (barometric)",mdb->altitude);
         break;
     case ALT_GEO:
-        fprintf(to, "  Alt:  %d ft (geometric)",
-                mdb->altitude);
+        fprintf(to, "  Alt:  %d ft (geometric)",mdb->altitude);
         break;
     default:
         break;
     }
 
     if (mdb->speed_valid)
-        fprintf(to, "  Speed:  %u kt\n",
-                mdb->speed);
+        fprintf(to, "  Speed:  %u kt\n",mdb->speed);
 
     if (mdb->dimensions_valid)
-        fprintf(to, " Size: %.1fm L x %.1fm W%s\n",
-                mdb->length, mdb->width,
+        fprintf(to, " Size: %.1fm L x %.1fm W%s\n",mdb->length, mdb->width,
                 mdb->position_offset ? " (position offset applied)" : "");
 }
 
@@ -789,10 +759,7 @@ static void uat_display_ms(const struct uat_adsb_mdb *mdb, FILE *to)
     if (!mdb->has_ms)
         return;
 
-    fprintf(to,
-    		" Reg:%2s%9s"
-            "    Category: %s\n"
-            " Emergency status:  %s\n",
+    fprintf(to," Reg:%2s%9s    Category: %s\n Emergency status:  %s\n",
             mdb->callsign_type == CS_SQUAWK ? "sq" : "",
             mdb->callsign_type == CS_INVALID ? "      n/a" : mdb->callsign,
             emitter_category_names[mdb->emitter_category],
@@ -885,41 +852,41 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
 
     case 0: // Hours, Minutes
         frame->fisb.monthday_valid = 0;
-        frame->fisb.seconds_valid = 0;
-        frame->fisb.hours = (frame->data[2] & 0x7c) >> 2;
+        frame->fisb.seconds_valid  = 0;
+        frame->fisb.hours	= (frame->data[2] & 0x7c) >> 2;
         frame->fisb.minutes = ((frame->data[2] & 0x03) << 4) | (frame->data[3] >> 4);
-        frame->fisb.length = frame->length - 4;
-        frame->fisb.data = frame->data + 4;
+        frame->fisb.length  = frame->length - 4;
+        frame->fisb.data    = frame->data + 4;
         break;
 
     case 1: // Hours, Minutes, Seconds
         if (frame->length < 5)
             return;
         frame->fisb.monthday_valid = 0;
-        frame->fisb.seconds_valid = 1;
-        frame->fisb.hours = (frame->data[2] & 0x7c) >> 2;
+        frame->fisb.seconds_valid  = 1;
+        frame->fisb.hours   = (frame->data[2] & 0x7c) >> 2;
         frame->fisb.minutes = ((frame->data[2] & 0x03) << 4) | (frame->data[3] >> 4);
         frame->fisb.seconds = ((frame->data[3] & 0x0f) << 2) | (frame->data[4] >> 6);
-        frame->fisb.length = frame->length - 5;
-        frame->fisb.data = frame->data + 5;
+        frame->fisb.length  = frame->length - 5;
+        frame->fisb.data    = frame->data + 5;
         break;
 
     case 2: // Month, Day, Hours, Minutes
         if (frame->length < 5)
             return;
         frame->fisb.monthday_valid = 1;
-        frame->fisb.seconds_valid = 0;
-        frame->fisb.month = (frame->data[2] & 0x78) >> 3;
-        frame->fisb.day = ((frame->data[2] & 0x07) << 2) | (frame->data[3] >> 6);
-        frame->fisb.hours = (frame->data[3] & 0x3e) >> 1;
+        frame->fisb.seconds_valid  = 0;
+        frame->fisb.month   = (frame->data[2] & 0x78) >> 3;
+        frame->fisb.day     = ((frame->data[2] & 0x07) << 2) | (frame->data[3] >> 6);
+        frame->fisb.hours   = (frame->data[3] & 0x3e) >> 1;
         frame->fisb.minutes = ((frame->data[3] & 0x01) << 5) | (frame->data[4] >> 3);
 
         if (frame->data[1] & 0x02){
             frame->fisb.length = frame->length ; // ???
-            frame->fisb.data = frame->data ; }
+            frame->fisb.data   = frame->data ; }
         else {
         frame->fisb.length = frame->length - 5; // ???
-        frame->fisb.data = frame->data + 5;
+        frame->fisb.data   = frame->data + 5;
         }
 
         break;
@@ -928,14 +895,14 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
         if (frame->length < 6)
             return;
         frame->fisb.monthday_valid = 1;
-        frame->fisb.seconds_valid = 1;
-        frame->fisb.month = (frame->data[2] & 0x78) >> 3;
-        frame->fisb.day = ((frame->data[2] & 0x07) << 2) | (frame->data[3] >> 6);
-        frame->fisb.hours = (frame->data[3] & 0x3e) >> 1;
+        frame->fisb.seconds_valid  = 1;
+        frame->fisb.month 	= (frame->data[2] & 0x78) >> 3;
+        frame->fisb.day 	= ((frame->data[2] & 0x07) << 2) | (frame->data[3] >> 6);
+        frame->fisb.hours   = (frame->data[3] & 0x3e) >> 1;
         frame->fisb.minutes = ((frame->data[3] & 0x01) << 5) | (frame->data[4] >> 3);
         frame->fisb.seconds = ((frame->data[4] & 0x03) << 3) | (frame->data[5] >> 5);
-        frame->fisb.length = frame->length - 6;
-        frame->fisb.data = frame->data + 6;
+        frame->fisb.length 	= frame->length - 6;
+        frame->fisb.data 	= frame->data + 6;
         break;
     }
 
@@ -943,7 +910,7 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
     frame->fisb.g_flag = (frame->data[0] & 0x40) ? 1 : 0;
     frame->fisb.p_flag = (frame->data[0] & 0x20) ? 1 : 0;
     frame->fisb.product_id = ((frame->data[0] & 0x1f) << 6) | (frame->data[1] >> 2);
-    frame->fisb.s_flag = (frame->data[1] & 0x02) ? 1 : 0;
+    frame->fisb.s_flag 	   = (frame->data[1] & 0x02) ? 1 : 0;
     frame->is_fisb = 1;
 
     if (frame->fisb.s_flag){
@@ -972,10 +939,10 @@ void uat_decode_uplink_mdb(uint8_t *frame, struct uat_uplink_mdb *mdb)
     if (mdb->lon > 180)
     	mdb->lon -= 360;
 
-    mdb->utc_coupled = (frame[6] & 0x80) ? 1 : 0;
+    mdb->utc_coupled 	= (frame[6] & 0x80) ? 1 : 0;
     mdb->app_data_valid = (frame[6] & 0x20) ? 1 : 0;
-    mdb->slot_id = (frame[6] & 0x1f);
-    mdb->tisb_site_id = (frame[7] >> 4);
+    mdb->slot_id 	    = (frame[6] & 0x1f);
+    mdb->tisb_site_id 	= (frame[7] >> 4);
 
     if (mdb->app_data_valid) {
         uint8_t *data, *end;
@@ -984,11 +951,11 @@ void uat_decode_uplink_mdb(uint8_t *frame, struct uat_uplink_mdb *mdb)
         mdb->num_info_frames = 0;
         
         data = mdb->app_data;
-        end = mdb->app_data + 424;
+        end  = mdb->app_data + 424;
         while (mdb->num_info_frames < UPLINK_MAX_INFO_FRAMES && data+2 <= end) {
             struct uat_uplink_info_frame *frame = &mdb->info_frames[mdb->num_info_frames];
             frame->length = (data[0] << 1) | (data[1] >> 7);
-            frame->type = (data[1] & 0x0f);
+            frame->type   = (data[1] & 0x0f);
             if (data + frame->length + 2 > end) {
                 // overrun?
                 break;
@@ -1033,18 +1000,17 @@ static void display_generic_data(uint8_t *data, uint16_t length, FILE *to)
     }
 }
 
-
 static const char *get_fisb_product_name(uint16_t product_id)
 {
     switch (product_id) {
-    case 0:  case 20: return "METAR and SPECI ****";
-    case 1:  case 21: return "TAF and Amended TAF ****";
-    case 2:  case 22: return "SIGMET ****";
-    case 3:  case 23: return "Convective SIGMET ****";
-    case 4:  case 24: return "AIRMET ****";
-    case 5:  case 25: return "PIREP ****";
-    case 6:  case 26: return "AWW ****";
-    case 7:  case 27: return "Winds and Temperatures Aloft ****";
+    case 0:  	case 20: return "METAR and SPECI ****";
+    case 1:  	case 21: return "TAF and Amended TAF ****";
+    case 2:  	case 22: return "SIGMET ****";
+    case 3:  	case 23: return "Convective SIGMET ****";
+    case 4:  	case 24: return "AIRMET ****";
+    case 5:  	case 25: return "PIREP ****";
+    case 6:  	case 26: return "AWW ****";
+    case 7:  	case 27: return "Winds and Temperatures Aloft ****";
     case 8:    	return "NOTAM (Including TFRs) and Service Status";
     case 9:    	return "Aerodrome and Airspace – D-ATIS ****";
     case 10:	return "Aerodrome and Airspace - TWIP ****";
@@ -1086,10 +1052,10 @@ static const char *get_fisb_product_name(uint16_t product_id)
     case 352:  	return "Operational Status ****";
     case 353:	return "Ground Station Status ****";
     case 401:  	return "**** Generic Raster Scan Data Product APDU Payload Format Type 1";
-    case 402:  case 411: return "**** Generic Textual Data Product APDU Payload Format Type 1";
+    case 402:  	case 411: return "**** Generic Textual Data Product APDU Payload Format Type 1";
     case 403:  	return "**** Generic Vector Data Product APDU Payload Format Type 1";
-    case 404:  case 412: return "**** Generic Symbolic Product APDU Payload Format Type 1";
-    case 405:  case 413: return "Generic Textual Data Product APDU Payload Format Type 2";
+    case 404:  	case 412: return "**** Generic Symbolic Product APDU Payload Format Type 1";
+    case 405:  	case 413: return "Generic Textual Data Product APDU Payload Format Type 2";
     case 600:  	return "**** FISDL Products – Proprietary Encoding";
     case 2000: 	return "**** FAA/FIS-B Product 1 – Developmental";
     case 2001: 	return "**** FAA/FIS-B Product 2 – Developmental";
@@ -1172,18 +1138,17 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	else {
     		recf = apdu->data[0]; }
 
-//    	fprintf(to," Record Format   : %d      apdu->s_flag %d\n",recf >> 4, apdu->s_flag);
     	fprintf(filenotam," Record Format   : %d\n",recf >> 4);
 
-        if ((recf >> 4) == 8){ 				//graphic
+        if ((recf >> 4) == 8){ 										//graphic
         	fprintf(to," Report Type     : NOTAM\n");
 			fprintf(filenotam," Report Type     : NOTAM\n");
 
         	get_graphic(apdu, filenotam,to);
         }
-        else if (((recf >> 4) == 2 ) && (apdu->s_flag))  {        // text
+        else if (((recf >> 4) == 2 ) && (apdu->s_flag))  {        	// segmented text
         	get_seg_text(apdu, filenotam,to); }
-        else if ((recf >> 4) == 2 ) {
+        else if ((recf >> 4) == 2 ) {								// text
         	get_text(apdu, filenotam,to);}
         else
         	display_generic_data(apdu->data, apdu->length, to);
@@ -1198,13 +1163,13 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fprintf(to," Record Format   : %d \n",recf >> 4);
     	fprintf(fileairmet," Record Format   : %d \n",recf >> 4);
 
-    	if ((recf >> 4) == 8){ 				//graphic
+    	if ((recf >> 4) == 8){ 										//graphic
 			fprintf(to," Report Type     : AIRMET\n");
 			fprintf(fileairmet," Report Type     : AIRMET\n");
 
 			get_graphic(apdu, fileairmet,to);
     	}
-    	else if ((recf >> 4) == 2 ) {       // text
+    	else if ((recf >> 4) == 2 ) {       						// text
         	get_text(apdu, fileairmet,to);
    	    }
     	else
@@ -1221,13 +1186,13 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fprintf(to," Record Format   : %d \n",recf >> 4);
     	fprintf(filesigmet," Record Format   : %d \n",recf >> 4);
 
-    	if ((recf >> 4) == 8){ 				//graphic
+    	if ((recf >> 4) == 8){ 										//graphic
     		fprintf(to," Report Type     : SIGMET\n");
     		fprintf(filesigmet," Report Type     : SIGMET\n");
 
     		get_graphic(apdu, filesigmet,to);
      	}
-    	else if ((recf >> 4) == 2 ) {       // text
+    	else if ((recf >> 4) == 2 ) {       						// text
         	get_text(apdu, filesigmet,to);
         }
         else
@@ -1259,7 +1224,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fprintf(to," Record Format   : %d \n",recf >> 4);
     	fprintf(filegairmet," Record Format   : %d \n",recf >> 4);
 
-    	if ((recf >> 4) == 8){ 				//graphic
+    	if ((recf >> 4) == 8){ 											//graphic
     		fprintf(to," Report Type     : G-AIRMET\n");
     		fprintf(filegairmet," Report Type     : G-AIRMET\n");
 
@@ -1274,7 +1239,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     case 70:            // Icing Low **************
     {
     	FILE * fileicinglow;
-    	int recf; // int cnt=0;
+    	int recf;
     	recf = apdu->data[0];
 
     	fprintf(to," Record Format   : %d \n",recf >> 4);
@@ -1290,7 +1255,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
         fprintf(to," rle_flag: %d   Altitude: %d  block: %d\n",rle_flag,icel_alt,block_num);
 
         switch(icel_alt){
-
         case 0:        	fileicinglow = fileicingl2;     break;
         case 1:        	fileicinglow = fileicingl4;     break;
         case 2:        	fileicinglow = fileicingl6;     break;
@@ -1311,8 +1275,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     		fprintf(fileicinglow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    				apdu->product_id == 70 ? "Regional" : "CONUS",
-    				apdu->hours,
+    				apdu->product_id == 70 ? "Regional" : "CONUS",apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
     		for (i = 3; i < apdu->length; ++i) {
@@ -1368,9 +1331,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     					fprintf(fileicinglow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    							apdu->product_id == 70 ? "Regional" : "CONUS",
-    							apdu->hours,apdu->minutes,
-								scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+    							apdu->product_id == 70 ? "Regional" : "CONUS",apdu->hours,
+    							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+
     					for (k = 0; k < 128; ++k)
     						fprintf(fileicinglow, "%d", (apdu->product_id == 70 ? 0 : 1));
 
@@ -1387,7 +1350,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     case 71:            // Icing High **************
     {
     	FILE * fileicinghigh;
-    	int recf; // int cnt=0;
+    	int recf;
     	recf = apdu->data[0];
 
     	fprintf(to," Record Format   : %d \n",recf >> 4);
@@ -1401,7 +1364,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	int iceh_alt = (apdu->data[0] & 0x70) >> 4;
 
     	switch(iceh_alt){
-
     	case 0:    		fileicinghigh = fileicingh18;  	break;
     	case 1:    		fileicinghigh = fileicingh20;  	break;
     	case 2:    		fileicinghigh = fileicingh22;   break;
@@ -1420,8 +1382,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     		fprintf(fileicinghigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    				apdu->product_id == 71 ? "Regional" : "CONUS",
-    				apdu->hours,
+    				apdu->product_id == 71 ? "Regional" : "CONUS",apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
     		for (i = 3; i < apdu->length; ++i) {
@@ -1439,7 +1400,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				fprintf(fileicinghigh, "%d", ice_prob);}
     		}
 
-//    		fprintf(to,"count: %d\n",cnt);
     		fprintf(fileicinghigh, "\n");
     	}
     	else {    // Empty
@@ -1477,9 +1437,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     					fprintf(fileicinghigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    							apdu->product_id == 71 ? "Regional" : "CONUS",
-    							apdu->hours,apdu->minutes,
-								scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+    							apdu->product_id == 71 ? "Regional" : "CONUS",apdu->hours,
+    							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+
     					for (k = 0; k < 128; ++k)
     						fprintf(fileicinghigh, "%d", (apdu->product_id == 71 ? 0 : 1));
 
@@ -1495,7 +1455,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     case 84:  			// Cloud Tops **************
     {
-       	int recf;  //int cnt=0;
+       	int recf;
        	recf = apdu->data[0];
 
        	fprintf(to," Record Format   : %d \n",recf >> 4);
@@ -1518,8 +1478,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
        		fprintf(filecloudt, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-       				apdu->product_id == 84 ? "Regional" : "CONUS",
-       				apdu->hours,
+       				apdu->product_id == 84 ? "Regional" : "CONUS",apdu->hours,
     				apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
        		for (i = 3; i < apdu->length; ++i) {
@@ -1535,7 +1494,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  //      			fprintf(to,"count: %3d  bins: %3d encoding: %d\n",cnt,num_bins,cld_hgt);
 
        			switch (cld_hgt){
-
        			case 10:    enc='a';  	break;
         		case 11:    enc='b';    break;
         		case 12:    enc='c';    break;
@@ -1551,7 +1509,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        				fprintf(filecloudt, "%c", enc);}
        		}
 
- //      		fprintf(to,"count: %d\n",cnt);
        		fprintf(filecloudt, "\n");
        	}
        	else {
@@ -1589,9 +1546,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
        					fprintf(filecloudt, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-       							apdu->product_id == 84 ? "Regional" : "CONUS",
-       							apdu->hours,apdu->minutes,
-								scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+       							apdu->product_id == 84 ? "Regional" : "CONUS",apdu->hours,
+       							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+
        					for (k = 0; k < 128; ++k)
        						fprintf(filecloudt, "%d", (apdu->product_id == 84 ? 0 : 1));
 
@@ -1608,7 +1565,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     case 90:   			// Turbulence Low **************
     {
     	FILE * fileturblow;
-    	int recf;  //int cnt=0;
+    	int recf;
     	recf = apdu->data[0];
 
     	fprintf(to," Record Format   : %d \n",recf >> 4);
@@ -1624,7 +1581,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fprintf(to," rle_flag: %d  Altitude: %d   Block: %d\n",rle_flag,turb_alt,block_num);
 
         switch(turb_alt){
-
         case 0:    	fileturblow = fileturbl2;      	break;
         case 1:   	fileturblow = fileturbl4;     	break;
         case 2:    	fileturblow = fileturbl6;     	break;
@@ -1645,8 +1601,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     		fprintf(fileturblow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    				apdu->product_id == 90 ? "Regional" : "CONUS",
-    				apdu->hours,
+    				apdu->product_id == 90 ? "Regional" : "CONUS",apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
     		for (i = 3; i < apdu->length; ++i) {
@@ -1662,7 +1617,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
   //  			fprintf(to,"count: %3d  bins: %3d encoding: %d\n",cnt,num_bins,edr_enc);
 
     			switch (edr_enc){
-
     			case 10:   	enc='a';  	break;
     			case 11:  	enc='b';    break;
     			case 12:  	enc='c'; 	break;
@@ -1678,7 +1632,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				fprintf(fileturblow, "%c", enc);}
     		}
 
-//    		fprintf(to,"count: %d\n",cnt);
     		fprintf(fileturblow, "\n");
     	}
     	else {
@@ -1716,9 +1669,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     					fprintf(fileturblow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    							apdu->product_id == 90 ? "Regional" : "CONUS",
-    							apdu->hours,apdu->minutes,
-								scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+    							apdu->product_id == 90 ? "Regional" : "CONUS",apdu->hours,
+    							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+
     					for (k = 0; k < 128; ++k)
     						fprintf(fileturblow, "%d", (apdu->product_id == 90 ? 0 : 1));
 
@@ -1751,7 +1704,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	fprintf(to," rle_flag: %d  Altitude: %d   Block: %d\n",rle_flag,turb_alt,block_num);
 
     	switch(turb_alt){
-
     	case 0:  	fileturbhigh = fileturbh18; 	break;
     	case 1: 	fileturbhigh = fileturbh20; 	break;
     	case 2: 	fileturbhigh = fileturbh22; 	break;
@@ -1768,8 +1720,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     		fprintf(fileturbhigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    				apdu->product_id == 91 ? "Regional" : "CONUS",
-    				apdu->hours,
+    				apdu->product_id == 91 ? "Regional" : "CONUS",apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
     		for (i = 3; i < apdu->length; ++i) {
@@ -1785,7 +1736,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
  //   			fprintf(to,"count: %3d  bins: %3d encoding: %d\n",cnt,num_bins,edr_enc);
 
     			switch (edr_enc){
-
     			case 10:    enc='a';    break;
     			case 11:    enc='b';    break;
     			case 12:    enc='c';    break;
@@ -1801,7 +1751,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				fprintf(fileturbhigh, "%c", enc);}
     		}
 
-//    		fprintf(to,"count: %d\n",cnt);
     		fprintf(fileturbhigh, "\n");
     	}
     	else {
@@ -1839,9 +1788,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     					fprintf(fileturbhigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    							apdu->product_id == 91 ? "Regional" : "CONUS",
-    							apdu->hours,apdu->minutes,
-								scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+    							apdu->product_id == 91 ? "Regional" : "CONUS",apdu->hours,
+    							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+
     					for (k = 0; k < 128; ++k)
     						fprintf(fileturbhigh, "%d", (apdu->product_id == 91 ? 0 : 1));
 
@@ -1880,8 +1829,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
        		fprintf(filelightng, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-       				apdu->product_id == 103 ? "Regional" : "CONUS",
-       				apdu->hours,
+       				apdu->product_id == 103 ? "Regional" : "CONUS",apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
        		for (i = 3; i < apdu->length; ++i) {
@@ -1939,9 +1887,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
        					fprintf(filelightng, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-       							apdu->product_id == 103 ? "Regional" : "CONUS",
-       							apdu->hours,apdu->minutes,
-								scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+       							apdu->product_id == 103 ? "Regional" : "CONUS",apdu->hours,
+       							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+
        					for (k = 0; k < 128; ++k)
        						fprintf(filelightng, "%d", (apdu->product_id == 63 ? 0 : 1));
 
@@ -1970,14 +1918,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     		fprintf(filenexradc, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    				apdu->product_id == 63 ? "Regional" : "CONUS",
-    				apdu->hours,
+    				apdu->product_id == 63 ? "Regional" : "CONUS",apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
-
-//    		fprintf(to, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-//    				apdu->product_id == 63 ? "Regional" : "CONUS",
-//    						apdu->hours,
-//							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
     		for (i = 3; i < apdu->length; ++i) {
     			int intensity = apdu->data[i] & 7;
@@ -2023,9 +1965,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     					fprintf(filenexradc, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    							apdu->product_id == 63 ? "Regional" : "CONUS",
-    									apdu->hours,apdu->minutes,
-										scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+    							apdu->product_id == 63 ? "Regional" : "CONUS",apdu->hours,
+    							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+
     					for (k = 0; k < 128; ++k)
     						fprintf(filenexradc, "%d", (apdu->product_id == 63 ? 0 : 1));
 
@@ -2039,10 +1981,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 413:
+    case 413:  // Generic text, DLAC
     {
-    	// Generic text, DLAC
-    	int rec_offset=0;
+     	int rec_offset=0;
     	const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
     	const char *report = text;
 
@@ -2131,7 +2072,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     			fprintf(filemetar," Report Name         : %s\n",mtype);
     			fprintf(filemetar," Data:\n%s\n", r);    // *** Text ***
- //   			display_generic_data(apdu->data, apdu->length, to);
     		}
 
     		if (strcmp(mtype,"WINDS") == 0){
@@ -2147,16 +2087,13 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     			fprintf(filemetar," Report Name         : %s\n",mtype);
     			fprintf(filemetar," Data:\n");
- //   			fprintf(to," Data:\n");
 
     			while ( (tok2 = strsep(&tok1," ")) != NULL ){
     				if (strcmp(tok2,"") != 0){
-   // 					fprintf(to,"%-10s",tok2);
-    					fprintf(filemetar,"%-10s",tok2);
+     					fprintf(filemetar,"%-10s",tok2);
     				}
     			}
 
-//    			fprintf(to,"\n          ");
     			fprintf(filemetar,"\n          ");
 
     			u = strchr(r, '\n');
@@ -2165,17 +2102,12 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     			while ( (tok4 = strsep(&tok3," ")) != NULL ){
     				if (strcmp(tok4,"") != 0){
-    //					fprintf(to,"%-10s",tok4);
     					fprintf(filemetar,"%-10s",tok4);
     				}
     			}
 
-  //  			fprintf(to,"\n");
    			fprintf(filemetar,"\n");
     		}
-//    		else
-//    			fprintf(to," Text:\n%s", r);    // *** Text ***
-
 //   *** METAR ***
     		strcat(observation," ");
     		strcat(observation,r);
@@ -2228,10 +2160,8 @@ static const char *info_frame_type_names[16] = {
 
 static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *frame, FILE *to)
 {
-    fprintf(to, "\nINFORMATION FRAME:\n"
-    			" Type:  %u (%s)\n",
-				frame->type,
-				info_frame_type_names[frame->type]);
+    fprintf(to, "\nINFORMATION FRAME:\n Type:  %u (%s)\n",
+				frame->type,info_frame_type_names[frame->type]);
 
     if (frame->length > 0) {
     	if (frame->is_fisb)
@@ -2256,11 +2186,11 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
         		int txt; 		int grph; 		int i;
         		uint16_t prodt; uint16_t repid=0;
 
-        		prodt=frame->data[0] <<3 | frame->data[1] >>5;
-        		tfr=(frame->data[1] >> 4) & 1;
-        		lidflag=(frame->data[1] >> 8) & 1;
+        		prodt   = frame->data[0] <<3 | frame->data[1] >>5;
+        		tfr     = (frame->data[1] >> 4) & 1;
+        		lidflag = (frame->data[1] >> 8) & 1;
         		prod_range = frame->data[2] * 5;
-        		num_crl = frame->data[3];
+        		num_crl    = frame->data[3];
 
             	fprintf(to,"\n Current Report List\n");
             	fprintf(to," Product: %d -  %s\n",prodt,get_fisb_product_name(prodt));
@@ -2275,9 +2205,9 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
         			q++;
 
         			rep_yr = (frame->data[j] & (~( 1<< 0))) ;
-        			txt = (frame->data[j+1] >> 7) & 1;
-        			grph = (frame->data[j+1] >> 6) & 1;
-        			repid = (frame->data[j+1] & ((1<<6)-1)) << 8 |  frame->data[j+2];
+        			txt    = (frame->data[j+1] >> 7) & 1;
+        			grph   = (frame->data[j+1] >> 6) & 1;
+        			repid  = (frame->data[j+1] & ((1<<6)-1)) << 8 |  frame->data[j+2];
         			fprintf(to," #%3d Year: 20%d T%d G%d Rpt ID: %d",
         					i+1,rep_yr,txt,grph,repid);
         			j=j+3;
@@ -2296,8 +2226,7 @@ void uat_display_uplink_mdb(const struct uat_uplink_mdb *mdb, FILE *to)
 	fprintf(to,"UPLINK: ");
 
     fprintf(to," Site: %u  " , mdb->tisb_site_id);
-    fprintf(to," Lat: %+.4f%s"
-            	" Lon: %+.4f%s ",
+    fprintf(to," Lat: %+.4f%s Lon: %+.4f%s ",
 				mdb->lat, mdb->position_valid ? "" : " ",
 				mdb->lon, mdb->position_valid ? "" : " ");
 
@@ -2538,7 +2467,6 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 	if (element_flag==1 && obj_type ==14 && apdu->product_id == 14)
 			strcpy(ob_ele_text,gairspace_element_names[obj_element]);
 
-
 	switch (geo_overlay_opt) {
 
 		case 3: // Extended Range 3D Polygon (MSL).
@@ -2561,7 +2489,6 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 				fprintf(fnm, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
 			}
-
 		break;
 
 		case 9: // Extended Range 3D Point (AGL). p.47.
@@ -2609,8 +2536,6 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 				r_lat_raw = (((apdu->data[11]) & 0x01) << 8) | (apdu->data[12]);
 				alpha = (apdu->data[13]);
 
-//				lat_bot, lng_bot = airmetLatLng(lat_bot_raw, lng_bot_raw, true);
-
 				lat_bot = fct_f * lat_bot_raw;
 				lng_bot = fct_f * lng_bot_raw;
 				if (lat_bot > 90.0) {
@@ -2618,8 +2543,6 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 				if (lng_bot > 180.0) {
 					lng_bot = lng_bot - 360.0;
 				}
-
-//				lat_top, lng_top = airmetLatLng(lat_top_raw, lng_top_raw, true);
 
 				lat_top = fct_f * lat_top_raw;
 				lng_top = fct_f * lng_top_raw;
@@ -2664,7 +2587,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 
-	int rec_offset=11;     //was 11
+	int rec_offset = 11;
 	char gstn[5]; char *sua_text;
 
 	const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
@@ -2673,7 +2596,7 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
    	while (report) {
    		char report_buf[1024];
    		const char *next_report; uint16_t report_year;
-   		uint16_t rep_num=0;
+   		uint16_t rep_num = 0;
    		char *p, *r;
 
    		next_report = strchr(report, '\x1e'); // RS
@@ -2745,7 +2668,6 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
    			get_sua_text(sua_text,to);
    		}
 
-//		fprintf(to,"\n%s \n",r);
 		fprintf(fnm," Data:\n%s\n",r);
 
 		fflush(fnm);
@@ -2831,9 +2753,9 @@ static void get_seg_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 				char_cnt = char_cnt + seg_list[i].seg_text_len;
 			}
 		}
-		const char *goose = decode_dlac(rep_all, char_cnt-15 ,20);
-		fprintf(to,"%s\n",goose);
-		fprintf(fnm,"%s\n",goose);
+		const char *seg_text_all = decode_dlac(rep_all, char_cnt-15 ,20);
+		fprintf(to,"%s\n",seg_text_all);
+		fprintf(fnm,"%s\n",seg_text_all);
 	}
 	display_generic_data(apdu->data, apdu->length, to);
 	fflush(fnm);

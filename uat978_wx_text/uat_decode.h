@@ -44,7 +44,7 @@ typedef enum { CS_INVALID=0, CS_CALLSIGN, CS_SQUAWK } callsign_type_t;
 struct MyStruct{
 	char gs_call[5];
 	char gs_loc[75];
-	}  gs_list[900];
+}  gs_list[900];
 
 // SEgmentation
 struct MySegStruct{
@@ -57,33 +57,27 @@ struct MySegStruct{
 
 int seg_count;
 
-
-FILE * filemetar;   		//413
-FILE * filenotam;   		// 8
-FILE * filesua;      		// 13
-FILE * filesigmet;    		// 12
-FILE * fileairmet;			// 11
-FILE * filegairmet;			// 14
-FILE * filepirep;			// PIREP
-FILE * filenexradc;			// NEXRAD Graphics output
-FILE * fileicingl2;			// ICING LOW Graphics output
-FILE * fileicingl4;			// ICING LOW Graphics output
-FILE * fileicingl6;			// ICING LOW Graphics output
-FILE * fileicingl8;			// ICING LOW Graphics output
-FILE * fileicingl10;		// ICING LOW Graphics output
-FILE * fileicingl12;		// ICING LOW Graphics output
-FILE * fileicingl14;		// ICING LOW Graphics output
-FILE * fileicingl16;		// ICING LOW Graphics output
-
-FILE * fileicingh18;		// ICING HIGH Graphics output
-FILE * fileicingh20;		// ICING HIGH Graphics output
-FILE * fileicingh22;		// ICING HIGH Graphics output
-FILE * fileicingh24;		// ICING HIGH Graphics output
-
-
+FILE * filemetar;   	// 413
+FILE * filenotam;   	// 8
+FILE * filesua;      	// 13
+FILE * filesigmet;    	// 12
+FILE * fileairmet;		// 11
+FILE * filegairmet;		// 14
+FILE * filepirep;		// PIREP
+FILE * filenexradc;		// NEXRAD Graphics output
+FILE * fileicingl2;		// ICING LOW Graphics output
+FILE * fileicingl4;		// ICING LOW Graphics output
+FILE * fileicingl6;		// ICING LOW Graphics output
+FILE * fileicingl8;		// ICING LOW Graphics output
+FILE * fileicingl10;	// ICING LOW Graphics output
+FILE * fileicingl12;	// ICING LOW Graphics output
+FILE * fileicingl14;	// ICING LOW Graphics output
+FILE * fileicingl16;	// ICING LOW Graphics output
+FILE * fileicingh18;	// ICING HIGH Graphics output
+FILE * fileicingh20;	// ICING HIGH Graphics output
+FILE * fileicingh22;	// ICING HIGH Graphics output
+FILE * fileicingh24;	// ICING HIGH Graphics output
 FILE * filecloudt;		// CLOUD TOPS Graphics output
-
-
 FILE * fileturbl2;		// TURBULENCE LOW Graphics output
 FILE * fileturbl4;		// TURBULENCE LOW Graphics output
 FILE * fileturbl6;		// TURBULENCE LOW Graphics output
@@ -92,13 +86,10 @@ FILE * fileturbl10;		// TURBULENCE LOW Graphics output
 FILE * fileturbl12;		// TURBULENCE LOW Graphics output
 FILE * fileturbl14;		// TURBULENCE LOW Graphics output
 FILE * fileturbl16;		// TURBULENCE LOW Graphics output
-
-
 FILE * fileturbh18;		// TURBULENCE HIGH Graphics output
 FILE * fileturbh20;		// TURBULENCE HIGH Graphics output
 FILE * fileturbh22;		// TURBULENCE HIGH Graphics output
 FILE * fileturbh24;		// TURBULENCE HIGH Graphics output
-
 FILE * filelightng;		// LIGHTNING Graphics output
 
 int reccount;
