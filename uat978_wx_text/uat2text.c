@@ -88,11 +88,11 @@ int main(int argc, char **argv)
    	if (filesigmet == 0)			{
    		fprintf(stdout,"sigmet.out Error--file could not be opened. \n") ;
    		exit (1) ;			}
-   	fileairmet = fopen("airmet.out ","w");
+   	fileairmet = fopen("airmet.out","w");
    	if (fileairmet == 0)			{
    		fprintf(stdout,"airmet.out Error--file could not be opened. \n") ;
    		exit (1) ;			}
-   	filegairmet = fopen("gairmet.out ","w");
+   	filegairmet = fopen("gairmet.out","w");
    	if (filegairmet == 0)			{
    		fprintf(stdout,"gairmet.out Error--file could not be opened. \n") ;
    		exit (1) ;			}
