@@ -8,6 +8,10 @@ project (https://github.com/cyoung/stratux Copyright (c) 2015-2016 Christopher Y
 My programming skills are somewhat limited, and this is my first Github project, so be nice! I am just doing this for my own amusement,
 and the hope that someone more expierienced can take it further.
 
+## What I've done
+* WX station and airport lookup
+
+
 ## Screenshots
 
 AIRMET (Airmen's meteorological information)
