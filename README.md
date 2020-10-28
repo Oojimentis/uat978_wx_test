@@ -23,10 +23,11 @@ My programming skills are somewhat limited, and this is my first Github project,
 
     > rtl_sdr -g 0 -d 0 -f 978000000 -s 2083334 - | ./dump978 | tee  >(./uat2text > slog.txt)
 
->   #!/bin/bash
+````
+#!/bin/bash
 
->   read -p "rtl [0]: " rtl
->   rtl=${rtl:-0}
+read -p "rtl [0]: " rtl
+rtl=${rtl:-0}
 
 read -p "gain [0]: " gain
 gain=${gain:-0}
@@ -43,7 +44,7 @@ gnome-terminal --tab --title="airmet"   -- bash -ic "multitail -cS dump978 airme
 gnome-terminal --tab --title="sigmet"   -- bash -ic "multitail -cS dump978 sigmet.out"
 gnome-terminal --tab --title="g-airmet" -- bash -ic "multitail -cS dump978 gairmet.out"
 gnome-terminal --tab --title="pirep"    -- bash -ic "multitail -cS dump978 pirep.out"
-
+````
 
 
 
