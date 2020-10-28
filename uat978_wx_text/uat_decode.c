@@ -1293,9 +1293,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				fprintf(fileicinglow, "%d", ice_prob);}
     		}
 
- //   		fprintf(to,"count: %d\n",cnt);
+ //   		fprintf(to,"kount: %d\n",cnt);
     		fprintf(fileicinglow, "\n");
-    		// test
+
     	}
     	else {    // Empty
     		int L = apdu->data[3] & 15;
