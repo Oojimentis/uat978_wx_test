@@ -4,12 +4,47 @@ This is a clone of DUMP978 (https://github.com/mutability/dump978) written by Ol
 
 My programming skills are somewhat limited, and this is my first Github project, so be nice! I am just doing this for my own amusement, and the hope that someone more experienced can take it further.
 
-## Updates
+## Added
 * WX station and airport lookup
 * METAR decode (libmetar.a)
 * Attempt at handling segmented NOTAM-TFR reports
 * Output files for each FIS-B product. (overkill...)
 * Decoding of Cloud Tops, Icing, Lightening, and Turbulence radar graphic reports like nexrad radar in DUMP978
+* SUA and PIREP decode
+* AIRMET, NOTAM, SIGMET, TAF, and Winds aloft text report.
+* AIRMET, G-AIRMET, NOTAM, SIGMET graphic reports - Decode parameters and coordinates. (Would love to be able to plot on map)
+* Use Multitail (https://vanheusden.com/multitail) to colorize lof files.
+
+## Building
+
+    > make
+    
+## Run
+
+    > rtl_sdr -g 0 -d 0 -f 978000000 -s 2083334 - | ./dump978 | tee  >(./uat2text > slog.txt)
+
+>   #!/bin/bash
+
+>   read -p "rtl [0]: " rtl
+>   rtl=${rtl:-0}
+
+read -p "gain [0]: " gain
+gain=${gain:-0}
+
+cd /your-directory
+
+#gnome-terminal --tab --title="dump978 - rtl:$rtl" -- bash -ic "rtl_sdr -g $gain -d $rtl -f 978000000 -s 2083334 - | ./dump978 | tee  >(./uat2text > slog.txt) | ./uat2esnt | nc -q1 localhost 30001" 
+
+gnome-terminal --tab --title="slog.txt" -- bash -ic "multitail -cS dump978 slog.txt"
+gnome-terminal --tab --title="metar"    -- bash -ic "multitail -cS dump978 metar.out"
+gnome-terminal --tab --title="sua"      -- bash -ic "multitail -cS dump978 sua.out"
+gnome-terminal --tab --title="notam"    -- bash -ic "multitail -cS dump978 notam.out"
+gnome-terminal --tab --title="airmet"   -- bash -ic "multitail -cS dump978 airmet.out"
+gnome-terminal --tab --title="sigmet"   -- bash -ic "multitail -cS dump978 sigmet.out"
+gnome-terminal --tab --title="g-airmet" -- bash -ic "multitail -cS dump978 gairmet.out"
+gnome-terminal --tab --title="pirep"    -- bash -ic "multitail -cS dump978 pirep.out"
+
+
 
 
 ## Screenshots
