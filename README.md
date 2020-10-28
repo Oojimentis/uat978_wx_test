@@ -13,7 +13,7 @@ My programming skills are somewhat limited, and this is my first Github project,
 * SUA and PIREP decode
 * AIRMET, NOTAM, SIGMET, TAF, and Winds aloft text report.
 * AIRMET, G-AIRMET, NOTAM, SIGMET graphic reports - Decode parameters and coordinates. (Would love to be able to plot on map)
-* Use Multitail (https://vanheusden.com/multitail) to colorize lof files.
+* Use Multitail (https://vanheusden.com/multitail) to colorize log files.
 
 ## Building
 
