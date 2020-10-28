@@ -1,15 +1,15 @@
 # uat978_wx_test
 
-This is a clone of DUMP978 (https://github.com/mutability/dump978) written by Oliver Jowett, that I have 
-expanded upon purely for my own amusement. It usees the METAR decoder library libmetar.a from 
-https://github.com/flightaware/mdsplib (Eric McCarthy eric@limulus.net) and also borrows from Christopher Young's Stratux
-project (https://github.com/cyoung/stratux Copyright (c) 2015-2016 Christopher Young).
+This is a clone of DUMP978 (https://github.com/mutability/dump978) written by Oliver Jowett, that I have expanded upon purely for my own amusement. It uses the METAR decoder library libmetar.a from https://github.com/flightaware/mdsplib (Eric McCarthy eric@limulus.net) and borrows from Christopher Young's Stratux project (https://github.com/cyoung/stratux Copyright (c) 2015-2016 Christopher Young).
 
-My programming skills are somewhat limited, and this is my first Github project, so be nice! I am just doing this for my own amusement,
-and the hope that someone more expierienced can take it further.
+My programming skills are somewhat limited, and this is my first Github project, so be nice! I am just doing this for my own amusement, and the hope that someone more experienced can take it further.
 
-## What I've done
+## Updates
 * WX station and airport lookup
+* METAR decode (libmetar.a)
+* Attempt at handling segmented NOTAM-TFR reports
+* Output files for each FIS-B product. (overkill...)
+* Decoding of Cloud Tops, Icing, Lightening, and Turbulence radar graphic reports like nexrad radar in DUMP978
 
 
 ## Screenshots
@@ -50,7 +50,7 @@ SUA (Special use airspace)
 
 ![SUA](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/sua_screen.png)
 
-TAF (Terminal Aerodrome Forcast)
+TAF (Terminal Aerodrome Forecast)
 
 ![TAF](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/taf_screen.png)
 
