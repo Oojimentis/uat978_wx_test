@@ -23,18 +23,19 @@ My programming skills are somewhat limited, and this is my first Github project,
 
     > rtl_sdr -g 0 -d 0 -f 978000000 -s 2083334 - | ./dump978 | tee  >(./uat2text > slog.txt)
 
+I use a script to launch DUMP978, output position data to DUMP1090, and view some of the output files in tabs using Multitail.
+
 ````
 #!/bin/bash
 
 read -p "rtl [0]: " rtl
 rtl=${rtl:-0}
-
 read -p "gain [0]: " gain
 gain=${gain:-0}
 
 cd /your-directory
 
-#gnome-terminal --tab --title="dump978 - rtl:$rtl" -- bash -ic "rtl_sdr -g $gain -d $rtl -f 978000000 -s 2083334 - | ./dump978 | tee  >(./uat2text > slog.txt) | ./uat2esnt | nc -q1 localhost 30001" 
+gnome-terminal --tab --title="dump978 - rtl:$rtl" -- bash -ic "rtl_sdr -g $gain -d $rtl -f 978000000 -s 2083334 - | ./dump978 | tee  >(./uat2text > slog.txt) | ./uat2esnt | nc -q1 localhost 30001" 
 
 gnome-terminal --tab --title="slog.txt" -- bash -ic "multitail -cS dump978 slog.txt"
 gnome-terminal --tab --title="metar"    -- bash -ic "multitail -cS dump978 metar.out"
