@@ -51,6 +51,10 @@ gnome-terminal --tab --title="pirep"    -- bash -ic "multitail -cS dump978 pirep
 
 ## Screenshots
 
+Aircraft
+
+![Aircraft](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/aircraft_screen.png)
+
 AIRMET (Airmen's meteorological information)
 
 ![AIRMET graphic](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/airmet_graphic_screen.png)
