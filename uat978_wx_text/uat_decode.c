@@ -7,12 +7,17 @@
 #define NULL   ((void *) 0)
 #endif
 
+#include <math.h>
+#include <string.h>
 #include <assert.h>
-#include <time.h>
 
 #include "uat.h"
 #include "uat_decode.h"
+
 #include "metar.h"
+#include <time.h>
+
+#include <stdlib.h>
 
 #define BLOCK_WIDTH (48.0/60.0)
 #define WIDE_BLOCK_WIDTH (96.0/60.0)

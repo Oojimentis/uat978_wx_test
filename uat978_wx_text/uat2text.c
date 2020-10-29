@@ -1,7 +1,5 @@
-//      This is a test
 // Copyright 2015, Oliver Jowett <oliver@mutability.co.uk>
 //
-
 // This file is free software: you may copy, redistribute and/or modify it  
 // under the terms of the GNU General Public License as published by the
 // Free Software Foundation, either version 2 of the License, or (at your  
@@ -17,14 +15,14 @@
 
 #include <stdio.h>
 
+#include "uat.h"
+#include "uat_decode.h"
+#include "reader.h"
+
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-
-#include "uat.h"
-#include "uat_decode.h"
-#include "reader.h"
 
 #ifndef NULL
 #define NULL   ((void *) 0)

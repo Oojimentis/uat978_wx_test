@@ -20,15 +20,9 @@
 
 #include <stdint.h>
 #include <stdio.h>
-#include <stdint.h>
 
 #include "uat.h"
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include <unistd.h>
 
-#include "fec.h"
 //
 // Datatypes
 //
