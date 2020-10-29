@@ -2114,7 +2114,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
    			fprintf(filemetar,"\n");
     		}
-//   *** METAR ***
+
     		strcat(observation," ");
     		strcat(observation,r);
 
@@ -2305,7 +2305,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 	fprintf(fnm,"     Record Length    : %03d ",rec_len);
 
 	report_year = ((apdu->data[datoff + 3]) & 0xFE) >> 1;    									// 9
-	fprintf(fnm,"     Report Year        : %d\n ",report_year);
+	fprintf(fnm,"     Report Year        : 20%02d\n ",report_year);
 
 	overlay_rec_id = (((apdu->data[datoff + 4]) & 0x1E) >> 1) + 1; // Document instructs to add 1.
 	fprintf(fnm,"Ovrlay RcID     : %d",overlay_rec_id);                       					//10
@@ -2382,7 +2382,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		obj_param_type= apdu->data[18] >> 3;              					 //18
 		ob_par_val = (apdu->data[18] & 0x7)<< 8 | apdu->data[19];				//19
 
-		fprintf(to, "Obj Qualfr: %d  Obj Prm Tp: %d  Obj Par Val: %d\n",object_qualifier,obj_param_type,ob_par_val);
+//		fprintf(to, "Obj Qualfr: %d  Obj Prm Tp: %d  Obj Par Val: %d\n",object_qualifier,obj_param_type,ob_par_val);
 		fprintf(fnm,"Obj Qualfr: %d  Obj Prm Tp: %d  Obj Par Val: %d\n",object_qualifier,obj_param_type,ob_par_val);
 
 		datoff = datoff+7;                 //13 datogg =20
@@ -2524,7 +2524,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 		case 7: case 8: // Extended Range Circular Prism (7 = MSL, 8 = AGL)
 			if (rec_len < 14) {
-				fprintf(to, "invalid data: Extended Range Circular Prism. Should be 14 bytes; %d seen.\n",rec_len);
+				fprintf(fnm, "invalid data: Extended Range Circular Prism. Should be 14 bytes; %d seen.\n",rec_len);
 			} else {
 				uint32_t lng_bot_raw,lat_bot_raw,lng_top_raw,lat_top_raw;
 				uint32_t alt_bot_raw,alt_top_raw,r_lng_raw,r_lat_raw,alpha, alt_bot,alt_top;
@@ -2564,21 +2564,21 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 				r_lng = r_lng_raw * 0.2;
 				r_lat = r_lat_raw * 0.2;
 
-				fprintf(to,"lat_bot, lng_bot = %f, %f\n", lat_bot, lng_bot);
-				fprintf(to,"lat_top, lng_top = %f, %f\n", lat_top, lng_top);
+				fprintf(fnm,"lat_bot, lng_bot = %f, %f\n", lat_bot, lng_bot);
+				fprintf(fnm,"lat_top, lng_top = %f, %f\n", lat_top, lng_top);
 
 				if (geo_overlay_opt == 8) {
-					fprintf(to,"alt_bot, alt_top = %d AGL, %d AGL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
+					fprintf(fnm,"alt_bot, alt_top = %d AGL, %d AGL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
 				} else {
-					fprintf(to,"alt_bot, alt_top = %d MSL, %d MSL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
+					fprintf(fnm,"alt_bot, alt_top = %d MSL, %d MSL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
 				}
-				fprintf(to,"r_lng, r_lat = %f, %f\n", r_lng, r_lat);
+				fprintf(fnm,"r_lng, r_lat = %f, %f\n", r_lng, r_lat);
 
-				fprintf(to,"alpha=%d\n", alpha);
+				fprintf(fnm,"alpha=%d\n", alpha);
 			}
 		break;
-
 	}
+
 	fprintf(fnm, "\n");
 	fprintf(fnm, " Object Type: %s  Object Element: %s\n",ob_type_text,ob_ele_text);
 	fprintf(fnm, " Object Status: %s Overlay type: %s\n",ob_status_text,geo_overlay_text);
@@ -2660,8 +2660,8 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 		fprintf(fnm," Report Number   : %6d  ",rep_num);
 
     	report_year = (((apdu->data[9]) & 0x03) << 5 | ((apdu->data[10])  & 0xF8) >> 3) ;
-    	fprintf(to,"     Report Year       : %d\n ",report_year);
-    	fprintf(fnm,"     Report Year       : %d\n ",report_year);
+    	fprintf(to,"     Report Year       : 20%02d\n ",report_year);
+    	fprintf(fnm,"     Report Year       : 20%02d\n ",report_year);
 
    		time_t current_time = time(NULL);
    		struct tm *tm = localtime(&current_time);
@@ -2688,36 +2688,40 @@ static void get_seg_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 	prodfillen = (apdu->data[5] & 0x1) | (apdu->data[6]);
 	apdunum    = ((apdu->data[7]) << 1 ) | (apdu->data[8] >> 7);
 
-	uint16_t rec_len = ((apdu->data[15]) << 8) | (apdu->data[16]);    	// 6 7
-	fprintf(fnm,"     Record Length    : %d ",rec_len);
-	uint16_t rep_num = ((apdu->data[17]  << 6) | (apdu->data[18] >> 2));   			//7 8
-	fprintf(fnm," Report Number   : %d\n",rep_num);
-
-	fprintf(fnm,"Prodid: %d prodfillen: %d  apdunum: %d  ",prodid,prodfillen,apdunum);
-
 	int fg=0;       // Check if report part already stored
 	for (int i = 0; i <= seg_count; ++i) {
 		if ((prodid == seg_list[i].seg_prodid) &&
 				(prodfillen == seg_list[i].seg_prolen) &&
 				(apdunum == seg_list[i].seg_segnum)){
-			fprintf(fnm," item in list\n");
 			++fg;
 		}
 	}
-	if (fg == 0){              // New report part
-		fprintf(fnm," item not in list\n");
-		seg_list[seg_count].seg_prodid = prodid;            // Add new record
+	if (fg == 0){              // New report part - add record
+		int offx = 0;
+		seg_list[seg_count].seg_prodid = prodid;
 		seg_list[seg_count].seg_prolen = prodfillen;
 		seg_list[seg_count].seg_segnum = apdunum;
-		seg_list[seg_count].seg_text_len = apdu->length;
 
-		for (int x = 0; x <= apdu->length; ++x) {
+		if (apdunum == 1){            // Contains report number and year
+			offx = 20;
+			seg_list[seg_count].seg_text_len = apdu->length-20;
+			seg_list[seg_count].seg_rpt_num = ((apdu->data[17]  << 6) | (apdu->data[18] >> 2));   			//7 8
+			seg_list[seg_count].seg_rpt_year = (((apdu->data[18]) & 0x03) << 5 | ((apdu->data[19])  & 0xF8) >> 3) ;
+		}
+		else {
+			offx = 15;
+			seg_list[seg_count].seg_text_len = apdu->length-15;
+			seg_list[seg_count].seg_rpt_num = 0;
+			seg_list[seg_count].seg_rpt_year = 0 ;
+		}
+
+		for ( int x = offx; x <= apdu->length; ++x) {
 			int c = apdu->data[x];
-			seg_list[seg_count].seg_data[x] = c;
+			seg_list[seg_count].seg_data[x-offx] = c;
 		}
 		++seg_count;
 	}
-	fg=0;     // See if all parts of record are stored
+	fg=0;     						// See if all parts of record are stored
 	for (int i = 0; i <= seg_count; ++i) {
 		for (int j = 1; j <= prodfillen; ++j) {
 			if ((prodid == seg_list[i].seg_prodid) &&
@@ -2731,7 +2735,6 @@ static void get_seg_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 		uint8_t rep_all[2000];
 		int char_cnt = 0;
 
-		fprintf(fnm," all items in list\n");
 		for (int i = 0; i <= seg_count; ++i) {       // 1st part
 			if ((seg_list[i].seg_prodid == prodid) &&
 					(seg_list[i].seg_prolen == prodfillen) && (seg_list[i].seg_segnum == 1)){
@@ -2739,13 +2742,23 @@ static void get_seg_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 					rep_all[d] = seg_list[i].seg_data[d];
 				}
 				char_cnt = char_cnt + seg_list[i].seg_text_len;	  // 550
+
+				fprintf(to," Report Type     : NOTAM - Segmented\n");
+				fprintf(fnm," Report Type     : NOTAM - Segmented\n");
+				fprintf(to," Num of Segments : %d\n", seg_list[i].seg_prolen);
+				fprintf(fnm," Num of Segments : %d\n", seg_list[i].seg_prolen);
+
+				fprintf(to," Report Number   : %6d  ",seg_list[i].seg_rpt_num);
+				fprintf(fnm," Report Number   : %6d  ",seg_list[i].seg_rpt_num);
+		    	fprintf(to,"     Report Year       : 20%02d\n ",seg_list[i].seg_rpt_year);
+		    	fprintf(fnm,"     Report Year       : 20%02d\n ",seg_list[i].seg_rpt_year);
 			}
 		}
 		for (int i = 0; i <= seg_count; ++i) {       // 2nd part
 			if ((seg_list[i].seg_prodid == prodid) &&
 					(seg_list[i].seg_prolen == prodfillen) && (seg_list[i].seg_segnum == 2)){
 				for (int d = char_cnt; d  <= char_cnt + seg_list[i].seg_text_len; ++d) {
-					rep_all[d] = seg_list[i].seg_data[(d-char_cnt) +15];
+					rep_all[d] = seg_list[i].seg_data[(d-char_cnt)];
 				}
 				char_cnt = char_cnt + seg_list[i].seg_text_len;
 			}
@@ -2753,17 +2766,23 @@ static void get_seg_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 		for (int i = 0; i <= seg_count; ++i) {       // 3rd part
 			if ((seg_list[i].seg_prodid == prodid) &&
 					(seg_list[i].seg_prolen == prodfillen) && (seg_list[i].seg_segnum == 3)){
-				for (int d = char_cnt-15; d  <=  char_cnt + seg_list[i].seg_text_len; ++d) {
-					rep_all[d] = seg_list[i].seg_data[(d-char_cnt)+15];
+				for (int d = char_cnt; d  <=  char_cnt + seg_list[i].seg_text_len; ++d) {
+					rep_all[d] = seg_list[i].seg_data[(d-char_cnt)];
 				}
 				char_cnt = char_cnt + seg_list[i].seg_text_len;
 			}
 		}
-		const char *seg_text_all = decode_dlac(rep_all, char_cnt-15 ,20);
-		fprintf(to,"%s\n",seg_text_all);
-		fprintf(fnm,"%s\n",seg_text_all);
+
+		const char *seg_text_all = decode_dlac(rep_all, char_cnt ,0);
+
+		time_t current_time = time(NULL);
+		struct tm *tm = localtime(&current_time);
+		fprintf(to,"Time            : %s", asctime(tm));
+		fprintf(fnm,"Time            : %s", asctime(tm));
+		fprintf(fnm," Data:\n%s\n\n",seg_text_all);
 	}
-	display_generic_data(apdu->data, apdu->length, to);
+
+//	display_generic_data(apdu->data, apdu->length, to);
 	fflush(fnm);
 }
 

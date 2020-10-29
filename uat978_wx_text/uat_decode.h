@@ -46,6 +46,8 @@ struct MySegStruct{
 	uint16_t seg_prolen;
 	uint16_t seg_segnum;
 	int seg_text_len;
+	uint16_t seg_rpt_num;
+	int seg_rpt_year;
 	uint8_t  seg_data[1000];
 }  seg_list[50];
 
