@@ -42,12 +42,11 @@ static const char *decode_dlac(uint8_t *data, unsigned bytelen, int rec_offset)
 
 {
     static char buf[2048];
-
     bytelen 	 = bytelen - rec_offset;
     uint8_t *end = data + bytelen;
-    char *p  = buf;
-    int step = 0;
-    int tab  = 0;
+    char *p  	 = buf;
+    int step 	 = 0;
+    int tab  	 = 0;
 
     while (data < end) {
         int ch;
@@ -85,6 +84,7 @@ static const char *decode_dlac(uint8_t *data, unsigned bytelen, int rec_offset)
     }
 
     *p = 0;
+
     return buf;
 }
 
@@ -100,13 +100,14 @@ static void get_gs_name(char *Word,int len){
 	for(int i=0; i < len; i++){
 
 		if(*gs_list[i].gs_call == '\0')
-	  	         return;
-	  	if(strcmp(gs_list[i].gs_call, temp_stn)==0){
+			return;
+
+		if(strcmp(gs_list[i].gs_call, temp_stn)==0){
 	  		strncpy(gs_ret,gs_list[i].gs_loc,75);
- 	  	    	 return;
+	  		return;
 	  	}
-	 }
-     return;
+	}
+	return;
 }
 
 static void get_sua_text(char *Word, FILE *to);
@@ -229,26 +230,31 @@ static void get_sua_text(char *Word, FILE *to){
 		else if	(strcmp(sua_shp_ind,"Y") ==0){
 			fprintf(filesua," Shape Indicator: %s Has Shape Defined\n",sua_shp_ind);}
 	}
+
 	token = strsep(&Word,"|");
 	if (token){
 		strcpy(sua_nfdc_id,token);      //14
 		fprintf(filesua," NFDC ID         : %10s",sua_nfdc_id);
 	}
+
 	token = strsep(&Word,"|");
 	if (token) {
 		strcpy(sua_nfcd_nm,token);      //15
 		fprintf(filesua,"      NFCD Name : %s\n",sua_nfcd_nm);
 	}
+
 	token = strsep(&Word,"|");
 	if (token) {
 		strcpy(sua_dafif_id,token);    	//16
 		fprintf(filesua," DAFIF ID        : %10s",sua_dafif_id);
 	}
+
 	token = strsep(&Word,"|");
 	if (token) {
 		strcpy(sua_dafif_nm,token);    	//17
 		fprintf(filesua,"      DAFIF Name: %s\n",sua_dafif_nm);
 	}
+
 	fflush(filesua);
 }
 
@@ -277,7 +283,8 @@ static void get_pirep(char *Word, FILE *to){
     get_gs_name(pirep_stn,reccount);
 
     fprintf(filepirep,"PIREP REPORT:\n");
- 	time_t current_time = time(NULL);
+
+    time_t current_time = time(NULL);
  	char * tm=ctime(&current_time);
     tm[strlen(tm)-1] = '\0';
 	fprintf(filepirep," Time           : %s\n", tm);
@@ -351,11 +358,12 @@ static void get_pirep(char *Word, FILE *to){
     		 }
     	 }
     }
+
     fflush(filepirep);
 }
 
-static void uat_decode_hdr(uint8_t *frame, struct uat_adsb_mdb *mdb)
-{
+static void uat_decode_hdr(uint8_t *frame, struct uat_adsb_mdb *mdb){
+
     mdb->mdb_type = (frame[0] >> 3) & 0x1f;
     mdb->address_qualifier = (address_qualifier_t) (frame[0] & 0x07);
     mdb->address = (frame[1] << 16) | (frame[2] << 8) | frame[3];
@@ -499,7 +507,6 @@ static const char *obj_param_type_names[31] = {
 		"Future Use"
 };
 
-
 static void uat_display_hdr(const struct uat_adsb_mdb *mdb, FILE *to)
 {
 	fprintf(to,"HDR:");
@@ -535,6 +542,7 @@ static void uat_decode_sv(uint8_t *frame, struct uat_adsb_mdb *mdb)
     }
 
     raw_alt = (frame[10] << 4) | ((frame[11] & 0xf0) >> 4);
+
     if (raw_alt != 0) {
         mdb->altitude_type = (frame[9] & 1) ? ALT_GEO : ALT_BARO;
         mdb->altitude = (raw_alt - 1) * 25 - 1000;
@@ -545,32 +553,38 @@ static void uat_decode_sv(uint8_t *frame, struct uat_adsb_mdb *mdb)
     switch (mdb->airground_state) {
     case AG_SUBSONIC:
     case AG_SUPERSONIC:
-        {
-        	int raw_ns, raw_ew, raw_vvel;
+    {
+    	int raw_ns, raw_ew, raw_vvel;
             
-        	raw_ns = ((frame[12] & 0x1f) << 6) | ((frame[13] & 0xfc) >> 2);
-            if ((raw_ns & 0x3ff) != 0) {
-                mdb->ns_vel_valid = 1;
-                mdb->ns_vel = ((raw_ns & 0x3ff) - 1);
-                if (raw_ns & 0x400)
-                    mdb->ns_vel = 0 - mdb->ns_vel;
-                if (mdb->airground_state == AG_SUPERSONIC)
-                    mdb->ns_vel *= 4;
+    	raw_ns = ((frame[12] & 0x1f) << 6) | ((frame[13] & 0xfc) >> 2);
+
+    	if ((raw_ns & 0x3ff) != 0) {
+    		mdb->ns_vel_valid = 1;
+    		mdb->ns_vel = ((raw_ns & 0x3ff) - 1);
+
+    		if (raw_ns & 0x400)
+    			mdb->ns_vel = 0 - mdb->ns_vel;
+
+    		if (mdb->airground_state == AG_SUPERSONIC)
+    			mdb->ns_vel *= 4;
             }
             
-            raw_ew = ((frame[13] & 0x03) << 9) | (frame[14] << 1) | ((frame[15] & 0x80) >> 7);
-            if ((raw_ew & 0x3ff) != 0) {
-                mdb->ew_vel_valid = 1;
-                mdb->ew_vel = ((raw_ew & 0x3ff) - 1);
-                if (raw_ew & 0x400)
-                    mdb->ew_vel = 0 - mdb->ew_vel;
-                if (mdb->airground_state == AG_SUPERSONIC)
+    	raw_ew = ((frame[13] & 0x03) << 9) | (frame[14] << 1) | ((frame[15] & 0x80) >> 7);
+
+    	if ((raw_ew & 0x3ff) != 0) {
+    		mdb->ew_vel_valid = 1;
+    		mdb->ew_vel = ((raw_ew & 0x3ff) - 1);
+
+    		if (raw_ew & 0x400)
+    			mdb->ew_vel = 0 - mdb->ew_vel;
+
+    		if (mdb->airground_state == AG_SUPERSONIC)
                     mdb->ew_vel *= 4;
             }
             
             if (mdb->ns_vel_valid && mdb->ew_vel_valid) {
-                if (mdb->ns_vel != 0 || mdb->ew_vel != 0) {
-                    mdb->track_type = TT_TRACK;
+            	if (mdb->ns_vel != 0 || mdb->ew_vel != 0) {
+            		mdb->track_type = TT_TRACK;
                     mdb->track = (uint16_t)(360 + 90 - atan2(mdb->ns_vel, mdb->ew_vel) * 180 / M_PI) % 360;
                 }
                 
@@ -579,9 +593,11 @@ static void uat_decode_sv(uint8_t *frame, struct uat_adsb_mdb *mdb)
             }
 
             raw_vvel = ((frame[15] & 0x7f) << 4) | ((frame[16] & 0xf0) >> 4);
+
             if ((raw_vvel & 0x1ff) != 0) {
                 mdb->vert_rate_source = (raw_vvel & 0x400) ? ALT_BARO : ALT_GEO;
                 mdb->vert_rate = ((raw_vvel & 0x1ff) - 1) * 64;
+
                 if (raw_vvel & 0x200)
                     mdb->vert_rate = 0 - mdb->vert_rate;
             }                
@@ -589,35 +605,37 @@ static void uat_decode_sv(uint8_t *frame, struct uat_adsb_mdb *mdb)
         break;
 
     case AG_GROUND:
-        {
-        	int raw_gs, raw_track;
+    {
+    	int raw_gs, raw_track;
 
-            raw_gs = ((frame[12] & 0x1f) << 6) | ((frame[13] & 0xfc) >> 2);
-            if (raw_gs != 0) {
-                mdb->speed_valid = 1;
-                mdb->speed = ((raw_gs & 0x3ff) - 1);
-            }
+    	raw_gs = ((frame[12] & 0x1f) << 6) | ((frame[13] & 0xfc) >> 2);
 
-            raw_track = ((frame[13] & 0x03) << 9) | (frame[14] << 1) | ((frame[15] & 0x80) >> 7);
-            switch ((raw_track & 0x0600)>>9) {
-            case 1: mdb->track_type = TT_TRACK; break;
-            case 2: mdb->track_type = TT_MAG_HEADING; break;
-            case 3: mdb->track_type = TT_TRUE_HEADING; break;
-            }
+    	if (raw_gs != 0) {
+    		mdb->speed_valid = 1;
+    		mdb->speed = ((raw_gs & 0x3ff) - 1);
+    	}
 
-            if (mdb->track_type != TT_INVALID)
-                mdb->track = (raw_track & 0x1ff) * 360 / 512;
+    	raw_track = ((frame[13] & 0x03) << 9) | (frame[14] << 1) | ((frame[15] & 0x80) >> 7);
 
-            mdb->dimensions_valid = 1;
-            mdb->length = 15 + 10 * ((frame[15] & 0x38) >> 3);
-            mdb->width = dimensions_widths[(frame[15] & 0x78) >> 3];
-            mdb->position_offset = (frame[15] & 0x04) ? 1 : 0;
-        }
-        break;
+    	switch ((raw_track & 0x0600)>>9) {
+    	case 1: mdb->track_type = TT_TRACK; break;
+    	case 2: mdb->track_type = TT_MAG_HEADING; break;
+    	case 3: mdb->track_type = TT_TRUE_HEADING; break;
+    	}
+
+    	if (mdb->track_type != TT_INVALID)
+    		mdb->track = (raw_track & 0x1ff) * 360 / 512;
+
+    	mdb->dimensions_valid = 1;
+    	mdb->length = 15 + 10 * ((frame[15] & 0x38) >> 3);
+    	mdb->width = dimensions_widths[(frame[15] & 0x78) >> 3];
+    	mdb->position_offset = (frame[15] & 0x04) ? 1 : 0;
+    }
+    break;
 
     case AG_RESERVED:
         // nothing
-        break;
+    	break;
     }
     
     if ((frame[0] & 7) == 2 || (frame[0] & 7) == 3) {
@@ -686,19 +704,20 @@ static void uat_decode_ms(uint8_t *frame, struct uat_adsb_mdb *mdb)
             break;
     }
 
-    mdb->emergency_status = (frame[23] >> 5) & 7;
-    mdb->uat_version = (frame[23] >> 2) & 7;
-    mdb->sil = (frame[23] & 3);
-    mdb->transmit_mso = (frame[24] >> 2) & 0x3f;
-    mdb->nac_p = (frame[25] >> 4) & 15;
-    mdb->nac_v = (frame[25] >> 1) & 7;
-    mdb->nic_baro = (frame[25] & 1);
-    mdb->has_cdti = (frame[26] & 0x80 ? 1 : 0);
-    mdb->has_acas = (frame[26] & 0x40 ? 1 : 0);
+    mdb->emergency_status 	= (frame[23] >> 5) & 7;
+    mdb->uat_version	= (frame[23] >> 2) & 7;
+    mdb->sil 			= (frame[23] & 3);
+    mdb->transmit_mso 	= (frame[24] >> 2) & 0x3f;
+    mdb->nac_p 			= (frame[25] >> 4) & 15;
+    mdb->nac_v 			= (frame[25] >> 1) & 7;
+    mdb->nic_baro 		= (frame[25] & 1);
+    mdb->has_cdti 		= (frame[26] & 0x80 ? 1 : 0);
+    mdb->has_acas 		= (frame[26] & 0x40 ? 1 : 0);
     mdb->acas_ra_active = (frame[26] & 0x20 ? 1 : 0);
-    mdb->ident_active = (frame[26] & 0x10 ? 1 : 0);
-    mdb->atc_services = (frame[26] & 0x08 ? 1 : 0);
-    mdb->heading_type = (frame[26] & 0x04 ? HT_MAGNETIC : HT_TRUE);
+    mdb->ident_active 	= (frame[26] & 0x10 ? 1 : 0);
+    mdb->atc_services 	= (frame[26] & 0x08 ? 1 : 0);
+    mdb->heading_type 	= (frame[26] & 0x04 ? HT_MAGNETIC : HT_TRUE);
+
     if (mdb->callsign[0])
         mdb->callsign_type = (frame[26] & 0x02 ? CS_CALLSIGN : CS_SQUAWK);
 }
@@ -774,6 +793,7 @@ static void uat_display_ms(const struct uat_adsb_mdb *mdb, FILE *to)
 static void uat_decode_auxsv(uint8_t *frame, struct uat_adsb_mdb *mdb)
 {
     int raw_alt = (frame[29] << 4) | ((frame[30] & 0xf0) >> 4);
+
     if (raw_alt != 0) {
         mdb->sec_altitude = (raw_alt - 1) * 25 - 1000;
         mdb->sec_altitude_type = (frame[9] & 1) ? ALT_BARO : ALT_GEO;
@@ -917,12 +937,6 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
     frame->fisb.product_id = ((frame->data[0] & 0x1f) << 6) | (frame->data[1] >> 2);
     frame->fisb.s_flag 	   = (frame->data[1] & 0x02) ? 1 : 0;
     frame->is_fisb = 1;
-
-    if (frame->fisb.s_flag){
-
-    	int i =0;
-        i= i+1;
-    }
 }
 
 void uat_decode_uplink_mdb(uint8_t *frame, struct uat_uplink_mdb *mdb)
@@ -938,9 +952,12 @@ void uat_decode_uplink_mdb(uint8_t *frame, struct uat_uplink_mdb *mdb)
     uint32_t raw_lon = ((frame[2] & 0x01) << 23) | (frame[3] << 15) | (frame[4] << 7) | (frame[5] >> 1);
         
     mdb->lat = raw_lat * 360.0 / 16777216.0;
+
     if (mdb->lat > 90)
     	mdb->lat -= 180;
+
     mdb->lon = raw_lon * 360.0 / 16777216.0;
+
     if (mdb->lon > 180)
     	mdb->lon -= 360;
 
@@ -957,8 +974,9 @@ void uat_decode_uplink_mdb(uint8_t *frame, struct uat_uplink_mdb *mdb)
         
         data = mdb->app_data;
         end  = mdb->app_data + 424;
+
         while (mdb->num_info_frames < UPLINK_MAX_INFO_FRAMES && data+2 <= end) {
-            struct uat_uplink_info_frame *frame = &mdb->info_frames[mdb->num_info_frames];
+        	struct uat_uplink_info_frame *frame = &mdb->info_frames[mdb->num_info_frames];
             frame->length = (data[0] << 1) | (data[1] >> 7);
             frame->type   = (data[1] & 0x0f);
             if (data + frame->length + 2 > end) {
@@ -1127,9 +1145,11 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     if (apdu->monthday_valid)
     	fprintf(to, "%u/%u ", apdu->month, apdu->day);
+
     fprintf(to, "%02u:%02u", apdu->hours, apdu->minutes);
     if (apdu->seconds_valid)
     	fprintf(to, ":%02u", apdu->seconds);
+
     fprintf(to, "\n");
 
     switch (apdu->product_id) {
@@ -1243,17 +1263,17 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     case 70:            // Icing Low **************
     {
+    	int scale_factor = 1;
+    	int ns_flag   	 = 0;
     	FILE * fileicinglow;
+
+    	int rle_flag  = (apdu->data[0] & 0x80) != 0;
+    	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
+     	int icel_alt  = (apdu->data[0] & 0x70) >> 4;
 
     	fprintf(to," Record Format   :  Graphic\n");
 
     	display_generic_data(apdu->data, apdu->length, to);
-
-    	int rle_flag = (apdu->data[0] & 0x80) != 0;
-    	int ns_flag = 0;
-    	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
-    	int scale_factor = 1;
-     	int icel_alt = (apdu->data[0] & 0x70) >> 4;
 
         fprintf(to," rle_flag: %d   Altitude: %d  block: %d\n",rle_flag,icel_alt,block_num);
 
@@ -1274,7 +1294,11 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	if (rle_flag) {
     		// One bin, 128 values, RLE-encoded
     		int i;
-    		double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
+    		double latN = 0;
+    		double lonW = 0;
+    		double latSize = 0;
+    		double lonSize = 0;
+
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     		fprintf(fileicinglow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
@@ -1283,7 +1307,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     		for (i = 3; i < apdu->length; ++i) {
     			int num_bins = (apdu->data[i] ) + 1;
-    			i=i+1;
+    			i = i+1;
 //    			int sld = apdu->data[i] >> 6;
 //    			int ice_sev = (apdu->data[i]) & 56;
     			int ice_prob = (apdu->data[i]) & 7;
@@ -1295,11 +1319,13 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		fprintf(fileicinglow, "\n");
     	}
     	else {    // Empty
-    		int L = apdu->data[3] & 15;
-    		int i;
-    		int row_start, row_offset, row_size;
+    		int row_start;
+			int row_offset;
+			int row_size;
 
-    		if (block_num >= 405000) {
+			int L = apdu->data[3] & 15;
+
+			if (block_num >= 405000) {
     			row_start = block_num - ((block_num - 405000) % 225);
     			row_size = 225;
     		} else {
@@ -1309,30 +1335,29 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     		row_offset = block_num - row_start;
 
-    		for (i = 0; i < L; ++i) {
+    		for (int i = 0; i < L; ++i) {
     			int bb;
-    			int j;
 
     			if (i == 0)
     				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
     			else
     				bb = (apdu->data[i+3]);
 
-    			for (j = 0; j < 8; ++j) {
+    			for (int j = 0; j < 8; ++j) {
     				if (bb & (1 << j)) {
     					// find the relevant block for this bit, limited
     					// to the same row as the original block.
     					int row_x = (row_offset + 8*i + j - 3) % row_size;
     					int bn = row_start + row_x;
     					double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
-    					int k;
+
     					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     					fprintf(fileicinglow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
     							apdu->product_id == 70 ? "Regional" : "CONUS",apdu->hours,
     							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-    					for (k = 0; k < 128; ++k)
+    					for (int k = 0; k < 128; ++k)
     						fprintf(fileicinglow, "%d", (apdu->product_id == 70 ? 0 : 1));
 
     					fprintf(fileicinglow, "\n");
@@ -1340,6 +1365,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			}
     		}
     	}
+
     	fflush(fileicinglow);
         fflush(to);
     }
@@ -1347,17 +1373,17 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     case 71:            // Icing High **************
     {
+    	int scale_factor = 1;
+    	int ns_flag   	 = 0;
     	FILE * fileicinghigh;
+
+    	int rle_flag  = (apdu->data[0] & 0x80) != 0;
+    	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
+     	int iceh_alt  = (apdu->data[0] & 0x70) >> 4;
 
     	fprintf(to," Record Format   :  Graphic\n");
 
     	display_generic_data(apdu->data, apdu->length, to);
-
-    	int rle_flag = (apdu->data[0] & 0x80) != 0;
-    	int ns_flag = 0;
-    	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
-    	int scale_factor = 1;
-    	int iceh_alt = (apdu->data[0] & 0x70) >> 4;
 
     	switch(iceh_alt){
     	case 0:    		fileicinghigh = fileicingh18;  	break;
@@ -1373,17 +1399,17 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	// now decode the bins
     	if (rle_flag) {
     		// One bin, 128 values, RLE-encoded
-    		int i;
     		double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
+
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     		fprintf(fileicinghigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
     				apdu->product_id == 71 ? "Regional" : "CONUS",apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-    		for (i = 3; i < apdu->length; ++i) {
+    		for (int i = 3; i < apdu->length; ++i) {
     			int num_bins = (apdu->data[i] ) + 1;
-    			i=i+1;
+    			i = i + 1;
 //    			int sld = apdu->data[i] >> 6;
 //    			int ice_sev = (apdu->data[i]) & 56;
     			int ice_prob = (apdu->data[i]) & 7;
@@ -1396,7 +1422,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	}
     	else {    // Empty
     		int L = apdu->data[3] & 15;
-    		int i;
     		int row_start, row_offset, row_size;
 
     		if (block_num >= 405000) {
@@ -1409,30 +1434,29 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     		row_offset = block_num - row_start;
 
-    		for (i = 0; i < L; ++i) {
+    		for (int i = 0; i < L; ++i) {
     			int bb;
-    			int j;
 
     			if (i == 0)
     				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
     			else
     				bb = (apdu->data[i+3]);
 
-    			for (j = 0; j < 8; ++j) {
+    			for (int j = 0; j < 8; ++j) {
     				if (bb & (1 << j)) {
     					// find the relevant block for this bit, limited
     					// to the same row as the original block.
     					int row_x = (row_offset + 8*i + j - 3) % row_size;
     					int bn = row_start + row_x;
     					double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
-    					int k;
+
     					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     					fprintf(fileicinghigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
     							apdu->product_id == 71 ? "Regional" : "CONUS",apdu->hours,
     							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-    					for (k = 0; k < 128; ++k)
+    					for (int k = 0; k < 128; ++k)
     						fprintf(fileicinghigh, "%d", (apdu->product_id == 71 ? 0 : 1));
 
     					fprintf(fileicinghigh, "\n");
@@ -1447,14 +1471,14 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     case 84:  			// Cloud Tops **************
     {
+    	int rle_flag 	 = (apdu->data[0] & 0x80) != 0;
+       	int ns_flag 	 = (apdu->data[0] & 0x40) != 0;
+       	int block_num 	 = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
+       	int scale_factor = (apdu->data[0] & 0x30) >> 4;
+
     	fprintf(to," Record Format   :  Graphic\n");
 
        	display_generic_data(apdu->data, apdu->length, to);
-
-       	int rle_flag = (apdu->data[0] & 0x80) != 0;
-       	int ns_flag = (apdu->data[0] & 0x40) != 0;
-       	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
-       	int scale_factor = (apdu->data[0] & 0x30) >> 4;
 
        	fprintf(to," rle_fl: %d  scale: %d ns-flag: %d block: %d\n",
        			rle_flag,scale_factor,ns_flag,block_num);
@@ -1462,20 +1486,23 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        	// now decode the bins
        	if (rle_flag) {
        		// One bin, 128 values, RLE-encoded
-       		int i;
+
        		double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
+
        		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
        		fprintf(filecloudt, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
        				apdu->product_id == 84 ? "Regional" : "CONUS",apdu->hours,
     				apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-       		for (i = 3; i < apdu->length; ++i) {
-       			char enc=' ';
-       			int cld_hgt = apdu->data[i] & 15;
+       		for (int i = 3; i < apdu->length; ++i) {
+
+       			char enc = ' ';
+       			int cld_hgt  = apdu->data[i] & 15;
        			int num_bins = (apdu->data[i] >> 4) + 1;
+
        			if (num_bins == 15){
-       				i = i+1;
+       				i = i + 1;
        				num_bins = (apdu->data[i])+1;
        			}
 
@@ -1499,7 +1526,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        	}
        	else {
        		int L = apdu->data[3] & 15;
-       		int i;
        		int row_start, row_offset, row_size;
 
        		if (block_num >= 405000) {
@@ -1512,30 +1538,30 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
        		row_offset = block_num - row_start;
 
-       		for (i = 0; i < L; ++i) {
+       		for (int i = 0; i < L; ++i) {
        			int bb;
-       			int j;
 
        			if (i == 0)
        				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
        			else
        				bb = (apdu->data[i+3]);
 
-       			for (j = 0; j < 8; ++j) {
+       			for (int j = 0; j < 8; ++j) {
        				if (bb & (1 << j)) {
        					// find the relevant block for this bit, limited
        					// to the same row as the original block.
        					int row_x = (row_offset + 8*i + j - 3) % row_size;
-       					int bn = row_start + row_x;
+       					int bn 	  = row_start + row_x;
+
        					double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
-       					int k;
+
        					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
        					fprintf(filecloudt, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
        							apdu->product_id == 84 ? "Regional" : "CONUS",apdu->hours,
        							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-       					for (k = 0; k < 128; ++k)
+       					for (int k = 0; k < 128; ++k)
        						fprintf(filecloudt, "%d", (apdu->product_id == 84 ? 0 : 1));
 
        					fprintf(filecloudt, "\n");
@@ -1543,6 +1569,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        			}
        		}
        	}
+
        	fflush(filecloudt);
        	fflush(to);
     }
@@ -1551,16 +1578,16 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     case 90:   			// Turbulence Low **************
     {
     	FILE * fileturblow;
+    	int ns_flag = 0;
+    	int scale_factor = 1;
+
+    	int rle_flag  = (apdu->data[0] & 0x80) != 0;
+    	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
+    	int turb_alt  = (apdu->data[0] & 0x70) >> 4;
 
     	fprintf(to," Record Format   :  Graphic\n");
 
     	display_generic_data(apdu->data, apdu->length, to);
-
-    	int rle_flag = (apdu->data[0] & 0x80) != 0;
-    	int ns_flag = 0;
-    	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
-    	int scale_factor = 1;
-    	int turb_alt = (apdu->data[0] & 0x70) >> 4;
 
     	fprintf(to," rle_flag: %d  Altitude: %d   Block: %d\n",rle_flag,turb_alt,block_num);
 
@@ -1580,18 +1607,20 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	// now decode the bins
     	if (rle_flag) {
     		// One bin, 128 values, RLE-encoded
-    		int i;
+
     		double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
+
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     		fprintf(fileturblow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
     				apdu->product_id == 90 ? "Regional" : "CONUS",apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-    		for (i = 3; i < apdu->length; ++i) {
-    			char enc=' ';
-    			int edr_enc = apdu->data[i] & 15;
+    		for (int i = 3; i < apdu->length; ++i) {
+    			char enc = ' ';
+    			int edr_enc  = apdu->data[i] & 15;
     			int num_bins = (apdu->data[i] >> 4) + 1;
+
     			if (num_bins == 15){
     				i = i+1;
     				num_bins = (apdu->data[i])+1;
@@ -1617,7 +1646,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	}
     	else {
     		int L = apdu->data[3] & 15;
-    		int i;
+
     		int row_start, row_offset, row_size;
 
     		if (block_num >= 405000) {
@@ -1630,30 +1659,30 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     		row_offset = block_num - row_start;
 
-    		for (i = 0; i < L; ++i) {
+    		for (int i = 0; i < L; ++i) {
     			int bb;
-    			int j;
 
     			if (i == 0)
     				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
     			else
     				bb = (apdu->data[i+3]);
 
-    			for (j = 0; j < 8; ++j) {
+    			for (int j = 0; j < 8; ++j) {
     				if (bb & (1 << j)) {
     					// find the relevant block for this bit, limited
     					// to the same row as the original block.
     					int row_x = (row_offset + 8*i + j - 3) % row_size;
     					int bn = row_start + row_x;
+
     					double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
-    					int k;
+
     					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     					fprintf(fileturblow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
     							apdu->product_id == 90 ? "Regional" : "CONUS",apdu->hours,
     							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-    					for (k = 0; k < 128; ++k)
+    					for (int k = 0; k < 128; ++k)
     						fprintf(fileturblow, "%d", (apdu->product_id == 90 ? 0 : 1));
 
     					fprintf(fileturblow, "\n");
@@ -1661,6 +1690,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			}
     		}
     	}
+
     	fflush(fileturblow);
         fflush(to);
     }
@@ -1669,16 +1699,16 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     case 91:  			// Turbulence High **************
     {
     	FILE * fileturbhigh;
+    	int ns_flag = 0;
+    	int scale_factor = 1;
+
+    	int rle_flag  = (apdu->data[0] & 0x80) != 0;
+    	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
+    	int turb_alt  = (apdu->data[0] & 0x70) >> 4;
 
     	fprintf(to," Record Format   :  Graphic\n");
 
     	display_generic_data(apdu->data, apdu->length, to);
-
-    	int rle_flag = (apdu->data[0] & 0x80) != 0;
-    	int ns_flag = 0;
-    	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
-    	int scale_factor = 1;
-    	int turb_alt = (apdu->data[0] & 0x70) >> 4;
 
     	fprintf(to," rle_flag: %d  Altitude: %d   Block: %d\n",rle_flag,turb_alt,block_num);
 
@@ -1694,20 +1724,22 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	// now decode the bins
     	if (rle_flag) {
     		// One bin, 128 values, RLE-encoded
-    		int i;
+
     		double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
+
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     		fprintf(fileturbhigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
     				apdu->product_id == 91 ? "Regional" : "CONUS",apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-    		for (i = 3; i < apdu->length; ++i) {
-    			char enc=' ';
-    			int edr_enc = apdu->data[i] & 15;
+    		for (int i = 3; i < apdu->length; ++i) {
+    			char enc = ' ';
+    			int edr_enc  = apdu->data[i] & 15;
     			int num_bins = (apdu->data[i] >> 4) + 1;
+
     			if (num_bins == 15){
-    				i = i+1;
+    				i = i + 1;
     				num_bins = (apdu->data[i])+1;
     			}
 
@@ -1731,43 +1763,41 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	}
     	else {
     		int L = apdu->data[3] & 15;
-    		int i;
     		int row_start, row_offset, row_size;
 
     		if (block_num >= 405000) {
     			row_start = block_num - ((block_num - 405000) % 225);
-    			row_size = 225;
+    			row_size  = 225;
     		} else {
     			row_start = block_num - (block_num % 450);
-    			row_size = 450;
+    			row_size  = 450;
     		}
 
     		row_offset = block_num - row_start;
 
-    		for (i = 0; i < L; ++i) {
+    		for (int i = 0; i < L; ++i) {
     			int bb;
-    			int j;
 
     			if (i == 0)
     				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
     			else
     				bb = (apdu->data[i+3]);
 
-    			for (j = 0; j < 8; ++j) {
+    			for (int j = 0; j < 8; ++j) {
     				if (bb & (1 << j)) {
     					// find the relevant block for this bit, limited
     					// to the same row as the original block.
     					int row_x = (row_offset + 8*i + j - 3) % row_size;
     					int bn = row_start + row_x;
     					double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
-    					int k;
+
     					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     					fprintf(fileturbhigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
     							apdu->product_id == 91 ? "Regional" : "CONUS",apdu->hours,
     							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-    					for (k = 0; k < 128; ++k)
+    					for (int k = 0; k < 128; ++k)
     						fprintf(fileturbhigh, "%d", (apdu->product_id == 91 ? 0 : 1));
 
     					fprintf(fileturbhigh, "\n");
@@ -1775,6 +1805,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			}
     		}
     	}
+
     	fflush(fileturbhigh);
     	fflush(to);
     }
@@ -1784,14 +1815,14 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     {
     	int cnt;
 
+       	int rle_flag	 = (apdu->data[0] & 0x80) != 0;
+       	int ns_flag 	 = (apdu->data[0] & 0x40) != 0;
+       	int block_num 	 = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
+       	int scale_factor = (apdu->data[0] & 0x30) >> 4;
+
     	fprintf(to," Record Format   :  Graphic\n");
 
        	display_generic_data(apdu->data, apdu->length, to);
-
-       	int rle_flag = (apdu->data[0] & 0x80) != 0;
-       	int ns_flag = (apdu->data[0] & 0x40) != 0;
-       	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
-       	int scale_factor = (apdu->data[0] & 0x30) >> 4;
 
        	fprintf(to," rle_flag: %d  Scale: %d ns-flag: %d Block: %d ",
        			rle_flag,scale_factor,ns_flag,block_num);
@@ -1799,7 +1830,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        	// now decode the bins
        	if (rle_flag) {
        		// One bin, 128 values, RLE-encoded
-       		int i;
        		double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
        		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
@@ -1807,12 +1837,12 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        				apdu->product_id == 103 ? "Regional" : "CONUS",apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-       		for (i = 3; i < apdu->length; ++i) {
+       		for (int i = 3; i < apdu->length; ++i) {
        			int lgt_pol = apdu->data[i] & 8;
        			int lgt_cnt = apdu->data[i] & 7;
        			int num_bins = (apdu->data[i] >> 4) + 1;
        			if (num_bins == 15){
-       				i = i+1;
+       				i = i + 1;
        				num_bins = (apdu->data[i])+1;
        			}
 
@@ -1829,7 +1859,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        	}
        	else {
        		int L = apdu->data[3] & 15;
-       		int i;
        		int row_start, row_offset, row_size;
 
        		if (block_num >= 405000) {
@@ -1842,30 +1871,29 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
        		row_offset = block_num - row_start;
 
-       		for (i = 0; i < L; ++i) {
+       		for (int i = 0; i < L; ++i) {
        			int bb;
-       			int j;
 
        			if (i == 0)
        				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
        			else
        				bb = (apdu->data[i+3]);
 
-       			for (j = 0; j < 8; ++j) {
+       			for (int j = 0; j < 8; ++j) {
        				if (bb & (1 << j)) {
        					// find the relevant block for this bit, limited
        					// to the same row as the original block.
        					int row_x = (row_offset + 8*i + j - 3) % row_size;
        					int bn = row_start + row_x;
        					double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
-       					int k;
+
        					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
        					fprintf(filelightng, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
        							apdu->product_id == 103 ? "Regional" : "CONUS",apdu->hours,
        							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-       					for (k = 0; k < 128; ++k)
+       					for (int k = 0; k < 128; ++k)
        						fprintf(filelightng, "%d", (apdu->product_id == 63 ? 0 : 1));
 
        					fprintf(filelightng, "\n");
@@ -1873,6 +1901,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        			}
        		}
        	}
+
    		fflush(filelightng);
        	fflush(to);
     }
@@ -1880,23 +1909,23 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     case 63: case 64:   		// NEXRAD **************
     {
-    	int rle_flag = (apdu->data[0] & 0x80) != 0;
-    	int ns_flag = (apdu->data[0] & 0x40) != 0;
-    	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
+    	int rle_flag  	 = (apdu->data[0] & 0x80) != 0;
+    	int ns_flag   	 = (apdu->data[0] & 0x40) != 0;
+    	int block_num 	 = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
     	int scale_factor = (apdu->data[0] & 0x30) >> 4;
 
     	// now decode the bins
     	if (rle_flag) {
     		// One bin, 128 values, RLE-encoded
-    		int i;
     		double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
+
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     		fprintf(filenexradc, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
     				apdu->product_id == 63 ? "Regional" : "CONUS",apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-    		for (i = 3; i < apdu->length; ++i) {
+    		for (int i = 3; i < apdu->length; ++i) {
     			int intensity = apdu->data[i] & 7;
     			int runlength = (apdu->data[i] >> 3) + 1;
 
@@ -1907,43 +1936,41 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	}
     	else {
     		int L = apdu->data[3] & 15;
-    		int i;
     		int row_start, row_offset, row_size;
 
     		if (block_num >= 405000) {
     			row_start = block_num - ((block_num - 405000) % 225);
-    			row_size = 225;
+    			row_size  = 225;
     		} else {
     			row_start = block_num - (block_num % 450);
-    			row_size = 450;
+    			row_size  = 450;
     		}
 
     		row_offset = block_num - row_start;
 
-    		for (i = 0; i < L; ++i) {
+    		for (int i = 0; i < L; ++i) {
     			int bb;
-    			int j;
 
     			if (i == 0)
     				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
     			else
     				bb = (apdu->data[i+3]);
 
-    			for (j = 0; j < 8; ++j) {
+    			for (int j = 0; j < 8; ++j) {
     				if (bb & (1 << j)) {
     					// find the relevant block for this bit, limited
     					// to the same row as the original block.
     					int row_x = (row_offset + 8*i + j - 3) % row_size;
     					int bn = row_start + row_x;
     					double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
-    					int k;
+
     					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     					fprintf(filenexradc, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
     							apdu->product_id == 63 ? "Regional" : "CONUS",apdu->hours,
     							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-    					for (k = 0; k < 128; ++k)
+    					for (int k = 0; k < 128; ++k)
     						fprintf(filenexradc, "%d", (apdu->product_id == 63 ? 0 : 1));
 
     					fprintf(filenexradc, "\n");
@@ -1951,6 +1978,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
                }
            }
     	}
+
     	fflush(filenexradc);
     	fflush(to);
     }
@@ -1958,7 +1986,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     case 413:  // Generic text, DLAC
     {
-     	int rec_offset=0;
+     	int rec_offset = 0;
     	const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
     	const char *report = text;
 
@@ -2135,7 +2163,17 @@ static const char *info_frame_type_names[16] = {
 
 static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *frame, FILE *to)
 {
-    fprintf(to, "\nINFORMATION FRAME:\n Type:  %u (%s)\n",
+	int tfr;
+	int lidflag;
+	int prod_range;
+	int num_crl;
+	int rep_yr;
+	int txt;
+	int grph;
+	uint16_t prodt;
+	uint16_t repid = 0;
+
+	fprintf(to, "\nINFORMATION FRAME:\n Type:  %u (%s)\n",
 				frame->type,info_frame_type_names[frame->type]);
 
     if (frame->length > 0) {
@@ -2145,7 +2183,9 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
     		int rec_offset=frame->length;
         	if (frame->type == 15) {
         		fprintf(to," ICAO List: \n");
+
         		int i = 1; int j =0	;
+
         		while (i < rec_offset ) {
         			if (j % 10 == 0)
         				fprintf(to,"\n");
@@ -2153,17 +2193,13 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
         			fprintf(to,"%02x%02x%02x ",frame->data[i],frame->data[i+1],frame->data[i+2]);
         			i = i +4;
         		}
+
         		fprintf(to,"\n");
         	}
         	else if (frame->type == 14){      // report list
-        		int tfr;  		int lidflag;
-        		int prod_range; int num_crl; 	int rep_yr;
-        		int txt; 		int grph; 		int i;
-        		uint16_t prodt; uint16_t repid=0;
-
-        		prodt   = frame->data[0] <<3 | frame->data[1] >>5;
-        		tfr     = (frame->data[1] >> 4) & 1;
-        		lidflag = (frame->data[1] >> 8) & 1;
+        		prodt      = frame->data[0] <<3 | frame->data[1] >>5;
+        		tfr        = (frame->data[1] >> 4) & 1;
+        		lidflag    = (frame->data[1] >> 8) & 1;
         		prod_range = frame->data[2] * 5;
         		num_crl    = frame->data[3];
 
@@ -2172,9 +2208,10 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
             	fprintf(to," TFR: %d LID Flag: %d",tfr,lidflag);
     	      	fprintf(to," Number of reports: %d  Range(nm): %d\n",num_crl,prod_range);
 
-        		int j = 4; int q=0;
-        		for (i = 0; i < num_crl; ++i) {
+        		int j = 4;
+        		int q = 0;
 
+        		for (int i = 0; i < num_crl; ++i) {
         			if (q % 4 == 0)
         					fprintf(to,"\n");
         			q++;
@@ -2183,10 +2220,12 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
         			txt    = (frame->data[j+1] >> 7) & 1;
         			grph   = (frame->data[j+1] >> 6) & 1;
         			repid  = (frame->data[j+1] & ((1<<6)-1)) << 8 |  frame->data[j+2];
+
         			fprintf(to," #%3d Year: 20%d T%d G%d Rpt ID: %d",
         					i+1,rep_yr,txt,grph,repid);
         			j=j+3;
         		 }
+
         		 fprintf(to,"\n\n");
         	     display_generic_data(frame->data, frame->length, to);
         	}
@@ -2219,32 +2258,53 @@ void uat_display_uplink_mdb(const struct uat_uplink_mdb *mdb, FILE *to)
 
 static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
-	int rec_offset=11;			int datoff=6;
+	int rec_offset = 11;
+	int datoff = 6;
 	int product_ver;
 	int rec_count;
 	int rec_ref;
-	int overlay_rec_id=0;
-	int obj_label=0;			int obj_label_flag=0;
+	int overlay_rec_id = 0;
+	int obj_label = 0;
+	int obj_label_flag = 0;
+
 	char gstn[5];
-	char ob_type_text[35]; 		char ob_ele_text[35]; char ob_status_text[45];
-	char geo_overlay_text[45];	char obj_par_name_text[45];
-	const char * obj_labelt; 	const char * location_id;
-	uint16_t rec_len=0; 		uint16_t rep_num=0;
-	uint16_t report_year=0;
+	char ob_type_text[35];
+	char ob_ele_text[35];
+	char ob_status_text[45];
+	char geo_overlay_text[45];
+	char obj_par_name_text[45];
+
+	const char * obj_labelt;
+	const char * location_id;
+
+	uint16_t rec_len = 0;
+	uint16_t rep_num = 0;
+	uint16_t report_year = 0;
+
 	uint8_t obj_type;
-	uint8_t obj_element; 		uint8_t obj_status;
-	uint8_t qualifier_flag; 	uint8_t param_flag;
+	uint8_t obj_element;
+	uint8_t obj_status;
+	uint8_t qualifier_flag;
+	uint8_t param_flag;
 	uint8_t rec_app_opt;
-	uint8_t date_time_format; 	uint8_t element_flag;
-	int geo_overlay_opt; 		int overlay_op;
+	uint8_t date_time_format;
+	uint8_t element_flag;
+
+	int geo_overlay_opt;
+	int overlay_op;
 	int overlay_vert_cnt;
 	int d1;	int d2;	int d3;	int d4;
-	uint32_t lat_raw; 			uint32_t lng_raw;
-	uint32_t alt_raw;  			int alt;
-	float lat;  				float lng;
+
+	uint32_t lat_raw;
+	uint32_t lng_raw;
+	uint32_t alt_raw;
+	int alt;
+	float lat;
+	float lng;
 	float fct_f =0.000687;  // float_t fct_t =0.001373;
+
 	uint32_t object_qualifier;
-	int obj_param_type=0;
+	int obj_param_type = 0;
 	uint16_t ob_par_val;
 
 	product_ver = ((apdu->data[0]) & 0x0F);
@@ -2261,7 +2321,9 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		fprintf(fnm," Location ID     : %s\n",location_id);
 
 		rec_offset = 2;
+
 		const char *text = decode_dlac(apdu->data,5 ,rec_offset);
+
 		strncpy(gstn,text,5);
 		get_gs_name(gstn,reccount);
 		fprintf(fnm," RLoc            : %s - %s\n",gstn, gs_ret);
@@ -2284,11 +2346,15 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 	if (obj_label_flag == 0) { // Numeric index.
 		obj_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);   				// 11 12
+
 		fprintf(fnm, " Ob Lbl Num      : %d    ", obj_label);
+
 		datoff = datoff +7;	}                   												//datoff=13
 	else {
 		obj_labelt = decode_dlac(apdu->data,5, 2);
+
 		fprintf(fnm, " Ob Lbl Alph     : %s ",obj_labelt);
+
 		datoff = datoff + 14;
 	}
 
@@ -2319,39 +2385,31 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		if (apdu->product_id == 14) {
 			if (apdu->data[datoff + 2] & (1 << 7))      //15
 				fprintf(fnm," Qualifier       : Unspecified\n");
-
 			if (apdu->data[datoff + 3] & (1 << 0))               //16
 				fprintf(fnm," Qualifier       : Ash\n");
-
 			if (apdu->data[datoff + 4] & (1 << 0))               //17
 				fprintf(fnm," Qualifier       : Precipitation\n");
-
 			if (apdu->data[datoff + 4] & (1 << 1))
 				fprintf(fnm," Qualifier       : Mist\n");
-
 			if (apdu->data[datoff + 4] & (1 << 2))
 				fprintf(fnm," Qualifier       : Fog\n");
-
 			if (apdu->data[datoff + 4] & (1 << 3))
 				fprintf(fnm," Qualifier       : Haze\n");
-
 			if (apdu->data[datoff + 4] & (1 << 4))
 				fprintf(fnm," Qualifier       : Smoke\n");
-
 			if (apdu->data[datoff + 4] & (1 << 5))
 				fprintf(fnm," Qualifier       : Blowing Snow\n");
-
 			if (apdu->data[datoff + 4] & (1 << 6))
 				fprintf(fnm," Qualifier       : Clouds\n");
-
 			if (apdu->data[datoff + 4] & (1 << 7))
 				fprintf(fnm," Qualifier      : Dust\n");
 		}
 
-		obj_param_type= apdu->data[18] >> 3;              					 //18
-		ob_par_val = (apdu->data[18] & 0x7)<< 8 | apdu->data[19];				//19
+		obj_param_type = apdu->data[18] >> 3;              					 //18
+		ob_par_val 	   = (apdu->data[18] & 0x7)<< 8 | apdu->data[19];				//19
 
-		fprintf(fnm,"Obj Qualfr: %d  Obj Prm Tp: %d  Obj Par Val: %d\n",object_qualifier,obj_param_type,ob_par_val);
+		fprintf(fnm,"Obj Qualfr: %d  Obj Prm Tp: %d  Obj Par Val: %d\n",
+				object_qualifier,obj_param_type,ob_par_val);
 
 		datoff = datoff+7;                 //13 datogg =20
 	}
@@ -2385,6 +2443,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 			d4 = apdu->data[datoff + 5];
 
 			fprintf(fnm, " Only Start Date : %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
+
 			datoff = datoff + 6;
 		break;
 
@@ -2442,26 +2501,28 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 	switch (geo_overlay_opt) {
 
-		case 3: // Extended Range 3D Polygon (MSL).
+	case 3: // Extended Range 3D Polygon (MSL).
 
-			for (int i = 0; i < overlay_vert_cnt; i++) {
-				lng_raw = ((apdu->data[datoff + i]) << 11) | ((apdu->data[datoff +i+1]) << 3) | ((apdu->data[datoff +i+2]) & 0xE0 >> 5);
-				lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+3]) << 6) | (((apdu->data[datoff +i+4]) & 0xFC) >> 2);
-				alt_raw = (((apdu->data[datoff +i+4]) & 0x03) << 8) | (apdu->data[datoff +i+5]);
+		for (int i = 0; i < overlay_vert_cnt; i++) {
+			lng_raw = ((apdu->data[datoff + i]) << 11) | ((apdu->data[datoff +i+1]) << 3) | ((apdu->data[datoff +i+2]) & 0xE0 >> 5);
+			lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+3]) << 6) | (((apdu->data[datoff +i+4]) & 0xFC) >> 2);
+			alt_raw = (((apdu->data[datoff +i+4]) & 0x03) << 8) | (apdu->data[datoff +i+5]);
 
-				datoff = datoff + 5;
+			datoff = datoff + 5;
 
-				lat = fct_f * lat_raw;
-				lng = fct_f * lng_raw;
-				if (lat > 90.0) {
-					lat = lat - 180.0;}
-				if (lng > 180.0) {
-					lng = lng - 360.0;
-				}
-				alt = alt_raw * 100;
+			lat = fct_f * lat_raw;
+			lng = fct_f * lng_raw;
 
-				fprintf(fnm, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
-			}
+			if (lat > 90.0)
+				lat = lat - 180.0;
+
+			if (lng > 180.0)
+				lng = lng - 360.0;
+
+			alt = alt_raw * 100;
+
+			fprintf(fnm, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
+		}
 		break;
 
 		case 9: // Extended Range 3D Point (AGL). p.47.
@@ -2476,16 +2537,16 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 				lat = fct_f * lat_raw;
 				lng = fct_f * lng_raw;
-				if (lat > 90.0) {
-					lat = lat - 180.0; }
-				if (lng > 180.0) {
+
+				if (lat > 90.0)
+					lat = lat - 180.0;
+
+				if (lng > 180.0)
 					lng = lng - 360.0;
-				}
 
 				alt = alt_raw * 100;
 
 				fprintf(fnm, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
-
 			}
 		break;
 
@@ -2493,8 +2554,18 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 			if (rec_len < 14) {
 				fprintf(fnm, "invalid data: Extended Range Circular Prism. Should be 14 bytes; %d seen.\n",rec_len);
 			} else {
-				uint32_t lng_bot_raw,lat_bot_raw,lng_top_raw,lat_top_raw;
-				uint32_t alt_bot_raw,alt_top_raw,r_lng_raw,r_lat_raw,alpha, alt_bot,alt_top;
+				uint32_t lng_bot_raw;
+				uint32_t lat_bot_raw;
+				uint32_t lng_top_raw;
+				uint32_t lat_top_raw;
+
+				uint32_t alt_bot_raw;
+				uint32_t alt_top_raw;
+				uint32_t r_lng_raw;
+				uint32_t r_lat_raw,alpha;
+				uint32_t alt_bot;
+				uint32_t alt_top;
+
 				float lat_bot,lng_bot,lat_top,lng_top,r_lng,r_lat;
 
 				lng_bot_raw = ((apdu->data[0]) << 10) | ((apdu->data[1]) << 2) | ((apdu->data[2]) & 0xC0 >> 6);
@@ -2511,19 +2582,21 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 				lat_bot = fct_f * lat_bot_raw;
 				lng_bot = fct_f * lng_bot_raw;
-				if (lat_bot > 90.0) {
-					lat_bot = lat_bot - 180.0; }
-				if (lng_bot > 180.0) {
+
+				if (lat_bot > 90.0)
+					lat_bot = lat_bot - 180.0;
+
+				if (lng_bot > 180.0)
 					lng_bot = lng_bot - 360.0;
-				}
 
 				lat_top = fct_f * lat_top_raw;
 				lng_top = fct_f * lng_top_raw;
-				if (lat_top > 90.0) {
-					lat_top = lat_top - 180.0; }
-				if (lng_top > 180.0) {
+
+				if (lat_top > 90.0)
+					lat_top = lat_top - 180.0;
+
+				if (lng_top > 180.0)
 					lng_top = lng_top - 360.0;
-				}
 
 				alt_bot = alt_bot_raw * 5;
 				alt_top = alt_top_raw * 500;
@@ -2534,13 +2607,12 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 				fprintf(fnm,"lat_bot, lng_bot = %f, %f\n", lat_bot, lng_bot);
 				fprintf(fnm,"lat_top, lng_top = %f, %f\n", lat_top, lng_top);
 
-				if (geo_overlay_opt == 8) {
+				if (geo_overlay_opt == 8)
 					fprintf(fnm,"alt_bot, alt_top = %d AGL, %d AGL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
-				} else {
+				else
 					fprintf(fnm,"alt_bot, alt_top = %d MSL, %d MSL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
-				}
-				fprintf(fnm,"r_lng, r_lat = %f, %f\n", r_lng, r_lat);
 
+				fprintf(fnm,"r_lng, r_lat = %f, %f\n", r_lng, r_lat);
 				fprintf(fnm,"alpha=%d\n", alpha);
 			}
 		break;
@@ -2561,16 +2633,18 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 
 	int rec_offset = 11;
-	char gstn[5]; char *sua_text;
+	char gstn[5];
+	char *sua_text;
 
 	const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
 	const char *report = text;
 
    	while (report) {
+
    		char report_buf[1024];
+   		char *p, *r;
    		const char *next_report; uint16_t report_year;
    		uint16_t rep_num = 0;
-   		char *p, *r;
 
    		next_report = strchr(report, '\x1e'); // RS
    		if (!next_report)
@@ -2605,12 +2679,11 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
    		if (apdu->product_id != 13){
    			if (p) {
    				*p = 0;
-
    				strncpy(gstn,r,5);
    				get_gs_name(gstn,reccount);
    				fprintf(to," RLoc            : %s - %s\n",gstn, gs_ret);
    				fprintf(fnm," RLoc            : %s - %s\n",gstn, gs_ret);
-   				r = p+1;
+   				r = p + 1;
    			}
 		}
 
@@ -2619,7 +2692,7 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 			*p = 0;
 			fprintf(to," RTime           : %s\n", r);
 			fprintf(fnm," RTime           : %s\n", r);
-			r = p+1;
+			r = p + 1;
 		}
 
 		rep_num = ((apdu->data[8]  << 6) | (apdu->data[9] & 0xFC) >> 2);
@@ -2649,13 +2722,16 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 
 static void get_seg_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 
-	uint16_t prodid;	uint16_t prodfillen;	uint16_t apdunum;
+	uint16_t prodid;
+	uint16_t prodfillen;
+	uint16_t apdunum;
 
 	prodid 	   = ((apdu->data[4] & 0x7) >> 1) | (apdu->data[5] >> 1);
 	prodfillen = (apdu->data[5] & 0x1) | (apdu->data[6]);
 	apdunum    = ((apdu->data[7]) << 1 ) | (apdu->data[8] >> 7);
 
-	int fg=0;       // Check if report part already stored
+	int fg = 0;       // Check if report part already stored
+
 	for (int i = 0; i <= seg_count; ++i) {
 		if ((prodid == seg_list[i].seg_prodid) &&
 				(prodfillen == seg_list[i].seg_prolen) &&
@@ -2663,20 +2739,24 @@ static void get_seg_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 			++fg;
 		}
 	}
+
 	if (fg == 0){              // New report part - add record
 		int offx = 0;
+
 		seg_list[seg_count].seg_prodid = prodid;
 		seg_list[seg_count].seg_prolen = prodfillen;
 		seg_list[seg_count].seg_segnum = apdunum;
 
 		if (apdunum == 1){            // Contains report number and year
 			offx = 20;
+
 			seg_list[seg_count].seg_text_len = apdu->length-20;
 			seg_list[seg_count].seg_rpt_num = ((apdu->data[17]  << 6) | (apdu->data[18] >> 2));   			//7 8
 			seg_list[seg_count].seg_rpt_year = (((apdu->data[18]) & 0x03) << 5 | ((apdu->data[19])  & 0xF8) >> 3) ;
 		}
 		else {
 			offx = 15;
+
 			seg_list[seg_count].seg_text_len = apdu->length-15;
 			seg_list[seg_count].seg_rpt_num = 0;
 			seg_list[seg_count].seg_rpt_year = 0 ;
@@ -2688,7 +2768,9 @@ static void get_seg_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 		}
 		++seg_count;
 	}
-	fg=0;     						// See if all parts of record are stored
+
+	fg = 0;     						// See if all parts of record are stored
+
 	for (int i = 0; i <= seg_count; ++i) {
 		for (int j = 1; j <= prodfillen; ++j) {
 			if ((prodid == seg_list[i].seg_prodid) &&
@@ -2698,6 +2780,7 @@ static void get_seg_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 			}
 		}
 	}
+
 	if (fg == prodfillen){           // All parts have been stored
 		uint8_t rep_all[2000];
 		int char_cnt = 0;
@@ -2721,6 +2804,7 @@ static void get_seg_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 		    	fprintf(fnm,"     Report Year       : 20%02d\n ",seg_list[i].seg_rpt_year);
 			}
 		}
+
 		for (int i = 0; i <= seg_count; ++i) {       // 2nd part
 			if ((seg_list[i].seg_prodid == prodid) &&
 					(seg_list[i].seg_prolen == prodfillen) && (seg_list[i].seg_segnum == 2)){
@@ -2730,6 +2814,7 @@ static void get_seg_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 				char_cnt = char_cnt + seg_list[i].seg_text_len;
 			}
 		}
+
 		for (int i = 0; i <= seg_count; ++i) {       // 3rd part
 			if ((seg_list[i].seg_prodid == prodid) &&
 					(seg_list[i].seg_prolen == prodfillen) && (seg_list[i].seg_segnum == 3)){
@@ -2746,6 +2831,7 @@ static void get_seg_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 		struct tm *tm = localtime(&current_time);
 		fprintf(to,"Time            : %s", asctime(tm));
 		fprintf(fnm,"Time            : %s", asctime(tm));
+
 		fprintf(fnm," Data:\n%s\n\n",seg_text_all);
 	}
 
