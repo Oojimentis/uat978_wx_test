@@ -1244,10 +1244,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     case 70:            // Icing Low **************
     {
     	FILE * fileicinglow;
-    	int recf;
-    	recf = apdu->data[0];
 
-    	fprintf(to," Record Format   : %d \n",recf >> 4);
+    	fprintf(to," Record Format   :  Graphic\n");
 
     	display_generic_data(apdu->data, apdu->length, to);
 
@@ -1290,17 +1288,11 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 //    			int ice_sev = (apdu->data[i]) & 56;
     			int ice_prob = (apdu->data[i]) & 7;
 
- //   			cnt = cnt+num_bins;
- //   			fprintf(to,"count: %3d  bins: %3d sld: %d  sev: %3d  prb: %d\n",
- //   					     cnt,num_bins,sld,ice_sev,ice_prob);
-
     			while (num_bins-- > 0){
     				fprintf(fileicinglow, "%d", ice_prob);}
     		}
 
- //   		fprintf(to,"kount: %d\n",cnt);
     		fprintf(fileicinglow, "\n");
-
     	}
     	else {    // Empty
     		int L = apdu->data[3] & 15;
@@ -1356,10 +1348,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     case 71:            // Icing High **************
     {
     	FILE * fileicinghigh;
-    	int recf;
-    	recf = apdu->data[0];
 
-    	fprintf(to," Record Format   : %d \n",recf >> 4);
+    	fprintf(to," Record Format   :  Graphic\n");
 
     	display_generic_data(apdu->data, apdu->length, to);
 
@@ -1397,10 +1387,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 //    			int sld = apdu->data[i] >> 6;
 //    			int ice_sev = (apdu->data[i]) & 56;
     			int ice_prob = (apdu->data[i]) & 7;
-
-//    			cnt = cnt+num_bins;
-//   			fprintf(to,"count: %3d  bins: %3d sld: %d  sev: %3d  prb: %d\n",
-//    					     cnt,num_bins,sld,ice_sev,ice_prob);
 
     			while (num_bins-- > 0){
     				fprintf(fileicinghigh, "%d", ice_prob);}
@@ -1461,10 +1447,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     case 84:  			// Cloud Tops **************
     {
-       	int recf;
-       	recf = apdu->data[0];
-
-       	fprintf(to," Record Format   : %d \n",recf >> 4);
+    	fprintf(to," Record Format   :  Graphic\n");
 
        	display_generic_data(apdu->data, apdu->length, to);
 
@@ -1495,9 +1478,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        				i = i+1;
        				num_bins = (apdu->data[i])+1;
        			}
-
- //     			cnt = cnt+num_bins;
- //      			fprintf(to,"count: %3d  bins: %3d encoding: %d\n",cnt,num_bins,cld_hgt);
 
        			switch (cld_hgt){
        			case 10:    enc='a';  	break;
@@ -1571,10 +1551,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     case 90:   			// Turbulence Low **************
     {
     	FILE * fileturblow;
-    	int recf;
-    	recf = apdu->data[0];
 
-    	fprintf(to," Record Format   : %d \n",recf >> 4);
+    	fprintf(to," Record Format   :  Graphic\n");
 
     	display_generic_data(apdu->data, apdu->length, to);
 
@@ -1618,9 +1596,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				i = i+1;
     				num_bins = (apdu->data[i])+1;
     			}
-
-  //  			cnt = cnt+num_bins;
-  //  			fprintf(to,"count: %3d  bins: %3d encoding: %d\n",cnt,num_bins,edr_enc);
 
     			switch (edr_enc){
     			case 10:   	enc='a';  	break;
@@ -1694,10 +1669,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     case 91:  			// Turbulence High **************
     {
     	FILE * fileturbhigh;
-    	int recf;  // int cnt=0;
-    	recf = apdu->data[0];
 
-    	fprintf(to," Record Format   : %d \n",recf >> 4);
+    	fprintf(to," Record Format   :  Graphic\n");
 
     	display_generic_data(apdu->data, apdu->length, to);
 
@@ -1737,9 +1710,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				i = i+1;
     				num_bins = (apdu->data[i])+1;
     			}
-
- //   			cnt = cnt+num_bins;
- //   			fprintf(to,"count: %3d  bins: %3d encoding: %d\n",cnt,num_bins,edr_enc);
 
     			switch (edr_enc){
     			case 10:    enc='a';    break;
@@ -1812,10 +1782,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     case 103:  			// Lightning  **************
     {
-       	int recf;int cnt=0;
-       	recf = apdu->data[0];
+    	int cnt;
 
-       	fprintf(to," Record Format   : %d \n",recf >> 4);
+    	fprintf(to," Record Format   :  Graphic\n");
 
        	display_generic_data(apdu->data, apdu->length, to);
 
@@ -1981,7 +1950,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
                    }
                }
            }
-       }
+    	}
     	fflush(filenexradc);
     	fflush(to);
     }
@@ -2382,7 +2351,6 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		obj_param_type= apdu->data[18] >> 3;              					 //18
 		ob_par_val = (apdu->data[18] & 0x7)<< 8 | apdu->data[19];				//19
 
-//		fprintf(to, "Obj Qualfr: %d  Obj Prm Tp: %d  Obj Par Val: %d\n",object_qualifier,obj_param_type,ob_par_val);
 		fprintf(fnm,"Obj Qualfr: %d  Obj Prm Tp: %d  Obj Par Val: %d\n",object_qualifier,obj_param_type,ob_par_val);
 
 		datoff = datoff+7;                 //13 datogg =20
@@ -2457,7 +2425,6 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 	strcpy(ob_status_text,"Unknown Status");
 	strcpy(ob_status_text,object_status_text[obj_status]);
 	strcpy(geo_overlay_text,overlay_options_text[geo_overlay_opt]);
-
 
 	if (qualifier_flag == 1)
 		strcpy(obj_par_name_text,obj_param_type_names[obj_param_type]);
