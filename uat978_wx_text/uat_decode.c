@@ -3,6 +3,8 @@
 // Copyright 2015, Oliver Jowett <oliver@mutability.co.uk>
 //
 
+// Testing branch
+
 #ifndef NULL
 #define NULL   ((void *) 0)
 #endif
