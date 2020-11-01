@@ -1304,7 +1304,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     		fprintf(fileicinglow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    				apdu->product_id == 70 ? "Regional" : "CONUS",apdu->hours,
+    				"CONUS",apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
     		for (i = 3; i < apdu->length; ++i) {
@@ -1356,7 +1356,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     					fprintf(fileicinglow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    							apdu->product_id == 70 ? "Regional" : "CONUS",apdu->hours,
+    							"CONUS",apdu->hours,
     							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
     					for (int k = 0; k < 128; ++k)
@@ -1406,7 +1406,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     		fprintf(fileicinghigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    				apdu->product_id == 71 ? "Regional" : "CONUS",apdu->hours,
+    				"CONUS",apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
     		for (int i = 3; i < apdu->length; ++i) {
@@ -1455,7 +1455,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     					fprintf(fileicinghigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    							apdu->product_id == 71 ? "Regional" : "CONUS",apdu->hours,
+    							"CONUS",apdu->hours,
     							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
     					for (int k = 0; k < 128; ++k)
@@ -1494,7 +1494,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
        		fprintf(filecloudt, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-       				apdu->product_id == 84 ? "Regional" : "CONUS",apdu->hours,
+       				"CONUS",apdu->hours,
     				apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
        		for (int i = 3; i < apdu->length; ++i) {
@@ -1560,7 +1560,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
        					fprintf(filecloudt, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-       							apdu->product_id == 84 ? "Regional" : "CONUS",apdu->hours,
+       							"CONUS",apdu->hours,
        							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
        					for (int k = 0; k < 128; ++k)
@@ -1615,7 +1615,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     		fprintf(fileturblow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    				apdu->product_id == 90 ? "Regional" : "CONUS",apdu->hours,
+    				"CONUS",apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
     		for (int i = 3; i < apdu->length; ++i) {
@@ -1681,7 +1681,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     					fprintf(fileturblow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    							apdu->product_id == 90 ? "Regional" : "CONUS",apdu->hours,
+    							"CONUS",apdu->hours,
     							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
     					for (int k = 0; k < 128; ++k)
@@ -1732,7 +1732,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     		fprintf(fileturbhigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    				apdu->product_id == 91 ? "Regional" : "CONUS",apdu->hours,
+    				"CONUS",apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
     		for (int i = 3; i < apdu->length; ++i) {
@@ -1796,7 +1796,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
     					fprintf(fileturbhigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    							apdu->product_id == 91 ? "Regional" : "CONUS",apdu->hours,
+    							"CONUS",apdu->hours,
     							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
     					for (int k = 0; k < 128; ++k)
@@ -1836,7 +1836,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
        		fprintf(filelightng, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-       				apdu->product_id == 103 ? "Regional" : "CONUS",apdu->hours,
+       				"CONUS",apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
        		for (int i = 3; i < apdu->length; ++i) {
@@ -1892,7 +1892,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
        					fprintf(filelightng, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-       							apdu->product_id == 103 ? "Regional" : "CONUS",apdu->hours,
+       							"CONUS",apdu->hours,
        							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
        					for (int k = 0; k < 128; ++k)
