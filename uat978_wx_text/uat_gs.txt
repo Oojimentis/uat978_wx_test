@@ -758,3 +758,14 @@ K67R$Rio Grande City Municipal Airport Rio Grande City, TX                  $
 KCVV$Coupeville - Penn Cove, WA                                             $
 KSTL$St Louis/Lambert International Airport, MO                             $
 KSDF$Louisville International, KY                                           $
+K9Y2$East Gull Lake, MN                                                     $
+KZLA$Los Angeles Center Weather Service Unit                                $
+KHQU$Thomson-McDuffie County Airpot, Thomson, GA                            $
+KSEM$Selma Airport-Selma, AL                                                $
+KH57$Bismark Memorial Airport-Bismark, MO                                   $
+KMLU$Monroe Regional Airport-Monroe, LA                                     $
+KBUR$Bob Hope Airport Burbank, CA                                           $
+KPAO$Palo Alto Airport-Santa Clara, CA                                      $
+PAHX$Shageluk Airport-Shageluka, AK                                         $
+KFAR$Hector International Airport-Fargo, ND                                 $
+KSCK$Stockton Metropolitan Airport-Stockton, CA                             $
