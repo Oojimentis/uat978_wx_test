@@ -753,8 +753,8 @@ KRKR$Robert S. Kerr Airport - Poteau, OK                                    $
 KSAF$Santa Fe Regional Airport - Santa Fe, NM                               $
 KSFB$Orlando Sanford International Airport - Orlando, FL                    $
 PACV$Merle K. (Mudhole) Smith Airport - Cordova, AK                         $
-KCFT*Greenlee County Airport Clifton/Morenci, AZ                            $
-K67R*Rio Grande City Municipal Airport Rio Grande City, TX                  $
-KCVV*Coupeville - Penn Cove, WA                                             $
-KSTL*St Louis/Lambert International Airport, MO                             $
-KSDF*Louisville International, KY                                           $
+KCFT$Greenlee County Airport Clifton/Morenci, AZ                            $
+K67R$Rio Grande City Municipal Airport Rio Grande City, TX                  $
+KCVV$Coupeville - Penn Cove, WA                                             $
+KSTL$St Louis/Lambert International Airport, MO                             $
+KSDF$Louisville International, KY                                           $
