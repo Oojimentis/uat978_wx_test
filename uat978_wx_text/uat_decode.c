@@ -2299,11 +2299,14 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 	uint32_t lat_raw;
 	uint32_t lng_raw;
+//	uint32_t lat_raw1;
+//	uint32_t lng_raw1;
 	uint32_t alt_raw;
 	int alt;
 	float lat;
 	float lng;
-	float fct_f =0.000687;  // float_t fct_t =0.001373;
+	float fct_f =0.000687;  // float_t fct_t =0.001373;    raw_lon * 360.0 / 16777216.0;
+//	float fct_f = 16777216.0;
 
 	uint32_t object_qualifier;
 	int obj_param_type = 0;
@@ -2537,11 +2540,17 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 				lat_raw = (((apdu->data[datoff +2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) | (((apdu->data[datoff + 4]) & 0xFC) >> 2);
 				alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
 
-				lat = fct_f * lat_raw;
-				lng = fct_f * lng_raw;
+				lng_raw = (~lng_raw & 0x7FFFF) +1;    // 2's compliment +1
+				lat_raw = (~lat_raw & 0x7FFFF) +1;    // 2's compliment +1
+
+				lat = lat_raw *  0.0006866455078125 ;
+				lng = (lng_raw *  0.0006866455078125) * -1 ;
+
+//				if (lat > 90.0)
+//					lat = lat - 180.0;
 
 				if (lat > 90.0)
-					lat = lat - 180.0;
+					lat = 360.0 - lat;
 
 				if (lng > 180.0)
 					lng = lng - 360.0;
