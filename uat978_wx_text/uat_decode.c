@@ -421,7 +421,7 @@ static const char *object_status_text[16] = {
 };
 
 static const char *overlay_options_text[16] = {
-		"No Geometry",
+		"No Geometry",                              // 0
 		"Low Resolution 2D Polygon",
 		"High Resolution 3D Polygon",
 		"Extended Range 3D Polygon (MSL)",
@@ -431,9 +431,9 @@ static const char *overlay_options_text[16] = {
 		"Extended Range Circular Prism (MSL)",
 		"Extended Range Circular Prism (AGL)",
 		"Extended Range 3D Point (AGL)",
-		"Future Use",
-		"Future Use",
-		"Future Use",
+		"Extended Range 3D Point (MSL)",                  //10
+		"Extended Range 3D Polyline (MSL)",               // 11
+		"Extended Range 3D Polyline (AGL)",               // 12
 		"Future Use",
 		"Future Use",
 		"Future Use"
@@ -2561,9 +2561,44 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 			}
 		break;
 
+		case 11: case 12:   // Extended Range 3D Polyline
+
+		for (int i = 0; i < overlay_vert_cnt; i++) {
+			if (rec_len < 6) {
+				fprintf(fnm,  "Too short\n");
+			}
+			else {
+				lng_raw = ((apdu->data[datoff +i]) << 11) | ((apdu->data[datoff +i+1]) << 3) | ((apdu->data[datoff +i+2]) & 0xE0 >> 5);
+				lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+ 3]) << 6) | (((apdu->data[datoff +i+ 4]) & 0xFC) >> 2);
+				alt_raw = (((apdu->data[datoff +i+ 4]) & 0x03) << 8) | (apdu->data[datoff +i+ 5]);
+
+				datoff = datoff + 5;
+
+				lng_raw = (~lng_raw & 0x7FFFF) +1;    // 2's compliment +1
+				lat_raw = (~lat_raw & 0x7FFFF) +1;    // 2's compliment +1
+
+				lat = lat_raw *  0.0006866455078125 ;
+				lng = (lng_raw *  0.0006866455078125) * -1 ;
+
+//				if (lat > 90.0)
+//					lat = lat - 180.0;
+
+				if (lat > 90.0)
+					lat = 360.0 - lat;
+
+				if (lng > 180.0)
+					lng = lng - 360.0;
+
+				alt = alt_raw * 100;
+
+				fprintf(fnm, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
+			}
+		}
+		break;
+
 		case 7: case 8: // Extended Range Circular Prism (7 = MSL, 8 = AGL)
 			if (rec_len < 14) {
-				fprintf(fnm, "invalid data: Extended Range Circular Prism. Should be 14 bytes; %d seen.\n",rec_len);
+				fprintf(fnm, "Data too short. Should be 14 bytes; %d seen.\n",rec_len);
 			} else {
 				uint32_t lng_bot_raw;
 				uint32_t lat_bot_raw;
@@ -2579,32 +2614,36 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 				float lat_bot,lng_bot,lat_top,lng_top,r_lng,r_lat;
 
-				lng_bot_raw = ((apdu->data[0]) << 10) | ((apdu->data[1]) << 2) | ((apdu->data[2]) & 0xC0 >> 6);
-				lat_bot_raw = (((apdu->data[2]) & 0x3F) << 12) | ((apdu->data[3]) << 4) | (((apdu->data[4]) & 0xF0) >> 4);
-				lng_top_raw = (((apdu->data[4]) & 0x0F) << 14) | ((apdu->data[5]) << 6) | (((apdu->data[6]) & 0xFC) >> 2);
-				lat_top_raw = (((apdu->data[6]) & 0x03) << 16) | ((apdu->data[7]) << 8) | (apdu->data[8]);
+				lng_bot_raw = ((apdu->data[datoff +0]) << 10) | ((apdu->data[datoff +1]) << 2) | ((apdu->data[datoff +2]) & 0xC0 >> 6);
+				lat_bot_raw = (((apdu->data[datoff+ 2]) & 0x3F) << 12) | ((apdu->data[datoff +3]) << 4) | (((apdu->data[datoff +4]) & 0xF0) >> 4);
+				lng_top_raw = (((apdu->data[datoff +4]) & 0x0F) << 14) | ((apdu->data[datoff +5]) << 6) | (((apdu->data[datoff +6]) & 0xFC) >> 2);
+				lat_top_raw = (((apdu->data[datoff +6]) & 0x03) << 16) | ((apdu->data[datoff +7]) << 8) | (apdu->data[datoff +8]);
 
-				alt_bot_raw = ((apdu->data[9]) & 0xFE) >> 1;
-				alt_top_raw = (((apdu->data[9]) & 0x01) << 6) | (((apdu->data[10]) & 0xFC) >> 2);
+				alt_bot_raw = ((apdu->data[datoff +9]) & 0xFE) >> 1;
+				alt_top_raw = (((apdu->data[datoff +9]) & 0x01) << 6) | (((apdu->data[datoff +10]) & 0xFC) >> 2);
 
-				r_lng_raw = (((apdu->data[10]) & 0x03) << 7) | (((apdu->data[11]) & 0xFE) >> 1);
-				r_lat_raw = (((apdu->data[11]) & 0x01) << 8) | (apdu->data[12]);
-				alpha = (apdu->data[13]);
+				r_lng_raw = (((apdu->data[datoff +10]) & 0x03) << 7) | (((apdu->data[datoff +11]) & 0xFE) >> 1);
+				r_lat_raw = (((apdu->data[datoff +11]) & 0x01) << 8) | (apdu->data[datoff +12]);
+				alpha = (apdu->data[datoff +13]);
 
-				lat_bot = fct_f * lat_bot_raw;
-				lng_bot = fct_f * lng_bot_raw;
+				lng_bot_raw = (~lng_bot_raw & 0x1FFFF) +1;    // 2's compliment +1
+				lat_bot_raw = (~lat_bot_raw & 0x1FFFF) +1;    // 2's compliment +1
+				lat_bot = lat_bot_raw *  0.001373 ;
+				lng_bot = (lng_bot_raw *  0.001373) * -1 ;
 
 				if (lat_bot > 90.0)
-					lat_bot = lat_bot - 180.0;
+					lat_bot = (lat_bot - 180.0) * -1 ;
 
 				if (lng_bot > 180.0)
 					lng_bot = lng_bot - 360.0;
 
-				lat_top = fct_f * lat_top_raw;
-				lng_top = fct_f * lng_top_raw;
+				lng_top_raw = (~lng_top_raw & 0x1FFFF) +1;    // 2's compliment +1
+				lat_top_raw = (~lat_top_raw & 0x1FFFF) +1;    // 2's compliment +1
+				lat_top = lat_top_raw *  0.001373 ;
+				lng_top = (lng_top_raw *  0.001373) * -1 ;
 
 				if (lat_top > 90.0)
-					lat_top = lat_top - 180.0;
+					lat_top = (lat_top - 180.0) * -1 ;
 
 				if (lng_top > 180.0)
 					lng_top = lng_top - 360.0;
