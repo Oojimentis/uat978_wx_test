@@ -2506,7 +2506,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 	switch (geo_overlay_opt) {
 
-	case 3: // Extended Range 3D Polygon (MSL).
+	case 3:  case 4: // Extended Range 3D Polygon
 
 		for (int i = 0; i < overlay_vert_cnt; i++) {
 			lng_raw = ((apdu->data[datoff + i]) << 11) | ((apdu->data[datoff +i+1]) << 3) | ((apdu->data[datoff +i+2]) & 0xE0 >> 5);
