@@ -2546,9 +2546,6 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 				lat = lat_raw *  0.0006866455078125 ;
 				lng = (lng_raw *  0.0006866455078125) * -1 ;
 
-//				if (lat > 90.0)
-//					lat = lat - 180.0;
-
 				if (lat > 90.0)
 					lat = 360.0 - lat;
 
@@ -2568,12 +2565,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 				fprintf(fnm,  "Too short\n");
 			}
 			else {
-				int a = ((apdu->data[datoff +i]) << 11) ;
-				int b = ((apdu->data[datoff +i+1]) << 3);
-				int c = ((apdu->data[datoff +i+2]) >> 2);
-				int cc = ((apdu->data[datoff +i+2]));
-				fprintf(fnm, " %d %d %d %d",a,b,c,cc) ;
-				lng_raw = ((apdu->data[datoff +i]) << 11) | ((apdu->data[datoff +i+1]) << 3) | ((apdu->data[datoff +i+2]) & 0xE0 >> 5);
+				lng_raw = ((apdu->data[datoff +i]) << 11) | ((apdu->data[datoff +i+1]) << 3) | ((apdu->data[datoff +i+2]) >> 5);
 				lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+ 3]) << 6) | (((apdu->data[datoff +i+ 4]) & 0xFC) >> 2);
 				alt_raw = (((apdu->data[datoff +i+ 4]) & 0x03) << 8) | (apdu->data[datoff +i+ 5]);
 
@@ -2583,10 +2575,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 				lat_raw = (~lat_raw & 0x7FFFF) +1;    // 2's compliment +1
 
 				lat = lat_raw *  0.0006866455078125 ;
-				lng = (lng_raw *  0.0006866455078125) * -1 ;
-
-//				if (lat > 90.0)
-//					lat = lat - 180.0;
+				lng = lng_raw * -0.0006866455078125 ;
 
 				if (lat > 90.0)
 					lat = 360.0 - lat;
