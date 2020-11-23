@@ -2554,6 +2554,39 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 				alt = alt_raw * 100;
 
+				if (apdu->product_id == 8) {
+
+					notam_list[notam_count].notam_lat = lat;
+					notam_list[notam_count].notam_lng = lng;
+					strcpy(notam_list[notam_count].notam_stn,gstn);
+					notam_list[notam_count].notam_repid =rep_num;
+
+					if (notam_count ==0) {
+						fprintf(filejson,"{\"type\": \"FeatureCollection\",\n");
+						fprintf(filejson,"\"features\": [ \n");
+					}
+
+					if (notam_count ==0) {
+						fprintf(filejson,"{\"type\": \"Feature\", \"properties\": { \"Location\": \"%s\" ,\"Stuff\": \"%d\"},\n",gstn,rep_num);
+
+						fprintf(filejson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %f , %f ] }}\n",lng,lat);
+						fprintf(filejson,"]}");
+					}
+					else {
+						fseek(filejson, -3, SEEK_CUR);
+
+						fprintf(filejson,",{\"type\": \"Feature\", \"properties\": { \"Location\": \"%s\" ,\"Stuff\": \"%d\"},\n",gstn,rep_num);
+						fprintf(filejson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %f , %f ] }}\n",lng,lat);
+						fprintf(filejson,"]}");
+					}
+
+//					fprintf(filejson,"\n%s  %11f,%11f ]}\n ",gstn,lng,lat);
+					fflush(filejson);
+					notam_count ++;
+				}
+
+
+
 				fprintf(fnm, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
 			}
 		break;
