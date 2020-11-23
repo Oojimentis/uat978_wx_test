@@ -54,6 +54,7 @@ int main(int argc, char **argv)
 	char *item;
 
 	seg_count=0;
+	notam_count=0;
 
 	fprintf(stderr, "\nOpening file: uat_gs.txt ");
 
@@ -70,7 +71,12 @@ int main(int argc, char **argv)
 	fprintf(stderr, "- %d Records read\n\n",reccount);
    	fclose(filehandle);
 
-   	filemetar = fopen("metar.out","w");
+   	filejson = fopen("/home/trev/git/map-978/WebContent/notam.geojson","w");
+   	if (filejson == 0)		{
+   		fprintf(stderr,"notam.geojson Error--file could not be opened. \n") ;
+   		exit (1) ;		}
+   	fflush(filejson);
+   	   	filemetar = fopen("metar.out","w");
    	if (filemetar == 0)		{
    		fprintf(stderr,"metar.out Error--file could not be opened. \n") ;
    		exit (1) ;		}

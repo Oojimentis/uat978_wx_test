@@ -53,6 +53,18 @@ struct MySegStruct{
 
 int seg_count;
 
+struct NotamJsonStruct{
+	float notam_lat;
+	float notam_lng;
+	char  notam_stn[6];
+	int  notam_repid;
+} notam_list[100];
+
+int notam_count;
+
+
+
+
 FILE * filemetar;   	// 413
 FILE * filenotam;   	// 8
 FILE * filesua;      	// 13
@@ -87,6 +99,8 @@ FILE * fileturbh20;		// TURBULENCE HIGH Graphics output
 FILE * fileturbh22;		// TURBULENCE HIGH Graphics output
 FILE * fileturbh24;		// TURBULENCE HIGH Graphics output
 FILE * filelightng;		// LIGHTNING Graphics output
+
+FILE * filejson; //notam geojson
 
 int reccount;
 
