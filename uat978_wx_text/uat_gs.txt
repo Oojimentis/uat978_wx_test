@@ -778,3 +778,14 @@ KZZV$Zanesville Municipal Airport-Zanesville, OH                            $
 PACV$Merle K. (Mudhole) Smith Airport-Cordova, AK                           $
 PAHX$Shageluk Airport-Shageluka, AK                                         $
 PAJN$Juneau International Airport-Juneau, AK                                $
+K18Y$Milaca Municipal Airport, MN                                           $
+KAPF$Naples Airplort, FL                                                    $
+KDQH$Douglas Municipal Gene Chambers Airport-Douglas, GA                    $
+KIAH$George Bush International-Houston, TX                                  $
+KORD$O'Hare International-Chicago, IL                                       $
+KPDK$DeKalb-Peachtree Airport-Chamblee, GA                                  $
+KRZN$Burnett County Airport-Siren, WI                                       $
+KSCD$Sylacauga, AL                                                          $
+KSFO$San Francisco International-Burlingame, CA                             $
+KU01$American Falls Airport-American Falls, ID                              $
+PAGH$Shungnak Airport-Shungnak, AK                                          $

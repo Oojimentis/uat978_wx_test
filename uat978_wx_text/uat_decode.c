@@ -1170,7 +1170,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
         if ((recf >> 4) == 8){ 										//graphic
         	fprintf(to," Report Type     : NOTAM\n");
 			fprintf(filenotam," Report Type     : NOTAM\n");
-
+			fprintf(to,"notam_count %d \n",notam_count);
+			fflush(to);
         	get_graphic(apdu, filenotam,to);
         }
         else if (((recf >> 4) == 2 ) && (apdu->s_flag))  {        	// segmented text
@@ -2585,7 +2586,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 					notam_count ++;
 				}
 
-
+//					fprintf(filejson,"%s %s %11f,%11f ]}\n ",gstn,gs_ret,lng,lat);
 
 				fprintf(fnm, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
 			}
