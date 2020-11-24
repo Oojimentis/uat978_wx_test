@@ -2526,6 +2526,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 				lng = lng - 360.0;
 
 			alt = alt_raw * 100;
+			fprintf(fnm," Moo");
 
 			fprintf(fnm, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
 		}
