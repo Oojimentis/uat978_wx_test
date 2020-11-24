@@ -53,15 +53,15 @@ struct MySegStruct{
 
 int seg_count;
 
+
 struct NotamJsonStruct{
 	float notam_lat;
 	float notam_lng;
 	char  notam_stn[6];
 	int  notam_repid;
-} notam_list[100];
+} notam_list[5000];
 
 int notam_count;
-
 
 
 
