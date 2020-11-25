@@ -28,6 +28,8 @@
 #define BLOCKS_PER_RING 450
 
 static char gs_ret[80];
+static char gs_ret_lat[25];
+static char gs_ret_lng[25];
 
 void block_location_new(int bn, int ns, int sf, double *latN, double *lonW, double *latSize, double *lonSize);
 
@@ -106,6 +108,8 @@ static void get_gs_name(char *Word,int len){
 
 		if(strcmp(gs_list[i].gs_call, temp_stn)==0){
 	  		strncpy(gs_ret,gs_list[i].gs_loc,75);
+	  		strncpy(gs_ret_lat,gs_list[i].gs_lat,25);
+	  		strncpy(gs_ret_lng,gs_list[i].gs_lng,25);
 	  		return;
 	  	}
 	}
@@ -2054,7 +2058,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     				get_gs_name(gstn,reccount);
 
-    				fprintf(to," RLoc:  %s - %s\n",gstn, gs_ret);
+    				fprintf(to," RLoc:  %s - %s Lat: %s Lng: %s\n"
+    						,gstn, gs_ret,gs_ret_lat,gs_ret_lng);
 
     				time_t current_time = time(NULL);
     				struct tm *tm = localtime(&current_time);
@@ -2130,7 +2135,52 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			if( decode_metar(observation, Mptr) != 0 ) {
     				fprintf(to,"Error METAR Decode\n"); }
     			else {
-    				print_decoded_metar( Mptr); }
+    				print_decoded_metar( Mptr);
+    				if (metar_count ==0) {
+    					fprintf(filemetarjson,"{\"type\": \"FeatureCollection\",\n");
+    					fprintf(filemetarjson,"\"features\": [ \n");
+    				}
+
+    				if (metar_count ==0) {
+
+    	fprintf(filemetarjson,"{\"type\": \"Feature\", \"properties\": { \"Stn\": \"%s\" ,"
+    			"\"Wind Speed\": \"%d\","
+    			"\"Altimeter(Inches) \": \"%f\","
+    			"\"Prevailing Vsby(SM)\": \"%f\","
+    			"\"Dew Point Temp(C)\": \"%d\","
+    			"\"Temperature(C)\": \"%d\","
+    			"\"Wind Direction\": \"%d\""
+
+    			"},\n",gstn,MetarStruct.winData.windSpeed,				MetarStruct.inches_altstng,
+				MetarStruct.prevail_vsbySM,				MetarStruct.dew_pt_temp,
+				MetarStruct.temp,		MetarStruct.winData.windDir);
+
+   	fprintf(filemetarjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %s , %s ] }}\n",gs_ret_lng,gs_ret_lat);
+    			fprintf(filemetarjson,"]}");
+    				}
+    			else {
+    				fseek(filemetarjson, -3, SEEK_CUR);
+
+   		fprintf(filemetarjson,",{\"type\": \"Feature\", \"properties\": { \"Stn\": \"%s\" ,"
+        			"\"Wind Speed\": \"%d\","
+        			"\"Altimeter(Inches) \": \"%f\","
+        			"\"Prevailing Vsby(SM)\": \"%f\","
+        			"\"Dew Point Temp(C)\": \"%d\","
+        			"\"Temperature(C)\": \"%d\","
+        			"\"Wind Direction\": \"%d\""
+
+        			"},\n",gstn,MetarStruct.winData.windSpeed,				MetarStruct.inches_altstng,
+    				MetarStruct.prevail_vsbySM,				MetarStruct.dew_pt_temp,
+    				MetarStruct.temp,		MetarStruct.winData.windDir);
+
+    	fprintf(filemetarjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %s , %s ] }}\n",gs_ret_lng,gs_ret_lat);
+    			fprintf(filemetarjson,"]}");
+    			}
+
+    			fflush(filemetarjson);
+    		metar_count ++;
+
+    			}
     		}
     		memset(&MetarStruct, 0, sizeof(MetarStruct));
     		fflush(filemetar);
@@ -2526,7 +2576,6 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 				lng = lng - 360.0;
 
 			alt = alt_raw * 100;
-			fprintf(fnm," Moo");
 
 			fprintf(fnm, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
 		}
@@ -2564,26 +2613,26 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 					notam_list[notam_count].notam_repid =rep_num;
 
 					if (notam_count ==0) {
-						fprintf(filejson,"{\"type\": \"FeatureCollection\",\n");
-						fprintf(filejson,"\"features\": [ \n");
+						fprintf(filenotamjson,"{\"type\": \"FeatureCollection\",\n");
+						fprintf(filenotamjson,"\"features\": [ \n");
 					}
 
 					if (notam_count ==0) {
-						fprintf(filejson,"{\"type\": \"Feature\", \"properties\": { \"Location\": \"%s\" ,\"Stuff\": \"%d\"},\n",gstn,rep_num);
+						fprintf(filenotamjson,"{\"type\": \"Feature\", \"properties\": { \"Location\": \"%s\" ,\"Stuff\": \"%d\"},\n",gstn,rep_num);
 
-						fprintf(filejson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %f , %f ] }}\n",lng,lat);
-						fprintf(filejson,"]}");
+						fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %f , %f ] }}\n",lng,lat);
+						fprintf(filenotamjson,"]}");
 					}
 					else {
-						fseek(filejson, -3, SEEK_CUR);
+						fseek(filenotamjson, -3, SEEK_CUR);
 
-						fprintf(filejson,",{\"type\": \"Feature\", \"properties\": { \"Location\": \"%s\" ,\"Stuff\": \"%d\"},\n",gstn,rep_num);
-						fprintf(filejson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %f , %f ] }}\n",lng,lat);
-						fprintf(filejson,"]}");
+						fprintf(filenotamjson,",{\"type\": \"Feature\", \"properties\": { \"Location\": \"%s\" ,\"Stuff\": \"%d\"},\n",gstn,rep_num);
+						fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %f , %f ] }}\n",lng,lat);
+						fprintf(filenotamjson,"]}");
 					}
 
 //					fprintf(filejson,"\n%s  %11f,%11f ]}\n ",gstn,lng,lat);
-					fflush(filejson);
+					fflush(filenotamjson);
 					notam_count ++;
 				}
 

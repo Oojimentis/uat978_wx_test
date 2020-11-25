@@ -50,32 +50,45 @@ void handle_frame(frame_type_t type, uint8_t *frame, int len, void *extra)
 int main(int argc, char **argv)
  {
 	//  TJH
-	char lyne[80];
+	char lyne[150];
 	char *item;
 
 	seg_count=0;
 	notam_count=0;
+	metar_count=0;
 
 	fprintf(stderr, "\nOpening file: uat_gs.txt ");
 
 	filehandle = fopen("uat_gs.txt","r");
 
-	while (fgets(lyne,80,filehandle)) {
+	while (fgets(lyne,150,filehandle)) {
 		item = strtok(lyne,"$");
 	    strncpy(gs_list[reccount].gs_call,item,5);
 	    item = strtok(NULL,"$");
 	    strncpy(gs_list[reccount].gs_loc,item,70);
+	    item = strtok(NULL,"$");
+	    strncpy(gs_list[reccount].gs_lat,item,24);	                      //lat
+	    item = strtok(NULL,"$");
+	    strncpy(gs_list[reccount].gs_lng,item,24);		                  //lng
 	    reccount++;
 	}
 
 	fprintf(stderr, "- %d Records read\n\n",reccount);
    	fclose(filehandle);
 
-   	filejson = fopen("/home/trev/git/map-978/WebContent/notam.geojson","w");
-   	if (filejson == 0)		{
+   	filenotamjson = fopen("/home/trev/git/map-978/WebContent/notam.geojson","w");
+   	if (filenotamjson == 0)		{
    		fprintf(stderr,"notam.geojson Error--file could not be opened. \n") ;
    		exit (1) ;		}
-   	fflush(filejson);
+   	fflush(filenotamjson);
+
+   	filemetarjson = fopen("/home/trev/git/map-978/WebContent/metar.geojson","w");
+   	if (filemetarjson == 0)		{
+   		fprintf(stderr,"metar.geojson Error--file could not be opened. \n") ;
+   		exit (1) ;		}
+   	fflush(filemetarjson);
+
+
    	   	filemetar = fopen("metar.out","w");
    	if (filemetar == 0)		{
    		fprintf(stderr,"metar.out Error--file could not be opened. \n") ;

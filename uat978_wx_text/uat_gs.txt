@@ -1,791 +1,791 @@
-K06A$Moton Field Municipal Airport-Tuskegee, AL                             $
-K0A3$Smithville Municipal Airport-Smithville, TN                            $
-K0V4$Brookneal/Campbell County, VA                                          $
-K0VG$Jonesville, VA                                                         $
-K12N$Andover, NJ                                                            $
-K17N$Cross Keys, NJ                                                         $
-K1A5$Macon-Franklin, NC                                                     $
-K1B1$Hudson-Columbia, NY                                                    $
-K1B6$Woonsocket, RI                                                         $
-K1B8$Boonville, NY                                                          $
-K1M5$Portland Municipal Airport-Portland, TN                                $
-K1N7$Blairstown, NJ                                                         $
-K1P1$Plymouth Muni, NH                                                      $
-K1V4$Saint Johnsbury St. Johnsbury, VT                                      $
-K22G$Lorain-Elyria, OH                                                      $
-K22N$Lehighton/Arner Mem, PA                                                $
-K24A$Sylva, NC                                                              $
-K26N$Ocean City, NJ                                                         $
-K29D$Grove City, PA                                                         $
-K29G$Ravena-Portage, OH                                                     $
-K29J$Rock Hill, SC                                                          $
-K2B2$Newburyport, MA                                                        $
-K2B4$Newport, RI                                                            $
-K2B6$North Adams, MA                                                        $
-K2B7$Harmony, ME                                                            $
-K2DP$Dare County Gunnery Range, NC                                          $
-K2G4$Oakland/Garrett County, MD                                             $
-K2G6$Meadville, PA                                                          $
-K2G9$Somerset County Airport-Somerset, PA                                   $
-K2I4$Columbus-Bolton, OH                                                    $
-K2I8$Newark, OH                                                             $
-K2PJ$Sumter-Poinsett, SC                                                    $
-K2W6$St Marys (Duke), MD                                                    $
-K2XG$Gulf Of Mexico?                                                        $
-K33N$Dover-Cheswold Airpark, DE                                             $
-K37W$Erwin-Harnett Co, NC                                                   $
-K39N$Princeton, NJ                                                          $
-K3B1$Greenville, ME                                                         $
-K3B2$Marshfield, MA                                                         $
-K3N6$Old Bridge, NJ                                                         $
-K40B$Clayton Lake, ME                                                       $
-K40N$Coatesville, PA                                                        $
-K43M$Fort Ritchie-Sit, MD                                                   $
-K44W$Diamond Shores, NC                                                     $
-K45J$Rockingham, NC                                                         $
-K47B$Eastport, ME                                                           $
-K47N$Manville, NJ                                                           $
-K49J$Hilton Head, SC                                                        $
-K4G6$Hornell, NY                                                            $
-K4I3$Mt Vernon-Knox, OH                                                     $
-K4N1$West Milford, NJ                                                       $
-K56N$Sandy Hook CGS, NJ                                                     $
-K5B0$Mansfield, CT                                                          $
-K5B2$Saratoga Springs, NY                                                   $
-K5B3$Putnam, CT                                                             $
-K5B5$Bennington, VT                                                         $
-K5W8$Siler City, NC                                                         $
-K67R$Rio Grande City Municipal Airport Rio Grande City, TX                  $
-K6A3$Andrews, NC                                                            $
-K6B0$Middlebury, VT                                                         $
-K6B1$Rochester, NH                                                          $
-K6B8$Lyndonville, VT                                                        $
-K6B9$Skaneateles Aero Drome Airport Skaneateles, NY                         $
-K6V3$Richlands, VA                                                          $
-K78N$Reidsville, NC                                                         $
-K7B2$Knightville, MA                                                        $
-K7B4$Miller Farm Landing Strip-Baltimore, OH                                $
-K7G2$Ashtabula, OH                                                          $
-K7TB$Tobyhanna, PA                                                          $
-K7W4$Bumpass/Lake Anna, VA                                                  $
-K7W6$Engelhard/Hyde Connty, NC                                              $
-K84R$Smithville Crawford Muniicipal-Smithville, TX                          $
-K8B0$Rangeley, ME                                                           $
-K8B2$Diamond Lake, NH                                                       $
-K8B3$Ball Mountain, VT                                                      $
-K8B5$Barre Falls, MA                                                        $
-K8W2$New Market, VA                                                         $
-K9B4$Ashburnham, MA                                                         $
-K9B6$Sewel Ridge, ME                                                        $
-K9B9$Wiscasset, ME                                                          $
-K9W7$Currituck, NC                                                          $
-K9Y2$East Gull Lake, MN                                                     $
-KABE$Lehigh Valley International Airport-Allentown, PA                      $
-KACK$Nantucket Memorial Airport-Nantucket, MA                               $
-KACY$Atlantic City International Airport-Atlantic City, NJ                  $
-KACZ$Henderson Field-Wallace, NC                                            $
-KADW$Andrews Air Force Base-Camp Springs, MD                                $
-KAFJ$Washington County Airport-Washington, PA                               $
-KAFN$Jaffrey Airport-Silver Ranch Airpark-Jaffrey, NH                       $
-KAFP$Anson County Airport-Wadesboro, NC                                     $
-KAFW$Fort Worth Alliance-Fort Worth, TX                                     $
-KAGC$Allegheny County Airport-West Mifflin, PA                              $
-KAIK$Aiken Municipal Airport-Aiken, SC                                      $
-KAIR$Bellaire VOR, OH                                                       $
-KAJO$Corona Municipal Airport-Corona, CA                                    $
-KAKH$Gastonia Municipal Airport-Gastonia, NC                                $
-KAKQ$Wakefield Municipal Airport-Wakefield, VA                              $
-KAKR$Akron Fulton International Airport-Akron, OH                           $
-KALB$Albany International Airport-Albany, NY                                $
-KALY$Albany-WFO, NY                                                         $
-KAMT$Alexander Salamon Airport-West Union, OH                               $
-KAND$Anderson Regional Airport-Anderson, SC                                 $
-KANP$Lee Airport-Annapolis, MD                                              $
-KAOH$Lima Allen County Airport-Lima, OH                                     $
-KAOO$Altoona-Blair County Airport-Altoona, PA                               $
-KAPE$Appleton, OH                                                           $
-KAPG$Phillips Army Airfield-Aberdeen Proving Ground, MD                     $
-KAPH$A.P. Hill Army Airfield-Fort A.P. Hill, VA                             $
-KAQW$Harriman-And-West Airport-North Adams, MA                              $
-KAQX$Allendale County, SC                                                   $
-KART$Watertown International Airport-Watertown, NY                          $
-KARW$Beaufort County Airport-Beaufort County, SC                            $
-KASH$Nashua Airport (Boire Field)-Nashua, NH                                $
-KASJ$Tri-County Airport-Ahoskie, NC                                         $
-KATL$Hartsfield-Jackson Atlanta International Airport                       $
-KAUG$Augusta State Airport-Augusta, ME                                      $
-KAUS$Austin/Bergstrom International Airport, TX                             $
-KAUW$Wausau, WI                                                             $
-KAVC$Mecklenburg-Brunswick Regional Airport-South Hill, VA                  $
-KAVL$Asheville Regional Airport-Fletcher, NC                                $
-KAVP$Wilkes-Barre/Scranton International Airport-Avoca, PA                  $
-KAWO$Arlington Municipal Airport-Arlington, WA                              $
-KAXQ$Clarion County Airport-Clarion, PA                                     $
-KAXV$Neil Armstrong Airport-Wapakoneta, OH                                  $
-KAYE$Ayer, MA                                                               $
-KB20$Freyburg, ME                                                           $
-KB21$Carrabassett, ME                                                       $
-KBAF$Westfield-Barnes Regional Airport-Springfield, MA                      $
-KBBP$Marlboro County Jetport-Bennettsville, SC                              $
-KBCB$Virginiatech/Montgomery Executive Airport-Blacksburg, VA               $
-KBDL$Bradley International Airport-Windsor Locks, CT                        $
-KBDR$Igor I. Sikorsky Memorial Airport-Bridgeport, CT                       $
-KBED$Laurence G. Hanscom Field-Bedford, MA                                  $
-KBFD$Bradford Regional Airport-Bradford, PA                                 $
-KBGM$Greater Binghamton Airport-Binghamton, NY                              $
-KBGR$Bangor International Airport-Bangor, ME                                $
-KBHB$Hancock County-Bar Harbor Airport-Bar Harbor, ME                       $
-KBID$Block Island State Airport-Block Island, RI                            $
-KBJJ$Wayne County Airport-Wooster, OH                                       $
-KBKL$Cleveland Burke Lakefront Airport-Cleveland, OH                        $
-KBKT$Allen C. Perkinson Airport-Blackstone, VA                              $
-KBKW$Beckley Raleigh County Memorial Airport-Beckley, WV                    $
-KBLF$Mercer County Airport-Bluefield, WV                                    $
-KBLM$Monmouth Executive Airport-Belmar / Farmingdale, NJ                    $
-KBML$Berlin Regional Airport-Berlin, NH                                     $
-KBNA$Nashville Internationl Airport, TN                                     $
-KBNL$Barnwell Regional Airport-Barnwell, SC                                 $
-KBOS$Logan International Airport-Boston, MA                                 $
-KBOX$Boston-Taunton, MA                                                     $
-KBQR$Buffalo-Lancaster Regional Airport-Lancaster, NY                       $
-KBST$Belfast Municipal Airport-Belfast, ME                                  $
-KBTP$Pittsburgh-Butler Regional Airport-Butler, PA                          $
-KBTV$Burlington International Airport-Burlington, VT                        $
-KBUF$Buffalo Niagara International Airport-Buffalo, NY                      $
-KBUR$Bob Hope Airport Burbank, CA                                           $
-KBUY$Burlington-Alamance Regional Airport-Burlington, NC                    $
-KBVI$Beaver County Airport-Beaver Falls, PA                                 $
-KBVY$Beverly Regional Airport-Beverly, MA                                   $
-KBWG$Bowling Green-Warren County Regional Airport-Bowling Green, KY         $
-KBWI$Baltimore-Washington International-Baltimore, MD                       $
-KBXM$Brunswick Executive Airport-Brunswick, ME                              $
-KCAE$Columbia Metropolitan Airport-West Columbia, SC                        $
-KCAK$Akron-Canton Regional Airport-Akron, OH                                $
-KCAR$Caribou Municipal Airport-Caribou, ME                                  $
-KCBE$Greater Cumberland Regional Airport-Cumberland, MD                     $
-KCBW$Houlton-88D, ME                                                        $
-KCCX$Rush-St College, PA                                                    $
-KCDA$Caledonia County Airport-Lyndonville, VT                               $
-KCDI$Cambridge Municipal Airport-Cambridge, OH                              $
-KCDN$Woodward Field (Kershaw County Airport)-Camden, SC                     $
-KCDW$Essex County Airport (Caldwell Airport)-Caldwell, NJ                   $
-KCEF$Westover Metropolitan Airport-Springfield, MA                          $
-KCEU$Oconee County Regional Airport-Clemson, SC                             $
-KCFT$Greenlee County Airport Clifton/Morenci, AZ                            $
-KCGE$Cambridge-Dorchester Regional Airport-Cambridge, MD                    $
-KCGF$Cuyahoga County Airport-Cleveland, OH                                  $
-KCGS$College Park Airport-College Park, MD                                  $
-KCHH$Chatham, MA                                                            $
-KCHI$Chicago-WSFO, IL                                                       $
-KCHO$Charlottesville-Albemarle Airport-Charlottesville, VA                  $
-KCHS$Charleston International Airport-Charleston, SC                        $
-KCJR$Culpeper Regional Airport-Culpeper, VA                                 $
-KCKB$Harrison/Marion Regional Airport-Clarksburg, WV                        $
-KCKI$Williamsburg Regional Airport-Kingstree, SC                            $
-KCKZ$Perkasie/Pennridge A, PA                                               $
-KCLE$Cleveland Hopkins International Airport-Cleveland, OH                  $
-KCLT$Charlotte/Douglas International Airport-Charlotte, NC                  $
-KCLX$Charleston-Grays, SC                                                   $
-KCMH$John Glenn Columbus International Airport-Columbus, OH                 $
-KCMX$Houghton County Memorial Airport-Hancock, MI                           $
-KCNH$Claremont Municipal Airport-Claremont, NH                              $
-KCNO$Chino Airport-Chino, CA                                                $
-KCOL$Colden, NY                                                             $
-KCON$Concord Municipal Airport-Concord, NH                                  $
-KCOO$Cooperstown, NY                                                        $
-KCOU$Columbia Regional Airport-Columbia, MO                                 $
-KCPC$Columbus County Municipal Airport-Whiteville, NC                       $
-KCPK$Chesapeake Regional Airport-Norfolk, VA                                $
-KCQW$Cheraw Municipal Airport-Cheraw, SC                                    $
-KCQX$Chatham Municipal Airport-Chatham, MA                                  $
-KCRE$Grand Strand Airport-North Myrtle Beach, SC                            $
-KCRW$Yeager Airport-Charleston, WV                                          $
-KCSG$Columbus Airport, COlumbus, GA                                         $
-KCSN$Cassanova VOR, VA                                                      $
-KCTP$State College-WFO, PA                                                  $
-KCTZ$Clinton-Sampson County Airport-Clinton, NC                             $
-KCUB$Columbia Owens Downtown Airport-Columbia, SC                           $
-KCVG$Covington, KY                                                          $
-KCVV$Coupeville-Penn Cove, WA                                               $
-KCXE$Chase City Municipal Airport-Chase City, VA                            $
-KCXX$Colchester-88D, VT                                                     $
-KCXY$Capital City Airport-Harrisburg, PA                                    $
-KCYN$Coyle VOR, NJ                                                          $
-KCYO$Pickaway County Memorial Airport-Circleville, OH                       $
-KCZG$Tri-Cities Airport-Endicott, NY                                        $
-KD38$Canandaigua, NY                                                        $
-KDAA$Davison Army Airfield-Fort Belvoir, VA                                 $
-KDAN$Danville Regional Airport-Danville, VA                                 $
-KDAW$Skyhaven Airport-Rochester, NH                                         $
-KDAY$James M. Cox International Airport-Dayton, OH                          $
-KDCA$Ronald Reagan National Airport-Arlington County, VA                    $
-KDCM$Chester Catawba, SC                                                    $
-KDDH$William H. Morse State Airport-Bennington, VT                          $
-KDFI$Defiance Memorial Airport-Defiance, OH                                 $
-KDFW$Dallas-Ft Worth International Airport, TX                              $
-KDIX$Manchester 88D, NJ                                                     $
-KDKK$Chautauqua County/Dunkirk Airport-Dunkirk, NY                          $
-KDLC$Dillon County Airport-Dillon, SC                                       $
-KDLZ$Delaware Municipal Airport-Delaware, OH                                $
-KDMH$Baltimore-Dwntwn, MD                                                   $
-KDMW$Carroll County Regional Airport-Westminster, MD                        $
-KDOV$Dover Air Force Base-Dover, DElaware                                   $
-KDOX$Dover-Ellendale, DE                                                    $
-KDPL$Duplin County Airport-Kenansville, NC                                  $
-KDSV$Dansville Municipal Airport-Dansville, NY                              $
-KDUJ$Dubois Regional Airport-Dubois, PA                                     $
-KDVD$Camp David, MD                                                         $
-KDXR$Danbury Municipal Airport-Danbury, CT                                  $
-KDYB$Summerville Airport-Summerville, SC                                    $
-KDYL$Doylestown Airport-Doylestown, PA                                      $
-KECG$Elizabeth City Regional Airport / Elizabeth City, NC                   $
-KECK$Peck, MI                                                               $
-KEDE$Northeastern Regional Airport-Edenton, NC                              $
-KEDG$Weide Army Heliport-Edgewood Arsenal, Aberdeen Proving Ground, MD      $
-KEDJ$Bellefontaine Regional Airport-Bellefontaine, OH                       $
-KEEN$Dillant-Hopkins Airport-Keene, NH                                      $
-KEFK$Northeast Kingdom International Airport-Newport, VT                    $
-KEHO$Shelby-Cleveland Regional Airport-Shelby, NC                           $
-KEKN$Elkins-Randolph County Airport-Elkins, WV                              $
-KELB$Ellenburg Depot, NY                                                    $
-KELM$Elmira/Corning Regional Airport-Big Flats, NY                          $
-KELZ$Wellsville Municipal Airport-Wellsville, NY                            $
-KEMI$Westminster, MD                                                        $
-KEMV$Emporia-Greensville Regional Airport-Emporia, VA                       $
-KENE$Kennebunk Port, ME                                                     $
-KENX$Albany-E. Berne, NY                                                    $
-KEOE$Newberry County Airport-Newberry, SC                                   $
-KEOP$Pike County Airport-Waverly, OH                                        $
-KEPM$Eastport Municipal Airport-Eastport, ME                                $
-KEQY$Monroe Regional Airport-Monroe, NC                                     $
-KERI$Erie International Airport-Erie, PA                                    $
-KERR$Errol Airport-Errol, NH                                                $
-KESN$Easton Airport (Newnan Field)-Easton, MD                               $
-KETC$Tarboro-Edgecombe Airport-Tarboro, NC                                  $
-KETX$East Texas VOR, PA                                                     $
-KEUG$Mahlon Sweet Field-Eugene, OR                                          $
-KEVV$Evansville Regional Airport, IN                                        $
-KEVY$Summit Airport-Middletown, DElaware                                    $
-KEWB$New Bedford Regional Airport-New Bedford, MA                           $
-KEWC$Ellwood City VOR, PA                                                   $
-KEWN$Craven County Regional Airport-New Bern, NC                            $
-KEWR$Newark Liberty International Airport, NJ                               $
-KEXX$Davidson County Airport-Lexington, NC                                  $
-KEYF$Curtis L. Brown Jr. Field-Elizabethtown, NC                            $
-KEZF$Shannon Airport-Fredericksburg, VA                                     $
-KFAF$Joint Base Langley-Eustis-Fort Eustis, VA                              $
-KFAR$Hector International Airport-Fargo, Nd                                 $
-KFAY$Fayetteville Regional Airport-Fayetteville, NC                         $
-KFBC$Flag City, OH                                                          $
-KFBG$Simmons Army Airfield-Fort Bragg, NC                                   $
-KFCI$Chesterfield County Airport-Richmond, VA                               $
-KFCX$Roanoke-Floyd County, VA                                               $
-KFDK$Frederick Municipal Airport-Frederick, MD                              $
-KFDW$Fairfield County Airport-Winnsboro, SC                                 $
-KFDY$Findlay, OH                                                            $
-KFFA$First Flight Airport-Kill Devil Hills, NC                              $
-KFFO$Wright-Patterson Air Force Base-Dayton, OH                             $
-KFIG$Clearfield-Lawrence Airport-Clearfield, PA                             $
-KFIT$Fitchburg Municipal Airport-Fitchburg, MA                              $
-KFKL$Venango Regional Airport-Franklin, PA                                  $
-KFKN$Franklin Municipal-John Beverly Rose Airport-Franklin, VA              $
-KFLO$Florence Regional Airport-Florence, SC                                 $
-KFME$Tipton Airport-Fort Meade / Odenton, MD                                $
-KFMH$Otis Air National Guard Base-Falmouth, MA                              $
-KFOK$Francis S. Gabreski Airport-Westhampton Beach, NY                      $
-KFQD$Rutherford County Airport-Rutherfordton, NC                            $
-KFRG$Republic Airport-East Farmingdale, NY                                  $
-KFRR$Front Royal-Warren County Airport-Front Royal, VA                      $
-KFSO$Franklin County State Airport-Highgate, VT                             $
-KFVE$Northern Aroostook Regional Airport-Frenchville, ME                    $
-KFVX$Farmville Regional Airport-Farmville, VA                               $
-KFWA$Fort Wayne, IN                                                         $
-KFWN$Sussex Airport-Sussex, NJ                                              $
-KFWQ$Rostraver Airport-Monongahela, PA                                      $
-KFYJ$Middle Peninsula Regional Airport-West Point, VA                       $
-KFZI$Fostoria Metropolitan Airport-Fostoria, OH                             $
-KFZY$Oswego County Airport-Fulton, NY                                       $
-KGAI$Montgomery County Airpark-Gaithersburg, MD                             $
-KGBR$Walter J. Koladza Airport-Great Barrington, MA                         $
-KGDM$Gardner Municipal Airport-Gardner, MA                                  $
-KGDY$Grundy Municipal Airport-Grundy, VA                                    $
-KGED$Delaware Coastal Airport-Georgetown, DElaware                          $
-KGEE$Unknown                                                                $
-KGEV$Ashe County Airport-Jefferson, NC                                      $
-KGFL$Floyd Bennett Memorial Airport-Glens Falls, NY                         $
-KGGE$Georgetown County Airport-Georgetown, SC                               $
-KGHG$Marshfield Municipal Airport -Marshfield, MA                           $
-KGKJ$Port Meadville Airport-Meadville, PA                                   $
-KGMU$Greenville Downtown Airport-Greenville, SC                             $
-KGNR$Greenville Municipal, ME                                               $
-KGON$Groton-New London Airport-Groton / New London, CT                      $
-KGRB$Green Bay Austin Straubel International Airport, WI                    $
-KGRD$Greenwood County Airport-Greenwood, SC                                 $
-KGSB$Seymour Johnson Air Force Base-Goldsboro, NC                           $
-KGSO$Piedmont Triad International Airport-Greensboro, NC                    $
-KGSP$Greenville-Spartanburg International Airport, SC                       $
-KGTB$Wheeler-Sack Army Airfield-Fort Drum, NY                               $
-KGTF$Great Falls, MT                                                        $
-KGVE$Gordonsville Municipal Airport-Gordonsville, VA                        $
-KGVQ$Genesee County Airport-Batavia, NY                                     $
-KGWW$Goldsboro-Wayne Municipal Airport-Goldsboro, NC                        $
-KGYH$Donaldson Center Airport-Greenville, SC                                $
-KGYX$Gray-Portland, ME                                                      $
-KH57$Bismark Memorial Airport-Bismark, MO                                   $
-KHAO$Butler County Regional Airport-Hamilton, OH                            $
-KHAR$Harrisburg, PA                                                         $
-KHAT$Cape Hatteras, NC                                                      $
-KHAW$Hawley, PA                                                             $
-KHBI$Asheboro Regional Airport-Asheboro, NC                                 $
-KHEF$Manassas Regional Airport-Manassas, VA                                 $
-KHFD$Hartford-Brainard Airport-Hartford, CT                                 $
-KHFF$Mackall Army Airfield-Camp Mackall, NC                                 $
-KHGR$Hagerstown Regional Airport-Hagerstown, MD                             $
-KHIE$Mount Washington Regional Airport-Whitefield, NH                       $
-KHKY$Hickory Regional Airport-Hickory, NC                                   $
-KHLG$Wheeling-Ohio County Airport-Wheeling, WV                              $
-KHLX$Twin County Airport-Galax-Hillsville, VA                               $
-KHMZ$Bedford County Airport-Bedford, PA                                     $
-KHNK$Hancock VOR, NY                                                        $
-KHNZ$Henderson-Oxford Airport-Oxford, NC                                    $
-KHPN$Westchester County Airport-White Plains, NY                            $
-KHQU$Thomson-Mcduffie County Airpot, Thomson, GA                            $
-KHRJ$Harnett Regional Jetport-Erwin, NC                                     $
-KHSE$Billy Mitchell Airport-Hatteras, NC                                    $
-KHSP$Ingalls Field-Hot Springs, VA                                          $
-KHSS$Hot Springs, NC                                                        $
-KHSV$Huntsville International Airport, AL                                   $
-KHTO$East Hampton Airport-East Hampton, NY                                  $
-KHTS$Tri-State Airport-Huntington, WV                                       $
-KHUF$Terre Haute Regional Airport-Terre Haute, IN                           $
-KHUL$Houlton International Airport-Houlton, ME                              $
-KHVN$Tweed-New Haven Airport-New Haven, CT                                  $
-KHVS$Hartsville Regional Airport-Hartsville, SC                             $
-KHWV$Brookhaven Airport-Shirley, NY                                         $
-KHWY$Warrenton-Fauquier Airport-Warrenton, VA                               $
-KHXD$Hilton Head Airport-Hilton Head Island, SC                             $
-KHYA$Barnstable Municipal Airport-Hyannis, MA                               $
-KHYW$Conway-Horry County Airport-Conway, SC                                 $
-KHZL$Hazleton Regional Airport-Hazleton, PA                                 $
-KHZY$Northeast Ohio Regional Airport Ashtabula, OH                          $
-KI15$Lancaster, OH                                                          $
-KI19$Xenia, OH                                                              $
-KI23$Washington Court, OH                                                   $
-KI43$Jackson, OH                                                            $
-KI67$Harrison, OH                                                           $
-KI68$Lebanon, OH                                                            $
-KI69$Batavia, OH                                                            $
-KI74$Urbana, OH                                                             $
-KIAD$Washington Dulles International Airport-Dulles, VA                     $
-KIAG$Niagara Falls International-Niagara Falls, NY                          $
-KIDI$Indiana/Stewart Airport, PA                                            $
-KIGC$Charleston Afb, SC                                                     $
-KIGX$Horace Williams Airport-Chapel Hill, NC                                $
-KIJD$Windham Airport-Willimantic, CT                                        $
-KILG$Wilmington Airport-Wilmington, DElaware                                $
-KILM$Wilmington International Airport-Wilmington, NC                        $
-KILN$Wilmington Air Park-Wilmington, OH                                     $
-KIND$Indianapolis International Airport, IN                                 $
-KINT$Smith Reynolds Airport-Winston-Salem, NC                               $
-KIPJ$Lincolnton-Lincoln County Regional Airport-Lincolnton, NC              $
-KIPT$Williamsport Regional Airport-Williamsport, PA                         $
-KIRQ$Colliers VOR, SC                                                       $
-KISM$Kissimmee Gateway-Orlando, FL                                          $
-KISO$Kinston Regional Jetport (Stallings Field)-Kinston, NC                 $
-KISP$Long Island Macarthur Airport-Islip, NY                                $
-KITH$Ithaca Tompkins Regional Airport-Ithaca, NY                            $
-KIWI$Wiscasset Airport-Wiscasset, ME                                        $
-KIXA$Halifax/Northampton, NC                                                $
-KIZG$Eastern Slopes Regional Airport-Fryeburg, ME                           $
-KJAX$Jacksonville International Airport, Jacksonville, FL                   $
-KJAY$Jay Peak, VT                                                           $
-KJFK$John F. Kennedy International Airport, NY                              $
-KJFZ$Richlands, VA                                                          $
-KJGG$Williamsburg-Jamestown Airport-Williamsburg, VA                        $
-KJHW$Chautauqua County-Jamestown Airport-Jamestown, NY                      $
-KJNX$Johnston Regional Airport-Smithfield, NC                               $
-KJOT$Joliet Regional Airport, Joliet,Il                                     $
-KJQF$Concord Regional Airport-Concord, NC                                   $
-KJRA$West 30Th Street Heliport-Manhattan, NY                                $
-KJRB$Downtown Manhattan Heliport-Manhattan, NY                              $
-KJST$Johnstown-Cambria County Airport-Johnstown, PA                         $
-KJVU$Allentown Queen, PA                                                    $
-KJWX$Fort Ritchie, MD                                                       $
-KJYO$Leesburg Executive Airport-Leesburg, VA                                $
-KJZI$Charleston Executive Airport-Charleston, SC                            $
-KKCI$Kansas City International Airport, MO                                  $
-KLBE$Arnold Palmer Regional Airport-Latrobe, PA                             $
-KLBT$Lumberton Municipal Airport-Lumberton, NC                              $
-KLCI$Laconia Municipal Airport-Laconia, NH                                  $
-KLCK$Rickenbacker International Airport-Columbus, OH                        $
-KLDJ$Linden Airport-Linden, NJ                                              $
-KLEB$Lebanon Municipal Airport-West Lebanon, NH                             $
-KLEW$Auburn/Lewiston Municipal Airport-Auburn, ME                           $
-KLFI$Langley Air Force Base-Hampton, VA                                     $
-KLGA$La Guardia International Airport-New York, NY                          $
-KLHQ$Fairfield County Airport-Lancaster, OH                                 $
-KLHV$William T. Piper Memorial Airport-Lock Haven, PA                       $
-KLHZ$Triangle North Executive Airport-Louisburg, NC                         $
-KLIZ$Loring AFB, ME                                                         $
-KLKP$Lake Placid Airport-Lake Placid, NY                                    $
-KLKR$Lancaster County Airport (Mcwhirter Field)-Lancaster, SC               $
-KLKU$Louisa County Airport (Freeman Field)-Louisa, VA                       $
-KLNN$Lost Nation Airport-Willoughby, OH                                     $
-KLNP$Lonesome Pine Airport-Wise, VA                                         $
-KLNS$Lancaster Airport-Lancaster, PA                                        $
-KLOM$Philadelphia/Wings Field, PA                                           $
-KLOU$Bowman Field Airport, Louisville, KY                                   $
-KLPR$Lorain County Regional Airport-Lorain, OH                              $
-KLQK$Pickens County Airport-Pickens, SC                                     $
-KLRG$Lincoln Regional Airport-Lincoln, ME                                   $
-KLRO$Mount Pleasant, SC                                                     $
-KLTX$Shallotte-Wilm., NC                                                    $
-KLUA$Luray Caverns Arpt, VA                                                 $
-KLUK$Cincinnati Municipal Lunken Airport Cincinnati, OH                     $
-KLUX$Laurens, SC                                                            $
-KLVL$Lawrenceville Municipal Airport-Lawrenceville, VA                      $
-KLWB$Greenbrier Valley Airport-Lewisburg, WV                                $
-KLWM$Lawrence Municipal Airport-Lawrence, MA                                $
-KLWX$Sterling, VA                                                           $
-KLYH$Lynchburg Regional Airport-Lynchburg, VA                               $
-KMAL$Malone-Dufort Airport-Malone, NY                                       $
-KMAO$Marion County Airport-Marion, SC                                       $
-KMCX$Montcello/White, IN                                                    $
-KMCZ$Martin County Airport-Williamston, NC                                  $
-KMDT$Harrisburg International Airport-Middletown, PA                        $
-KMEB$Laurinburg-Maxton Airport-Maxton, NC                                   $
-KMFD$Mansfield, OH                                                          $
-KMFV$Accomack County Airport-Melfa, VA                                      $
-KMGJ$Orange County Airport-Montgomery, NY                                   $
-KMGW$Morgantown Municipal Airport-Morgantown, WV                            $
-KMGY$Dayton Wright Brothers Airport-Dayton, OH                              $
-KMHR$Jaffrey Airport-Silver Ranch, Jaffrey, NH                              $
-KMHT$Manchester-Boston Regional Airport-Manchester, NH                      $
-KMHX$Morehead-Newport, NC                                                   $
-KMIA$Miami International Airport, FL                                        $
-KMIV$Millville Municipal Airport-Millville, NJ                              $
-KMJX$Robert J. Miller Air Park-Toms River, NJ                               $
-KMKC$Charles B. Wheeler Downtown Airport-Kansas City, MO                    $
-KMKG$Muskegon County Airport, MI                                            $
-KMKJ$Mountain Empire Airport-Marion / Wytheville, VA                        $
-KMKS$Berkeley Moncks, SC                                                    $
-KMLT$Millinocket Municipal Airport-Millinocket, ME                          $
-KMLU$Monroe Regional Airport-Monroe, LA                                     $
-KMMK$Meriden Markham Municipal Airport-Meriden, CT                          $
-KMMT$Mcentire Joint National Guard Base-Eastover, SC                        $
-KMMU$Morristown Municipal Airport-Morristown, NJ                            $
-KMNI$Santee Cooper Regional Airport-Manning, SC                             $
-KMNN$Marion, OH                                                             $
-KMNW$Wilmington, VT                                                         $
-KMPO$Pocono Mountains Municipal Airport-Mount Pocono, PA                    $
-KMPV$Edward F. Knapp State Airport-Barre-Montpelier, VT                     $
-KMQE$Milton/Blue Hills Observatory, MA                                      $
-KMQI$Dare County Regional Airport-Manteo, NC                                $
-KMQS$Chester County G. O. Carlson Airport-Coatesville, PA                   $
-KMQT$Marquette, MI                                                          $
-KMRB$Eastern West Virginia Regional-Martinsburg, WV                         $
-KMRH$Michael J. Smith Field-Beaufort, NC                                    $
-KMRN$Foothills Regional Airport-Morganton, NC                               $
-KMRT$Marysville, OH                                                         $
-KMSS$Massena International Airport-Massena, NY                              $
-KMSV$Sullivan County International Airport-Monticello, NY                   $
-KMTJ$Montrose Regional-Montrose, CO                                         $
-KMTN$Martin State Airport-Baltimore, MD                                     $
-KMTP$Montauk Airport-Montauk, NY                                            $
-KMTV$Blue Ridge Airport-Martinsville, VA                                    $
-KMUI$Muir Aaf/Indiantown, PA                                                $
-KMVL$Morrisville-Stowe State Airport-Morrisville, VT                        $
-KMVM$Machias Valley Airport-Machias, ME                                     $
-KMVY$Martha'S Vineyard Airport-Vineyard Haven, MA                           $
-KMWK$Mount Airy/Surry County Airport-Mount Airy, NC                         $
-KMWN$Mount Washington, NH                                                   $
-KMWO$Middletown/Hook Fld, OH                                                $
-KMYR$Myrtle Beach International Airport-Myrtle Beach, SC                    $
-KN00$Oswego County Airport, Fulton, NY                                      $
-KN03$Cortland County/Chase, NY                                              $
-KN07$Lincoln Park, NJ                                                       $
-KN12$Lakewood, NJ                                                           $
-KN14$Lumberton, NJ                                                          $
-KN23$Sidney, NY                                                             $
-KN27$Towanda, PA                                                            $
-KN28$Ambrose, NY                                                            $
-KN38$Wellsboro/Grand Cany, PA                                               $
-KN40$Pittstown, NJ                                                          $
-KN52$Somerville, NJ                                                         $
-KN63$Sussex, NJ                                                             $
-KN80$Ocean City, MD                                                         $
-KN81$Hammonton, NJ                                                          $
-KN85$Alexandria, NJ                                                         $
-KN87$Robbinsville, NJ                                                       $
-KN97$Clearfield, PA                                                         $
-KNAK$Annapolis/Naval Academy, MD                                            $
-KNBC$Marine Corps Air Station Beaufort-Beaufort, SC                         $
-KNBK$New Brunswick, NJ                                                      $
-KNBT$Piney Island/Bomb Range, NC                                            $
-KNCA$Marine Corps Air Station New River-Jacksonville, NC                    $
-KNDY$Naval Surface Warfare Center Dahlgren-Dahlgren, VA                     $
-KNEL$Naval Air Engineering Station-Lakehurst, NJ                            $
-KNFE$Naval Auxiliary Landing Field Fentress-Chesapeake, VA                  $
-KNGR$North Groton, NH                                                       $
-KNGU$Naval Station Norfolk-Norfolk, VA                                      $
-KNHK$Naval Air Station Patuxent River, MD                                   $
-KNHZ$Brunswick NAS, ME                                                      $
-KNJM$Marine Corps Auxiliary Landing Field Bogue-Swansboro, NC               $
-KNKT$Marine Corps Air Station Cherry Point, NC                              $
-KNTU$Naval Air Station Oceana-Virginia Beach, VA                            $
-KNUI$Naval Outlying Field Webster-Saint Inigoes, MD                         $
-KNXX$Naval Air Station Joint Reserve Base Willow Grove, PA                  $
-KNY0$Johnstown/Fulton Cnt, NY                                               $
-KNYC$New York/Central Park, NY                                              $
-KNYG$Marine Corps Air Facility Quantico-Quantico, VA                        $
-KNZW$South Weymouth, MA                                                     $
-KOAJ$Albert J. Ellis Airport-Jacksonville, NC                               $
-KOBI$Woodbine Municipal Airport-Woodbine, NJ                                $
-KOCN$Concord Municipal Airport-Concord, NH                                  $
-KOCW$Washington-Warren Airport-Washington, NC                               $
-KOFP$Hanover County Municipal Airport-Richmond, VA                          $
-KOGB$Orangeburg Municipal Airport-Orangeburg, SC                            $
-KOGS$Ogdensburg International Airport-Ogdensburg, NY                        $
-KOIC$Lt. Warren Eaton Airport-Norwich, NY                                   $
-KOKV$Winchester Regional Airport-Winchester, VA                             $
-KOKX$Brookhaven-Upton, NY                                                   $
-KOLD$Old Town Municipal Airport-Old Town, ME                                $
-KOLE$Cattaraugus County-Olean Airport-Olean, NY                             $
-KOMH$Orange County Airport-Orange, VA                                       $
-KONX$Currituck County Regional Airport-Currituck, NC                        $
-KOQN$Brandywine Airport-West Chester, PA                                    $
-KOQU$Quonset State Airport-North Kingstown, RI                              $
-KORE$Orange Municipal Airport-Orange, MA                                    $
-KORF$Norfolk International Airport-Norfolk, VA                              $
-KORH$Worcester Regional Airport-Worcester, MA                               $
-KOSU$Ohio State University Airport-Columbus, OH                             $
-KOWD$Norwood Memorial Airport-Norwood, MA                                   $
-KOWK$Central Maine Airport-Norridgewock, ME                                 $
-KOWX$Ottawa, OH                                                             $
-KOXB$Ocean City Municipal Airport-Ocean City, MD                            $
-KOXC$Waterbury-Oxford Airport-Oxford, CT                                    $
-KOXD$Miami University Airport-Oxford, OH                                    $
-KOYM$St. Marys Municipal Airport-Saint Marys, PA                            $
-KOZX$Oneonta, NY                                                            $
-KP20$Avi Suquilla-Parker, AZ                                                $
-KPAO$Palo Alto Airport-Santa Clara, CA                                      $
-KPBG$Plattsburgh International Airport-Plattsburgh, NY                      $
-KPBZ$Pitt-Coraopolis, PA                                                    $
-KPCW$Port Clinton, OH                                                       $
-KPEO$Penn Yan Airport (Yates County Airport)-Penn Yan, NY                   $
-KPGV$Pitt-Greenville Airport-Greenville, NC                                 $
-KPHD$Harry Clever Field Airport, New Philadelphia, OH                       $
-KPHF$Newport News/Williamsburg International-Newport News, VA               $
-KPHH$Robert F. Swinnie Airport-Andrews, SC                                  $
-KPHI$Mt Holly-PHL-WFO, NJ                                                   $
-KPHL$Philadelphia International Airport-Philadelphia, PA                    $
-KPIA$General Downing-Peoria International Airport, Peoria, IL               $
-KPIC$Piseco Lake, NY                                                        $
-KPIT$Pittsburgh International Airport-Pittsburgh, PA                        $
-KPJC$Zelienople, PA                                                         $
-KPKB$Mid-Ohio Valley Regional Airport-Parkersburg, WV                       $
-KPLB$Plattsburgh, NY                                                        $
-KPMH$Portsmouth, OH                                                         $
-KPMZ$Plymouth Municipal Airport-Plymouth, NC                                $
-KPNE$Northeast Philadelphia Airport-Philadelphia, PA                        $
-KPNN$Princeton Municipal Airport-Princeton, ME                              $
-KPOB$Pope Field (Military)-Fayetteville, NC                                 $
-KPOU$Hudson Valley Regional Airport-Poughkeepsie, NY                        $
-KPOV$Portage County Airport Ravenna, OH                                     $
-KPQI$Northern Maine Regional Airport-Presque Isle, ME                       $
-KPSB$Mid-State Regional Airport-Philipsburg, PA                             $
-KPSF$Pittsfield Municipal Airport-Pittsfield, MA                            $
-KPSK$New River Valley Airport-Dublin, VA                                    $
-KPSM$Portsmouth International Airport At Pease-Portsmouth, NH               $
-KPTB$Dinwiddie County Airport-Petersburg, VA                                $
-KPTD$Potsdam Municipal Airport-Potsdam, NY                                  $
-KPTW$Heritage Field-Pottstown, PA                                           $
-KPVC$Provincetown Municipal Airport-Provincetown, MA                        $
-KPVD$T.F. Green State Airport-Providence, RI                                $
-KPVG$Hampton Roads Executive Airport-Chesapeake, VA                         $
-KPWM$Portland International Jetport-Portland, ME                            $
-KPYG$Pageland Airport-Pageland, SC                                          $
-KPYM$Plymouth Municipal Airport-Plymouth, MA                                $
-KRAH$Raleigh-WFO, NC                                                        $
-KRAP$Rapid City Regional Airport-Rapid City, SD                             $
-KRAX$Clayton-RDU 88D, NC                                                    $
-KRBD$Dallas Executive Airport-Dallas, TX                                    $
-KRBW$Lowcountry Regional Airport-Walterboro, SC                             $
-KRCZ$Rockingham, NC                                                         $
-KRDG$Reading Regional Airport-Reading, PA                                   $
-KRDU$Raleigh-Durham International Airport-Raleigh, NC                       $
-KRHA$State Colleg-RFC, PA                                                   $
-KRHP$Western Carolina Regional Airport-Andrews, NC                          $
-KRIC$Richmond International Airport-Sandston, VA                            $
-KRJD$Ridgely Airpark-Ridgely, MD                                            $
-KRKD$Knox County Regional Airport-Rockland, ME                              $
-KRKP$Aransas Coounty-Rockport, TX                                           $
-KRKR$Robert S. Kerr Airport-Poteau, OK                                      $
-KRME$Griffiss International Airport-Rome, NY                                $
-KRMN$Stafford Regional Airport-Stafford, VA                                 $
-KRMX$Griffiss AFB-88D, NY                                                   $
-KRNK$Roanoke-Blacksbg, VA                                                   $
-KROA$Roanoke-Blacksburg Regional Airport-Roanoke, VA                        $
-KROC$Greater Rochester International Airport-Rochester, NY                  $
-KROD$Rosewood VOR, OH                                                       $
-KRSP$NSF Thurmont, MD                                                       $
-KRUM$Rumford, ME                                                            $
-KRUQ$Mid-Carolina Regional Airport-Salisbury, NC                            $
-KRUT$Rutland-Southern Vermont Regional Airport-Rutland, VT                  $
-KRVL$Mifflin County Airport-Reedsville, PA                                  $
-KRWI$Rocky Mount-Wilson Regional Airport-Rocky Mount, NC                    $
-KRYT$Fountain Dale, PA                                                      $
-KRZT$Ross County Airport-Chillicothe, OH                                    $
-KRZZ$Halifax County Airport-Roanoke Rapids, NC                              $
-KSAF$Santa Fe Regional Airport-Santa Fe, NM                                 $
-KSAT$San Antonio International Airport, TX                                  $
-KSAV$Savannah/Hilton Head International Airport, GA                         $
-KSAX$Sparta VOR, NJ                                                         $
-KSBY$Salisbury-Ocean City Regional Airport-Salisbury, MD                    $
-KSCH$Schenectady County Airport-Schenectady, NY                             $
-KSCK$Stockton Metropolitan Airport-Stockton, CA                             $
-KSCR$Siler City Municipal Airport-Siler City, NC                            $
-KSDC$Williamson-Sodus Airport-Williamson/Sodus, NY                          $
-KSDF$Louisville International, KY                                           $
-KSDL$Scottsdale Airport-Scottsdale, AZ                                      $
-KSEA$Seattle-Tacoma International, WA                                       $
-KSEG$Penn Valley Airport-Selinsgrove, PA                                    $
-KSEM$Selma Airport-Selma, AL                                                $
-KSFB$Orlando Sanford International Airport-Orlando, FL                      $
-KSFF$Felts Field Spokane, WA                                                $
-KSFM$Sanford Seacoast Regional Airport-Sanford, ME                          $
-KSFQ$Suffolk Executive Airport-Suffolk, VA                                  $
-KSFZ$North Central State Airport-Pawtucket, RI                              $
-KSGH$Springfield Municipal, OH                                              $
-KSHD$Shenandoah Valley Regional Airport-Staunton, VA                        $
-KSHI$Ashtabula, OH                                                          $
-KSIE$Sea Isle VOR, NJ                                                       $
-KSIF$Rockingham County Nc Shiloh Airport-Stoneville, NC                     $
-KSJB$Somerville, NJ                                                         $
-KSLD$Slide Mountain, NY                                                     $
-KSLK$Adirondack Regional Airport-Saranac Lake, NY                           $
-KSLT$Slate Run, PA                                                          $
-KSMQ$Somerset Airport-Somerville, NJ                                        $
-KSMS$Sumter Airport-Sumter, SC                                              $
-KSNC$Chester Airport-Chester, CT                                            $
-KSOL$South Lincoln, VT                                                      $
-KSOP$Moore County Airport-Southern Pines, NC                                $
-KSPA$Spartanburg Downtown Memorial Airport-Spartanburg, SC                  $
-KSPI$Abraham Lincoln Capital Airport, Springfield, IL                       $
-KSQL$San Carlos Airport-San Carlos, CA                                      $
-KSRQ$Sarasota-Bradenton-Sarasota,Fl                                         $
-KSSC$Shaw Air Force Base-Sumter, SC                                         $
-KSSM$Sault Ste Marie, MI                                                    $
-KSSN$Seneca Army Airfield-Romulus, NY                                       $
-KSTE$Stevens Point Municipal Airport-Stevens Point, WI                      $
-KSTJ$Rosecrans Memorial-St Joseph, MO                                       $
-KSTL$St Louis/Lambert International Airport, MO                             $
-KSTM$Stormville, NY                                                         $
-KSUT$Cape Fear Regional Jetport-Oak Island, NC                              $
-KSVH$Statesville Regional Airport-Statesville, NC                           $
-KSWF$Stewart International Airport-Newburgh, NY                             $
-KSXL$Summersville Airport-Summersville, WV                                  $
-KSYR$Syracuse Hancock International Airport-Syracuse, NY                    $
-KTAN$Taunton Municipal Airport-Taunton, MA                                  $
-KTAR$Boston-RFC, MA                                                         $
-KTDF$Person County Airport-Roxboro, NC                                      $
-KTDZ$Toledo, OH                                                             $
-KTEB$Teterboro Airport-Teterboro, NJ                                        $
-KTGI$Tangier Island Airport-Tangier, VA                                     $
-KTHV$York Airport-York, PA                                                  $
-KTIR$Wilmington-RFC, OH                                                     $
-KTMW$Tamworth, NH                                                           $
-KTNB$Boone Watauga Ct, NC                                                   $
-KTOL$Toledo Express Airport-Toledo, OH                                      $
-KTRI$Bristol/Tri-Cities Regional Airport, TN                                $
-KTTA$Sanford-Lee County Regional Airport-Sanford, NC                        $
-KTTN$Trenton-Mercer Airport-Trenton, NJ                                     $
-KTVC$Cherry Capital Airport, Traverse City, MI                              $
-KTYS$Mc Ghee Tyson Airport, Knoxville, TN                                   $
-KTYX$Fort Drum-88D, NY                                                      $
-KTZR$Columbus-Bolton, OH                                                    $
-KUCA$Oneida County Airport-Utica, NY                                        $
-KUCP$New Castle Municipal Airport-New Castle, PA                            $
-KUDG$Darlington County Jetport-Darlington, SC                               $
-KUKF$Wilkes County Airport-North Wilkesboro, NC                             $
-KUKT$Quakertown Airport-Quakertown, PA                                      $
-KUNI$Gordon K. Bush Airport-Athens / Albany, OH                             $
-KUNV$University Park Airport-University Park, PA                            $
-KUSE$Wauseon, OH                                                            $
-KUUU$Newport State Airport-Newport, RI                                      $
-KUYF$London, OH                                                             $
-KUZA$Rock Hill/York County Airport-Rock Hill, SC                            $
-KVAY$South Jersey Regional Airport-Mount Holly, NJ                          $
-KVBW$Bridgewater Airport-Bridgewater, VA                                    $
-KVES$Darke County Airport-Versailles, OH                                    $
-KVGC$Hamilton Municipal, NY                                                 $
-KVJI$Virginia Highlands Airport-Abingdon, VA                                $
-KVKX$Potomac Airfield-Friendly, MD                                          $
-KVNW$Van Wert County, OH                                                    $
-KVQN$Volens, VA                                                             $
-KVSF$Hartness State Airport-Springfield, VT                                 $
-KVT1$Canaan, VT                                                             $
-KVT2$West Burke, VT                                                         $
-KVTA$Newark-Heath Airport-Newark, OH                                        $
-KVUJ$Stanly County Airport-Albemarle, NC                                    $
-KVVS$Joseph A. Hardy Connellsville Airport-Connellsville, PA                $
-KW13$Waynesboro/Eagles Nest, VA                                             $
-KW22$Upshur County Regional Airport Buckhannon, WV                          $
-KW29$Stevensville, MD                                                       $
-KW31$Lunenburg County Airport Kenbridge, VA                                 $
-KW32$Clinton, MD                                                            $
-KW44$Asheboro, NC                                                           $
-KW45$Luray, VA                                                              $
-KW63$Clarksville/Lake Cou, VA                                               $
-KW66$Warrenton, VA                                                          $
-KW75$Saluda/Hummel Field, VA                                                $
-KW78$South Boston/Tuck AR, VA                                               $
-KW81$Crewe Muni, VA                                                         $
-KW94$Williamsburg, VA                                                       $
-KW96$Quinton/New Kent Center, VA                                            $
-KW99$Grant County Airport Petersburg, WV                                    $
-KWAL$Wallops Flight Facility-Wallops Island, VA                             $
-KWAY$Greene County Airport-Waynesburg, PA                                   $
-KWBC$News Headquarters, DC                                                  $
-KWBW$Wilkes-Barre Wyoming Valley Airport-Wilkes-Barre, PA                   $
-KWDO$West Dover, VT                                                         $
-KWNB$Camp Springs-DBC, MD                                                   $
-KWNC$Camp Springs-CPC, MD                                                   $
-KWNH$Camp Springs-HPC, MD                                                   $
-KWNM$Camp Springs-MPC, MD                                                   $
-KWNO$Camp Spring-NCEP, MD                                                   $
-KWOR$Worthington, MA                                                        $
-KWRI$Mcguire Air Force Base-Wrightstown, NJ                                 $
-KWRS$Warsaw, NY                                                             $
-KWST$Westerly State Airport-Westerly, RI                                    $
-KWVL$Waterville Robert Lafleur Airport-Waterville, ME                       $
-KWWD$Cape Mayairport-Wildwood, NJ                                           $
-KXAA$Grnvl-Dnldsn, SC                                                       $
-KXLL$Allentown Queen City Municipal Airport-Allentown, PA                   $
-KXNO$North Air Force Auxiliary Field-North, SC                              $
-KXSA$Tappahannock, VA                                                       $
-KYNG$Youngstown-Warren Regional Airport-Youngstown, OH                      $
-KZAB$Albuquerque Center Weather Service Unit                                $
-KZBW$Nashua-ARTCC-Bos, NH                                                   $
-KZDC$Washington-ARTCC, DC                                                   $
-KZEF$Elkin Municipal Airport-Elkin, NC                                      $
-KZER$Schuylkill County Airport-Pottsville, PA                               $
-KZLA$Los Angeles Center Weather Service Unit                                $
-KZMP$Minneapolis Center Weather Service Unit                                $
-KZNY$New York-ARTCC, NY                                                     $
-KZOB$Cleveland-ARTCC, OH                                                    $
-KZZV$Zanesville Municipal Airport-Zanesville, OH                            $
-PACV$Merle K. (Mudhole) Smith Airport-Cordova, AK                           $
-PAHX$Shageluk Airport-Shageluka, AK                                         $
-PAJN$Juneau International Airport-Juneau, AK                                $
-K18Y$Milaca Municipal Airport, MN                                           $
-KAPF$Naples Airplort, FL                                                    $
-KDQH$Douglas Municipal Gene Chambers Airport-Douglas, GA                    $
-KIAH$George Bush International-Houston, TX                                  $
-KORD$O'Hare International-Chicago, IL                                       $
-KPDK$DeKalb-Peachtree Airport-Chamblee, GA                                  $
-KRZN$Burnett County Airport-Siren, WI                                       $
-KSCD$Sylacauga, AL                                                          $
-KSFO$San Francisco International-Burlingame, CA                             $
-KU01$American Falls Airport-American Falls, ID                              $
-PAGH$Shungnak Airport-Shungnak, AK                                          $
+K06A$Moton Field Municipal Airport-Tuskegee, AL                             $40.639801               $-73.776627             $             $
+K0A3$Smithville Municipal Airport-Smithville, TN                            $40.639801               $-73.776627             $
+K0V4$Brookneal/Campbell County, VA                                          $40.639801               $-73.776627             $
+K0VG$Jonesville, VA                                                         $40.639801               $-73.776627             $
+K12N$Andover, NJ                                                            $40.639801               $-73.776627             $
+K17N$Cross Keys, NJ                                                         $40.639801               $-73.776627             $
+K1A5$Macon-Franklin, NC                                                     $40.639801               $-73.776627             $
+K1B1$Hudson-Columbia, NY                                                    $40.639801               $-73.776627             $
+K1B6$Woonsocket, RI                                                         $40.639801               $-73.776627             $
+K1B8$Boonville, NY                                                          $40.639801               $-73.776627             $
+K1M5$Portland Municipal Airport-Portland, TN                                $40.639801               $-73.776627             $
+K1N7$Blairstown, NJ                                                         $40.639801               $-73.776627             $
+K1P1$Plymouth Muni, NH                                                      $40.639801               $-73.776627             $
+K1V4$Saint Johnsbury St. Johnsbury, VT                                      $40.639801               $-73.776627             $
+K22G$Lorain-Elyria, OH                                                      $40.639801               $-73.776627             $
+K22N$Lehighton/Arner Mem, PA                                                $40.639801               $-73.776627             $
+K24A$Sylva, NC                                                              $40.639801               $-73.776627             $
+K26N$Ocean City, NJ                                                         $40.639801               $-73.776627             $
+K29D$Grove City, PA                                                         $40.639801               $-73.776627             $
+K29G$Ravena-Portage, OH                                                     $40.639801               $-73.776627             $
+K29J$Rock Hill, SC                                                          $40.639801               $-73.776627             $
+K2B2$Newburyport, MA                                                        $40.639801               $-73.776627             $
+K2B4$Newport, RI                                                            $40.639801               $-73.776627             $
+K2B6$North Adams, MA                                                        $40.639801               $-73.776627             $
+K2B7$Harmony, ME                                                            $40.639801               $-73.776627             $
+K2DP$Dare County Gunnery Range, NC                                          $40.639801               $-73.776627             $
+K2G4$Oakland/Garrett County, MD                                             $40.639801               $-73.776627             $
+K2G6$Meadville, PA                                                          $40.639801               $-73.776627             $
+K2G9$Somerset County Airport-Somerset, PA                                   $40.639801               $-73.776627             $
+K2I4$Columbus-Bolton, OH                                                    $40.639801               $-73.776627             $
+K2I8$Newark, OH                                                             $40.639801               $-73.776627             $
+K2PJ$Sumter-Poinsett, SC                                                    $40.639801               $-73.776627             $
+K2W6$St Marys (Duke), MD                                                    $40.639801               $-73.776627             $
+K2XG$Gulf Of Mexico?                                                        $40.639801               $-73.776627             $
+K33N$Dover-Cheswold Airpark, DE                                             $40.639801               $-73.776627             $
+K37W$Erwin-Harnett Co, NC                                                   $40.639801               $-73.776627             $
+K39N$Princeton, NJ                                                          $40.639801               $-73.776627             $
+K3B1$Greenville, ME                                                         $40.639801               $-73.776627             $
+K3B2$Marshfield, MA                                                         $40.639801               $-73.776627             $
+K3N6$Old Bridge, NJ                                                         $40.639801               $-73.776627             $
+K40B$Clayton Lake, ME                                                       $40.639801               $-73.776627             $
+K40N$Coatesville, PA                                                        $40.639801               $-73.776627             $
+K43M$Fort Ritchie-Sit, MD                                                   $40.639801               $-73.776627             $
+K44W$Diamond Shores, NC                                                     $40.639801               $-73.776627             $
+K45J$Rockingham, NC                                                         $40.639801               $-73.776627             $
+K47B$Eastport, ME                                                           $40.639801               $-73.776627             $
+K47N$Manville, NJ                                                           $40.639801               $-73.776627             $
+K49J$Hilton Head, SC                                                        $40.639801               $-73.776627             $
+K4G6$Hornell, NY                                                            $40.639801               $-73.776627             $
+K4I3$Mt Vernon-Knox, OH                                                     $40.639801               $-73.776627             $
+K4N1$West Milford, NJ                                                       $40.639801               $-73.776627             $
+K56N$Sandy Hook CGS, NJ                                                     $40.639801               $-73.776627             $
+K5B0$Mansfield, CT                                                          $40.639801               $-73.776627             $
+K5B2$Saratoga Springs, NY                                                   $40.639801               $-73.776627             $
+K5B3$Putnam, CT                                                             $40.639801               $-73.776627             $
+K5B5$Bennington, VT                                                         $40.639801               $-73.776627             $
+K5W8$Siler City, NC                                                         $40.639801               $-73.776627             $
+K67R$Rio Grande City Municipal Airport Rio Grande City, TX                  $40.639801               $-73.776627             $
+K6A3$Andrews, NC                                                            $40.639801               $-73.776627             $
+K6B0$Middlebury, VT                                                         $40.639801               $-73.776627             $
+K6B1$Rochester, NH                                                          $40.639801               $-73.776627             $
+K6B8$Lyndonville, VT                                                        $40.639801               $-73.776627             $
+K6B9$Skaneateles Aero Drome Airport Skaneateles, NY                         $40.639801               $-73.776627             $
+K6V3$Richlands, VA                                                          $40.639801               $-73.776627             $
+K78N$Reidsville, NC                                                         $40.639801               $-73.776627             $
+K7B2$Knightville, MA                                                        $40.639801               $-73.776627             $
+K7B4$Miller Farm Landing Strip-Baltimore, OH                                $40.639801               $-73.776627             $
+K7G2$Ashtabula, OH                                                          $40.639801               $-73.776627             $
+K7TB$Tobyhanna, PA                                                          $40.639801               $-73.776627             $
+K7W4$Bumpass/Lake Anna, VA                                                  $40.639801               $-73.776627             $
+K7W6$Engelhard/Hyde Connty, NC                                              $40.639801               $-73.776627             $
+K84R$Smithville Crawford Muniicipal-Smithville, TX                          $40.639801               $-73.776627             $
+K8B0$Rangeley, ME                                                           $40.639801               $-73.776627             $
+K8B2$Diamond Lake, NH                                                       $40.639801               $-73.776627             $
+K8B3$Ball Mountain, VT                                                      $40.639801               $-73.776627             $
+K8B5$Barre Falls, MA                                                        $40.639801               $-73.776627             $
+K8W2$New Market, VA                                                         $40.639801               $-73.776627             $
+K9B4$Ashburnham, MA                                                         $40.639801               $-73.776627             $
+K9B6$Sewel Ridge, ME                                                        $40.639801               $-73.776627             $
+K9B9$Wiscasset, ME                                                          $40.639801               $-73.776627             $
+K9W7$Currituck, NC                                                          $40.639801               $-73.776627             $
+K9Y2$East Gull Lake, MN                                                     $40.639801               $-73.776627             $
+KABE$Lehigh Valley International Airport-Allentown, PA                      $40.639801               $-73.776627             $
+KACK$Nantucket Memorial Airport-Nantucket, MA                               $40.639801               $-73.776627             $
+KACY$Atlantic City International Airport-Atlantic City, NJ                  $40.639801               $-73.776627             $
+KACZ$Henderson Field-Wallace, NC                                            $40.639801               $-73.776627             $
+KADW$Andrews Air Force Base-Camp Springs, MD                                $40.639801               $-73.776627             $
+KAFJ$Washington County Airport-Washington, PA                               $40.639801               $-73.776627             $
+KAFN$Jaffrey Airport-Silver Ranch Airpark-Jaffrey, NH                       $40.639801               $-73.776627             $
+KAFP$Anson County Airport-Wadesboro, NC                                     $40.639801               $-73.776627             $
+KAFW$Fort Worth Alliance-Fort Worth, TX                                     $40.639801               $-73.776627             $
+KAGC$Allegheny County Airport-West Mifflin, PA                              $40.639801               $-73.776627             $
+KAIK$Aiken Municipal Airport-Aiken, SC                                      $40.639801               $-73.776627             $
+KAIR$Bellaire VOR, OH                                                       $40.639801               $-73.776627             $
+KAJO$Corona Municipal Airport-Corona, CA                                    $40.639801               $-73.776627             $
+KAKH$Gastonia Municipal Airport-Gastonia, NC                                $40.639801               $-73.776627             $
+KAKQ$Wakefield Municipal Airport-Wakefield, VA                              $40.639801               $-73.776627             $
+KAKR$Akron Fulton International Airport-Akron, OH                           $40.639801               $-73.776627             $
+KALB$Albany International Airport-Albany, NY                                $40.639801               $-73.776627             $
+KALY$Albany-WFO, NY                                                         $40.639801               $-73.776627             $
+KAMT$Alexander Salamon Airport-West Union, OH                               $40.639801               $-73.776627             $
+KAND$Anderson Regional Airport-Anderson, SC                                 $40.639801               $-73.776627             $
+KANP$Lee Airport-Annapolis, MD                                              $40.639801               $-73.776627             $
+KAOH$Lima Allen County Airport-Lima, OH                                     $40.639801               $-73.776627             $
+KAOO$Altoona-Blair County Airport-Altoona, PA                               $40.639801               $-73.776627             $
+KAPE$Appleton, OH                                                           $40.639801               $-73.776627             $
+KAPG$Phillips Army Airfield-Aberdeen Proving Ground, MD                     $40.639801               $-73.776627             $
+KAPH$A.P. Hill Army Airfield-Fort A.P. Hill, VA                             $40.639801               $-73.776627             $
+KAQW$Harriman-And-West Airport-North Adams, MA                              $40.639801               $-73.776627             $
+KAQX$Allendale County, SC                                                   $40.639801               $-73.776627             $
+KART$Watertown International Airport-Watertown, NY                          $40.639801               $-73.776627             $
+KARW$Beaufort County Airport-Beaufort County, SC                            $40.639801               $-73.776627             $
+KASH$Nashua Airport (Boire Field)-Nashua, NH                                $40.639801               $-73.776627             $
+KASJ$Tri-County Airport-Ahoskie, NC                                         $40.639801               $-73.776627             $
+KATL$Hartsfield-Jackson Atlanta International Airport                       $40.639801               $-73.776627             $
+KAUG$Augusta State Airport-Augusta, ME                                      $40.639801               $-73.776627             $
+KAUS$Austin/Bergstrom International Airport, TX                             $40.639801               $-73.776627             $
+KAUW$Wausau, WI                                                             $40.639801               $-73.776627             $
+KAVC$Mecklenburg-Brunswick Regional Airport-South Hill, VA                  $40.639801               $-73.776627             $
+KAVL$Asheville Regional Airport-Fletcher, NC                                $40.639801               $-73.776627             $
+KAVP$Wilkes-Barre/Scranton International Airport-Avoca, PA                  $40.639801               $-73.776627             $
+KAWO$Arlington Municipal Airport-Arlington, WA                              $40.639801               $-73.776627             $
+KAXQ$Clarion County Airport-Clarion, PA                                     $40.639801               $-73.776627             $
+KAXV$Neil Armstrong Airport-Wapakoneta, OH                                  $40.639801               $-73.776627             $
+KAYE$Ayer, MA                                                               $40.639801               $-73.776627             $
+KB20$Freyburg, ME                                                           $40.639801               $-73.776627             $
+KB21$Carrabassett, ME                                                       $40.639801               $-73.776627             $
+KBAF$Westfield-Barnes Regional Airport-Springfield, MA                      $40.639801               $-73.776627             $
+KBBP$Marlboro County Jetport-Bennettsville, SC                              $40.639801               $-73.776627             $
+KBCB$Virginiatech/Montgomery Executive Airport-Blacksburg, VA               $40.639801               $-73.776627             $
+KBDL$Bradley International Airport-Windsor Locks, CT                        $40.639801               $-73.776627             $
+KBDR$Igor I. Sikorsky Memorial Airport-Bridgeport, CT                       $40.639801               $-73.776627             $
+KBED$Laurence G. Hanscom Field-Bedford, MA                                  $40.639801               $-73.776627             $
+KBFD$Bradford Regional Airport-Bradford, PA                                 $40.639801               $-73.776627             $
+KBGM$Greater Binghamton Airport-Binghamton, NY                              $40.639801               $-73.776627             $
+KBGR$Bangor International Airport-Bangor, ME                                $40.639801               $-73.776627             $
+KBHB$Hancock County-Bar Harbor Airport-Bar Harbor, ME                       $40.639801               $-73.776627             $
+KBID$Block Island State Airport-Block Island, RI                            $40.639801               $-73.776627             $
+KBJJ$Wayne County Airport-Wooster, OH                                       $40.639801               $-73.776627             $
+KBKL$Cleveland Burke Lakefront Airport-Cleveland, OH                        $40.639801               $-73.776627             $
+KBKT$Allen C. Perkinson Airport-Blackstone, VA                              $40.639801               $-73.776627             $
+KBKW$Beckley Raleigh County Memorial Airport-Beckley, WV                    $40.639801               $-73.776627             $
+KBLF$Mercer County Airport-Bluefield, WV                                    $40.639801               $-73.776627             $
+KBLM$Monmouth Executive Airport-Belmar / Farmingdale, NJ                    $40.639801               $-73.776627             $
+KBML$Berlin Regional Airport-Berlin, NH                                     $40.639801               $-73.776627             $
+KBNA$Nashville Internationl Airport, TN                                     $40.639801               $-73.776627             $
+KBNL$Barnwell Regional Airport-Barnwell, SC                                 $40.639801               $-73.776627             $
+KBOS$Logan International Airport-Boston, MA                                 $40.639801               $-73.776627             $
+KBOX$Boston-Taunton, MA                                                     $40.639801               $-73.776627             $
+KBQR$Buffalo-Lancaster Regional Airport-Lancaster, NY                       $40.639801               $-73.776627             $
+KBST$Belfast Municipal Airport-Belfast, ME                                  $40.639801               $-73.776627             $
+KBTP$Pittsburgh-Butler Regional Airport-Butler, PA                          $40.639801               $-73.776627             $
+KBTV$Burlington International Airport-Burlington, VT                        $40.639801               $-73.776627             $
+KBUF$Buffalo Niagara International Airport-Buffalo, NY                      $40.639801               $-73.776627             $
+KBUR$Bob Hope Airport Burbank, CA                                           $40.639801               $-73.776627             $
+KBUY$Burlington-Alamance Regional Airport-Burlington, NC                    $40.639801               $-73.776627             $
+KBVI$Beaver County Airport-Beaver Falls, PA                                 $40.639801               $-73.776627             $
+KBVY$Beverly Regional Airport-Beverly, MA                                   $40.639801               $-73.776627             $
+KBWG$Bowling Green-Warren County Regional Airport-Bowling Green, KY         $40.639801               $-73.776627             $
+KBWI$Baltimore-Washington International-Baltimore, MD                       $40.639801               $-73.776627             $
+KBXM$Brunswick Executive Airport-Brunswick, ME                              $40.639801               $-73.776627             $
+KCAE$Columbia Metropolitan Airport-West Columbia, SC                        $40.639801               $-73.776627             $
+KCAK$Akron-Canton Regional Airport-Akron, OH                                $40.639801               $-73.776627             $
+KCAR$Caribou Municipal Airport-Caribou, ME                                  $40.639801               $-73.776627             $
+KCBE$Greater Cumberland Regional Airport-Cumberland, MD                     $40.639801               $-73.776627             $
+KCBW$Houlton-88D, ME                                                        $40.639801               $-73.776627             $
+KCCX$Rush-St College, PA                                                    $40.639801               $-73.776627             $
+KCDA$Caledonia County Airport-Lyndonville, VT                               $40.639801               $-73.776627             $
+KCDI$Cambridge Municipal Airport-Cambridge, OH                              $40.639801               $-73.776627             $
+KCDN$Woodward Field (Kershaw County Airport)-Camden, SC                     $40.639801               $-73.776627             $
+KCDW$Essex County Airport (Caldwell Airport)-Caldwell, NJ                   $40.639801               $-73.776627             $
+KCEF$Westover Metropolitan Airport-Springfield, MA                          $40.639801               $-73.776627             $
+KCEU$Oconee County Regional Airport-Clemson, SC                             $40.639801               $-73.776627             $
+KCFT$Greenlee County Airport Clifton/Morenci, AZ                            $40.639801               $-73.776627             $
+KCGE$Cambridge-Dorchester Regional Airport-Cambridge, MD                    $40.639801               $-73.776627             $
+KCGF$Cuyahoga County Airport-Cleveland, OH                                  $40.639801               $-73.776627             $
+KCGS$College Park Airport-College Park, MD                                  $40.639801               $-73.776627             $
+KCHH$Chatham, MA                                                            $40.639801               $-73.776627             $
+KCHI$Chicago-WSFO, IL                                                       $40.639801               $-73.776627             $
+KCHO$Charlottesville-Albemarle Airport-Charlottesville, VA                  $40.639801               $-73.776627             $
+KCHS$Charleston International Airport-Charleston, SC                        $40.639801               $-73.776627             $
+KCJR$Culpeper Regional Airport-Culpeper, VA                                 $40.639801               $-73.776627             $
+KCKB$Harrison/Marion Regional Airport-Clarksburg, WV                        $40.639801               $-73.776627             $
+KCKI$Williamsburg Regional Airport-Kingstree, SC                            $40.639801               $-73.776627             $
+KCKZ$Perkasie/Pennridge A, PA                                               $40.639801               $-73.776627             $
+KCLE$Cleveland Hopkins International Airport-Cleveland, OH                  $40.639801               $-73.776627             $
+KCLT$Charlotte/Douglas International Airport-Charlotte, NC                  $40.639801               $-73.776627             $
+KCLX$Charleston-Grays, SC                                                   $40.639801               $-73.776627             $
+KCMH$John Glenn Columbus International Airport-Columbus, OH                 $40.639801               $-73.776627             $
+KCMX$Houghton County Memorial Airport-Hancock, MI                           $40.639801               $-73.776627             $
+KCNH$Claremont Municipal Airport-Claremont, NH                              $40.639801               $-73.776627             $
+KCNO$Chino Airport-Chino, CA                                                $40.639801               $-73.776627             $
+KCOL$Colden, NY                                                             $40.639801               $-73.776627             $
+KCON$Concord Municipal Airport-Concord, NH                                  $40.639801               $-73.776627             $
+KCOO$Cooperstown, NY                                                        $40.639801               $-73.776627             $
+KCOU$Columbia Regional Airport-Columbia, MO                                 $40.639801               $-73.776627             $
+KCPC$Columbus County Municipal Airport-Whiteville, NC                       $40.639801               $-73.776627             $
+KCPK$Chesapeake Regional Airport-Norfolk, VA                                $40.639801               $-73.776627             $
+KCQW$Cheraw Municipal Airport-Cheraw, SC                                    $40.639801               $-73.776627             $
+KCQX$Chatham Municipal Airport-Chatham, MA                                  $40.639801               $-73.776627             $
+KCRE$Grand Strand Airport-North Myrtle Beach, SC                            $40.639801               $-73.776627             $
+KCRW$Yeager Airport-Charleston, WV                                          $40.639801               $-73.776627             $
+KCSG$Columbus Airport, COlumbus, GA                                         $40.639801               $-73.776627             $
+KCSN$Cassanova VOR, VA                                                      $40.639801               $-73.776627             $
+KCTP$State College-WFO, PA                                                  $40.639801               $-73.776627             $
+KCTZ$Clinton-Sampson County Airport-Clinton, NC                             $40.639801               $-73.776627             $
+KCUB$Columbia Owens Downtown Airport-Columbia, SC                           $40.639801               $-73.776627             $
+KCVG$Covington, KY                                                          $40.639801               $-73.776627             $
+KCVV$Coupeville-Penn Cove, WA                                               $40.639801               $-73.776627             $
+KCXE$Chase City Municipal Airport-Chase City, VA                            $40.639801               $-73.776627             $
+KCXX$Colchester-88D, VT                                                     $40.639801               $-73.776627             $
+KCXY$Capital City Airport-Harrisburg, PA                                    $40.639801               $-73.776627             $
+KCYN$Coyle VOR, NJ                                                          $40.639801               $-73.776627             $
+KCYO$Pickaway County Memorial Airport-Circleville, OH                       $40.639801               $-73.776627             $
+KCZG$Tri-Cities Airport-Endicott, NY                                        $40.639801               $-73.776627             $
+KD38$Canandaigua, NY                                                        $40.639801               $-73.776627             $
+KDAA$Davison Army Airfield-Fort Belvoir, VA                                 $40.639801               $-73.776627             $
+KDAN$Danville Regional Airport-Danville, VA                                 $40.639801               $-73.776627             $
+KDAW$Skyhaven Airport-Rochester, NH                                         $40.639801               $-73.776627             $
+KDAY$James M. Cox International Airport-Dayton, OH                          $40.639801               $-73.776627             $
+KDCA$Ronald Reagan National Airport-Arlington County, VA                    $40.639801               $-73.776627             $
+KDCM$Chester Catawba, SC                                                    $40.639801               $-73.776627             $
+KDDH$William H. Morse State Airport-Bennington, VT                          $40.639801               $-73.776627             $
+KDFI$Defiance Memorial Airport-Defiance, OH                                 $40.639801               $-73.776627             $
+KDFW$Dallas-Ft Worth International Airport, TX                              $40.639801               $-73.776627             $
+KDIX$Manchester 88D, NJ                                                     $40.639801               $-73.776627             $
+KDKK$Chautauqua County/Dunkirk Airport-Dunkirk, NY                          $40.639801               $-73.776627             $
+KDLC$Dillon County Airport-Dillon, SC                                       $40.639801               $-73.776627             $
+KDLZ$Delaware Municipal Airport-Delaware, OH                                $40.639801               $-73.776627             $
+KDMH$Baltimore-Dwntwn, MD                                                   $40.639801               $-73.776627             $
+KDMW$Carroll County Regional Airport-Westminster, MD                        $40.639801               $-73.776627             $
+KDOV$Dover Air Force Base-Dover, DElaware                                   $40.639801               $-73.776627             $
+KDOX$Dover-Ellendale, DE                                                    $40.639801               $-73.776627             $
+KDPL$Duplin County Airport-Kenansville, NC                                  $40.639801               $-73.776627             $
+KDSV$Dansville Municipal Airport-Dansville, NY                              $40.639801               $-73.776627             $
+KDUJ$Dubois Regional Airport-Dubois, PA                                     $40.639801               $-73.776627             $
+KDVD$Camp David, MD                                                         $40.639801               $-73.776627             $
+KDXR$Danbury Municipal Airport-Danbury, CT                                  $40.639801               $-73.776627             $
+KDYB$Summerville Airport-Summerville, SC                                    $40.639801               $-73.776627             $
+KDYL$Doylestown Airport-Doylestown, PA                                      $40.639801               $-73.776627             $
+KECG$Elizabeth City Regional Airport / Elizabeth City, NC                   $40.639801               $-73.776627             $
+KECK$Peck, MI                                                               $40.639801               $-73.776627             $
+KEDE$Northeastern Regional Airport-Edenton, NC                              $40.639801               $-73.776627             $
+KEDG$Weide Army Heliport-Edgewood Arsenal, Aberdeen Proving Ground, MD      $40.639801               $-73.776627             $
+KEDJ$Bellefontaine Regional Airport-Bellefontaine, OH                       $40.639801               $-73.776627             $
+KEEN$Dillant-Hopkins Airport-Keene, NH                                      $40.639801               $-73.776627             $
+KEFK$Northeast Kingdom International Airport-Newport, VT                    $40.639801               $-73.776627             $
+KEHO$Shelby-Cleveland Regional Airport-Shelby, NC                           $40.639801               $-73.776627             $
+KEKN$Elkins-Randolph County Airport-Elkins, WV                              $40.639801               $-73.776627             $
+KELB$Ellenburg Depot, NY                                                    $40.639801               $-73.776627             $
+KELM$Elmira/Corning Regional Airport-Big Flats, NY                          $40.639801               $-73.776627             $
+KELZ$Wellsville Municipal Airport-Wellsville, NY                            $40.639801               $-73.776627             $
+KEMI$Westminster, MD                                                        $40.639801               $-73.776627             $
+KEMV$Emporia-Greensville Regional Airport-Emporia, VA                       $40.639801               $-73.776627             $
+KENE$Kennebunk Port, ME                                                     $40.639801               $-73.776627             $
+KENX$Albany-E. Berne, NY                                                    $40.639801               $-73.776627             $
+KEOE$Newberry County Airport-Newberry, SC                                   $40.639801               $-73.776627             $
+KEOP$Pike County Airport-Waverly, OH                                        $40.639801               $-73.776627             $
+KEPM$Eastport Municipal Airport-Eastport, ME                                $40.639801               $-73.776627             $
+KEQY$Monroe Regional Airport-Monroe, NC                                     $40.639801               $-73.776627             $
+KERI$Erie International Airport-Erie, PA                                    $40.639801               $-73.776627             $
+KERR$Errol Airport-Errol, NH                                                $40.639801               $-73.776627             $
+KESN$Easton Airport (Newnan Field)-Easton, MD                               $40.639801               $-73.776627             $
+KETC$Tarboro-Edgecombe Airport-Tarboro, NC                                  $40.639801               $-73.776627             $
+KETX$East Texas VOR, PA                                                     $40.639801               $-73.776627             $
+KEUG$Mahlon Sweet Field-Eugene, OR                                          $40.639801               $-73.776627             $
+KEVV$Evansville Regional Airport, IN                                        $40.639801               $-73.776627             $
+KEVY$Summit Airport-Middletown, DElaware                                    $40.639801               $-73.776627             $
+KEWB$New Bedford Regional Airport-New Bedford, MA                           $40.639801               $-73.776627             $
+KEWC$Ellwood City VOR, PA                                                   $40.639801               $-73.776627             $
+KEWN$Craven County Regional Airport-New Bern, NC                            $40.639801               $-73.776627             $
+KEWR$Newark Liberty International Airport, NJ                               $40.639801               $-73.776627             $
+KEXX$Davidson County Airport-Lexington, NC                                  $40.639801               $-73.776627             $
+KEYF$Curtis L. Brown Jr. Field-Elizabethtown, NC                            $40.639801               $-73.776627             $
+KEZF$Shannon Airport-Fredericksburg, VA                                     $40.639801               $-73.776627             $
+KFAF$Joint Base Langley-Eustis-Fort Eustis, VA                              $40.639801               $-73.776627             $
+KFAR$Hector International Airport-Fargo, Nd                                 $40.639801               $-73.776627             $
+KFAY$Fayetteville Regional Airport-Fayetteville, NC                         $40.639801               $-73.776627             $
+KFBC$Flag City, OH                                                          $40.639801               $-73.776627             $
+KFBG$Simmons Army Airfield-Fort Bragg, NC                                   $40.639801               $-73.776627             $
+KFCI$Chesterfield County Airport-Richmond, VA                               $40.639801               $-73.776627             $
+KFCX$Roanoke-Floyd County, VA                                               $40.639801               $-73.776627             $
+KFDK$Frederick Municipal Airport-Frederick, MD                              $40.639801               $-73.776627             $
+KFDW$Fairfield County Airport-Winnsboro, SC                                 $40.639801               $-73.776627             $
+KFDY$Findlay, OH                                                            $40.639801               $-73.776627             $
+KFFA$First Flight Airport-Kill Devil Hills, NC                              $40.639801               $-73.776627             $
+KFFO$Wright-Patterson Air Force Base-Dayton, OH                             $40.639801               $-73.776627             $
+KFIG$Clearfield-Lawrence Airport-Clearfield, PA                             $40.639801               $-73.776627             $
+KFIT$Fitchburg Municipal Airport-Fitchburg, MA                              $40.639801               $-73.776627             $
+KFKL$Venango Regional Airport-Franklin, PA                                  $40.639801               $-73.776627             $
+KFKN$Franklin Municipal-John Beverly Rose Airport-Franklin, VA              $40.639801               $-73.776627             $
+KFLO$Florence Regional Airport-Florence, SC                                 $40.639801               $-73.776627             $
+KFME$Tipton Airport-Fort Meade / Odenton, MD                                $40.639801               $-73.776627             $
+KFMH$Otis Air National Guard Base-Falmouth, MA                              $40.639801               $-73.776627             $
+KFOK$Francis S. Gabreski Airport-Westhampton Beach, NY                      $40.639801               $-73.776627             $
+KFQD$Rutherford County Airport-Rutherfordton, NC                            $40.639801               $-73.776627             $
+KFRG$Republic Airport-East Farmingdale, NY                                  $40.639801               $-73.776627             $
+KFRR$Front Royal-Warren County Airport-Front Royal, VA                      $40.639801               $-73.776627             $
+KFSO$Franklin County State Airport-Highgate, VT                             $40.639801               $-73.776627             $
+KFVE$Northern Aroostook Regional Airport-Frenchville, ME                    $40.639801               $-73.776627             $
+KFVX$Farmville Regional Airport-Farmville, VA                               $40.639801               $-73.776627             $
+KFWA$Fort Wayne, IN                                                         $40.639801               $-73.776627             $
+KFWN$Sussex Airport-Sussex, NJ                                              $40.639801               $-73.776627             $
+KFWQ$Rostraver Airport-Monongahela, PA                                      $40.639801               $-73.776627             $
+KFYJ$Middle Peninsula Regional Airport-West Point, VA                       $40.639801               $-73.776627             $
+KFZI$Fostoria Metropolitan Airport-Fostoria, OH                             $40.639801               $-73.776627             $
+KFZY$Oswego County Airport-Fulton, NY                                       $40.639801               $-73.776627             $
+KGAI$Montgomery County Airpark-Gaithersburg, MD                             $40.639801               $-73.776627             $
+KGBR$Walter J. Koladza Airport-Great Barrington, MA                         $40.639801               $-73.776627             $
+KGDM$Gardner Municipal Airport-Gardner, MA                                  $40.639801               $-73.776627             $
+KGDY$Grundy Municipal Airport-Grundy, VA                                    $40.639801               $-73.776627             $
+KGED$Delaware Coastal Airport-Georgetown, DElaware                          $40.639801               $-73.776627             $
+KGEE$Unknown                                                                $40.639801               $-73.776627             $
+KGEV$Ashe County Airport-Jefferson, NC                                      $40.639801               $-73.776627             $
+KGFL$Floyd Bennett Memorial Airport-Glens Falls, NY                         $40.639801               $-73.776627             $
+KGGE$Georgetown County Airport-Georgetown, SC                               $40.639801               $-73.776627             $
+KGHG$Marshfield Municipal Airport -Marshfield, MA                           $40.639801               $-73.776627             $
+KGKJ$Port Meadville Airport-Meadville, PA                                   $40.639801               $-73.776627             $
+KGMU$Greenville Downtown Airport-Greenville, SC                             $40.639801               $-73.776627             $
+KGNR$Greenville Municipal, ME                                               $40.639801               $-73.776627             $
+KGON$Groton-New London Airport-Groton / New London, CT                      $40.639801               $-73.776627             $
+KGRB$Green Bay Austin Straubel International Airport, WI                    $40.639801               $-73.776627             $
+KGRD$Greenwood County Airport-Greenwood, SC                                 $40.639801               $-73.776627             $
+KGSB$Seymour Johnson Air Force Base-Goldsboro, NC                           $40.639801               $-73.776627             $
+KGSO$Piedmont Triad International Airport-Greensboro, NC                    $40.639801               $-73.776627             $
+KGSP$Greenville-Spartanburg International Airport, SC                       $40.639801               $-73.776627             $
+KGTB$Wheeler-Sack Army Airfield-Fort Drum, NY                               $40.639801               $-73.776627             $
+KGTF$Great Falls, MT                                                        $40.639801               $-73.776627             $
+KGVE$Gordonsville Municipal Airport-Gordonsville, VA                        $40.639801               $-73.776627             $
+KGVQ$Genesee County Airport-Batavia, NY                                     $40.639801               $-73.776627             $
+KGWW$Goldsboro-Wayne Municipal Airport-Goldsboro, NC                        $40.639801               $-73.776627             $
+KGYH$Donaldson Center Airport-Greenville, SC                                $40.639801               $-73.776627             $
+KGYX$Gray-Portland, ME                                                      $40.639801               $-73.776627             $
+KH57$Bismark Memorial Airport-Bismark, MO                                   $40.639801               $-73.776627             $
+KHAO$Butler County Regional Airport-Hamilton, OH                            $40.639801               $-73.776627             $
+KHAR$Harrisburg, PA                                                         $40.639801               $-73.776627             $
+KHAT$Cape Hatteras, NC                                                      $40.639801               $-73.776627             $
+KHAW$Hawley, PA                                                             $40.639801               $-73.776627             $
+KHBI$Asheboro Regional Airport-Asheboro, NC                                 $40.639801               $-73.776627             $
+KHEF$Manassas Regional Airport-Manassas, VA                                 $40.639801               $-73.776627             $
+KHFD$Hartford-Brainard Airport-Hartford, CT                                 $40.639801               $-73.776627             $
+KHFF$Mackall Army Airfield-Camp Mackall, NC                                 $40.639801               $-73.776627             $
+KHGR$Hagerstown Regional Airport-Hagerstown, MD                             $40.639801               $-73.776627             $
+KHIE$Mount Washington Regional Airport-Whitefield, NH                       $40.639801               $-73.776627             $
+KHKY$Hickory Regional Airport-Hickory, NC                                   $40.639801               $-73.776627             $
+KHLG$Wheeling-Ohio County Airport-Wheeling, WV                              $40.639801               $-73.776627             $
+KHLX$Twin County Airport-Galax-Hillsville, VA                               $40.639801               $-73.776627             $
+KHMZ$Bedford County Airport-Bedford, PA                                     $40.639801               $-73.776627             $
+KHNK$Hancock VOR, NY                                                        $40.639801               $-73.776627             $
+KHNZ$Henderson-Oxford Airport-Oxford, NC                                    $40.639801               $-73.776627             $
+KHPN$Westchester County Airport-White Plains, NY                            $40.639801               $-73.776627             $
+KHQU$Thomson-Mcduffie County Airpot, Thomson, GA                            $40.639801               $-73.776627             $
+KHRJ$Harnett Regional Jetport-Erwin, NC                                     $40.639801               $-73.776627             $
+KHSE$Billy Mitchell Airport-Hatteras, NC                                    $40.639801               $-73.776627             $
+KHSP$Ingalls Field-Hot Springs, VA                                          $40.639801               $-73.776627             $
+KHSS$Hot Springs, NC                                                        $40.639801               $-73.776627             $
+KHSV$Huntsville International Airport, AL                                   $40.639801               $-73.776627             $
+KHTO$East Hampton Airport-East Hampton, NY                                  $40.639801               $-73.776627             $
+KHTS$Tri-State Airport-Huntington, WV                                       $40.639801               $-73.776627             $
+KHUF$Terre Haute Regional Airport-Terre Haute, IN                           $40.639801               $-73.776627             $
+KHUL$Houlton International Airport-Houlton, ME                              $40.639801               $-73.776627             $
+KHVN$Tweed-New Haven Airport-New Haven, CT                                  $40.639801               $-73.776627             $
+KHVS$Hartsville Regional Airport-Hartsville, SC                             $40.639801               $-73.776627             $
+KHWV$Brookhaven Airport-Shirley, NY                                         $40.639801               $-73.776627             $
+KHWY$Warrenton-Fauquier Airport-Warrenton, VA                               $40.639801               $-73.776627             $
+KHXD$Hilton Head Airport-Hilton Head Island, SC                             $40.639801               $-73.776627             $
+KHYA$Barnstable Municipal Airport-Hyannis, MA                               $40.639801               $-73.776627             $
+KHYW$Conway-Horry County Airport-Conway, SC                                 $40.639801               $-73.776627             $
+KHZL$Hazleton Regional Airport-Hazleton, PA                                 $40.639801               $-73.776627             $
+KHZY$Northeast Ohio Regional Airport Ashtabula, OH                          $40.639801               $-73.776627             $
+KI15$Lancaster, OH                                                          $40.639801               $-73.776627             $
+KI19$Xenia, OH                                                              $40.639801               $-73.776627             $
+KI23$Washington Court, OH                                                   $40.639801               $-73.776627             $
+KI43$Jackson, OH                                                            $40.639801               $-73.776627             $
+KI67$Harrison, OH                                                           $40.639801               $-73.776627             $
+KI68$Lebanon, OH                                                            $40.639801               $-73.776627             $
+KI69$Batavia, OH                                                            $40.639801               $-73.776627             $
+KI74$Urbana, OH                                                             $40.639801               $-73.776627             $
+KIAD$Washington Dulles International Airport-Dulles, VA                     $40.639801               $-73.776627             $
+KIAG$Niagara Falls International-Niagara Falls, NY                          $40.639801               $-73.776627             $
+KIDI$Indiana/Stewart Airport, PA                                            $40.639801               $-73.776627             $
+KIGC$Charleston Afb, SC                                                     $40.639801               $-73.776627             $
+KIGX$Horace Williams Airport-Chapel Hill, NC                                $40.639801               $-73.776627             $
+KIJD$Windham Airport-Willimantic, CT                                        $40.639801               $-73.776627             $
+KILG$Wilmington Airport-Wilmington, DElaware                                $40.639801               $-73.776627             $
+KILM$Wilmington International Airport-Wilmington, NC                        $40.639801               $-73.776627             $
+KILN$Wilmington Air Park-Wilmington, OH                                     $40.639801               $-73.776627             $
+KIND$Indianapolis International Airport, IN                                 $40.639801               $-73.776627             $
+KINT$Smith Reynolds Airport-Winston-Salem, NC                               $40.639801               $-73.776627             $
+KIPJ$Lincolnton-Lincoln County Regional Airport-Lincolnton, NC              $40.639801               $-73.776627             $
+KIPT$Williamsport Regional Airport-Williamsport, PA                         $40.639801               $-73.776627             $
+KIRQ$Colliers VOR, SC                                                       $40.639801               $-73.776627             $
+KISM$Kissimmee Gateway-Orlando, FL                                          $40.639801               $-73.776627             $
+KISO$Kinston Regional Jetport (Stallings Field)-Kinston, NC                 $40.639801               $-73.776627             $
+KISP$Long Island Macarthur Airport-Islip, NY                                $40.639801               $-73.776627             $
+KITH$Ithaca Tompkins Regional Airport-Ithaca, NY                            $40.639801               $-73.776627             $
+KIWI$Wiscasset Airport-Wiscasset, ME                                        $40.639801               $-73.776627             $
+KIXA$Halifax/Northampton, NC                                                $40.639801               $-73.776627             $
+KIZG$Eastern Slopes Regional Airport-Fryeburg, ME                           $40.639801               $-73.776627             $
+KJAX$Jacksonville International Airport, Jacksonville, FL                   $40.639801               $-73.776627             $
+KJAY$Jay Peak, VT                                                           $40.639801               $-73.776627             $
+KJFK$John F. Kennedy International Airport, NY                              $40.639801               $-73.776627             $
+KJFZ$Richlands, VA                                                          $40.639801               $-73.776627             $
+KJGG$Williamsburg-Jamestown Airport-Williamsburg, VA                        $40.639801               $-73.776627             $
+KJHW$Chautauqua County-Jamestown Airport-Jamestown, NY                      $40.639801               $-73.776627             $
+KJNX$Johnston Regional Airport-Smithfield, NC                               $40.639801               $-73.776627             $
+KJOT$Joliet Regional Airport, Joliet,Il                                     $40.639801               $-73.776627             $
+KJQF$Concord Regional Airport-Concord, NC                                   $40.639801               $-73.776627             $
+KJRA$West 30Th Street Heliport-Manhattan, NY                                $40.639801               $-73.776627             $
+KJRB$Downtown Manhattan Heliport-Manhattan, NY                              $40.639801               $-73.776627             $
+KJST$Johnstown-Cambria County Airport-Johnstown, PA                         $40.639801               $-73.776627             $
+KJVU$Allentown Queen, PA                                                    $40.639801               $-73.776627             $
+KJWX$Fort Ritchie, MD                                                       $40.639801               $-73.776627             $
+KJYO$Leesburg Executive Airport-Leesburg, VA                                $40.639801               $-73.776627             $
+KJZI$Charleston Executive Airport-Charleston, SC                            $40.639801               $-73.776627             $
+KKCI$Kansas City International Airport, MO                                  $40.639801               $-73.776627             $
+KLBE$Arnold Palmer Regional Airport-Latrobe, PA                             $40.639801               $-73.776627             $
+KLBT$Lumberton Municipal Airport-Lumberton, NC                              $40.639801               $-73.776627             $
+KLCI$Laconia Municipal Airport-Laconia, NH                                  $40.639801               $-73.776627             $
+KLCK$Rickenbacker International Airport-Columbus, OH                        $40.639801               $-73.776627             $
+KLDJ$Linden Airport-Linden, NJ                                              $40.639801               $-73.776627             $
+KLEB$Lebanon Municipal Airport-West Lebanon, NH                             $40.639801               $-73.776627             $
+KLEW$Auburn/Lewiston Municipal Airport-Auburn, ME                           $40.639801               $-73.776627             $
+KLFI$Langley Air Force Base-Hampton, VA                                     $40.639801               $-73.776627             $
+KLGA$La Guardia International Airport-New York, NY                          $40.639801               $-73.776627             $
+KLHQ$Fairfield County Airport-Lancaster, OH                                 $40.639801               $-73.776627             $
+KLHV$William T. Piper Memorial Airport-Lock Haven, PA                       $40.639801               $-73.776627             $
+KLHZ$Triangle North Executive Airport-Louisburg, NC                         $40.639801               $-73.776627             $
+KLIZ$Loring AFB, ME                                                         $40.639801               $-73.776627             $
+KLKP$Lake Placid Airport-Lake Placid, NY                                    $40.639801               $-73.776627             $
+KLKR$Lancaster County Airport (Mcwhirter Field)-Lancaster, SC               $40.639801               $-73.776627             $
+KLKU$Louisa County Airport (Freeman Field)-Louisa, VA                       $40.639801               $-73.776627             $
+KLNN$Lost Nation Airport-Willoughby, OH                                     $40.639801               $-73.776627             $
+KLNP$Lonesome Pine Airport-Wise, VA                                         $40.639801               $-73.776627             $
+KLNS$Lancaster Airport-Lancaster, PA                                        $40.639801               $-73.776627             $
+KLOM$Philadelphia/Wings Field, PA                                           $40.639801               $-73.776627             $
+KLOU$Bowman Field Airport, Louisville, KY                                   $40.639801               $-73.776627             $
+KLPR$Lorain County Regional Airport-Lorain, OH                              $40.639801               $-73.776627             $
+KLQK$Pickens County Airport-Pickens, SC                                     $40.639801               $-73.776627             $
+KLRG$Lincoln Regional Airport-Lincoln, ME                                   $40.639801               $-73.776627             $
+KLRO$Mount Pleasant, SC                                                     $40.639801               $-73.776627             $
+KLTX$Shallotte-Wilm., NC                                                    $40.639801               $-73.776627             $
+KLUA$Luray Caverns Arpt, VA                                                 $40.639801               $-73.776627             $
+KLUK$Cincinnati Municipal Lunken Airport Cincinnati, OH                     $40.639801               $-73.776627             $
+KLUX$Laurens, SC                                                            $40.639801               $-73.776627             $
+KLVL$Lawrenceville Municipal Airport-Lawrenceville, VA                      $40.639801               $-73.776627             $
+KLWB$Greenbrier Valley Airport-Lewisburg, WV                                $40.639801               $-73.776627             $
+KLWM$Lawrence Municipal Airport-Lawrence, MA                                $40.639801               $-73.776627             $
+KLWX$Sterling, VA                                                           $40.639801               $-73.776627             $
+KLYH$Lynchburg Regional Airport-Lynchburg, VA                               $40.639801               $-73.776627             $
+KMAL$Malone-Dufort Airport-Malone, NY                                       $40.639801               $-73.776627             $
+KMAO$Marion County Airport-Marion, SC                                       $40.639801               $-73.776627             $
+KMCX$Montcello/White, IN                                                    $40.639801               $-73.776627             $
+KMCZ$Martin County Airport-Williamston, NC                                  $40.639801               $-73.776627             $
+KMDT$Harrisburg International Airport-Middletown, PA                        $40.639801               $-73.776627             $
+KMEB$Laurinburg-Maxton Airport-Maxton, NC                                   $40.639801               $-73.776627             $
+KMFD$Mansfield, OH                                                          $40.639801               $-73.776627             $
+KMFV$Accomack County Airport-Melfa, VA                                      $40.639801               $-73.776627             $
+KMGJ$Orange County Airport-Montgomery, NY                                   $40.639801               $-73.776627             $
+KMGW$Morgantown Municipal Airport-Morgantown, WV                            $40.639801               $-73.776627             $
+KMGY$Dayton Wright Brothers Airport-Dayton, OH                              $40.639801               $-73.776627             $
+KMHR$Jaffrey Airport-Silver Ranch, Jaffrey, NH                              $40.639801               $-73.776627             $
+KMHT$Manchester-Boston Regional Airport-Manchester, NH                      $40.639801               $-73.776627             $
+KMHX$Morehead-Newport, NC                                                   $40.639801               $-73.776627             $
+KMIA$Miami International Airport, FL                                        $40.639801               $-73.776627             $
+KMIV$Millville Municipal Airport-Millville, NJ                              $40.639801               $-73.776627             $
+KMJX$Robert J. Miller Air Park-Toms River, NJ                               $40.639801               $-73.776627             $
+KMKC$Charles B. Wheeler Downtown Airport-Kansas City, MO                    $40.639801               $-73.776627             $
+KMKG$Muskegon County Airport, MI                                            $40.639801               $-73.776627             $
+KMKJ$Mountain Empire Airport-Marion / Wytheville, VA                        $40.639801               $-73.776627             $
+KMKS$Berkeley Moncks, SC                                                    $40.639801               $-73.776627             $
+KMLT$Millinocket Municipal Airport-Millinocket, ME                          $40.639801               $-73.776627             $
+KMLU$Monroe Regional Airport-Monroe, LA                                     $40.639801               $-73.776627             $
+KMMK$Meriden Markham Municipal Airport-Meriden, CT                          $40.639801               $-73.776627             $
+KMMT$Mcentire Joint National Guard Base-Eastover, SC                        $40.639801               $-73.776627             $
+KMMU$Morristown Municipal Airport-Morristown, NJ                            $40.639801               $-73.776627             $
+KMNI$Santee Cooper Regional Airport-Manning, SC                             $40.639801               $-73.776627             $
+KMNN$Marion, OH                                                             $40.639801               $-73.776627             $
+KMNW$Wilmington, VT                                                         $40.639801               $-73.776627             $
+KMPO$Pocono Mountains Municipal Airport-Mount Pocono, PA                    $40.639801               $-73.776627             $
+KMPV$Edward F. Knapp State Airport-Barre-Montpelier, VT                     $40.639801               $-73.776627             $
+KMQE$Milton/Blue Hills Observatory, MA                                      $40.639801               $-73.776627             $
+KMQI$Dare County Regional Airport-Manteo, NC                                $40.639801               $-73.776627             $
+KMQS$Chester County G. O. Carlson Airport-Coatesville, PA                   $40.639801               $-73.776627             $
+KMQT$Marquette, MI                                                          $40.639801               $-73.776627             $
+KMRB$Eastern West Virginia Regional-Martinsburg, WV                         $40.639801               $-73.776627             $
+KMRH$Michael J. Smith Field-Beaufort, NC                                    $40.639801               $-73.776627             $
+KMRN$Foothills Regional Airport-Morganton, NC                               $40.639801               $-73.776627             $
+KMRT$Marysville, OH                                                         $40.639801               $-73.776627             $
+KMSS$Massena International Airport-Massena, NY                              $40.639801               $-73.776627             $
+KMSV$Sullivan County International Airport-Monticello, NY                   $40.639801               $-73.776627             $
+KMTJ$Montrose Regional-Montrose, CO                                         $40.639801               $-73.776627             $
+KMTN$Martin State Airport-Baltimore, MD                                     $40.639801               $-73.776627             $
+KMTP$Montauk Airport-Montauk, NY                                            $40.639801               $-73.776627             $
+KMTV$Blue Ridge Airport-Martinsville, VA                                    $40.639801               $-73.776627             $
+KMUI$Muir Aaf/Indiantown, PA                                                $40.639801               $-73.776627             $
+KMVL$Morrisville-Stowe State Airport-Morrisville, VT                        $40.639801               $-73.776627             $
+KMVM$Machias Valley Airport-Machias, ME                                     $40.639801               $-73.776627             $
+KMVY$Martha'S Vineyard Airport-Vineyard Haven, MA                           $40.639801               $-73.776627             $
+KMWK$Mount Airy/Surry County Airport-Mount Airy, NC                         $40.639801               $-73.776627             $
+KMWN$Mount Washington, NH                                                   $40.639801               $-73.776627             $
+KMWO$Middletown/Hook Fld, OH                                                $40.639801               $-73.776627             $
+KMYR$Myrtle Beach International Airport-Myrtle Beach, SC                    $40.639801               $-73.776627             $
+KN00$Oswego County Airport, Fulton, NY                                      $40.639801               $-73.776627             $
+KN03$Cortland County/Chase, NY                                              $40.639801               $-73.776627             $
+KN07$Lincoln Park, NJ                                                       $40.639801               $-73.776627             $
+KN12$Lakewood, NJ                                                           $40.639801               $-73.776627             $
+KN14$Lumberton, NJ                                                          $40.639801               $-73.776627             $
+KN23$Sidney, NY                                                             $40.639801               $-73.776627             $
+KN27$Towanda, PA                                                            $40.639801               $-73.776627             $
+KN28$Ambrose, NY                                                            $40.639801               $-73.776627             $
+KN38$Wellsboro/Grand Cany, PA                                               $40.639801               $-73.776627             $
+KN40$Pittstown, NJ                                                          $40.639801               $-73.776627             $
+KN52$Somerville, NJ                                                         $40.639801               $-73.776627             $
+KN63$Sussex, NJ                                                             $40.639801               $-73.776627             $
+KN80$Ocean City, MD                                                         $40.639801               $-73.776627             $
+KN81$Hammonton, NJ                                                          $40.639801               $-73.776627             $
+KN85$Alexandria, NJ                                                         $40.639801               $-73.776627             $
+KN87$Robbinsville, NJ                                                       $40.639801               $-73.776627             $
+KN97$Clearfield, PA                                                         $40.639801               $-73.776627             $
+KNAK$Annapolis/Naval Academy, MD                                            $40.639801               $-73.776627             $
+KNBC$Marine Corps Air Station Beaufort-Beaufort, SC                         $40.639801               $-73.776627             $
+KNBK$New Brunswick, NJ                                                      $40.639801               $-73.776627             $
+KNBT$Piney Island/Bomb Range, NC                                            $40.639801               $-73.776627             $
+KNCA$Marine Corps Air Station New River-Jacksonville, NC                    $40.639801               $-73.776627             $
+KNDY$Naval Surface Warfare Center Dahlgren-Dahlgren, VA                     $40.639801               $-73.776627             $
+KNEL$Naval Air Engineering Station-Lakehurst, NJ                            $40.639801               $-73.776627             $
+KNFE$Naval Auxiliary Landing Field Fentress-Chesapeake, VA                  $40.639801               $-73.776627             $
+KNGR$North Groton, NH                                                       $40.639801               $-73.776627             $
+KNGU$Naval Station Norfolk-Norfolk, VA                                      $40.639801               $-73.776627             $
+KNHK$Naval Air Station Patuxent River, MD                                   $40.639801               $-73.776627             $
+KNHZ$Brunswick NAS, ME                                                      $40.639801               $-73.776627             $
+KNJM$Marine Corps Auxiliary Landing Field Bogue-Swansboro, NC               $40.639801               $-73.776627             $
+KNKT$Marine Corps Air Station Cherry Point, NC                              $40.639801               $-73.776627             $
+KNTU$Naval Air Station Oceana-Virginia Beach, VA                            $40.639801               $-73.776627             $
+KNUI$Naval Outlying Field Webster-Saint Inigoes, MD                         $40.639801               $-73.776627             $
+KNXX$Naval Air Station Joint Reserve Base Willow Grove, PA                  $40.639801               $-73.776627             $
+KNY0$Johnstown/Fulton Cnt, NY                                               $40.639801               $-73.776627             $
+KNYC$New York/Central Park, NY                                              $40.639801               $-73.776627             $
+KNYG$Marine Corps Air Facility Quantico-Quantico, VA                        $40.639801               $-73.776627             $
+KNZW$South Weymouth, MA                                                     $40.639801               $-73.776627             $
+KOAJ$Albert J. Ellis Airport-Jacksonville, NC                               $40.639801               $-73.776627             $
+KOBI$Woodbine Municipal Airport-Woodbine, NJ                                $40.639801               $-73.776627             $
+KOCN$Concord Municipal Airport-Concord, NH                                  $40.639801               $-73.776627             $
+KOCW$Washington-Warren Airport-Washington, NC                               $40.639801               $-73.776627             $
+KOFP$Hanover County Municipal Airport-Richmond, VA                          $40.639801               $-73.776627             $
+KOGB$Orangeburg Municipal Airport-Orangeburg, SC                            $40.639801               $-73.776627             $
+KOGS$Ogdensburg International Airport-Ogdensburg, NY                        $40.639801               $-73.776627             $
+KOIC$Lt. Warren Eaton Airport-Norwich, NY                                   $40.639801               $-73.776627             $
+KOKV$Winchester Regional Airport-Winchester, VA                             $40.639801               $-73.776627             $
+KOKX$Brookhaven-Upton, NY                                                   $40.639801               $-73.776627             $
+KOLD$Old Town Municipal Airport-Old Town, ME                                $40.639801               $-73.776627             $
+KOLE$Cattaraugus County-Olean Airport-Olean, NY                             $40.639801               $-73.776627             $
+KOMH$Orange County Airport-Orange, VA                                       $40.639801               $-73.776627             $
+KONX$Currituck County Regional Airport-Currituck, NC                        $40.639801               $-73.776627             $
+KOQN$Brandywine Airport-West Chester, PA                                    $40.639801               $-73.776627             $
+KOQU$Quonset State Airport-North Kingstown, RI                              $40.639801               $-73.776627             $
+KORE$Orange Municipal Airport-Orange, MA                                    $40.639801               $-73.776627             $
+KORF$Norfolk International Airport-Norfolk, VA                              $40.639801               $-73.776627             $
+KORH$Worcester Regional Airport-Worcester, MA                               $40.639801               $-73.776627             $
+KOSU$Ohio State University Airport-Columbus, OH                             $40.639801               $-73.776627             $
+KOWD$Norwood Memorial Airport-Norwood, MA                                   $40.639801               $-73.776627             $
+KOWK$Central Maine Airport-Norridgewock, ME                                 $40.639801               $-73.776627             $
+KOWX$Ottawa, OH                                                             $40.639801               $-73.776627             $
+KOXB$Ocean City Municipal Airport-Ocean City, MD                            $40.639801               $-73.776627             $
+KOXC$Waterbury-Oxford Airport-Oxford, CT                                    $40.639801               $-73.776627             $
+KOXD$Miami University Airport-Oxford, OH                                    $40.639801               $-73.776627             $
+KOYM$St. Marys Municipal Airport-Saint Marys, PA                            $40.639801               $-73.776627             $
+KOZX$Oneonta, NY                                                            $40.639801               $-73.776627             $
+KP20$Avi Suquilla-Parker, AZ                                                $40.639801               $-73.776627             $
+KPAO$Palo Alto Airport-Santa Clara, CA                                      $40.639801               $-73.776627             $
+KPBG$Plattsburgh International Airport-Plattsburgh, NY                      $40.639801               $-73.776627             $
+KPBZ$Pitt-Coraopolis, PA                                                    $40.639801               $-73.776627             $
+KPCW$Port Clinton, OH                                                       $40.639801               $-73.776627             $
+KPEO$Penn Yan Airport (Yates County Airport)-Penn Yan, NY                   $40.639801               $-73.776627             $
+KPGV$Pitt-Greenville Airport-Greenville, NC                                 $40.639801               $-73.776627             $
+KPHD$Harry Clever Field Airport, New Philadelphia, OH                       $40.639801               $-73.776627             $
+KPHF$Newport News/Williamsburg International-Newport News, VA               $40.639801               $-73.776627             $
+KPHH$Robert F. Swinnie Airport-Andrews, SC                                  $40.639801               $-73.776627             $
+KPHI$Mt Holly-PHL-WFO, NJ                                                   $40.639801               $-73.776627             $
+KPHL$Philadelphia International Airport-Philadelphia, PA                    $40.639801               $-73.776627             $
+KPIA$General Downing-Peoria International Airport, Peoria, IL               $40.639801               $-73.776627             $
+KPIC$Piseco Lake, NY                                                        $40.639801               $-73.776627             $
+KPIT$Pittsburgh International Airport-Pittsburgh, PA                        $40.639801               $-73.776627             $
+KPJC$Zelienople, PA                                                         $40.639801               $-73.776627             $
+KPKB$Mid-Ohio Valley Regional Airport-Parkersburg, WV                       $40.639801               $-73.776627             $
+KPLB$Plattsburgh, NY                                                        $40.639801               $-73.776627             $
+KPMH$Portsmouth, OH                                                         $40.639801               $-73.776627             $
+KPMZ$Plymouth Municipal Airport-Plymouth, NC                                $40.639801               $-73.776627             $
+KPNE$Northeast Philadelphia Airport-Philadelphia, PA                        $40.639801               $-73.776627             $
+KPNN$Princeton Municipal Airport-Princeton, ME                              $40.639801               $-73.776627             $
+KPOB$Pope Field (Military)-Fayetteville, NC                                 $40.639801               $-73.776627             $
+KPOU$Hudson Valley Regional Airport-Poughkeepsie, NY                        $40.639801               $-73.776627             $
+KPOV$Portage County Airport Ravenna, OH                                     $40.639801               $-73.776627             $
+KPQI$Northern Maine Regional Airport-Presque Isle, ME                       $40.639801               $-73.776627             $
+KPSB$Mid-State Regional Airport-Philipsburg, PA                             $40.639801               $-73.776627             $
+KPSF$Pittsfield Municipal Airport-Pittsfield, MA                            $40.639801               $-73.776627             $
+KPSK$New River Valley Airport-Dublin, VA                                    $40.639801               $-73.776627             $
+KPSM$Portsmouth International Airport At Pease-Portsmouth, NH               $40.639801               $-73.776627             $
+KPTB$Dinwiddie County Airport-Petersburg, VA                                $40.639801               $-73.776627             $
+KPTD$Potsdam Municipal Airport-Potsdam, NY                                  $40.639801               $-73.776627             $
+KPTW$Heritage Field-Pottstown, PA                                           $40.639801               $-73.776627             $
+KPVC$Provincetown Municipal Airport-Provincetown, MA                        $40.639801               $-73.776627             $
+KPVD$T.F. Green State Airport-Providence, RI                                $40.639801               $-73.776627             $
+KPVG$Hampton Roads Executive Airport-Chesapeake, VA                         $40.639801               $-73.776627             $
+KPWM$Portland International Jetport-Portland, ME                            $40.639801               $-73.776627             $
+KPYG$Pageland Airport-Pageland, SC                                          $40.639801               $-73.776627             $
+KPYM$Plymouth Municipal Airport-Plymouth, MA                                $40.639801               $-73.776627             $
+KRAH$Raleigh-WFO, NC                                                        $40.639801               $-73.776627             $
+KRAP$Rapid City Regional Airport-Rapid City, SD                             $40.639801               $-73.776627             $
+KRAX$Clayton-RDU 88D, NC                                                    $40.639801               $-73.776627             $
+KRBD$Dallas Executive Airport-Dallas, TX                                    $40.639801               $-73.776627             $
+KRBW$Lowcountry Regional Airport-Walterboro, SC                             $40.639801               $-73.776627             $
+KRCZ$Rockingham, NC                                                         $40.639801               $-73.776627             $
+KRDG$Reading Regional Airport-Reading, PA                                   $40.639801               $-73.776627             $
+KRDU$Raleigh-Durham International Airport-Raleigh, NC                       $40.639801               $-73.776627             $
+KRHA$State Colleg-RFC, PA                                                   $40.639801               $-73.776627             $
+KRHP$Western Carolina Regional Airport-Andrews, NC                          $40.639801               $-73.776627             $
+KRIC$Richmond International Airport-Sandston, VA                            $40.639801               $-73.776627             $
+KRJD$Ridgely Airpark-Ridgely, MD                                            $40.639801               $-73.776627             $
+KRKD$Knox County Regional Airport-Rockland, ME                              $40.639801               $-73.776627             $
+KRKP$Aransas Coounty-Rockport, TX                                           $40.639801               $-73.776627             $
+KRKR$Robert S. Kerr Airport-Poteau, OK                                      $40.639801               $-73.776627             $
+KRME$Griffiss International Airport-Rome, NY                                $40.639801               $-73.776627             $
+KRMN$Stafford Regional Airport-Stafford, VA                                 $40.639801               $-73.776627             $
+KRMX$Griffiss AFB-88D, NY                                                   $40.639801               $-73.776627             $
+KRNK$Roanoke-Blacksbg, VA                                                   $40.639801               $-73.776627             $
+KROA$Roanoke-Blacksburg Regional Airport-Roanoke, VA                        $40.639801               $-73.776627             $
+KROC$Greater Rochester International Airport-Rochester, NY                  $40.639801               $-73.776627             $
+KROD$Rosewood VOR, OH                                                       $40.639801               $-73.776627             $
+KRSP$NSF Thurmont, MD                                                       $40.639801               $-73.776627             $
+KRUM$Rumford, ME                                                            $40.639801               $-73.776627             $
+KRUQ$Mid-Carolina Regional Airport-Salisbury, NC                            $40.639801               $-73.776627             $
+KRUT$Rutland-Southern Vermont Regional Airport-Rutland, VT                  $40.639801               $-73.776627             $
+KRVL$Mifflin County Airport-Reedsville, PA                                  $40.639801               $-73.776627             $
+KRWI$Rocky Mount-Wilson Regional Airport-Rocky Mount, NC                    $40.639801               $-73.776627             $
+KRYT$Fountain Dale, PA                                                      $40.639801               $-73.776627             $
+KRZT$Ross County Airport-Chillicothe, OH                                    $40.639801               $-73.776627             $
+KRZZ$Halifax County Airport-Roanoke Rapids, NC                              $40.639801               $-73.776627             $
+KSAF$Santa Fe Regional Airport-Santa Fe, NM                                 $40.639801               $-73.776627             $
+KSAT$San Antonio International Airport, TX                                  $40.639801               $-73.776627             $
+KSAV$Savannah/Hilton Head International Airport, GA                         $40.639801               $-73.776627             $
+KSAX$Sparta VOR, NJ                                                         $40.639801               $-73.776627             $
+KSBY$Salisbury-Ocean City Regional Airport-Salisbury, MD                    $40.639801               $-73.776627             $
+KSCH$Schenectady County Airport-Schenectady, NY                             $40.639801               $-73.776627             $
+KSCK$Stockton Metropolitan Airport-Stockton, CA                             $40.639801               $-73.776627             $
+KSCR$Siler City Municipal Airport-Siler City, NC                            $40.639801               $-73.776627             $
+KSDC$Williamson-Sodus Airport-Williamson/Sodus, NY                          $40.639801               $-73.776627             $
+KSDF$Louisville International, KY                                           $40.639801               $-73.776627             $
+KSDL$Scottsdale Airport-Scottsdale, AZ                                      $40.639801               $-73.776627             $
+KSEA$Seattle-Tacoma International, WA                                       $40.639801               $-73.776627             $
+KSEG$Penn Valley Airport-Selinsgrove, PA                                    $40.639801               $-73.776627             $
+KSEM$Selma Airport-Selma, AL                                                $40.639801               $-73.776627             $
+KSFB$Orlando Sanford International Airport-Orlando, FL                      $40.639801               $-73.776627             $
+KSFF$Felts Field Spokane, WA                                                $40.639801               $-73.776627             $
+KSFM$Sanford Seacoast Regional Airport-Sanford, ME                          $40.639801               $-73.776627             $
+KSFQ$Suffolk Executive Airport-Suffolk, VA                                  $40.639801               $-73.776627             $
+KSFZ$North Central State Airport-Pawtucket, RI                              $40.639801               $-73.776627             $
+KSGH$Springfield Municipal, OH                                              $40.639801               $-73.776627             $
+KSHD$Shenandoah Valley Regional Airport-Staunton, VA                        $40.639801               $-73.776627             $
+KSHI$Ashtabula, OH                                                          $40.639801               $-73.776627             $
+KSIE$Sea Isle VOR, NJ                                                       $40.639801               $-73.776627             $
+KSIF$Rockingham County Nc Shiloh Airport-Stoneville, NC                     $40.639801               $-73.776627             $
+KSJB$Somerville, NJ                                                         $40.639801               $-73.776627             $
+KSLD$Slide Mountain, NY                                                     $40.639801               $-73.776627             $
+KSLK$Adirondack Regional Airport-Saranac Lake, NY                           $40.639801               $-73.776627             $
+KSLT$Slate Run, PA                                                          $40.639801               $-73.776627             $
+KSMQ$Somerset Airport-Somerville, NJ                                        $40.639801               $-73.776627             $
+KSMS$Sumter Airport-Sumter, SC                                              $40.639801               $-73.776627             $
+KSNC$Chester Airport-Chester, CT                                            $40.639801               $-73.776627             $
+KSOL$South Lincoln, VT                                                      $40.639801               $-73.776627             $
+KSOP$Moore County Airport-Southern Pines, NC                                $40.639801               $-73.776627             $
+KSPA$Spartanburg Downtown Memorial Airport-Spartanburg, SC                  $40.639801               $-73.776627             $
+KSPI$Abraham Lincoln Capital Airport, Springfield, IL                       $40.639801               $-73.776627             $
+KSQL$San Carlos Airport-San Carlos, CA                                      $40.639801               $-73.776627             $
+KSRQ$Sarasota-Bradenton-Sarasota,Fl                                         $40.639801               $-73.776627             $
+KSSC$Shaw Air Force Base-Sumter, SC                                         $40.639801               $-73.776627             $
+KSSM$Sault Ste Marie, MI                                                    $40.639801               $-73.776627             $
+KSSN$Seneca Army Airfield-Romulus, NY                                       $40.639801               $-73.776627             $
+KSTE$Stevens Point Municipal Airport-Stevens Point, WI                      $40.639801               $-73.776627             $
+KSTJ$Rosecrans Memorial-St Joseph, MO                                       $40.639801               $-73.776627             $
+KSTL$St Louis/Lambert International Airport, MO                             $40.639801               $-73.776627             $
+KSTM$Stormville, NY                                                         $40.639801               $-73.776627             $
+KSUT$Cape Fear Regional Jetport-Oak Island, NC                              $40.639801               $-73.776627             $
+KSVH$Statesville Regional Airport-Statesville, NC                           $40.639801               $-73.776627             $
+KSWF$Stewart International Airport-Newburgh, NY                             $40.639801               $-73.776627             $
+KSXL$Summersville Airport-Summersville, WV                                  $40.639801               $-73.776627             $
+KSYR$Syracuse Hancock International Airport-Syracuse, NY                    $40.639801               $-73.776627             $
+KTAN$Taunton Municipal Airport-Taunton, MA                                  $40.639801               $-73.776627             $
+KTAR$Boston-RFC, MA                                                         $40.639801               $-73.776627             $
+KTDF$Person County Airport-Roxboro, NC                                      $40.639801               $-73.776627             $
+KTDZ$Toledo, OH                                                             $40.639801               $-73.776627             $
+KTEB$Teterboro Airport-Teterboro, NJ                                        $40.639801               $-73.776627             $
+KTGI$Tangier Island Airport-Tangier, VA                                     $40.639801               $-73.776627             $
+KTHV$York Airport-York, PA                                                  $40.639801               $-73.776627             $
+KTIR$Wilmington-RFC, OH                                                     $40.639801               $-73.776627             $
+KTMW$Tamworth, NH                                                           $40.639801               $-73.776627             $
+KTNB$Boone Watauga Ct, NC                                                   $40.639801               $-73.776627             $
+KTOL$Toledo Express Airport-Toledo, OH                                      $40.639801               $-73.776627             $
+KTRI$Bristol/Tri-Cities Regional Airport, TN                                $40.639801               $-73.776627             $
+KTTA$Sanford-Lee County Regional Airport-Sanford, NC                        $40.639801               $-73.776627             $
+KTTN$Trenton-Mercer Airport-Trenton, NJ                                     $40.639801               $-73.776627             $
+KTVC$Cherry Capital Airport, Traverse City, MI                              $40.639801               $-73.776627             $
+KTYS$Mc Ghee Tyson Airport, Knoxville, TN                                   $40.639801               $-73.776627             $
+KTYX$Fort Drum-88D, NY                                                      $40.639801               $-73.776627             $
+KTZR$Columbus-Bolton, OH                                                    $40.639801               $-73.776627             $
+KUCA$Oneida County Airport-Utica, NY                                        $40.639801               $-73.776627             $
+KUCP$New Castle Municipal Airport-New Castle, PA                            $40.639801               $-73.776627             $
+KUDG$Darlington County Jetport-Darlington, SC                               $40.639801               $-73.776627             $
+KUKF$Wilkes County Airport-North Wilkesboro, NC                             $40.639801               $-73.776627             $
+KUKT$Quakertown Airport-Quakertown, PA                                      $40.639801               $-73.776627             $
+KUNI$Gordon K. Bush Airport-Athens / Albany, OH                             $40.639801               $-73.776627             $
+KUNV$University Park Airport-University Park, PA                            $40.639801               $-73.776627             $
+KUSE$Wauseon, OH                                                            $40.639801               $-73.776627             $
+KUUU$Newport State Airport-Newport, RI                                      $40.639801               $-73.776627             $
+KUYF$London, OH                                                             $40.639801               $-73.776627             $
+KUZA$Rock Hill/York County Airport-Rock Hill, SC                            $40.639801               $-73.776627             $
+KVAY$South Jersey Regional Airport-Mount Holly, NJ                          $40.639801               $-73.776627             $
+KVBW$Bridgewater Airport-Bridgewater, VA                                    $40.639801               $-73.776627             $
+KVES$Darke County Airport-Versailles, OH                                    $40.639801               $-73.776627             $
+KVGC$Hamilton Municipal, NY                                                 $40.639801               $-73.776627             $
+KVJI$Virginia Highlands Airport-Abingdon, VA                                $40.639801               $-73.776627             $
+KVKX$Potomac Airfield-Friendly, MD                                          $40.639801               $-73.776627             $
+KVNW$Van Wert County, OH                                                    $40.639801               $-73.776627             $
+KVQN$Volens, VA                                                             $40.639801               $-73.776627             $
+KVSF$Hartness State Airport-Springfield, VT                                 $40.639801               $-73.776627             $
+KVT1$Canaan, VT                                                             $40.639801               $-73.776627             $
+KVT2$West Burke, VT                                                         $40.639801               $-73.776627             $
+KVTA$Newark-Heath Airport-Newark, OH                                        $40.639801               $-73.776627             $
+KVUJ$Stanly County Airport-Albemarle, NC                                    $40.639801               $-73.776627             $
+KVVS$Joseph A. Hardy Connellsville Airport-Connellsville, PA                $40.639801               $-73.776627             $
+KW13$Waynesboro/Eagles Nest, VA                                             $40.639801               $-73.776627             $
+KW22$Upshur County Regional Airport Buckhannon, WV                          $40.639801               $-73.776627             $
+KW29$Stevensville, MD                                                       $40.639801               $-73.776627             $
+KW31$Lunenburg County Airport Kenbridge, VA                                 $40.639801               $-73.776627             $
+KW32$Clinton, MD                                                            $40.639801               $-73.776627             $
+KW44$Asheboro, NC                                                           $40.639801               $-73.776627             $
+KW45$Luray, VA                                                              $40.639801               $-73.776627             $
+KW63$Clarksville/Lake Cou, VA                                               $40.639801               $-73.776627             $
+KW66$Warrenton, VA                                                          $40.639801               $-73.776627             $
+KW75$Saluda/Hummel Field, VA                                                $40.639801               $-73.776627             $
+KW78$South Boston/Tuck AR, VA                                               $40.639801               $-73.776627             $
+KW81$Crewe Muni, VA                                                         $40.639801               $-73.776627             $
+KW94$Williamsburg, VA                                                       $40.639801               $-73.776627             $
+KW96$Quinton/New Kent Center, VA                                            $40.639801               $-73.776627             $
+KW99$Grant County Airport Petersburg, WV                                    $40.639801               $-73.776627             $
+KWAL$Wallops Flight Facility-Wallops Island, VA                             $40.639801               $-73.776627             $
+KWAY$Greene County Airport-Waynesburg, PA                                   $40.639801               $-73.776627             $
+KWBC$News Headquarters, DC                                                  $40.639801               $-73.776627             $
+KWBW$Wilkes-Barre Wyoming Valley Airport-Wilkes-Barre, PA                   $40.639801               $-73.776627             $
+KWDO$West Dover, VT                                                         $40.639801               $-73.776627             $
+KWNB$Camp Springs-DBC, MD                                                   $40.639801               $-73.776627             $
+KWNC$Camp Springs-CPC, MD                                                   $40.639801               $-73.776627             $
+KWNH$Camp Springs-HPC, MD                                                   $40.639801               $-73.776627             $
+KWNM$Camp Springs-MPC, MD                                                   $40.639801               $-73.776627             $
+KWNO$Camp Spring-NCEP, MD                                                   $40.639801               $-73.776627             $
+KWOR$Worthington, MA                                                        $40.639801               $-73.776627             $
+KWRI$Mcguire Air Force Base-Wrightstown, NJ                                 $40.639801               $-73.776627             $
+KWRS$Warsaw, NY                                                             $40.639801               $-73.776627             $
+KWST$Westerly State Airport-Westerly, RI                                    $40.639801               $-73.776627             $
+KWVL$Waterville Robert Lafleur Airport-Waterville, ME                       $40.639801               $-73.776627             $
+KWWD$Cape Mayairport-Wildwood, NJ                                           $40.639801               $-73.776627             $
+KXAA$Grnvl-Dnldsn, SC                                                       $40.639801               $-73.776627             $
+KXLL$Allentown Queen City Municipal Airport-Allentown, PA                   $40.639801               $-73.776627             $
+KXNO$North Air Force Auxiliary Field-North, SC                              $40.639801               $-73.776627             $
+KXSA$Tappahannock, VA                                                       $40.639801               $-73.776627             $
+KYNG$Youngstown-Warren Regional Airport-Youngstown, OH                      $40.639801               $-73.776627             $
+KZAB$Albuquerque Center Weather Service Unit                                $40.639801               $-73.776627             $
+KZBW$Nashua-ARTCC-Bos, NH                                                   $40.639801               $-73.776627             $
+KZDC$Washington-ARTCC, DC                                                   $40.639801               $-73.776627             $
+KZEF$Elkin Municipal Airport-Elkin, NC                                      $40.639801               $-73.776627             $
+KZER$Schuylkill County Airport-Pottsville, PA                               $40.639801               $-73.776627             $
+KZLA$Los Angeles Center Weather Service Unit                                $40.639801               $-73.776627             $
+KZMP$Minneapolis Center Weather Service Unit                                $40.639801               $-73.776627             $
+KZNY$New York-ARTCC, NY                                                     $40.639801               $-73.776627             $
+KZOB$Cleveland-ARTCC, OH                                                    $40.639801               $-73.776627             $
+KZZV$Zanesville Municipal Airport-Zanesville, OH                            $40.639801               $-73.776627             $
+PACV$Merle K. (Mudhole) Smith Airport-Cordova, AK                           $40.639801               $-73.776627             $
+PAHX$Shageluk Airport-Shageluka, AK                                         $40.639801               $-73.776627             $
+PAJN$Juneau International Airport-Juneau, AK                                $40.639801               $-73.776627             $
+K18Y$Milaca Municipal Airport, MN                                           $40.639801               $-73.776627             $
+KAPF$Naples Airplort, FL                                                    $40.639801               $-73.776627             $
+KDQH$Douglas Municipal Gene Chambers Airport-Douglas, GA                    $40.639801               $-73.776627             $
+KIAH$George Bush International-Houston, TX                                  $40.639801               $-73.776627             $
+KORD$O'Hare International-Chicago, IL                                       $40.639801               $-73.776627             $
+KPDK$DeKalb-Peachtree Airport-Chamblee, GA                                  $40.639801               $-73.776627             $
+KRZN$Burnett County Airport-Siren, WI                                       $40.639801               $-73.776627             $
+KSCD$Sylacauga, AL                                                          $40.639801               $-73.776627             $
+KSFO$San Francisco International-Burlingame, CA                             $40.639801               $-73.776627             $
+KU01$American Falls Airport-American Falls, ID                              $40.639801               $-73.776627             $
+PAGH$Shungnak Airport-Shungnak, AK                                          $40.639801               $-73.776627             $

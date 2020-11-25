@@ -38,6 +38,8 @@ typedef enum { CS_INVALID=0, CS_CALLSIGN, CS_SQUAWK } callsign_type_t;
 struct MyStruct{
 	char gs_call[5];
 	char gs_loc[75];
+	char gs_lat[25];
+	char gs_lng[25];
 }  gs_list[900];
 
 // SEgmentation
@@ -62,7 +64,7 @@ struct NotamJsonStruct{
 } notam_list[5000];
 
 int notam_count;
-
+int metar_count;
 
 
 FILE * filemetar;   	// 413
@@ -100,7 +102,8 @@ FILE * fileturbh22;		// TURBULENCE HIGH Graphics output
 FILE * fileturbh24;		// TURBULENCE HIGH Graphics output
 FILE * filelightng;		// LIGHTNING Graphics output
 
-FILE * filejson; //notam geojson
+FILE * filenotamjson; //notam geojson
+FILE * filemetarjson; //metar geojson
 
 int reccount;
 
