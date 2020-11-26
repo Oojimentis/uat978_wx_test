@@ -2144,16 +2144,21 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				if (metar_count ==0) {
 
     	fprintf(filemetarjson,"{\"type\": \"Feature\", \"properties\": { \"Stn\": \"%s\" ,"
-    			"\"Wind Speed\": \"%d\","
-    			"\"Altimeter(Inches) \": \"%f\","
-    			"\"Prevailing Vsby(SM)\": \"%f\","
-    			"\"Dew Point Temp(C)\": \"%d\","
-    			"\"Temperature(C)\": \"%d\","
-    			"\"Wind Direction\": \"%d\""
+    			"\"WindSp\": \"%s\","
+    			"\"Alt\": \"%3.2f\","
+    			"\"Vsby\": \"%3.2f\","
+    			"\"DewP\": \"%d\","
+    			"\"Temp\": \"%d\","
+    			"\"WindDir\": \"%d\""
+    		"},\n",gstn,gs_ret,MetarStruct.inches_altstng,
+			MetarStruct.prevail_vsbySM,MetarStruct.dew_pt_temp,
+			MetarStruct.temp,MetarStruct.winData.windDir);
 
-    			"},\n",gstn,MetarStruct.winData.windSpeed,				MetarStruct.inches_altstng,
-				MetarStruct.prevail_vsbySM,				MetarStruct.dew_pt_temp,
-				MetarStruct.temp,		MetarStruct.winData.windDir);
+
+
+ //   			"},\n",gstn,MetarStruct.winData.windSpeed,MetarStruct.inches_altstng,
+//				MetarStruct.prevail_vsbySM,MetarStruct.dew_pt_temp,
+//				MetarStruct.temp,MetarStruct.winData.windDir);
 
    	fprintf(filemetarjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %s , %s ] }}\n",gs_ret_lng,gs_ret_lat);
     			fprintf(filemetarjson,"]}");
@@ -2162,16 +2167,19 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				fseek(filemetarjson, -3, SEEK_CUR);
 
    		fprintf(filemetarjson,",{\"type\": \"Feature\", \"properties\": { \"Stn\": \"%s\" ,"
-        			"\"Wind Speed\": \"%d\","
-        			"\"Altimeter(Inches) \": \"%f\","
-        			"\"Prevailing Vsby(SM)\": \"%f\","
-        			"\"Dew Point Temp(C)\": \"%d\","
-        			"\"Temperature(C)\": \"%d\","
-        			"\"Wind Direction\": \"%d\""
+        			"\"WindSp\": \"%s\","
+        			"\"Alt\": \"%3.2f\","
+        			"\"Vsby\": \"%3.2f\","
+        			"\"DewP\": \"%d\","
+        			"\"Temp\": \"%d\","
+        			"\"WindDir\": \"%d\""
+    			"},\n",gstn,gs_ret,MetarStruct.inches_altstng,
+				MetarStruct.prevail_vsbySM,MetarStruct.dew_pt_temp,
+				MetarStruct.temp,MetarStruct.winData.windDir);
 
-        			"},\n",gstn,MetarStruct.winData.windSpeed,				MetarStruct.inches_altstng,
-    				MetarStruct.prevail_vsbySM,				MetarStruct.dew_pt_temp,
-    				MetarStruct.temp,		MetarStruct.winData.windDir);
+//        			"},\n",gstn,MetarStruct.winData.windSpeed,MetarStruct.inches_altstng,
+  //  				MetarStruct.prevail_vsbySM,MetarStruct.dew_pt_temp,
+    //				MetarStruct.temp,MetarStruct.winData.windDir);
 
     	fprintf(filemetarjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %s , %s ] }}\n",gs_ret_lng,gs_ret_lat);
     			fprintf(filemetarjson,"]}");
