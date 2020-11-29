@@ -28,7 +28,7 @@
 //
 
 typedef enum { AQ_ADSB_ICAO=0, AQ_NATIONAL=1, AQ_TISB_ICAO=2, AQ_TISB_OTHER=3, AQ_VEHICLE=4,
-               AQ_FIXED_BEACON=5, AQ_RESERVED_6=6, AQ_RESERVED_7=7 } address_qualifier_t;
+	AQ_FIXED_BEACON=5, AQ_RESERVED_6=6, AQ_RESERVED_7=7 } address_qualifier_t;
 typedef enum { ALT_INVALID=0, ALT_BARO, ALT_GEO } altitude_type_t;
 typedef enum { AG_SUBSONIC=0, AG_SUPERSONIC=1, AG_GROUND=2, AG_RESERVED=3 } airground_state_t;
 typedef enum { TT_INVALID=0, TT_TRACK, TT_MAG_HEADING, TT_TRUE_HEADING } track_type_t;
@@ -42,7 +42,7 @@ struct MyStruct{
 	char gs_lng[25];
 }  gs_list[900];
 
-// SEgmentation
+// Segmentation
 struct MySegStruct{
 	uint16_t seg_prodid;
 	uint16_t seg_prolen;
@@ -55,7 +55,6 @@ struct MySegStruct{
 
 int seg_count;
 
-
 struct NotamJsonStruct{
 	float notam_lat;
 	float notam_lng;
@@ -65,7 +64,7 @@ struct NotamJsonStruct{
 
 int notam_count;
 int metar_count;
-
+int airmet_count;
 
 FILE * filemetar;   	// 413
 FILE * filenotam;   	// 8
@@ -104,12 +103,13 @@ FILE * filelightng;		// LIGHTNING Graphics output
 
 FILE * filenotamjson; //notam geojson
 FILE * filemetarjson; //metar geojson
+FILE * fileairmetjson; //airmet geojson
 
 int reccount;
 
 struct uat_adsb_mdb {
     // presence bits
-    int has_sv : 1;
+	int has_sv : 1;
     int has_ms : 1;
     int has_auxsv : 1;
 

@@ -322,55 +322,55 @@ KSMQ$Somerset Airport-Somerville, NJ                                        $40.
 KIDI$Indiana/Stewart Airport, PA                                            $40.63300                $-79.10000              $
 KJFK$John F. Kennedy International Airport, NY                              $40.63900                $-73.76400              $
 K06A$Moton Field Municipal Airport-Tuskegee, AL                             $40.63980                $-73.77663              $
-K0A3$Smithville Municipal Airport-Smithville, TN                            $40.63980                $-73.77663              $
-K2XG$Gulf Of Mexico?                                                        $40.63980                $-73.77663              $
-K67R$Rio Grande City Municipal Airport Rio Grande City, TX                  $40.63980                $-73.77663              $
-K7B4$Miller Farm Landing Strip-Baltimore, OH                                $40.63980                $-73.77663              $
-K84R$Smithville Crawford Muniicipal-Smithville, TX                          $40.63980                $-73.77663              $
-K9Y2$East Gull Lake, MN                                                     $40.63980                $-73.77663              $
-KAMT$Alexander Salamon Airport-West Union, OH                               $40.63980                $-73.77663              $
-KANP$Lee Airport-Annapolis, MD                                              $40.63980                $-73.77663              $
-KAPH$A.P. Hill Army Airfield-Fort A.P. Hill, VA                             $40.63980                $-73.77663              $
-KAXQ$Clarion County Airport-Clarion, PA                                     $40.63980                $-73.77663              $
-KBQR$Buffalo-Lancaster Regional Airport-Lancaster, NY                       $40.63980                $-73.77663              $
-KBST$Belfast Municipal Airport-Belfast, ME                                  $40.63980                $-73.77663              $
-KBXM$Brunswick Executive Airport-Brunswick, ME                              $40.63980                $-73.77663              $
-KCFT$Greenlee County Airport Clifton/Morenci, AZ                            $40.63980                $-73.77663              $
-KCNH$Claremont Municipal Airport-Claremont, NH                              $40.63980                $-73.77663              $
-KCVV$Coupeville-Penn Cove, WA                                               $40.63980                $-73.77663              $
-KDLC$Dillon County Airport-Dillon, SC                                       $40.63980                $-73.77663              $
-KEDG$Weide Army Heliport-Edgewood Arsenal, Aberdeen Proving Ground, MD      $40.63980                $-73.77663              $
-KEOP$Pike County Airport-Waverly, OH                                        $40.63980                $-73.77663              $
-KERR$Errol Airport-Errol, NH                                                $40.63980                $-73.77663              $
-KEVY$Summit Airport-Middletown, DElaware                                    $40.63980                $-73.77663              $
-KFWQ$Rostraver Airport-Monongahela, PA                                      $40.63980                $-73.77663              $
-KFZI$Fostoria Metropolitan Airport-Fostoria, OH                             $40.63980                $-73.77663              $
-KGDY$Grundy Municipal Airport-Grundy, VA                                    $40.63980                $-73.77663              $
-KGEE$Unknown                                                                $40.63980                $-73.77663              $
-KH57$Bismark Memorial Airport-Bismark, MO                                   $40.63980                $-73.77663              $
-KJRA$West 30Th Street Heliport-Manhattan, NY                                $40.63980                $-73.77663              $
-KLKP$Lake Placid Airport-Lake Placid, NY                                    $40.63980                $-73.77663              $
-KLRG$Lincoln Regional Airport-Lincoln, ME                                   $40.63980                $-73.77663              $
-KMCZ$Martin County Airport-Williamston, NC                                  $40.63980                $-73.77663              $
-KMVM$Machias Valley Airport-Machias, ME                                     $40.63980                $-73.77663              $
-KNDY$Naval Surface Warfare Center Dahlgren-Dahlgren, VA                     $40.63980                $-73.77663              $
-KOCN$Concord Municipal Airport-Concord, NH                                  $40.63980                $-73.77663              $
-KOWK$Central Maine Airport-Norridgewock, ME                                 $40.63980                $-73.77663              $
-KP20$Avi Suquilla-Parker, AZ                                                $40.63980                $-73.77663              $
-KPHH$Robert F. Swinnie Airport-Andrews, SC                                  $40.63980                $-73.77663              $
-KPMZ$Plymouth Municipal Airport-Plymouth, NC                                $40.63980                $-73.77663              $
-KPNN$Princeton Municipal Airport-Princeton, ME                              $40.63980                $-73.77663              $
-KPYG$Pageland Airport-Pageland, SC                                          $40.63980                $-73.77663              $
-KSSN$Seneca Army Airfield-Romulus, NY                                       $40.63980                $-73.77663              $
-KSXL$Summersville Airport-Summersville, WV                                  $40.63980                $-73.77663              $
-KVKX$Potomac Airfield-Friendly, MD                                          $40.63980                $-73.77663              $
-KVVS$Joseph A. Hardy Connellsville Airport-Connellsville, PA                $40.63980                $-73.77663              $
-KWAY$Greene County Airport-Waynesburg, PA                                   $40.63980                $-73.77663              $
-KWBW$Wilkes-Barre Wyoming Valley Airport-Wilkes-Barre, PA                   $40.63980                $-73.77663              $
-KZEF$Elkin Municipal Airport-Elkin, NC                                      $40.63980                $-73.77663              $
-KZER$Schuylkill County Airport-Pottsville, PA                               $40.63980                $-73.77663              $
-K18Y$Milaca Municipal Airport, MN                                           $40.63980                $-73.77663              $
-KU01$American Falls Airport-American Falls, ID                              $40.63980                $-73.77663              $
+K0A3$Smithville Municipal Airport-Smithville, TN                            $0                       $0                      $
+K2XG$Gulf Of Mexico?                                                        $0                       $0                      $
+K67R$Rio Grande City Municipal Airport Rio Grande City, TX                  $0                       $0                      $
+K7B4$Miller Farm Landing Strip-Baltimore, OH                                $0                       $0                      $
+K84R$Smithville Crawford Muniicipal-Smithville, TX                          $0                       $0                      $
+K9Y2$East Gull Lake, MN                                                     $0                       $0                      $
+KAMT$Alexander Salamon Airport-West Union, OH                               $0                       $0                      $
+KANP$Lee Airport-Annapolis, MD                                              $0                       $0                      $
+KAPH$A.P. Hill Army Airfield-Fort A.P. Hill, VA                             $0                       $0                      $
+KAXQ$Clarion County Airport-Clarion, PA                                     $0                       $0                      $
+KBQR$Buffalo-Lancaster Regional Airport-Lancaster, NY                       $0                       $0                      $
+KBST$Belfast Municipal Airport-Belfast, ME                                  $0                       $0                      $
+KBXM$Brunswick Executive Airport-Brunswick, ME                              $0                       $0                      $
+KCFT$Greenlee County Airport Clifton/Morenci, AZ                            $0                       $0                      $
+KCNH$Claremont Municipal Airport-Claremont, NH                              $0                       $0                      $
+KCVV$Coupeville-Penn Cove, WA                                               $0                       $0                      $
+KDLC$Dillon County Airport-Dillon, SC                                       $0                       $0                      $
+KEDG$Weide Army Heliport-Edgewood Arsenal, Aberdeen Proving Ground, MD      $0                       $0                      $
+KEOP$Pike County Airport-Waverly, OH                                        $0                       $0                      $
+KERR$Errol Airport-Errol, NH                                                $0                       $0                      $
+KEVY$Summit Airport-Middletown, DElaware                                    $0                       $0                      $
+KFWQ$Rostraver Airport-Monongahela, PA                                      $0                       $0                      $
+KFZI$Fostoria Metropolitan Airport-Fostoria, OH                             $0                       $0                      $
+KGDY$Grundy Municipal Airport-Grundy, VA                                    $0                       $0                      $
+KGEE$Unknown                                                                $0                       $0                      $
+KH57$Bismark Memorial Airport-Bismark, MO                                   $0                       $0                      $
+KJRA$West 30Th Street Heliport-Manhattan, NY                                $0                       $0                      $
+KLKP$Lake Placid Airport-Lake Placid, NY                                    $0                       $0                      $
+KLRG$Lincoln Regional Airport-Lincoln, ME                                   $0                       $0                      $
+KMCZ$Martin County Airport-Williamston, NC                                  $0                       $0                      $
+KMVM$Machias Valley Airport-Machias, ME                                     $0                       $0                      $
+KNDY$Naval Surface Warfare Center Dahlgren-Dahlgren, VA                     $0                       $0                      $
+KOCN$Concord Municipal Airport-Concord, NH                                  $0                       $0                      $
+KOWK$Central Maine Airport-Norridgewock, ME                                 $0                       $0                      $
+KP20$Avi Suquilla-Parker, AZ                                                $0                       $0                      $
+KPHH$Robert F. Swinnie Airport-Andrews, SC                                  $0                       $0                      $
+KPMZ$Plymouth Municipal Airport-Plymouth, NC                                $0                       $0                      $
+KPNN$Princeton Municipal Airport-Princeton, ME                              $0                       $0                      $
+KPYG$Pageland Airport-Pageland, SC                                          $0                       $0                      $
+KSSN$Seneca Army Airfield-Romulus, NY                                       $0                       $0                      $
+KSXL$Summersville Airport-Summersville, WV                                  $0                       $0                      $
+KVKX$Potomac Airfield-Friendly, MD                                          $0                       $0                      $
+KVVS$Joseph A. Hardy Connellsville Airport-Connellsville, PA                $0                       $0                      $
+KWAY$Greene County Airport-Waynesburg, PA                                   $0                       $0                      $
+KWBW$Wilkes-Barre Wyoming Valley Airport-Wilkes-Barre, PA                   $0                       $0                      $
+KZEF$Elkin Municipal Airport-Elkin, NC                                      $0                       $0                      $
+KZER$Schuylkill County Airport-Pottsville, PA                               $0                       $0                      $
+K18Y$Milaca Municipal Airport, MN                                           $0                       $0                      $
+KU01$American Falls Airport-American Falls, ID                              $0                       $0                      $
 KAPF$Naples Airplort, FL                                                    $26.15000                $-81.76667              $
 KDQH$Douglas Municipal Gene Chambers Airport-Douglas, GA                    $31.48333                $-82.86667              $
 K49J$Hilton Head, SC                                                        $32.21667                $-80.70000              $

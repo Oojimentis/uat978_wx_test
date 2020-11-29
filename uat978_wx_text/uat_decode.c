@@ -3,8 +3,6 @@
 // Copyright 2015, Oliver Jowett <oliver@mutability.co.uk>
 //
 
-// Testing branch
-
 #ifndef NULL
 #define NULL   ((void *) 0)
 #endif
@@ -1160,7 +1158,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     switch (apdu->product_id) {
 
-    case 8:             //NOTAM **************
+    case 8:             // ** NOTAM **************
     {
     	int recf;
 
@@ -1187,7 +1185,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 11:            //AIRMET **************
+    case 11:            // ** AIRMET **************
     {
     	int recf;
     	recf = apdu->data[0];
@@ -1210,7 +1208,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 12:            //SIGMET **************
+    case 12:            // ** SIGMET **************
     {
     	int recf;
     	recf = apdu->data[0];
@@ -1233,7 +1231,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 13:            //SUA **************
+    case 13:            // ** SUA **************
     {
     	int recf;
     	recf = apdu->data[0];
@@ -1248,7 +1246,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 14:            //G-AIRMET **************
+    case 14:            // ** G-AIRMET **************
     {
     	int recf;
     	recf = apdu->data[0];
@@ -1268,7 +1266,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 70:            // Icing Low **************
+    case 70:            // ** Icing Low **************
     {
     	int scale_factor = 1;
     	int ns_flag   	 = 0;
@@ -1378,7 +1376,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 71:            // Icing High **************
+    case 71:            // ** Icing High **************
     {
     	int scale_factor = 1;
     	int ns_flag   	 = 0;
@@ -1476,7 +1474,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 84:  			// Cloud Tops **************
+    case 84:  			// ** Cloud Tops **************
     {
     	int rle_flag 	 = (apdu->data[0] & 0x80) != 0;
        	int ns_flag 	 = (apdu->data[0] & 0x40) != 0;
@@ -1582,7 +1580,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 90:   			// Turbulence Low **************
+    case 90:   			// ** Turbulence Low **************
     {
     	FILE * fileturblow;
     	int ns_flag = 0;
@@ -1703,7 +1701,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 91:  			// Turbulence High **************
+    case 91:  			// ** Turbulence High **************
     {
     	FILE * fileturbhigh;
     	int ns_flag = 0;
@@ -1818,7 +1816,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 103:  			// Lightning  **************
+    case 103:  			// ** Lightning  **************
     {
     	int cnt;
 
@@ -1914,7 +1912,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 63: case 64:   		// NEXRAD **************
+    case 63: case 64:   		// ** NEXRAD **************
     {
     	int rle_flag  	 = (apdu->data[0] & 0x80) != 0;
     	int ns_flag   	 = (apdu->data[0] & 0x40) != 0;
@@ -1991,9 +1989,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 413:  // Generic text, DLAC
+    case 413:  // ** Generic text, DLAC *****************
     {
-     	int rec_offset = 0;
+    	int rec_offset = 0;
     	const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
     	const char *report = text;
 
@@ -2161,60 +2159,62 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     					MetarStruct.inches_altstng=999;
 
     				if (metar_count ==0) {
-
-    	fprintf(filemetarjson,"{\"type\": \"Feature\", \"properties\": { \"Stn\": \"%s\" ,"
-    			"\"ObDate\": \"%d %d:%d\","
-    			"\"Temp\": \"%.2f\","
-    			"\"WindSp\": \"%d\","
-    			"\"WindDir\": \"%d\","
-    			"\"Alt\": \"%3.2f\","
-    			"\"Vsby\": \"%3.2f\","
-    			"\"DewP\": \"%.2f\""
-    		"},\n",gstn,MetarStruct.ob_date,MetarStruct.ob_hour,MetarStruct.ob_minute,
-			fahr,
-			MetarStruct.winData.windSpeed,
-			MetarStruct.winData.windDir,
-			MetarStruct.inches_altstng,
-			MetarStruct.prevail_vsbySM,
-			dewp);
+    					fprintf(filemetarjson,"{\"type\": \"Feature\", \"properties\": { \"Stn\": \"%s\" ,"
+    							"\"ObDate\": \"%d %d:%d\","
+    							"\"Temp\": \"%.2f\","
+    							"\"WindSp\": \"%d\","
+    							"\"WindDir\": \"%d\","
+    							"\"Alt\": \"%3.2f\","
+    							"\"Vsby\": \"%3.2f\","
+    							"\"DewP\": \"%.2f\""
+    							"},\n",
+								gstn,
+								MetarStruct.ob_date,MetarStruct.ob_hour,MetarStruct.ob_minute,
+								fahr,
+								MetarStruct.winData.windSpeed,
+								MetarStruct.winData.windDir,
+								MetarStruct.inches_altstng,
+								MetarStruct.prevail_vsbySM,
+								dewp);
 
  //   			"},\n",gstn,MetarStruct.winData.windSpeed,MetarStruct.inches_altstng,
 //				MetarStruct.prevail_vsbySM,MetarStruct.dew_pt_temp,
 //				MetarStruct.temp,MetarStruct.winData.windDir);
 
-   	fprintf(filemetarjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %s , %s ] }}\n",gs_ret_lng,gs_ret_lat);
-    			fprintf(filemetarjson,"]}");
-    				}
-    			else {
-    				fseek(filemetarjson, -3, SEEK_CUR);
+    					fprintf(filemetarjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %s , %s ] }}\n",gs_ret_lng,gs_ret_lat);
+    					fprintf(filemetarjson,"]}");
+    					}
+    				else {
+    					fseek(filemetarjson, -3, SEEK_CUR);
 
-   		fprintf(filemetarjson,",{\"type\": \"Feature\", \"properties\": { \"Stn\": \"%s\" ,"
-   				"\"ObDate\": \"%d %d:%d\","
-    			"\"Temp\": \"%.2f\","
-    			"\"WindSp\": \"%d\","
-    			"\"WindDir\": \"%d\","
-    			"\"Alt\": \"%3.2f\","
-    			"\"Vsby\": \"%3.2f\","
-    			"\"DewP\": \"%.2f\""
-    			"},\n",gstn,MetarStruct.ob_date,MetarStruct.ob_hour,MetarStruct.ob_minute,
-				fahr,
-				MetarStruct.winData.windSpeed,
-				MetarStruct.winData.windDir,
-				MetarStruct.inches_altstng,
-				MetarStruct.prevail_vsbySM,
-				dewp);
+    					fprintf(filemetarjson,",{\"type\": \"Feature\", \"properties\": { \"Stn\": \"%s\" ,"
+    							"\"ObDate\": \"%d %d:%d\","
+    							"\"Temp\": \"%.2f\","
+    							"\"WindSp\": \"%d\","
+    							"\"WindDir\": \"%d\","
+    							"\"Alt\": \"%3.2f\","
+    							"\"Vsby\": \"%3.2f\","
+    							"\"DewP\": \"%.2f\""
+    							"},\n",
+								gstn,
+								MetarStruct.ob_date,MetarStruct.ob_hour,MetarStruct.ob_minute,
+								fahr,
+								MetarStruct.winData.windSpeed,
+								MetarStruct.winData.windDir,
+								MetarStruct.inches_altstng,
+								MetarStruct.prevail_vsbySM,
+								dewp);
 
 //        			"},\n",gstn,MetarStruct.winData.windSpeed,MetarStruct.inches_altstng,
-  //  				MetarStruct.prevail_vsbySM,MetarStruct.dew_pt_temp,
-    //				MetarStruct.temp,MetarStruct.winData.windDir);
+//  				MetarStruct.prevail_vsbySM,MetarStruct.dew_pt_temp,
+//				MetarStruct.temp,MetarStruct.winData.windDir);
 
-    	fprintf(filemetarjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %s , %s ] }}\n",gs_ret_lng,gs_ret_lat);
-    			fprintf(filemetarjson,"]}");
-    			}
+    					fprintf(filemetarjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %s , %s ] }}\n",gs_ret_lng,gs_ret_lat);
+    					fprintf(filemetarjson,"]}");
+    				}
 
-    			fflush(filemetarjson);
-    		metar_count ++;
-
+    				fflush(filemetarjson);
+    				metar_count ++;
     			}
     		}
     		memset(&MetarStruct, 0, sizeof(MetarStruct));
@@ -2262,64 +2262,64 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 	uint16_t repid = 0;
 
 	fprintf(to, "\nINFORMATION FRAME:\n Type:  %u (%s)\n",
-				frame->type,info_frame_type_names[frame->type]);
+			frame->type,info_frame_type_names[frame->type]);
 
     if (frame->length > 0) {
     	if (frame->is_fisb)
-    			uat_display_fisb_frame(&frame->fisb, to);
+    		uat_display_fisb_frame(&frame->fisb, to);
     	else {
     		int rec_offset=frame->length;
-        	if (frame->type == 15) {
-        		fprintf(to," ICAO List: \n");
+    		if (frame->type == 15) {
+    			fprintf(to," ICAO List: \n");
 
-        		int i = 1; int j =0	;
+    			int i = 1; int j =0	;
 
-        		while (i < rec_offset ) {
-        			if (j % 10 == 0)
-        				fprintf(to,"\n");
-        			j++;
-        			fprintf(to,"%02x%02x%02x ",frame->data[i],frame->data[i+1],frame->data[i+2]);
-        			i = i +4;
-        		}
+    			while (i < rec_offset ) {
+    				if (j % 10 == 0)
+    					fprintf(to,"\n");
+    				j++;
+    				fprintf(to,"%02x%02x%02x ",frame->data[i],frame->data[i+1],frame->data[i+2]);
+    				i = i +4;
+    			}
 
-        		fprintf(to,"\n");
-        	}
-        	else if (frame->type == 14){      // report list
-        		prodt      = frame->data[0] <<3 | frame->data[1] >>5;
+    			fprintf(to,"\n");
+    		}
+    		else if (frame->type == 14){      // report list
+    			prodt      = frame->data[0] <<3 | frame->data[1] >>5;
         		tfr        = (frame->data[1] >> 4) & 1;
         		lidflag    = (frame->data[1] >> 8) & 1;
         		prod_range = frame->data[2] * 5;
         		num_crl    = frame->data[3];
 
-            	fprintf(to,"\n Current Report List\n");
+        		fprintf(to,"\n Current Report List\n");
             	fprintf(to," Product: %d -  %s\n",prodt,get_fisb_product_name(prodt));
             	fprintf(to," TFR: %d LID Flag: %d",tfr,lidflag);
     	      	fprintf(to," Number of reports: %d  Range(nm): %d\n",num_crl,prod_range);
 
-        		int j = 4;
-        		int q = 0;
+    	      	int j = 4;
+    	      	int q = 0;
 
-        		for (int i = 0; i < num_crl; ++i) {
-        			if (q % 4 == 0)
-        					fprintf(to,"\n");
-        			q++;
+    	      	for (int i = 0; i < num_crl; ++i) {
+    	      		if (q % 4 == 0)
+    	      			fprintf(to,"\n");
+    	      		q++;
 
-        			rep_yr = (frame->data[j] & (~( 1<< 0))) ;
-        			txt    = (frame->data[j+1] >> 7) & 1;
-        			grph   = (frame->data[j+1] >> 6) & 1;
-        			repid  = (frame->data[j+1] & ((1<<6)-1)) << 8 |  frame->data[j+2];
+    	      		rep_yr = (frame->data[j] & (~( 1<< 0))) ;
+    	      		txt    = (frame->data[j+1] >> 7) & 1;
+    	      		grph   = (frame->data[j+1] >> 6) & 1;
+    	      		repid  = (frame->data[j+1] & ((1<<6)-1)) << 8 |  frame->data[j+2];
 
-        			fprintf(to," #%3d Year: 20%d T%d G%d Rpt ID: %d",
-        					i+1,rep_yr,txt,grph,repid);
-        			j=j+3;
-        		 }
+    	      		fprintf(to," #%3d Year: 20%d T%d G%d Rpt ID: %d",
+    	      				i+1,rep_yr,txt,grph,repid);
+    	      		j=j+3;
+    	      	}
 
-        		 fprintf(to,"\n\n");
-        	     display_generic_data(frame->data, frame->length, to);
-        	}
-        	else
-        		display_generic_data(frame->data, frame->length, to);
-      	}
+    	      	fprintf(to,"\n\n");
+    	      	display_generic_data(frame->data, frame->length, to);
+    		}
+    		else
+    			display_generic_data(frame->data, frame->length, to);
+    	}
     }
 }
 
@@ -2327,20 +2327,20 @@ void uat_display_uplink_mdb(const struct uat_uplink_mdb *mdb, FILE *to)
 {
 	fprintf(to,"UPLINK: ");
 
-    fprintf(to," Site: %u  " , mdb->tisb_site_id);
+	fprintf(to," Site: %u  " , mdb->tisb_site_id);
     fprintf(to," Lat: %+.4f%s Lon: %+.4f%s ",
-				mdb->lat, mdb->position_valid ? "" : " ",
-				mdb->lon, mdb->position_valid ? "" : " ");
+    		mdb->lat, mdb->position_valid ? "" : " ",
+    		mdb->lon, mdb->position_valid ? "" : " ");
 
- 	time_t current_time = time(NULL);
+    time_t current_time = time(NULL);
  	char * tm=ctime(&current_time);
     tm[strlen(tm)-6] = '\0';
     fprintf(to," Time: %s",tm);
 
     if (mdb->app_data_valid) {
-        unsigned i;
-        for (i = 0; i < mdb->num_info_frames; ++i)
-            uat_display_uplink_info_frame(&mdb->info_frames[i], to);
+    	unsigned i;
+    	for (i = 0; i < mdb->num_info_frames; ++i)
+    		uat_display_uplink_info_frame(&mdb->info_frames[i], to);
     }
 }
 
@@ -2385,8 +2385,6 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 	uint32_t lat_raw;
 	uint32_t lng_raw;
-//	uint32_t lat_raw1;
-//	uint32_t lng_raw1;
 	uint32_t alt_raw;
 	int alt;
 	float lat;
@@ -2522,49 +2520,49 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 	switch (rec_app_opt) {
 
-		case 0:  // No times given. UFN.  (record_data[2:], date_time_format)
-			fprintf(fnm, "No Dates Given\n");
-			datoff = datoff +2;
+	case 0:  // No times given. UFN.  (record_data[2:], date_time_format)
+		fprintf(fnm, "No Dates Given\n");
+		datoff = datoff +2;
 		break;
 
-		case 1:  // Start time only. WEF.
-			d1 = apdu->data[datoff + 2];
-			d2 = apdu->data[datoff + 3];
-			d3 = apdu->data[datoff + 4];
-			d4 = apdu->data[datoff + 5];
+	case 1:  // Start time only. WEF.
+		d1 = apdu->data[datoff + 2];
+		d2 = apdu->data[datoff + 3];
+		d3 = apdu->data[datoff + 4];
+		d4 = apdu->data[datoff + 5];
 
-			fprintf(fnm, " Only Start Date : %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
+		fprintf(fnm, " Only Start Date : %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
 
-			datoff = datoff + 6;
+		datoff = datoff + 6;
 		break;
 
-		case 2: // End time only. TIL.
-			d1 = apdu->data[datoff + 2];
-			d2 = apdu->data[datoff + 3];
-			d3 = apdu->data[datoff + 4];
-			d4 = apdu->data[datoff + 5];
+	case 2: // End time only. TIL.
+		d1 = apdu->data[datoff + 2];
+		d2 = apdu->data[datoff + 3];
+		d3 = apdu->data[datoff + 4];
+		d4 = apdu->data[datoff + 5];
 
-			fprintf(fnm, " Only End Date: %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
+		fprintf(fnm, " Only End Date: %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
 
-			datoff = datoff + 6;
+		datoff = datoff + 6;
 		break;
 
-		case 3: // Both start and end times. WEF.
-			d1 = apdu->data[datoff + 2];
-			d2 = apdu->data[datoff + 3];
-			d3 = apdu->data[datoff + 4];
-			d4 = apdu->data[datoff + 5];
+	case 3: // Both start and end times. WEF.
+		d1 = apdu->data[datoff + 2];
+		d2 = apdu->data[datoff + 3];
+		d3 = apdu->data[datoff + 4];
+		d4 = apdu->data[datoff + 5];
 
-			fprintf(fnm, " Start Date      : %02d/%02d %02d:%02d  ",d1,d2,d3,d4);
+		fprintf(fnm, " Start Date      : %02d/%02d %02d:%02d  ",d1,d2,d3,d4);
 
-			d1 = apdu->data[datoff + 6];
-			d2 = apdu->data[datoff + 7];
-			d3 = apdu->data[datoff + 8];
-			d4 = apdu->data[datoff + 9];
+		d1 = apdu->data[datoff + 6];
+		d2 = apdu->data[datoff + 7];
+		d3 = apdu->data[datoff + 8];
+		d4 = apdu->data[datoff + 9];
 
-			fprintf(fnm, "End Date         : %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
+		fprintf(fnm, "End Date         : %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
 
-			datoff = datoff + 10;
+		datoff = datoff + 10;
 		break;
 	}
 
@@ -2588,11 +2586,30 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		strcpy(ob_ele_text,airspace_element_names[obj_element]);
 
 	if (element_flag==1 && obj_type ==14 && apdu->product_id == 14)
-			strcpy(ob_ele_text,gairspace_element_names[obj_element]);
+		strcpy(ob_ele_text,gairspace_element_names[obj_element]);
 
 	switch (geo_overlay_opt) {
 
 	case 3:  case 4: // Extended Range 3D Polygon
+
+		if (apdu->product_id == 11) {
+
+			alt_raw = (((apdu->data[datoff +4]) & 0x03) << 8) | (apdu->data[datoff +5]);
+			alt = alt_raw * 100;
+
+			if (airmet_count ==0) {
+				fprintf(fileairmetjson,"{\"type\": \"FeatureCollection\",\n");
+				fprintf(fileairmetjson,"\"features\": [ \n");
+				fprintf(fileairmetjson,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
+				fprintf(fileairmetjson,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
+			}
+			else {
+				fseek(fileairmetjson, -3, SEEK_CUR);
+
+				fprintf(fileairmetjson,",{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
+				fprintf(fileairmetjson,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
+			}
+		}
 
 		for (int i = 0; i < overlay_vert_cnt; i++) {
 			lng_raw = ((apdu->data[datoff + i]) << 11) | ((apdu->data[datoff +i+1]) << 3) | ((apdu->data[datoff +i+2]) & 0xE0 >> 5);
@@ -2612,72 +2629,159 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 			alt = alt_raw * 100;
 
+			if (apdu->product_id == 11) {
+				if (i == (overlay_vert_cnt-1))
+					fprintf(fileairmetjson,"[ %f , %f ]\n",lng,lat)	;
+				else
+					fprintf(fileairmetjson,"[ %f , %f ],\n",lng,lat);
+			}
+
+			fprintf(fnm, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
+		}
+
+		if (apdu->product_id == 11){
+			fprintf(fileairmetjson,"]]\n");
+			fprintf(fileairmetjson,"}}\n");
+			fprintf(fileairmetjson,"]}\n");
+			airmet_count ++;
+			fflush(fileairmetjson);
+		}
+
+		break;
+
+	case 7: case 8: // Extended Range Circular Prism (7 = MSL, 8 = AGL)
+		if (rec_len < 14) {
+			fprintf(fnm, "Data too short. Should be 14 bytes; %d seen.\n",rec_len);
+		} else {
+			uint32_t lng_bot_raw;
+			uint32_t lat_bot_raw;
+			uint32_t lng_top_raw;
+			uint32_t lat_top_raw;
+
+			uint32_t alt_bot_raw;
+			uint32_t alt_top_raw;
+			uint32_t r_lng_raw;
+			uint32_t r_lat_raw,alpha;
+			uint32_t alt_bot;
+			uint32_t alt_top;
+
+			float lat_bot,lng_bot,lat_top,lng_top,r_lng,r_lat;
+
+			lng_bot_raw = ((apdu->data[datoff +0]) << 10) | ((apdu->data[datoff +1]) << 2) | ((apdu->data[datoff +2]) & 0xC0 >> 6);
+			lat_bot_raw = (((apdu->data[datoff+ 2]) & 0x3F) << 12) | ((apdu->data[datoff +3]) << 4) | (((apdu->data[datoff +4]) & 0xF0) >> 4);
+			lng_top_raw = (((apdu->data[datoff +4]) & 0x0F) << 14) | ((apdu->data[datoff +5]) << 6) | (((apdu->data[datoff +6]) & 0xFC) >> 2);
+			lat_top_raw = (((apdu->data[datoff +6]) & 0x03) << 16) | ((apdu->data[datoff +7]) << 8) | (apdu->data[datoff +8]);
+
+			alt_bot_raw = ((apdu->data[datoff +9]) & 0xFE) >> 1;
+			alt_top_raw = (((apdu->data[datoff +9]) & 0x01) << 6) | (((apdu->data[datoff +10]) & 0xFC) >> 2);
+
+			r_lng_raw = (((apdu->data[datoff +10]) & 0x03) << 7) | (((apdu->data[datoff +11]) & 0xFE) >> 1);
+			r_lat_raw = (((apdu->data[datoff +11]) & 0x01) << 8) | (apdu->data[datoff +12]);
+			alpha = (apdu->data[datoff +13]);
+
+			lng_bot_raw = (~lng_bot_raw & 0x1FFFF) +1;    // 2's compliment +1
+			lat_bot_raw = (~lat_bot_raw & 0x1FFFF) +1;    // 2's compliment +1
+			lat_bot = lat_bot_raw *  0.001373 ;
+			lng_bot = (lng_bot_raw *  0.001373) * -1 ;
+
+			if (lat_bot > 90.0)
+				lat_bot = (lat_bot - 180.0) * -1 ;
+
+			if (lng_bot > 180.0)
+				lng_bot = lng_bot - 360.0;
+
+			lng_top_raw = (~lng_top_raw & 0x1FFFF) +1;    // 2's compliment +1
+			lat_top_raw = (~lat_top_raw & 0x1FFFF) +1;    // 2's compliment +1
+			lat_top = lat_top_raw *  0.001373 ;
+			lng_top = (lng_top_raw *  0.001373) * -1 ;
+
+			if (lat_top > 90.0)
+				lat_top = (lat_top - 180.0) * -1 ;
+
+			if (lng_top > 180.0)
+				lng_top = lng_top - 360.0;
+
+			alt_bot = alt_bot_raw * 5;
+			alt_top = alt_top_raw * 500;
+
+			r_lng = r_lng_raw * 0.2;
+			r_lat = r_lat_raw * 0.2;
+
+			fprintf(fnm,"lat_bot, lng_bot = %f, %f\n", lat_bot, lng_bot);
+			fprintf(fnm,"lat_top, lng_top = %f, %f\n", lat_top, lng_top);
+
+			if (geo_overlay_opt == 8)
+				fprintf(fnm,"alt_bot, alt_top = %d AGL, %d AGL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
+			else
+				fprintf(fnm,"alt_bot, alt_top = %d MSL, %d MSL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
+
+			fprintf(fnm,"r_lng, r_lat = %f, %f\n", r_lng, r_lat);
+			fprintf(fnm,"alpha=%d\n", alpha);
+		}
+		break;
+
+	case 9: // Extended Range 3D Point (AGL). p.47.
+
+		if (rec_len < 6) {
+			fprintf(fnm,  "Too short\n");
+		}
+		else {
+			lng_raw = ((apdu->data[datoff +0]) << 11) | ((apdu->data[datoff +1]) << 3) | ((apdu->data[datoff +2]) & 0xE0 >> 5);
+			lat_raw = (((apdu->data[datoff +2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) | (((apdu->data[datoff + 4]) & 0xFC) >> 2);
+			alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
+
+			lng_raw = (~lng_raw & 0x7FFFF) +1;    // 2's compliment +1
+			lat_raw = (~lat_raw & 0x7FFFF) +1;    // 2's compliment +1
+
+			lat = lat_raw *  0.0006866455078125 ;
+			lng = (lng_raw *  0.0006866455078125) * -1 ;
+
+			if (lat > 90.0)
+				lat = 360.0 - lat;
+
+			if (lng > 180.0)
+				lng = lng - 360.0;
+
+			alt = alt_raw * 100;
+
+			if (apdu->product_id == 8) {
+
+				notam_list[notam_count].notam_lat = lat;
+				notam_list[notam_count].notam_lng = lng;
+				strcpy(notam_list[notam_count].notam_stn,gstn);
+				notam_list[notam_count].notam_repid =rep_num;
+
+				if (notam_count ==0) {
+					fprintf(filenotamjson,"{\"type\": \"FeatureCollection\",\n");
+					fprintf(filenotamjson,"\"features\": [ \n");
+				}
+
+				if (notam_count ==0) {
+					fprintf(filenotamjson,"{\"type\": \"Feature\", \"properties\": { \"Location\": \"%s\" ,\"Stuff\": \"%d\"},\n",gstn,rep_num);
+
+					fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %f , %f ] }}\n",lng,lat);
+					fprintf(filenotamjson,"]}");
+				}
+				else {
+					fseek(filenotamjson, -3, SEEK_CUR);
+
+					fprintf(filenotamjson,",{\"type\": \"Feature\", \"properties\": { \"Location\": \"%s\" ,\"Stuff\": \"%d\"},\n",gstn,rep_num);
+					fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %f , %f ] }}\n",lng,lat);
+					fprintf(filenotamjson,"]}");
+				}
+
+//					fprintf(filejson,"\n%s  %11f,%11f ]}\n ",gstn,lng,lat);
+				fflush(filenotamjson);
+				notam_count ++;
+			}
+
+//					fprintf(filejson,"%s %s %11f,%11f ]}\n ",gstn,gs_ret,lng,lat);
+
 			fprintf(fnm, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
 		}
 		break;
 
-		case 9: // Extended Range 3D Point (AGL). p.47.
-
-			if (rec_len < 6) {
-				fprintf(fnm,  "Too short\n");
-			}
-			else {
-				lng_raw = ((apdu->data[datoff +0]) << 11) | ((apdu->data[datoff +1]) << 3) | ((apdu->data[datoff +2]) & 0xE0 >> 5);
-				lat_raw = (((apdu->data[datoff +2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) | (((apdu->data[datoff + 4]) & 0xFC) >> 2);
-				alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
-
-				lng_raw = (~lng_raw & 0x7FFFF) +1;    // 2's compliment +1
-				lat_raw = (~lat_raw & 0x7FFFF) +1;    // 2's compliment +1
-
-				lat = lat_raw *  0.0006866455078125 ;
-				lng = (lng_raw *  0.0006866455078125) * -1 ;
-
-				if (lat > 90.0)
-					lat = 360.0 - lat;
-
-				if (lng > 180.0)
-					lng = lng - 360.0;
-
-				alt = alt_raw * 100;
-
-				if (apdu->product_id == 8) {
-
-					notam_list[notam_count].notam_lat = lat;
-					notam_list[notam_count].notam_lng = lng;
-					strcpy(notam_list[notam_count].notam_stn,gstn);
-					notam_list[notam_count].notam_repid =rep_num;
-
-					if (notam_count ==0) {
-						fprintf(filenotamjson,"{\"type\": \"FeatureCollection\",\n");
-						fprintf(filenotamjson,"\"features\": [ \n");
-					}
-
-					if (notam_count ==0) {
-						fprintf(filenotamjson,"{\"type\": \"Feature\", \"properties\": { \"Location\": \"%s\" ,\"Stuff\": \"%d\"},\n",gstn,rep_num);
-
-						fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %f , %f ] }}\n",lng,lat);
-						fprintf(filenotamjson,"]}");
-					}
-					else {
-						fseek(filenotamjson, -3, SEEK_CUR);
-
-						fprintf(filenotamjson,",{\"type\": \"Feature\", \"properties\": { \"Location\": \"%s\" ,\"Stuff\": \"%d\"},\n",gstn,rep_num);
-						fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %f , %f ] }}\n",lng,lat);
-						fprintf(filenotamjson,"]}");
-					}
-
-//					fprintf(filejson,"\n%s  %11f,%11f ]}\n ",gstn,lng,lat);
-					fflush(filenotamjson);
-					notam_count ++;
-				}
-
-//					fprintf(filejson,"%s %s %11f,%11f ]}\n ",gstn,gs_ret,lng,lat);
-
-				fprintf(fnm, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
-			}
-		break;
-
-		case 11: case 12:   // Extended Range 3D Polyline
+	case 11: case 12:   // Extended Range 3D Polyline
 
 		for (int i = 0; i < overlay_vert_cnt; i++) {
 			if (rec_len < 6) {
@@ -2707,77 +2811,6 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 				fprintf(fnm, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
 			}
 		}
-		break;
-
-		case 7: case 8: // Extended Range Circular Prism (7 = MSL, 8 = AGL)
-			if (rec_len < 14) {
-				fprintf(fnm, "Data too short. Should be 14 bytes; %d seen.\n",rec_len);
-			} else {
-				uint32_t lng_bot_raw;
-				uint32_t lat_bot_raw;
-				uint32_t lng_top_raw;
-				uint32_t lat_top_raw;
-
-				uint32_t alt_bot_raw;
-				uint32_t alt_top_raw;
-				uint32_t r_lng_raw;
-				uint32_t r_lat_raw,alpha;
-				uint32_t alt_bot;
-				uint32_t alt_top;
-
-				float lat_bot,lng_bot,lat_top,lng_top,r_lng,r_lat;
-
-				lng_bot_raw = ((apdu->data[datoff +0]) << 10) | ((apdu->data[datoff +1]) << 2) | ((apdu->data[datoff +2]) & 0xC0 >> 6);
-				lat_bot_raw = (((apdu->data[datoff+ 2]) & 0x3F) << 12) | ((apdu->data[datoff +3]) << 4) | (((apdu->data[datoff +4]) & 0xF0) >> 4);
-				lng_top_raw = (((apdu->data[datoff +4]) & 0x0F) << 14) | ((apdu->data[datoff +5]) << 6) | (((apdu->data[datoff +6]) & 0xFC) >> 2);
-				lat_top_raw = (((apdu->data[datoff +6]) & 0x03) << 16) | ((apdu->data[datoff +7]) << 8) | (apdu->data[datoff +8]);
-
-				alt_bot_raw = ((apdu->data[datoff +9]) & 0xFE) >> 1;
-				alt_top_raw = (((apdu->data[datoff +9]) & 0x01) << 6) | (((apdu->data[datoff +10]) & 0xFC) >> 2);
-
-				r_lng_raw = (((apdu->data[datoff +10]) & 0x03) << 7) | (((apdu->data[datoff +11]) & 0xFE) >> 1);
-				r_lat_raw = (((apdu->data[datoff +11]) & 0x01) << 8) | (apdu->data[datoff +12]);
-				alpha = (apdu->data[datoff +13]);
-
-				lng_bot_raw = (~lng_bot_raw & 0x1FFFF) +1;    // 2's compliment +1
-				lat_bot_raw = (~lat_bot_raw & 0x1FFFF) +1;    // 2's compliment +1
-				lat_bot = lat_bot_raw *  0.001373 ;
-				lng_bot = (lng_bot_raw *  0.001373) * -1 ;
-
-				if (lat_bot > 90.0)
-					lat_bot = (lat_bot - 180.0) * -1 ;
-
-				if (lng_bot > 180.0)
-					lng_bot = lng_bot - 360.0;
-
-				lng_top_raw = (~lng_top_raw & 0x1FFFF) +1;    // 2's compliment +1
-				lat_top_raw = (~lat_top_raw & 0x1FFFF) +1;    // 2's compliment +1
-				lat_top = lat_top_raw *  0.001373 ;
-				lng_top = (lng_top_raw *  0.001373) * -1 ;
-
-				if (lat_top > 90.0)
-					lat_top = (lat_top - 180.0) * -1 ;
-
-				if (lng_top > 180.0)
-					lng_top = lng_top - 360.0;
-
-				alt_bot = alt_bot_raw * 5;
-				alt_top = alt_top_raw * 500;
-
-				r_lng = r_lng_raw * 0.2;
-				r_lat = r_lat_raw * 0.2;
-
-				fprintf(fnm,"lat_bot, lng_bot = %f, %f\n", lat_bot, lng_bot);
-				fprintf(fnm,"lat_top, lng_top = %f, %f\n", lat_top, lng_top);
-
-				if (geo_overlay_opt == 8)
-					fprintf(fnm,"alt_bot, alt_top = %d AGL, %d AGL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
-				else
-					fprintf(fnm,"alt_bot, alt_top = %d MSL, %d MSL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
-
-				fprintf(fnm,"r_lng, r_lat = %f, %f\n", r_lng, r_lat);
-				fprintf(fnm,"alpha=%d\n", alpha);
-			}
 		break;
 	}
 
@@ -2848,9 +2881,9 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
    				fprintf(fnm," RLoc            : %s - %s\n",gstn, gs_ret);
    				r = p + 1;
    			}
-		}
+   		}
 
-		p = strchr(r, ' ');   //  *** RTime ***
+   		p = strchr(r, ' ');   //  *** RTime ***
 		if (p) {
 			*p = 0;
 			fprintf(to," RTime           : %s\n", r);
@@ -3007,7 +3040,7 @@ void block_location_new(int bn, int ns, int sf, double *latN, double *lonW, doub
 	double raw_lat; double raw_lon; double scale;
 
 	if (sf == 1)
-        scale = 5.0;
+		scale = 5.0;
     else if (sf == 2)
         scale = 9.0;
     else

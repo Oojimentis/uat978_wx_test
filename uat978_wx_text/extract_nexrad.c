@@ -108,11 +108,11 @@ void block_location(int bn, int ns, int sf, double *latN, double *lonW, double *
     
     // With SF=2, it works like SF=1 but with a scale factor of 9x.
 
-    double raw_lat, raw_lon;
+	double raw_lat, raw_lon;
     double scale;
 
     if (sf == 1)
-        scale = 5.0;
+    	scale = 5.0;
     else if (sf == 2)
         scale = 9.0;
     else
@@ -158,12 +158,12 @@ void decode_nexrad(struct fisb_apdu *fisb)
     // now decode the bins
     if (rle_flag) {
         // One bin, 128 values, RLE-encoded
-        int i;
+    	int i;
         double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
         block_location(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
         fprintf(stdout, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-                fisb->product_id == 63 ? "Regional" : "CONUS",
+        		fisb->product_id == 63 ? "Regional" : "CONUS",
                 fisb->hours,
                 fisb->minutes,
                 scale_factor,
@@ -177,15 +177,15 @@ void decode_nexrad(struct fisb_apdu *fisb)
         // |   runlength - 1   | intensity |
 
         for (i = 3; i < fisb->length; ++i) {
-            int intensity = fisb->data[i] & 7;
-            int runlength = (fisb->data[i] >> 3) + 1;
+        	int intensity = fisb->data[i] & 7;
+        	int runlength = (fisb->data[i] >> 3) + 1;
 
-            while (runlength-- > 0)
-                fprintf(stdout, "%d", intensity);
+        	while (runlength-- > 0)
+        		fprintf(stdout, "%d", intensity);
         }
         fprintf(stdout, "\n");
     } else {
-        int L = fisb->data[3] & 15;
+    	int L = fisb->data[3] & 15;
         int i;
         int row_start, row_offset, row_size;
 
@@ -212,7 +212,7 @@ void decode_nexrad(struct fisb_apdu *fisb)
         
         // find the lowest-numbered block of this row
         if (block_num >= 405000) {
-            row_start = block_num - ((block_num - 405000) % 225);
+        	row_start = block_num - ((block_num - 405000) % 225);
             row_size = 225;
         } else {
             row_start = block_num - (block_num % 450);
@@ -224,7 +224,7 @@ void decode_nexrad(struct fisb_apdu *fisb)
         row_offset = block_num - row_start;
 
         for (i = 0; i < L; ++i) {
-            int bb;
+        	int bb;
             int j;
 
             if (i == 0)
@@ -233,17 +233,17 @@ void decode_nexrad(struct fisb_apdu *fisb)
                 bb = (fisb->data[i+3]);
 
             for (j = 0; j < 8; ++j) {
-                if (bb & (1 << j)) {
+            	if (bb & (1 << j)) {
                     // find the relevant block for this bit, limited
                     // to the same row as the original block.
-                    int row_x = (row_offset + 8*i + j - 3) % row_size;
+            		int row_x = (row_offset + 8*i + j - 3) % row_size;
                     int bn = row_start + row_x;
                     double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
                     int k;
                     block_location(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
                     fprintf(stdout, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-                            fisb->product_id == 63 ? "Regional" : "CONUS",
+                    		fisb->product_id == 63 ? "Regional" : "CONUS",
                             fisb->hours,
                             fisb->minutes,
                             scale_factor,
@@ -256,7 +256,7 @@ void decode_nexrad(struct fisb_apdu *fisb)
                     // CONUS empty blocks = intensity 1 (valid data, but no precipitation)
                     // regional empty blocks = intensity 0 (valid data <5dBz)
                     for (k = 0; k < 128; ++k)
-                        fprintf(stdout, "%d", (fisb->product_id == 63 ? 0 : 1));
+                    	fprintf(stdout, "%d", (fisb->product_id == 63 ? 0 : 1));
                     fprintf(stdout, "\n");
                 }
             }
@@ -312,4 +312,3 @@ int main(int argc, char **argv)
 
     return 0;
 }
-

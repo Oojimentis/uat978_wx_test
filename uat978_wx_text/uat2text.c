@@ -34,7 +34,7 @@ FILE * filehandle;
 void handle_frame(frame_type_t type, uint8_t *frame, int len, void *extra)
 {
 	if (type == UAT_DOWNLINK) {
-        struct uat_adsb_mdb mdb;
+		struct uat_adsb_mdb mdb;
         uat_decode_adsb_mdb(frame, &mdb);
         uat_display_adsb_mdb(&mdb, stdout);
     } else {
@@ -43,13 +43,12 @@ void handle_frame(frame_type_t type, uint8_t *frame, int len, void *extra)
         uat_display_uplink_mdb(&mdb, stdout);
     }
 
-    fprintf(stdout, "\n");
+	fprintf(stdout, "\n");
     fflush(stdout);
 }
 
 int main(int argc, char **argv)
  {
-	//  TJH
 	char lyne[150];
 	char *item;
 
@@ -67,9 +66,9 @@ int main(int argc, char **argv)
 	    item = strtok(NULL,"$");
 	    strncpy(gs_list[reccount].gs_loc,item,70);
 	    item = strtok(NULL,"$");
-	    strncpy(gs_list[reccount].gs_lat,item,24);	                      //lat
+	    strncpy(gs_list[reccount].gs_lat,item,24);
 	    item = strtok(NULL,"$");
-	    strncpy(gs_list[reccount].gs_lng,item,24);		                  //lng
+	    strncpy(gs_list[reccount].gs_lng,item,24);
 	    reccount++;
 	}
 
@@ -82,14 +81,20 @@ int main(int argc, char **argv)
    		exit (1) ;		}
    	fflush(filenotamjson);
 
+   	fileairmetjson = fopen("/home/trev/git/map-978/WebContent/airmet.geojson","w");
+   	if (fileairmetjson == 0)		{
+   		fprintf(stderr,"airmet.geojson Error--file could not be opened. \n") ;
+   		exit (1) ;		}
+   	fflush(fileairmetjson);
+
+
    	filemetarjson = fopen("/home/trev/git/map-978/WebContent/metar.geojson","w");
    	if (filemetarjson == 0)		{
    		fprintf(stderr,"metar.geojson Error--file could not be opened. \n") ;
    		exit (1) ;		}
    	fflush(filemetarjson);
 
-
-   	   	filemetar = fopen("metar.out","w");
+   	filemetar = fopen("metar.out","w");
    	if (filemetar == 0)		{
    		fprintf(stderr,"metar.out Error--file could not be opened. \n") ;
    		exit (1) ;		}
@@ -227,19 +232,19 @@ int main(int argc, char **argv)
 		exit (1) ;			}
 
 	struct dump978_reader *reader;
-    int framecount;
-        reader = dump978_reader_new(0,0);
-    if (!reader) {
-        perror("dump978_reader_new");
-        return 1;
+	int framecount;
+	reader = dump978_reader_new(0,0);
+	if (!reader) {
+		perror("dump978_reader_new");
+		return 1;
     }
     
-    while ((framecount = dump978_read_frames(reader, handle_frame, NULL)) > 0)
+	while ((framecount = dump978_read_frames(reader, handle_frame, NULL)) > 0)
         ;
 
     if (framecount < 0) {
-        perror("dump978_read_frames");
-        return 1;
+    	perror("dump978_read_frames");
+    	return 1;
     }
     return 0;
 }
