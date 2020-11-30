@@ -55,6 +55,9 @@ int main(int argc, char **argv)
 	seg_count=0;
 	notam_count=0;
 	metar_count=0;
+	airmet_count=0;
+	gairmet_count=0;
+	sigmet_count=0;
 
 	fprintf(stderr, "\nOpening file: uat_gs.txt ");
 
@@ -71,7 +74,6 @@ int main(int argc, char **argv)
 	    strncpy(gs_list[reccount].gs_lng,item,24);
 	    reccount++;
 	}
-
 	fprintf(stderr, "- %d Records read\n\n",reccount);
    	fclose(filehandle);
 
@@ -87,6 +89,17 @@ int main(int argc, char **argv)
    		exit (1) ;		}
    	fflush(fileairmetjson);
 
+   	filegairmetjson = fopen("/home/trev/git/map-978/WebContent/gairmet.geojson","w");
+   	if (filegairmetjson == 0)		{
+   		fprintf(stderr,"gairmet.geojson Error--file could not be opened. \n") ;
+   		exit (1) ;		}
+   	fflush(filegairmetjson);
+
+   	filesigmetjson = fopen("/home/trev/git/map-978/WebContent/sigmet.geojson","w");
+   	if (filesigmetjson == 0)		{
+   		fprintf(stderr,"sigmet.geojson Error--file could not be opened. \n") ;
+   		exit (1) ;		}
+   	fflush(filesigmetjson);
 
    	filemetarjson = fopen("/home/trev/git/map-978/WebContent/metar.geojson","w");
    	if (filemetarjson == 0)		{

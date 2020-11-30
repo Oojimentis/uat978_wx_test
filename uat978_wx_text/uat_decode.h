@@ -65,6 +65,9 @@ struct NotamJsonStruct{
 int notam_count;
 int metar_count;
 int airmet_count;
+int gairmet_count;
+int sigmet_count;
+
 
 FILE * filemetar;   	// 413
 FILE * filenotam;   	// 8
@@ -101,9 +104,11 @@ FILE * fileturbh22;		// TURBULENCE HIGH Graphics output
 FILE * fileturbh24;		// TURBULENCE HIGH Graphics output
 FILE * filelightng;		// LIGHTNING Graphics output
 
-FILE * filenotamjson; //notam geojson
-FILE * filemetarjson; //metar geojson
-FILE * fileairmetjson; //airmet geojson
+FILE * filenotamjson; 	//notam geojson
+FILE * filemetarjson; 	//metar geojson
+FILE * fileairmetjson; 	//airmet geojson
+FILE * filegairmetjson; //gairmet geojson
+FILE * filesigmetjson; 	//sigmet geojson
 
 int reccount;
 

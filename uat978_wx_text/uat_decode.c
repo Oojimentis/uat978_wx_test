@@ -917,7 +917,6 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
         frame->fisb.length = frame->length - 5; // ???
         frame->fisb.data   = frame->data + 5;
         }
-
         break;
 
     case 3: // Month, Day, Hours, Minutes, Seconds
@@ -1912,7 +1911,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     }
     break;
 
-    case 63: case 64:   		// ** NEXRAD **************
+    case 63: case 64:	// ** NEXRAD **************
     {
     	int rle_flag  	 = (apdu->data[0] & 0x80) != 0;
     	int ns_flag   	 = (apdu->data[0] & 0x40) != 0;
@@ -2396,6 +2395,8 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 	int obj_param_type = 0;
 	uint16_t ob_par_val;
 
+	FILE * file3dpoly;
+
 	product_ver = ((apdu->data[0]) & 0x0F);
 	fprintf(fnm," Product Version : %d ",product_ver);
 
@@ -2592,23 +2593,61 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 	case 3:  case 4: // Extended Range 3D Polygon
 
-		if (apdu->product_id == 11) {
+		alt_raw = (((apdu->data[datoff +4]) & 0x03) << 8) | (apdu->data[datoff +5]);
+		alt = alt_raw * 100;
 
-			alt_raw = (((apdu->data[datoff +4]) & 0x03) << 8) | (apdu->data[datoff +5]);
-			alt = alt_raw * 100;
+		switch(apdu->product_id ){
 
-			if (airmet_count ==0) {
-				fprintf(fileairmetjson,"{\"type\": \"FeatureCollection\",\n");
-				fprintf(fileairmetjson,"\"features\": [ \n");
-				fprintf(fileairmetjson,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
-				fprintf(fileairmetjson,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
-			}
-			else {
-				fseek(fileairmetjson, -3, SEEK_CUR);
+		case 11:       	file3dpoly = fileairmetjson;
 
-				fprintf(fileairmetjson,",{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
-				fprintf(fileairmetjson,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
-			}
+		if (airmet_count ==0) {
+			fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
+			fprintf(file3dpoly,"\"features\": [ \n");
+			fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
+			fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
+		}
+		else {
+			fseek(file3dpoly, -3, SEEK_CUR);
+			fprintf(file3dpoly,",{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
+			fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
+		}
+
+		airmet_count++;
+		break;
+
+		case 12:     	file3dpoly = filesigmetjson;
+
+		if (sigmet_count ==0) {
+			fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
+			fprintf(file3dpoly,"\"features\": [ \n");
+			fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
+			fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
+		}
+		else {
+			fseek(file3dpoly, -3, SEEK_CUR);
+			fprintf(file3dpoly,",{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
+			fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
+		}
+
+		sigmet_count++;
+		break;
+
+		case 14:        file3dpoly = filegairmetjson;
+
+		if (gairmet_count ==0) {
+			fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
+			fprintf(file3dpoly,"\"features\": [ \n");
+			fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+			fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
+		}
+		else {
+			fseek(file3dpoly, -3, SEEK_CUR);
+			fprintf(file3dpoly,",{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+			fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
+		}
+
+		gairmet_count++;
+		break;
 		}
 
 		for (int i = 0; i < overlay_vert_cnt; i++) {
@@ -2620,36 +2659,28 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 			lat = fct_f * lat_raw;
 			lng = fct_f * lng_raw;
-
 			if (lat > 90.0)
 				lat = lat - 180.0;
-
 			if (lng > 180.0)
 				lng = lng - 360.0;
-
 			alt = alt_raw * 100;
 
-			if (apdu->product_id == 11) {
-				if (i == (overlay_vert_cnt-1))
-					fprintf(fileairmetjson,"[ %f , %f ]\n",lng,lat)	;
-				else
-					fprintf(fileairmetjson,"[ %f , %f ],\n",lng,lat);
-			}
+			if (i == (overlay_vert_cnt-1))
+				fprintf(file3dpoly,"[ %f , %f ]\n",lng,lat)	;
+			else
+				fprintf(file3dpoly,"[ %f , %f ],\n",lng,lat);
 
 			fprintf(fnm, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
 		}
 
-		if (apdu->product_id == 11){
-			fprintf(fileairmetjson,"]]\n");
-			fprintf(fileairmetjson,"}}\n");
-			fprintf(fileairmetjson,"]}\n");
-			airmet_count ++;
-			fflush(fileairmetjson);
-		}
-
+		fprintf(file3dpoly,"]]\n");
+		fprintf(file3dpoly,"}}\n");
+		fprintf(file3dpoly,"]}\n");
+		fflush(file3dpoly);
 		break;
 
 	case 7: case 8: // Extended Range Circular Prism (7 = MSL, 8 = AGL)
+
 		if (rec_len < 14) {
 			fprintf(fnm, "Data too short. Should be 14 bytes; %d seen.\n",rec_len);
 		} else {
