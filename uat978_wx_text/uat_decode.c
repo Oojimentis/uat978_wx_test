@@ -1,7 +1,7 @@
 // Part of dump978, a UAT decoder.
 //
 // Copyright 2015, Oliver Jowett <oliver@mutability.co.uk>
-//
+// test 1
 
 #ifndef NULL
 #define NULL   ((void *) 0)
