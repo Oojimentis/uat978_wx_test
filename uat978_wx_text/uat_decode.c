@@ -2814,6 +2814,29 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 	case 11: case 12:   // Extended Range 3D Polyline
 
+		alt_raw = (((apdu->data[datoff +4]) & 0x03) << 8) | (apdu->data[datoff +5]);
+		alt = alt_raw * 100;
+
+		switch(apdu->product_id ){
+		case 14:        file3dpoly = filegairmetjson;
+
+		if (gairmet_count ==0) {
+			fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
+			fprintf(file3dpoly,"\"features\": [ \n");
+			fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+			fprintf(file3dpoly,"\"geometry\": { \"type\": \"LineString\", \"coordinates\": [\n");
+		}
+		else {
+			fseek(file3dpoly, -3, SEEK_CUR);
+			fprintf(file3dpoly,",{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+			fprintf(file3dpoly,"\"geometry\": { \"type\": \"LineString\", \"coordinates\": [\n");
+		}
+
+		gairmet_count++;
+		break;
+		}
+
+
 		for (int i = 0; i < overlay_vert_cnt; i++) {
 			if (rec_len < 6) {
 				fprintf(fnm,  "Too short\n");
@@ -2830,18 +2853,26 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 				lat = lat_raw *  0.0006866455078125 ;
 				lng = lng_raw * -0.0006866455078125 ;
-
 				if (lat > 90.0)
 					lat = 360.0 - lat;
-
 				if (lng > 180.0)
 					lng = lng - 360.0;
-
 				alt = alt_raw * 100;
+
+				if (i == (overlay_vert_cnt-1))
+					fprintf(file3dpoly,"[ %f , %f ]\n",lng,lat)	;
+				else
+					fprintf(file3dpoly,"[ %f , %f ],\n",lng,lat);
 
 				fprintf(fnm, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
 			}
 		}
+
+		fprintf(file3dpoly,"]\n");
+		fprintf(file3dpoly,"}}\n");
+		fprintf(file3dpoly,"]}\n");
+		fflush(file3dpoly);
+
 		break;
 	}
 
