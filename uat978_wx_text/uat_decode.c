@@ -1133,6 +1133,8 @@ static const char *get_fisb_product_format(uint16_t product_id)
 
 static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 {
+	int recf;
+
 	fprintf(to,"\nFIS-B: "
 			" Flags:             %s%s%s%s "
 			" Prod:  %u (%s) - %s\n",
@@ -1156,113 +1158,109 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     fprintf(to, "\n");
 
     switch (apdu->product_id) {
-
     case 8:             // ** NOTAM **************
-    {
-    	int recf;
+    	if ( apdu->s_flag)
+    		recf = apdu->data[9] >> 4;
+    	else
+    		recf = apdu->data[0] >> 4;
 
-    	if ( apdu->s_flag){
-    		recf = apdu->data[9];}
-    	else {
-    		recf = apdu->data[0]; }
+    	fprintf(filenotam," Record Format   : %d\n",recf);
+    	fprintf(to," Record Format   : %d\n",recf);
 
-    	fprintf(filenotam," Record Format   : %d\n",recf >> 4);
-
-        if ((recf >> 4) == 8){ 										//graphic
-        	fprintf(to," Report Type     : NOTAM\n");
+    	switch (recf){
+    	case 8:  										//graphic
+    		fprintf(to," Report Type     : NOTAM\n");
 			fprintf(filenotam," Report Type     : NOTAM\n");
-			fprintf(to,"notam_count %d \n",notam_count);
 			fflush(to);
         	get_graphic(apdu, filenotam,to);
-        }
-        else if (((recf >> 4) == 2 ) && (apdu->s_flag))  {        	// segmented text
-        	get_seg_text(apdu, filenotam,to); }
-        else if ((recf >> 4) == 2 ) {								// text
-        	get_text(apdu, filenotam,to);}
-        else
+        	break;
+    	case 2:                                         // text
+    		if (apdu->s_flag)          	// segmented text
+    			get_seg_text(apdu, filenotam,to);
+    		else  								// text
+    			get_text(apdu, filenotam,to);
+    		break;
+    	default:
         	display_generic_data(apdu->data, apdu->length, to);
-    }
+        	break;
+    	}
     break;
 
     case 11:            // ** AIRMET **************
-    {
-    	int recf;
-    	recf = apdu->data[0];
+    	recf = apdu->data[0] >> 4;
 
-    	fprintf(to," Record Format   : %d \n",recf >> 4);
-    	fprintf(fileairmet," Record Format   : %d \n",recf >> 4);
+    	fprintf(to," Record Format   : %d \n",recf);
+    	fprintf(fileairmet," Record Format   : %d \n",recf);
 
-    	if ((recf >> 4) == 8){ 										//graphic
+    	switch (recf){
+    	case 8:  							//graphic
 			fprintf(to," Report Type     : AIRMET\n");
 			fprintf(fileairmet," Report Type     : AIRMET\n");
-
 			get_graphic(apdu, fileairmet,to);
-    	}
-    	else if ((recf >> 4) == 2 ) {       						// text
+			break;
+    	case 2:								// text
         	get_text(apdu, fileairmet,to);
-   	    }
-    	else
-    		display_generic_data(apdu->data, apdu->length, to);
+        	break;
+    	default:
+        	display_generic_data(apdu->data, apdu->length, to);
+        	break;
+    	}
+    	break;        // switch recf
 
-    }
-    break;
+	break;
 
     case 12:            // ** SIGMET **************
-    {
-    	int recf;
-    	recf = apdu->data[0];
+    	recf = apdu->data[0] >> 4;
 
-    	fprintf(to," Record Format   : %d \n",recf >> 4);
-    	fprintf(filesigmet," Record Format   : %d \n",recf >> 4);
+    	fprintf(to," Record Format   : %d \n",recf );
+    	fprintf(filesigmet," Record Format   : %d \n",recf);
 
-    	if ((recf >> 4) == 8){ 										//graphic
+    	switch (recf) {
+    	case 8: 										//graphic
     		fprintf(to," Report Type     : SIGMET\n");
     		fprintf(filesigmet," Report Type     : SIGMET\n");
-
     		get_graphic(apdu, filesigmet,to);
-     	}
-    	else if ((recf >> 4) == 2 ) {       						// text
+    		break;
+    	case 2:     						// text
         	get_text(apdu, filesigmet,to);
-        }
-        else
+        	break;
+    	default:
         	display_generic_data(apdu->data, apdu->length, to);
-
-    }
+        	break;
+    	}
     break;
 
     case 13:            // ** SUA **************
-    {
-    	int recf;
-    	recf = apdu->data[0];
+    	recf = apdu->data[0] >> 4;
+    	fprintf(to," Record Format   : %d \n",recf);
+    	fprintf(filesua," Record Format   : %d \n",recf);
 
-    	fprintf(to," Record Format   : %d \n",recf >> 4);
-    	fprintf(filesua," Record Format   : %d \n",recf >> 4);
-
-        if ((recf >> 4) == 2 )             // text
-        	get_text(apdu, filesua,to);
-        else
-        	display_generic_data(apdu->data, apdu->length, to);
-    }
+    	switch (recf) {
+    	case 2: 										//text
+    		get_text(apdu, filesua,to);
+    		break;
+    	default:
+    		display_generic_data(apdu->data, apdu->length, to);
+    		break;
+    	}
     break;
 
     case 14:            // ** G-AIRMET **************
-    {
-    	int recf;
-    	recf = apdu->data[0];
+    	recf = apdu->data[0] >> 4;
 
-    	fprintf(to," Record Format   : %d \n",recf >> 4);
-    	fprintf(filegairmet," Record Format   : %d \n",recf >> 4);
+    	fprintf(to," Record Format   : %d \n",recf);
+    	fprintf(filegairmet," Record Format   : %d \n",recf);
 
-    	if ((recf >> 4) == 8){ 											//graphic
+    	switch (recf) {
+    	case 8: 										//graphic
     		fprintf(to," Report Type     : G-AIRMET\n");
     		fprintf(filegairmet," Report Type     : G-AIRMET\n");
-
     		get_graphic(apdu, filegairmet,to);
-    	}
-    	else
+    		break;
+    	default:
     		display_generic_data(apdu->data, apdu->length, to);
-
-    }
+    		break;
+    	}
     break;
 
     case 70:            // ** Icing Low **************
@@ -2055,8 +2053,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     				get_gs_name(gstn,reccount);
 
-    				fprintf(to," RLoc:  %s - %s Lat: %s Lng: %s\n"
-    						,gstn, gs_ret,gs_ret_lat,gs_ret_lng);
+    				fprintf(to," RLoc:  %s - %s\n"
+    						,gstn, gs_ret);
 
     				time_t current_time = time(NULL);
     				struct tm *tm = localtime(&current_time);
