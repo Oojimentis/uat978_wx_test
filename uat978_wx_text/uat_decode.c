@@ -1,7 +1,7 @@
 // Part of dump978, a UAT decoder.
 //
 // Copyright 2015, Oliver Jowett <oliver@mutability.co.uk>
-// test 1
+//
 
 #ifndef NULL
 #define NULL   ((void *) 0)
@@ -76,9 +76,11 @@ static const char *decode_dlac(uint8_t *data, unsigned bytelen, int rec_offset)
             while (ch > 0)
                 *p++ = ' ', ch--;
             tab = 0;
-        } else if (ch == 28) { // tab
+        }
+        else if (ch == 28) { // tab
             tab = 1;
-        } else {
+        }
+        else {
             *p++ = dlac_alphabet[ch];
         }
 
@@ -234,25 +236,21 @@ static void get_sua_text(char *Word, FILE *to){
 		else if	(strcmp(sua_shp_ind,"Y") ==0){
 			fprintf(filesua," Shape Indicator: %s Has Shape Defined\n",sua_shp_ind);}
 	}
-
 	token = strsep(&Word,"|");
 	if (token){
 		strcpy(sua_nfdc_id,token);      //14
 		fprintf(filesua," NFDC ID         : %10s",sua_nfdc_id);
 	}
-
 	token = strsep(&Word,"|");
 	if (token) {
 		strcpy(sua_nfcd_nm,token);      //15
 		fprintf(filesua,"      NFCD Name : %s\n",sua_nfcd_nm);
 	}
-
 	token = strsep(&Word,"|");
 	if (token) {
 		strcpy(sua_dafif_id,token);    	//16
 		fprintf(filesua," DAFIF ID        : %10s",sua_dafif_id);
 	}
-
 	token = strsep(&Word,"|");
 	if (token) {
 		strcpy(sua_dafif_nm,token);    	//17
@@ -585,7 +583,7 @@ static void uat_decode_sv(uint8_t *frame, struct uat_adsb_mdb *mdb)
     		if (mdb->airground_state == AG_SUPERSONIC)
                     mdb->ew_vel *= 4;
             }
-            
+
             if (mdb->ns_vel_valid && mdb->ew_vel_valid) {
             	if (mdb->ns_vel != 0 || mdb->ew_vel != 0) {
             		mdb->track_type = TT_TRACK;
@@ -645,7 +643,8 @@ static void uat_decode_sv(uint8_t *frame, struct uat_adsb_mdb *mdb)
     if ((frame[0] & 7) == 2 || (frame[0] & 7) == 3) {
         mdb->utc_coupled = 0;
         mdb->tisb_site_id = (frame[16] & 0x0f);
-    } else {
+    }
+    else {
         mdb->utc_coupled = (frame[16] & 0x08) ? 1 : 0;
         mdb->tisb_site_id = 0;
     }
@@ -801,7 +800,8 @@ static void uat_decode_auxsv(uint8_t *frame, struct uat_adsb_mdb *mdb)
     if (raw_alt != 0) {
         mdb->sec_altitude = (raw_alt - 1) * 25 - 1000;
         mdb->sec_altitude_type = (frame[9] & 1) ? ALT_BARO : ALT_GEO;
-    } else {
+    }
+    else {
         mdb->sec_altitude_type = ALT_INVALID;
     }
 
@@ -986,7 +986,6 @@ void uat_decode_uplink_mdb(uint8_t *frame, struct uat_uplink_mdb *mdb)
                 // overrun?
                 break;
             }
-
             if (frame->length == 0 && frame->type == 0) {
                 break; // no more frames
             }
@@ -1268,7 +1267,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	int scale_factor = 1;
     	int ns_flag   	 = 0;
     	FILE * fileicinglow;
-
     	int rle_flag  = (apdu->data[0] & 0x80) != 0;
     	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
      	int icel_alt  = (apdu->data[0] & 0x70) >> 4;
@@ -1317,29 +1315,26 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			while (num_bins-- > 0){
     				fprintf(fileicinglow, "%d", ice_prob);}
     		}
-
     		fprintf(fileicinglow, "\n");
     	}
     	else {    // Empty
     		int row_start;
 			int row_offset;
 			int row_size;
-
 			int L = apdu->data[3] & 15;
 
 			if (block_num >= 405000) {
     			row_start = block_num - ((block_num - 405000) % 225);
     			row_size = 225;
-    		} else {
+    		}
+			else {
     			row_start = block_num - (block_num % 450);
     			row_size = 450;
     		}
-
     		row_offset = block_num - row_start;
 
     		for (int i = 0; i < L; ++i) {
     			int bb;
-
     			if (i == 0)
     				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
     			else
@@ -1367,7 +1362,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			}
     		}
     	}
-
     	fflush(fileicinglow);
         fflush(to);
     }
@@ -1378,7 +1372,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	int scale_factor = 1;
     	int ns_flag   	 = 0;
     	FILE * fileicinghigh;
-
     	int rle_flag  = (apdu->data[0] & 0x80) != 0;
     	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
      	int iceh_alt  = (apdu->data[0] & 0x70) >> 4;
@@ -1396,7 +1389,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		fileicinghigh = fileicingh24;
     		break;
     	}
-
         fprintf(to," rle_flag: %d   Altitude: %d block: %d\n",rle_flag,iceh_alt,block_num);
     	// now decode the bins
     	if (rle_flag) {
@@ -1419,7 +1411,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			while (num_bins-- > 0){
     				fprintf(fileicinghigh, "%d", ice_prob);}
     		}
-
     		fprintf(fileicinghigh, "\n");
     	}
     	else {    // Empty
@@ -1429,16 +1420,15 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		if (block_num >= 405000) {
     			row_start = block_num - ((block_num - 405000) % 225);
     			row_size = 225;
-    		} else {
+    		}
+    		else {
     			row_start = block_num - (block_num % 450);
     			row_size = 450;
     		}
-
     		row_offset = block_num - row_start;
 
     		for (int i = 0; i < L; ++i) {
     			int bb;
-
     			if (i == 0)
     				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
     			else
@@ -1488,7 +1478,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        	// now decode the bins
        	if (rle_flag) {
        		// One bin, 128 values, RLE-encoded
-
        		double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
 
        		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
@@ -1498,7 +1487,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
        		for (int i = 3; i < apdu->length; ++i) {
-
        			char enc = ' ';
        			int cld_hgt  = apdu->data[i] & 15;
        			int num_bins = (apdu->data[i] >> 4) + 1;
@@ -1507,7 +1495,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        				i = i + 1;
        				num_bins = (apdu->data[i])+1;
        			}
-
        			switch (cld_hgt){
        			case 10:    enc='a';  	break;
         		case 11:    enc='b';    break;
@@ -1519,11 +1506,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
         			enc = cld_hgt +'0';
         			break;
        			}
-
        			while (num_bins-- > 0){
        				fprintf(filecloudt, "%c", enc);}
        		}
-
        		fprintf(filecloudt, "\n");
        	}
        	else {
@@ -1533,16 +1518,15 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        		if (block_num >= 405000) {
        			row_start = block_num - ((block_num - 405000) % 225);
        			row_size = 225;
-       		} else {
+       		}
+       		else {
        			row_start = block_num - (block_num % 450);
        			row_size = 450;
        		}
-
        		row_offset = block_num - row_start;
 
        		for (int i = 0; i < L; ++i) {
        			int bb;
-
        			if (i == 0)
        				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
        			else
@@ -1554,7 +1538,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        					// to the same row as the original block.
        					int row_x = (row_offset + 8*i + j - 3) % row_size;
        					int bn 	  = row_start + row_x;
-
        					double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
 
        					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
@@ -1571,7 +1554,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        			}
        		}
        	}
-
        	fflush(filecloudt);
        	fflush(to);
     }
@@ -1582,7 +1564,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	FILE * fileturblow;
     	int ns_flag = 0;
     	int scale_factor = 1;
-
     	int rle_flag  = (apdu->data[0] & 0x80) != 0;
     	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
     	int turb_alt  = (apdu->data[0] & 0x70) >> 4;
@@ -1609,7 +1590,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	// now decode the bins
     	if (rle_flag) {
     		// One bin, 128 values, RLE-encoded
-
     		double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
 
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
@@ -1627,7 +1607,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				i = i+1;
     				num_bins = (apdu->data[i])+1;
     			}
-
     			switch (edr_enc){
     			case 10:   	enc='a';  	break;
     			case 11:  	enc='b';    break;
@@ -1639,31 +1618,27 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				enc = edr_enc +'0';
     			break;
     			}
-
     			while (num_bins-- > 0){
     				fprintf(fileturblow, "%c", enc);}
     		}
-
     		fprintf(fileturblow, "\n");
     	}
     	else {
     		int L = apdu->data[3] & 15;
-
     		int row_start, row_offset, row_size;
 
     		if (block_num >= 405000) {
     			row_start = block_num - ((block_num - 405000) % 225);
     			row_size = 225;
-    		} else {
+    		}
+    		else {
     			row_start = block_num - (block_num % 450);
     			row_size = 450;
     		}
-
     		row_offset = block_num - row_start;
 
     		for (int i = 0; i < L; ++i) {
     			int bb;
-
     			if (i == 0)
     				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
     			else
@@ -1675,7 +1650,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     					// to the same row as the original block.
     					int row_x = (row_offset + 8*i + j - 3) % row_size;
     					int bn = row_start + row_x;
-
     					double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
 
     					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
@@ -1692,7 +1666,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			}
     		}
     	}
-
     	fflush(fileturblow);
         fflush(to);
     }
@@ -1703,7 +1676,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	FILE * fileturbhigh;
     	int ns_flag = 0;
     	int scale_factor = 1;
-
     	int rle_flag  = (apdu->data[0] & 0x80) != 0;
     	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
     	int turb_alt  = (apdu->data[0] & 0x70) >> 4;
@@ -1726,7 +1698,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	// now decode the bins
     	if (rle_flag) {
     		// One bin, 128 values, RLE-encoded
-
     		double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
 
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
@@ -1744,7 +1715,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				i = i + 1;
     				num_bins = (apdu->data[i])+1;
     			}
-
     			switch (edr_enc){
     			case 10:    enc='a';    break;
     			case 11:    enc='b';    break;
@@ -1756,11 +1726,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				enc = edr_enc +'0';
     			break;
     			}
-
     			while (num_bins-- > 0){
     				fprintf(fileturbhigh, "%c", enc);}
     		}
-
     		fprintf(fileturbhigh, "\n");
     	}
     	else {
@@ -1770,16 +1738,15 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		if (block_num >= 405000) {
     			row_start = block_num - ((block_num - 405000) % 225);
     			row_size  = 225;
-    		} else {
+    		}
+    		else {
     			row_start = block_num - (block_num % 450);
     			row_size  = 450;
     		}
-
     		row_offset = block_num - row_start;
 
     		for (int i = 0; i < L; ++i) {
     			int bb;
-
     			if (i == 0)
     				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
     			else
@@ -1807,7 +1774,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			}
     		}
     	}
-
     	fflush(fileturbhigh);
     	fflush(to);
     }
@@ -1816,7 +1782,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     case 103:  			// ** Lightning  **************
     {
     	int cnt;
-
        	int rle_flag	 = (apdu->data[0] & 0x80) != 0;
        	int ns_flag 	 = (apdu->data[0] & 0x40) != 0;
        	int block_num 	 = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
@@ -1828,7 +1793,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
        	fprintf(to," rle_flag: %d  Scale: %d ns-flag: %d Block: %d ",
        			rle_flag,scale_factor,ns_flag,block_num);
-
        	// now decode the bins
        	if (rle_flag) {
        		// One bin, 128 values, RLE-encoded
@@ -1847,7 +1811,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        				i = i + 1;
        				num_bins = (apdu->data[i])+1;
        			}
-
        			cnt = cnt+num_bins;
        			fprintf(to,"Count: %3d  Bins: %3d ",cnt,num_bins);
        			fprintf(to,"Polarity: %d  Count: %d\n",lgt_pol,lgt_cnt);
@@ -1855,7 +1818,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        			while (num_bins-- > 0){
        				fprintf(filelightng, "%d", lgt_cnt);}
        		}
-
        		fprintf(to,"Count: %d\n",cnt);
        		fprintf(filelightng, "\n");
        	}
@@ -1866,16 +1828,15 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        		if (block_num >= 405000) {
        			row_start = block_num - ((block_num - 405000) % 225);
        			row_size = 225;
-       		} else {
+       		}
+       		else {
        			row_start = block_num - (block_num % 450);
        			row_size = 450;
        		}
-
        		row_offset = block_num - row_start;
 
        		for (int i = 0; i < L; ++i) {
        			int bb;
-
        			if (i == 0)
        				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
        			else
@@ -1903,7 +1864,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
        			}
        		}
        	}
-
    		fflush(filelightng);
        	fflush(to);
     }
@@ -1915,7 +1875,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	int ns_flag   	 = (apdu->data[0] & 0x40) != 0;
     	int block_num 	 = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
     	int scale_factor = (apdu->data[0] & 0x30) >> 4;
-
     	// now decode the bins
     	if (rle_flag) {
     		// One bin, 128 values, RLE-encoded
@@ -1926,7 +1885,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		fprintf(filenexradc, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
     				apdu->product_id == 63 ? "Regional" : "CONUS",apdu->hours,
 					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
-
     		for (int i = 3; i < apdu->length; ++i) {
     			int intensity = apdu->data[i] & 7;
     			int runlength = (apdu->data[i] >> 3) + 1;
@@ -1943,16 +1901,15 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		if (block_num >= 405000) {
     			row_start = block_num - ((block_num - 405000) % 225);
     			row_size  = 225;
-    		} else {
+    		}
+    		else {
     			row_start = block_num - (block_num % 450);
     			row_size  = 450;
     		}
-
     		row_offset = block_num - row_start;
 
     		for (int i = 0; i < L; ++i) {
     			int bb;
-
     			if (i == 0)
     				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
     			else
@@ -1980,7 +1937,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
                }
            }
     	}
-
     	fflush(filenexradc);
     	fflush(to);
     }
@@ -2010,10 +1966,11 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			memcpy(report_buf, report, next_report - report);
     			report_buf[next_report - report] = 0;
     			report = next_report + 1;
-    		} else {
+    		}
+    		else {
     			strcpy(report_buf, report);
     			report = NULL;
-    			}
+    		}
     		if (!report_buf[0])
     			continue;
 
@@ -2022,7 +1979,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     		if (strcmp(taftype,"TAF COR")== 0){
     			report_buf[3]='.';
     		}
-
     		p = strchr(r, ' ');    // *** RType ***
     		if (p) {
     			*p = 0;
@@ -2061,10 +2017,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				fprintf(filemetar,"Time                 : %s", asctime(tm));
     				fprintf(filemetar,"WX Station           : %s - %s\n",gstn,gs_ret);
     				}
-
     			r = p+1;
     		}
-
     		p = strchr(r, ' ');   //  *** RTime ***
     		if (p) {
     			*p = 0;
@@ -2079,7 +2033,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     			fprintf(filemetar," Report Name         : %s\n",mtype);
     			fprintf(filemetar," Data:\n%s\n", r);    // *** Text ***
     		}
-
     		if (strcmp(mtype,"WINDS") == 0){
     			char *tok1;  char *tok2; char *tok3; char *tok4;
     			char winds[91];
@@ -2087,7 +2040,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     			strncpy(winds,r,90);
     			winds[90]= '\0';
-
     			q=winds;
       			tok1 = strsep(&q,"\0");
 
@@ -2099,7 +2051,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
      					fprintf(filemetar,"%-10s",tok2);
     				}
     			}
-
     			fprintf(filemetar,"\n          ");
 
     			u = strchr(r, '\n');
@@ -2111,22 +2062,17 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     					fprintf(filemetar,"%-10s",tok4);
     				}
     			}
-
    			fprintf(filemetar,"\n");
     		}
-
     		strcat(observation," ");
     		strcat(observation,r);
 
-    		if (strcmp(mtype,"PIREP") == 0)
-    		{
+    		if (strcmp(mtype,"PIREP") == 0){
     			pirep_copy = (char *)malloc(strlen(r) + 1);
     			strcpy(pirep_copy,r);
-
     			get_pirep(pirep_copy,to);
     		}
     		if (strcmp(mtype,"METAR") == 0 || strcmp(mtype,"SPECI") == 0  ) {
-
     			if( decode_metar(observation, Mptr) != 0 ) {
     				fprintf(to,"Error METAR Decode\n"); }
     			else {
@@ -2135,6 +2081,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     					fprintf(filemetarjson,"{\"type\": \"FeatureCollection\",\n");
     					fprintf(filemetarjson,"\"features\": [ \n");
     				}
+
     				float fahr;
     				float dewp;
 
@@ -2142,19 +2089,16 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     					fahr = 999;
     				else
     					fahr = (MetarStruct.temp * 9/5 ) +32;
-
     				if (MetarStruct.dew_pt_temp > 1000)
     					dewp = 999;
     				else
     					dewp = (MetarStruct.dew_pt_temp * 9/5 ) +32;
-
     				if (MetarStruct.winData.windSpeed> 1000)
     					MetarStruct.winData.windSpeed=999;
     				if (MetarStruct.winData.windDir> 1000)
     					MetarStruct.winData.windDir=999;
     				if (MetarStruct.inches_altstng> 1000)
     					MetarStruct.inches_altstng=999;
-
     				if (metar_count ==0) {
     					fprintf(filemetarjson,"{\"type\": \"Feature\", \"properties\": { \"Stn\": \"%s\" ,"
     							"\"ObDate\": \"%d %d:%d\","
@@ -2174,16 +2118,11 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 								MetarStruct.prevail_vsbySM,
 								dewp);
 
- //   			"},\n",gstn,MetarStruct.winData.windSpeed,MetarStruct.inches_altstng,
-//				MetarStruct.prevail_vsbySM,MetarStruct.dew_pt_temp,
-//				MetarStruct.temp,MetarStruct.winData.windDir);
-
     					fprintf(filemetarjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %s , %s ] }}\n",gs_ret_lng,gs_ret_lat);
     					fprintf(filemetarjson,"]}");
     					}
     				else {
     					fseek(filemetarjson, -3, SEEK_CUR);
-
     					fprintf(filemetarjson,",{\"type\": \"Feature\", \"properties\": { \"Stn\": \"%s\" ,"
     							"\"ObDate\": \"%d %d:%d\","
     							"\"Temp\": \"%.2f\","
@@ -2202,14 +2141,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 								MetarStruct.prevail_vsbySM,
 								dewp);
 
-//        			"},\n",gstn,MetarStruct.winData.windSpeed,MetarStruct.inches_altstng,
-//  				MetarStruct.prevail_vsbySM,MetarStruct.dew_pt_temp,
-//				MetarStruct.temp,MetarStruct.winData.windDir);
-
     					fprintf(filemetarjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %s , %s ] }}\n",gs_ret_lng,gs_ret_lat);
     					fprintf(filemetarjson,"]}");
     				}
-
     				fflush(filemetarjson);
     				metar_count ++;
     			}
@@ -2270,7 +2204,6 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
     			fprintf(to," ICAO List: \n");
 
     			int i = 1; int j =0	;
-
     			while (i < rec_offset ) {
     				if (j % 10 == 0)
     					fprintf(to,"\n");
@@ -2278,7 +2211,6 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
     				fprintf(to,"%02x%02x%02x ",frame->data[i],frame->data[i+1],frame->data[i+2]);
     				i = i +4;
     			}
-
     			fprintf(to,"\n");
     		}
     		else if (frame->type == 14){      // report list
@@ -2295,12 +2227,10 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 
     	      	int j = 4;
     	      	int q = 0;
-
     	      	for (int i = 0; i < num_crl; ++i) {
     	      		if (q % 4 == 0)
     	      			fprintf(to,"\n");
     	      		q++;
-
     	      		rep_yr = (frame->data[j] & (~( 1<< 0))) ;
     	      		txt    = (frame->data[j+1] >> 7) & 1;
     	      		grph   = (frame->data[j+1] >> 6) & 1;
@@ -2310,7 +2240,6 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
     	      				i+1,rep_yr,txt,grph,repid);
     	      		j=j+3;
     	      	}
-
     	      	fprintf(to,"\n\n");
     	      	display_generic_data(frame->data, frame->length, to);
     		}
@@ -2323,7 +2252,6 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 void uat_display_uplink_mdb(const struct uat_uplink_mdb *mdb, FILE *to)
 {
 	fprintf(to,"UPLINK: ");
-
 	fprintf(to," Site: %u  " , mdb->tisb_site_id);
     fprintf(to," Lat: %+.4f%s Lon: %+.4f%s ",
     		mdb->lat, mdb->position_valid ? "" : " ",
@@ -2384,7 +2312,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 	uint32_t lng_raw;
 	uint32_t alt_raw;
 	int alt;
-	float lat;
+	float lat;    float lat_save = 0.0;
 	float lng;
 	float fct_f =0.000687;  // float_t fct_t =0.001373;    raw_lon * 360.0 / 16777216.0;
 //	float fct_f = 16777216.0;
@@ -2397,10 +2325,8 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 	product_ver = ((apdu->data[0]) & 0x0F);
 	fprintf(fnm," Product Version : %d ",product_ver);
-
 	rec_count = ((apdu->data[1]) & 0xF0) >> 4;
 	fprintf(fnm,"           Record Count     : %d \n",rec_count);
-
 	rec_ref = ((apdu->data[5]));
 	fprintf(fnm," Record Reference: %d \n",rec_ref);
 
@@ -2409,59 +2335,43 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		fprintf(fnm," Location ID     : %s\n",location_id);
 
 		rec_offset = 2;
-
 		const char *text = decode_dlac(apdu->data,5 ,rec_offset);
 
 		strncpy(gstn,text,5);
 		get_gs_name(gstn,reccount);
 		fprintf(fnm," RLoc            : %s - %s\n",gstn, gs_ret);
 	}
-
 	rep_num = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]);   			//7 8
 	fprintf(fnm," Report Number   : %6d  ",rep_num);
-
 	rec_len = ((apdu->data[datoff + 0]) << 2) | (((apdu->data[datoff + 1]) & 0xC0) >> 6);    	// 6 7
 	fprintf(fnm,"     Record Length    : %03d ",rec_len);
-
 	report_year = ((apdu->data[datoff + 3]) & 0xFE) >> 1;    									// 9
 	fprintf(fnm,"     Report Year        : 20%02d\n ",report_year);
-
 	overlay_rec_id = (((apdu->data[datoff + 4]) & 0x1E) >> 1) + 1; // Document instructs to add 1.
 	fprintf(fnm,"Ovrlay RcID     : %d",overlay_rec_id);                       					//10
-
 	obj_label_flag = (apdu->data[datoff + 4] & 0x01);                             				//10
 	fprintf(fnm, "            Object Label Flag: %d \n", obj_label_flag);
-
 	if (obj_label_flag == 0) { // Numeric index.
 		obj_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);   				// 11 12
-
 		fprintf(fnm, " Ob Lbl Num      : %d    ", obj_label);
-
 		datoff = datoff +7;	}                   												//datoff=13
 	else {
 		obj_labelt = decode_dlac(apdu->data,5, 2);
-
 		fprintf(fnm, " Ob Lbl Alph     : %s ",obj_labelt);
-
 		datoff = datoff + 14;
 	}
 
-	element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;                 						//13
+	element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;                 			//13
 	fprintf(fnm, "        Element Flag     : %d  ", element_flag);
-
-	obj_element = (apdu->data[datoff + 0]) & 0x1F;                            					//13
+	obj_element = (apdu->data[datoff + 0]) & 0x1F;                            		//13
 	fprintf(fnm, "      Object Element     : %d\n", obj_element);
-
-	obj_status = (apdu->data[datoff +1]) & 0x0F;                   								//14
+	obj_status = (apdu->data[datoff +1]) & 0x0F;                   					//14
 	fprintf(fnm, " Object Status   : %d  ", obj_status);
-
-	obj_type = (apdu->data[datoff +1] & 0xF0) >> 4;                  							//14
+	obj_type = (apdu->data[datoff +1] & 0xF0) >> 4;                  				//14
 	fprintf(fnm, "         Object Type      : %d \n", obj_type);
-
-	qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;           							//13
+	qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;           				//13
 	fprintf(fnm, " Qualifier Flag  : %d  ", qualifier_flag);
-
-	param_flag = ((apdu->data[datoff + 0]) & 0x20) >> 5;                  						//13
+	param_flag = ((apdu->data[datoff + 0]) & 0x20) >> 5;                  			//13
 	fprintf(fnm, "          Parameter Flag   : %d \n", param_flag);
 
 	if (qualifier_flag == 0){
@@ -2471,11 +2381,11 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		object_qualifier = ((apdu->data[datoff + 2]) << 16) | ((apdu->data[datoff + 3]) << 8) | (apdu->data[datoff + 4]);
 
 		if (apdu->product_id == 14) {
-			if (apdu->data[datoff + 2] & (1 << 7))      //15
+			if (apdu->data[datoff + 2] & (1 << 7))                                  //15
 				fprintf(fnm," Qualifier       : Unspecified\n");
-			if (apdu->data[datoff + 3] & (1 << 0))               //16
+			if (apdu->data[datoff + 3] & (1 << 0))                                  //16
 				fprintf(fnm," Qualifier       : Ash\n");
-			if (apdu->data[datoff + 4] & (1 << 0))               //17
+			if (apdu->data[datoff + 4] & (1 << 0))                                  //17
 				fprintf(fnm," Qualifier       : Precipitation\n");
 			if (apdu->data[datoff + 4] & (1 << 1))
 				fprintf(fnm," Qualifier       : Mist\n");
@@ -2492,8 +2402,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 			if (apdu->data[datoff + 4] & (1 << 7))
 				fprintf(fnm," Qualifier      : Dust\n");
 		}
-
-		obj_param_type = apdu->data[18] >> 3;              					 //18
+		obj_param_type = apdu->data[18] >> 3;              					        //18
 		ob_par_val 	   = (apdu->data[18] & 0x7)<< 8 | apdu->data[19];				//19
 
 		fprintf(fnm,"Obj Qualfr: %d  Obj Prm Tp: %d  Obj Par Val: %d\n",
@@ -2502,15 +2411,12 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		datoff = datoff+7;                 //13 datogg =20
 	}
 
-	geo_overlay_opt = (apdu->data[datoff + 0]) & 0x0F;              //13
+	geo_overlay_opt = (apdu->data[datoff + 0]) & 0x0F;                              //13
 	fprintf(fnm, " Geo Overlay Opts: %02d  ", geo_overlay_opt);
-
 	overlay_op = ((apdu->data[datoff +1]) & 0xC0) >> 6;
 	fprintf(fnm, "         Overlay Operator : %d  ", overlay_op);
-
 	overlay_vert_cnt = ((apdu->data[datoff +1]) & 0x3F) + 1; // Document instructs to add 1. (6.20).
 	fprintf(fnm, "      Overlay Vertices # : %d \n", overlay_vert_cnt);
-
 	rec_app_opt = ((apdu->data[datoff + 0]) & 0xC0) >> 6;
 	date_time_format = ((apdu->data[datoff + 0]) & 0x30) >> 4;
 
@@ -2518,7 +2424,6 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 	fprintf(fnm, "          Rec App Date     : %d \n", date_time_format );
 
 	switch (rec_app_opt) {
-
 	case 0:  // No times given. UFN.  (record_data[2:], date_time_format)
 		fprintf(fnm, "No Dates Given\n");
 		datoff = datoff +2;
@@ -2529,7 +2434,6 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		d2 = apdu->data[datoff + 3];
 		d3 = apdu->data[datoff + 4];
 		d4 = apdu->data[datoff + 5];
-
 		fprintf(fnm, " Only Start Date : %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
 
 		datoff = datoff + 6;
@@ -2540,7 +2444,6 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		d2 = apdu->data[datoff + 3];
 		d3 = apdu->data[datoff + 4];
 		d4 = apdu->data[datoff + 5];
-
 		fprintf(fnm, " Only End Date: %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
 
 		datoff = datoff + 6;
@@ -2551,14 +2454,12 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		d2 = apdu->data[datoff + 3];
 		d3 = apdu->data[datoff + 4];
 		d4 = apdu->data[datoff + 5];
-
 		fprintf(fnm, " Start Date      : %02d/%02d %02d:%02d  ",d1,d2,d3,d4);
 
 		d1 = apdu->data[datoff + 6];
 		d2 = apdu->data[datoff + 7];
 		d3 = apdu->data[datoff + 8];
 		d4 = apdu->data[datoff + 9];
-
 		fprintf(fnm, "End Date         : %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
 
 		datoff = datoff + 10;
@@ -2580,73 +2481,62 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 	if (obj_label_flag == 0)
 		strcpy(ob_type_text,object_types_text[obj_type]);
-
 	if (element_flag==1 && obj_type ==14)
 		strcpy(ob_ele_text,airspace_element_names[obj_element]);
-
 	if (element_flag==1 && obj_type ==14 && apdu->product_id == 14)
 		strcpy(ob_ele_text,gairspace_element_names[obj_element]);
 
 	switch (geo_overlay_opt) {
-
 	case 3:  case 4: // Extended Range 3D Polygon
-
 		alt_raw = (((apdu->data[datoff +4]) & 0x03) << 8) | (apdu->data[datoff +5]);
 		alt = alt_raw * 100;
 
 		switch(apdu->product_id ){
-
 		case 11:       	file3dpoly = fileairmetjson;
-
-		if (airmet_count ==0) {
-			fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
-			fprintf(file3dpoly,"\"features\": [ \n");
-			fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
-			fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
-		}
-		else {
-			fseek(file3dpoly, -3, SEEK_CUR);
-			fprintf(file3dpoly,",{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
-			fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
-		}
-
-		airmet_count++;
-		break;
+			if (airmet_count ==0) {
+				fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
+				fprintf(file3dpoly,"\"features\": [ \n");
+				fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
+				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
+			}
+			else {
+				fseek(file3dpoly, -3, SEEK_CUR);
+				fprintf(file3dpoly,",{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
+				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
+			}
+			airmet_count++;
+			break;
 
 		case 12:     	file3dpoly = filesigmetjson;
-
-		if (sigmet_count ==0) {
-			fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
-			fprintf(file3dpoly,"\"features\": [ \n");
-			fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
-			fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
-		}
-		else {
-			fseek(file3dpoly, -3, SEEK_CUR);
-			fprintf(file3dpoly,",{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
-			fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
-		}
-
-		sigmet_count++;
-		break;
+			if (sigmet_count ==0) {
+				fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
+				fprintf(file3dpoly,"\"features\": [ \n");
+				fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
+				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
+			}
+			else {
+				fseek(file3dpoly, -3, SEEK_CUR);
+				fprintf(file3dpoly,",{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
+				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
+			}
+			sigmet_count++;
+			break;
 
 		case 14:        file3dpoly = filegairmetjson;
-
-		if (gairmet_count ==0) {
-			fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
-			fprintf(file3dpoly,"\"features\": [ \n");
-			fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
-			fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
-		}
-		else {
-			fseek(file3dpoly, -3, SEEK_CUR);
-			fprintf(file3dpoly,",{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
-			fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
-		}
-
-		gairmet_count++;
-		break;
-		}
+			if (gairmet_count ==0) {
+				fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
+				fprintf(file3dpoly,"\"features\": [ \n");
+				fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
+			}
+			else {
+				fseek(file3dpoly, -3, SEEK_CUR);
+				fprintf(file3dpoly,",{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
+			}
+			gairmet_count++;
+			break;
+			}
 
 		for (int i = 0; i < overlay_vert_cnt; i++) {
 			lng_raw = ((apdu->data[datoff + i]) << 11) | ((apdu->data[datoff +i+1]) << 3) | ((apdu->data[datoff +i+2]) & 0xE0 >> 5);
@@ -2663,6 +2553,13 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 				lng = lng - 360.0;
 			alt = alt_raw * 100;
 
+			if (lat == lat_save){                 // Ignore 2nd altitude data to fix map
+				fseek(file3dpoly, -2, SEEK_CUR);
+				i = overlay_vert_cnt;
+				continue;
+			}
+			lat_save = lat;
+
 			if (i == (overlay_vert_cnt-1))
 				fprintf(file3dpoly,"[ %f , %f ]\n",lng,lat)	;
 			else
@@ -2678,10 +2575,10 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		break;
 
 	case 7: case 8: // Extended Range Circular Prism (7 = MSL, 8 = AGL)
-
 		if (rec_len < 14) {
 			fprintf(fnm, "Data too short. Should be 14 bytes; %d seen.\n",rec_len);
-		} else {
+		}
+		else {
 			uint32_t lng_bot_raw;
 			uint32_t lat_bot_raw;
 			uint32_t lng_top_raw;
@@ -2700,14 +2597,11 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 			lat_bot_raw = (((apdu->data[datoff+ 2]) & 0x3F) << 12) | ((apdu->data[datoff +3]) << 4) | (((apdu->data[datoff +4]) & 0xF0) >> 4);
 			lng_top_raw = (((apdu->data[datoff +4]) & 0x0F) << 14) | ((apdu->data[datoff +5]) << 6) | (((apdu->data[datoff +6]) & 0xFC) >> 2);
 			lat_top_raw = (((apdu->data[datoff +6]) & 0x03) << 16) | ((apdu->data[datoff +7]) << 8) | (apdu->data[datoff +8]);
-
 			alt_bot_raw = ((apdu->data[datoff +9]) & 0xFE) >> 1;
 			alt_top_raw = (((apdu->data[datoff +9]) & 0x01) << 6) | (((apdu->data[datoff +10]) & 0xFC) >> 2);
-
 			r_lng_raw = (((apdu->data[datoff +10]) & 0x03) << 7) | (((apdu->data[datoff +11]) & 0xFE) >> 1);
 			r_lat_raw = (((apdu->data[datoff +11]) & 0x01) << 8) | (apdu->data[datoff +12]);
 			alpha = (apdu->data[datoff +13]);
-
 			lng_bot_raw = (~lng_bot_raw & 0x1FFFF) +1;    // 2's compliment +1
 			lat_bot_raw = (~lat_bot_raw & 0x1FFFF) +1;    // 2's compliment +1
 			lat_bot = lat_bot_raw *  0.001373 ;
@@ -2715,7 +2609,6 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 			if (lat_bot > 90.0)
 				lat_bot = (lat_bot - 180.0) * -1 ;
-
 			if (lng_bot > 180.0)
 				lng_bot = lng_bot - 360.0;
 
@@ -2726,13 +2619,11 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 			if (lat_top > 90.0)
 				lat_top = (lat_top - 180.0) * -1 ;
-
 			if (lng_top > 180.0)
 				lng_top = lng_top - 360.0;
 
 			alt_bot = alt_bot_raw * 5;
 			alt_top = alt_top_raw * 500;
-
 			r_lng = r_lng_raw * 0.2;
 			r_lat = r_lat_raw * 0.2;
 
@@ -2750,7 +2641,6 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		break;
 
 	case 9: // Extended Range 3D Point (AGL). p.47.
-
 		if (rec_len < 6) {
 			fprintf(fnm,  "Too short\n");
 		}
@@ -2758,83 +2648,68 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 			lng_raw = ((apdu->data[datoff +0]) << 11) | ((apdu->data[datoff +1]) << 3) | ((apdu->data[datoff +2]) & 0xE0 >> 5);
 			lat_raw = (((apdu->data[datoff +2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) | (((apdu->data[datoff + 4]) & 0xFC) >> 2);
 			alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
-
 			lng_raw = (~lng_raw & 0x7FFFF) +1;    // 2's compliment +1
 			lat_raw = (~lat_raw & 0x7FFFF) +1;    // 2's compliment +1
-
 			lat = lat_raw *  0.0006866455078125 ;
 			lng = (lng_raw *  0.0006866455078125) * -1 ;
-
 			if (lat > 90.0)
 				lat = 360.0 - lat;
-
 			if (lng > 180.0)
 				lng = lng - 360.0;
-
 			alt = alt_raw * 100;
 
 			if (apdu->product_id == 8) {
-
 				notam_list[notam_count].notam_lat = lat;
 				notam_list[notam_count].notam_lng = lng;
 				strcpy(notam_list[notam_count].notam_stn,gstn);
 				notam_list[notam_count].notam_repid =rep_num;
-
 				if (notam_count ==0) {
 					fprintf(filenotamjson,"{\"type\": \"FeatureCollection\",\n");
 					fprintf(filenotamjson,"\"features\": [ \n");
 				}
-
 				if (notam_count ==0) {
 					fprintf(filenotamjson,"{\"type\": \"Feature\", \"properties\": { \"Location\": \"%s\" ,\"Stuff\": \"%d\"},\n",gstn,rep_num);
-
 					fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %f , %f ] }}\n",lng,lat);
 					fprintf(filenotamjson,"]}");
 				}
 				else {
 					fseek(filenotamjson, -3, SEEK_CUR);
-
 					fprintf(filenotamjson,",{\"type\": \"Feature\", \"properties\": { \"Location\": \"%s\" ,\"Stuff\": \"%d\"},\n",gstn,rep_num);
 					fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %f , %f ] }}\n",lng,lat);
 					fprintf(filenotamjson,"]}");
 				}
 
-//					fprintf(filejson,"\n%s  %11f,%11f ]}\n ",gstn,lng,lat);
 				fflush(filenotamjson);
 				notam_count ++;
 			}
-
-//					fprintf(filejson,"%s %s %11f,%11f ]}\n ",gstn,gs_ret,lng,lat);
-
 			fprintf(fnm, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
 		}
 		break;
 
 	case 11: case 12:   // Extended Range 3D Polyline
+		                // Don't write geojson for items with qualifier flag set.
 
 		alt_raw = (((apdu->data[datoff +4]) & 0x03) << 8) | (apdu->data[datoff +5]);
 		alt = alt_raw * 100;
 
 		switch(apdu->product_id ){
 		case 14:        file3dpoly = filegairmetjson;
-
-		if (gairmet_count ==0) {
-			fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
-			fprintf(file3dpoly,"\"features\": [ \n");
-			fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
-			fprintf(file3dpoly,"\"geometry\": { \"type\": \"LineString\", \"coordinates\": [\n");
+			if (qualifier_flag == 0){
+				if (gairmet_count ==0) {
+					fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
+					fprintf(file3dpoly,"\"features\": [ \n");
+					fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+					fprintf(file3dpoly,"\"geometry\": { \"type\": \"LineString\", \"coordinates\": [\n");
+				}
+				else {
+					fseek(file3dpoly, -3, SEEK_CUR);
+					fprintf(file3dpoly,",{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+					fprintf(file3dpoly,"\"geometry\": { \"type\": \"LineString\", \"coordinates\": [\n");
+				}
+				gairmet_count++;
+			}
+			break;
 		}
-		else {
-			fseek(file3dpoly, -3, SEEK_CUR);
-			fprintf(file3dpoly,",{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
-			fprintf(file3dpoly,"\"geometry\": { \"type\": \"LineString\", \"coordinates\": [\n");
-		}
-
-		gairmet_count++;
-		break;
-		}
-
-
 		for (int i = 0; i < overlay_vert_cnt; i++) {
 			if (rec_len < 6) {
 				fprintf(fnm,  "Too short\n");
@@ -2848,7 +2723,6 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 				lng_raw = (~lng_raw & 0x7FFFF) +1;    // 2's compliment +1
 				lat_raw = (~lat_raw & 0x7FFFF) +1;    // 2's compliment +1
-
 				lat = lat_raw *  0.0006866455078125 ;
 				lng = lng_raw * -0.0006866455078125 ;
 				if (lat > 90.0)
@@ -2857,20 +2731,21 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 					lng = lng - 360.0;
 				alt = alt_raw * 100;
 
-				if (i == (overlay_vert_cnt-1))
-					fprintf(file3dpoly,"[ %f , %f ]\n",lng,lat)	;
-				else
-					fprintf(file3dpoly,"[ %f , %f ],\n",lng,lat);
-
+				if (qualifier_flag == 0){
+					if (i == (overlay_vert_cnt-1))
+						fprintf(file3dpoly,"[ %f , %f ]\n",lng,lat)	;
+					else
+						fprintf(file3dpoly,"[ %f , %f ],\n",lng,lat);
+				}
 				fprintf(fnm, "      Coordinates: %11f,%11f    Alt: %d\n", lat, lng,alt);
 			}
 		}
-
-		fprintf(file3dpoly,"]\n");
-		fprintf(file3dpoly,"}}\n");
-		fprintf(file3dpoly,"]}\n");
-		fflush(file3dpoly);
-
+		if (qualifier_flag == 0){
+			fprintf(file3dpoly,"]\n");
+			fprintf(file3dpoly,"}}\n");
+			fprintf(file3dpoly,"]}\n");
+			fflush(file3dpoly);
+		}
 		break;
 	}
 
@@ -2878,9 +2753,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 	fprintf(fnm, " Object Type: %s  Object Element: %s\n",ob_type_text,ob_ele_text);
 	fprintf(fnm, " Object Status: %s Overlay type: %s\n",ob_status_text,geo_overlay_text);
 	fprintf(fnm, " obj_par_name_text: %s\n",obj_par_name_text);
-
 	fprintf(fnm,"\n");
-
 	fflush(fnm);
 
 	display_generic_data(apdu->data, apdu->length, to);
@@ -2891,12 +2764,10 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 	int rec_offset = 11;
 	char gstn[5];
 	char *sua_text;
-
 	const char *text = decode_dlac(apdu->data, apdu->length,rec_offset);
 	const char *report = text;
 
    	while (report) {
-
    		char report_buf[1024];
    		char *p, *r;
    		const char *next_report; uint16_t report_year;
@@ -2909,11 +2780,11 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
    			memcpy(report_buf, report, next_report - report);
    			report_buf[next_report - report] = 0;
    			report = next_report + 1;
-   		} else {
+   		}
+   		else {
    			strcpy(report_buf, report);
    			report = NULL;
    		}
-
    		if (!report_buf[0])
    			continue;
 
@@ -2926,7 +2797,6 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
    			fprintf(fnm," Report Type     : %s\n",r);
    			r = p+1;
    		}
-
    		if (apdu->product_id == 8)
    			p = strchr(r, '.');
    		else
@@ -2942,7 +2812,6 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
    				r = p + 1;
    			}
    		}
-
    		p = strchr(r, ' ');   //  *** RTime ***
 		if (p) {
 			*p = 0;
@@ -2954,7 +2823,6 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 		rep_num = ((apdu->data[8]  << 6) | (apdu->data[9] & 0xFC) >> 2);
 		fprintf(to," Report Number   : %6d  ",rep_num);
 		fprintf(fnm," Report Number   : %6d  ",rep_num);
-
     	report_year = (((apdu->data[9]) & 0x03) << 5 | ((apdu->data[10])  & 0xF8) >> 3) ;
     	fprintf(to,"     Report Year       : 20%02d\n ",report_year);
     	fprintf(fnm,"     Report Year       : 20%02d\n ",report_year);
@@ -2966,12 +2834,10 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
    		if (apdu->product_id == 13){
    			sua_text = (char *)malloc(strlen(r) + 1);
    			strcpy(sua_text,r);
-
    			get_sua_text(sua_text,to);
    		}
 
 		fprintf(fnm," Data:\n%s\n",r);
-
 		fflush(fnm);
    	}
 }
@@ -2987,7 +2853,6 @@ static void get_seg_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 	apdunum    = ((apdu->data[7]) << 1 ) | (apdu->data[8] >> 7);
 
 	int fg = 0;       // Check if report part already stored
-
 	for (int i = 0; i <= seg_count; ++i) {
 		if ((prodid == seg_list[i].seg_prodid) &&
 				(prodfillen == seg_list[i].seg_prolen) &&
@@ -2995,29 +2860,24 @@ static void get_seg_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 			++fg;
 		}
 	}
-
 	if (fg == 0){              // New report part - add record
 		int offx = 0;
-
 		seg_list[seg_count].seg_prodid = prodid;
 		seg_list[seg_count].seg_prolen = prodfillen;
 		seg_list[seg_count].seg_segnum = apdunum;
 
 		if (apdunum == 1){            // Contains report number and year
 			offx = 20;
-
 			seg_list[seg_count].seg_text_len = apdu->length-20;
 			seg_list[seg_count].seg_rpt_num = ((apdu->data[17]  << 6) | (apdu->data[18] >> 2));   			//7 8
 			seg_list[seg_count].seg_rpt_year = (((apdu->data[18]) & 0x03) << 5 | ((apdu->data[19])  & 0xF8) >> 3) ;
 		}
 		else {
 			offx = 15;
-
 			seg_list[seg_count].seg_text_len = apdu->length-15;
 			seg_list[seg_count].seg_rpt_num = 0;
 			seg_list[seg_count].seg_rpt_year = 0 ;
 		}
-
 		for ( int x = offx; x <= apdu->length; ++x) {
 			int c = apdu->data[x];
 			seg_list[seg_count].seg_data[x-offx] = c;
@@ -3026,7 +2886,6 @@ static void get_seg_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 	}
 
 	fg = 0;     						// See if all parts of record are stored
-
 	for (int i = 0; i <= seg_count; ++i) {
 		for (int j = 1; j <= prodfillen; ++j) {
 			if ((prodid == seg_list[i].seg_prodid) &&
@@ -3040,7 +2899,6 @@ static void get_seg_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 	if (fg == prodfillen){           // All parts have been stored
 		uint8_t rep_all[2000];
 		int char_cnt = 0;
-
 		for (int i = 0; i <= seg_count; ++i) {       // 1st part
 			if ((seg_list[i].seg_prodid == prodid) &&
 					(seg_list[i].seg_prolen == prodfillen) && (seg_list[i].seg_segnum == 1)){
@@ -3053,14 +2911,12 @@ static void get_seg_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 				fprintf(fnm," Report Type     : NOTAM - Segmented\n");
 				fprintf(to," Num of Segments : %d\n", seg_list[i].seg_prolen);
 				fprintf(fnm," Num of Segments : %d\n", seg_list[i].seg_prolen);
-
 				fprintf(to," Report Number   : %6d  ",seg_list[i].seg_rpt_num);
 				fprintf(fnm," Report Number   : %6d  ",seg_list[i].seg_rpt_num);
 		    	fprintf(to,"     Report Year       : 20%02d\n ",seg_list[i].seg_rpt_year);
 		    	fprintf(fnm,"     Report Year       : 20%02d\n ",seg_list[i].seg_rpt_year);
 			}
 		}
-
 		for (int i = 0; i <= seg_count; ++i) {       // 2nd part
 			if ((seg_list[i].seg_prodid == prodid) &&
 					(seg_list[i].seg_prolen == prodfillen) && (seg_list[i].seg_segnum == 2)){
@@ -3070,7 +2926,6 @@ static void get_seg_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 				char_cnt = char_cnt + seg_list[i].seg_text_len;
 			}
 		}
-
 		for (int i = 0; i <= seg_count; ++i) {       // 3rd part
 			if ((seg_list[i].seg_prodid == prodid) &&
 					(seg_list[i].seg_prolen == prodfillen) && (seg_list[i].seg_segnum == 3)){
@@ -3087,7 +2942,6 @@ static void get_seg_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
 		struct tm *tm = localtime(&current_time);
 		fprintf(to,"Time            : %s", asctime(tm));
 		fprintf(fnm,"Time            : %s", asctime(tm));
-
 		fprintf(fnm," Data:\n%s\n\n",seg_text_all);
 	}
 
@@ -3122,7 +2976,8 @@ void block_location_new(int bn, int ns, int sf, double *latN, double *lonW, doub
     if (ns) {
         // southern hemisphere, mirror along the equator
         *latN = 0 - raw_lat;
-    } else {
+    }
+    else {
         // adjust to the northwest corner
     	*latN = raw_lat + BLOCK_HEIGHT;
     }
