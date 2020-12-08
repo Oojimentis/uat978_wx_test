@@ -2536,6 +2536,21 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 			}
 			gairmet_count++;
 			break;
+
+		case 8:        file3dpoly = filenotamjson;
+			if (notam_count ==0) {
+				fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
+				fprintf(file3dpoly,"\"features\": [ \n");
+				fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
+			}
+			else {
+				fseek(file3dpoly, -3, SEEK_CUR);
+				fprintf(file3dpoly,",{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
+			}
+			notam_count++;
+			break;
 			}
 
 		for (int i = 0; i < overlay_vert_cnt; i++) {
