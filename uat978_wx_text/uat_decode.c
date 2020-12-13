@@ -2107,6 +2107,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     							"\"WindDir\": \"%d\","
     							"\"Alt\": \"%3.2f\","
     							"\"Vsby\": \"%3.2f\","
+    							"\"Loc\": \"%s\","
     							"\"DewP\": \"%.2f\""
     							"},\n",
 								gstn,
@@ -2115,7 +2116,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 								MetarStruct.winData.windSpeed,
 								MetarStruct.winData.windDir,
 								MetarStruct.inches_altstng,
-								MetarStruct.prevail_vsbySM,
+								MetarStruct.prevail_vsbySM,gs_ret,
 								dewp);
 
     					fprintf(filemetarjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %s , %s ] }}\n",gs_ret_lng,gs_ret_lat);
@@ -2130,6 +2131,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     							"\"WindDir\": \"%d\","
     							"\"Alt\": \"%3.2f\","
     							"\"Vsby\": \"%3.2f\","
+    							"\"Loc\": \"%s\","
     							"\"DewP\": \"%.2f\""
     							"},\n",
 								gstn,
@@ -2138,7 +2140,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 								MetarStruct.winData.windSpeed,
 								MetarStruct.winData.windDir,
 								MetarStruct.inches_altstng,
-								MetarStruct.prevail_vsbySM,
+								MetarStruct.prevail_vsbySM,gs_ret,
 								dewp);
 
     					fprintf(filemetarjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %s , %s ] }}\n",gs_ret_lng,gs_ret_lat);
