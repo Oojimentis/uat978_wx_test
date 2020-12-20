@@ -2099,7 +2099,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     					MetarStruct.winData.windDir=999;
     				if (MetarStruct.inches_altstng> 1000)
     					MetarStruct.inches_altstng=999;
-    				if (metar_count ==0) {
+    				if (metar_count == 0) {
     					fprintf(filemetarjson,"{\"type\": \"Feature\", \"properties\": { \"Stn\": \"%s\" ,"
     							"\"ObDate\": \"%d %d:%d\","
     							"\"Temp\": \"%.2f\","
@@ -2539,7 +2539,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 			gairmet_count++;
 			break;
 
-		case 8:        file3dpoly = filenotamjson;
+		case 18:        file3dpoly = filenotamjson;
 			if (notam_count ==0) {
 				fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
 				fprintf(file3dpoly,"\"features\": [ \n");
@@ -2578,7 +2578,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 			lat_save = lat;
 
 			if (i == (overlay_vert_cnt-1))
-				fprintf(file3dpoly,"[ %f , %f ]\n",lng,lat)	;
+				fprintf(file3dpoly,"[ %f , %f ]\n",lng,lat);
 			else
 				fprintf(file3dpoly,"[ %f , %f ],\n",lng,lat);
 
@@ -2675,7 +2675,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 				lng = lng - 360.0;
 			alt = alt_raw * 100;
 
-			if (apdu->product_id == 8) {
+			if (apdu->product_id == 18) {
 				notam_list[notam_count].notam_lat = lat;
 				notam_list[notam_count].notam_lng = lng;
 				strcpy(notam_list[notam_count].notam_stn,gstn);
@@ -2853,6 +2853,44 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
    			strcpy(sua_text,r);
    			get_sua_text(sua_text,to);
    		}
+
+   		if (apdu->product_id == 8){
+   			int length = strlen(r);
+   			  if (r[length-1] == '\n')
+   			    r[length-1]  = '\0';
+   			for(int i = 0; i <= strlen(r); i++)
+   			  	{
+   			  		if(r[i] == '\n')
+   					{
+   			  			r[i] = ' ';
+   			 		}
+   				}
+
+
+
+   			if (notam_count == 0) {
+   				fprintf(filenotamjson,"{\"type\": \"FeatureCollection\",\n");
+   				fprintf(filenotamjson,"\"features\": [ \n");
+   				fprintf(filenotamjson,"{\"type\": \"Feature\", \"properties\": { \"Data\": \"%s\",\"RepNum\": \"%d\", \"Stn\": \"%s\",\"Loc\": \"%s\"},\n",r,rep_num,gstn,gs_ret);
+   				fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %s , %s ] }}\n",gs_ret_lng,gs_ret_lat);
+
+   			}
+   			else {
+   				fseek(filenotamjson, -3, SEEK_CUR);
+   				fprintf(filenotamjson,",{\"type\": \"Feature\", \"properties\": { \"Data\": \"%s\",\"RepNum\": \"%d\", \"Stn\": \"%s\",\"Loc\": \"%s\"},\n",r,rep_num,gstn,gs_ret);
+   				fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %s , %s ] }}\n",gs_ret_lng,gs_ret_lat);
+   			}
+
+   			fprintf(filenotamjson,"]}\n");
+
+   			notam_count++;
+
+
+
+   		}
+
+
+
 
 		fprintf(fnm," Data:\n%s\n",r);
 		fflush(fnm);
