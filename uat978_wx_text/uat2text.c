@@ -58,6 +58,7 @@ int main(int argc, char **argv)
 	airmet_count=0;
 	gairmet_count=0;
 	sigmet_count=0;
+	cwa_count=0;
 
 	fprintf(stderr, "\nOpening file: uat_gs.txt ");
 
@@ -139,109 +140,118 @@ int main(int argc, char **argv)
    	if (filenexradc == 0)			{
    		fprintf(stderr,"nexradc.out Error--file could not be opened. \n") ;
    		exit (1) ;			}
-   	fileicingl2 = fopen("icingl2.out","w");
-   	if (fileicingl2 == 0)			{
-   		fprintf(stderr,"icingl2.out Error--file could not be opened. \n") ;
-   		exit (1) ;			}
-   	fileicingl4 = fopen("icingl4.out","w");
-   	if (fileicingl4 == 0)			{
-   		fprintf(stderr,"icingl4.out Error--file could not be opened. \n") ;
-   		exit (1) ;			}
-   	fileicingl6 = fopen("icingl6.out","w");
-   	if (fileicingl6 == 0)			{
-   		fprintf(stderr,"icingl6.out Error--file could not be opened. \n") ;
-   		exit (1) ;			}
-   	fileicingl8 = fopen("icingl8.out","w");
-   	if (fileicingl8 == 0)			{
-   		fprintf(stderr,"icingl8.out Error--file could not be opened. \n") ;
-   		exit (1) ;			}
-   	fileicingl10 = fopen("icingl10.out","w");
-   	if (fileicingl10 == 0)			{
-   		fprintf(stderr,"icingl10.out Error--file could not be opened. \n") ;
-   		exit (1) ;			}
-   	fileicingl12 = fopen("icingl12.out","w");
-   	if (fileicingl12 == 0)			{
-   		fprintf(stderr,"icingl12.out Error--file could not be opened. \n") ;
-   		exit (1) ;			}
-   	fileicingl14 = fopen("icingl14.out","w");
-   	if (fileicingl14 == 0)			{
-   		fprintf(stderr,"icingl14.out Error--file could not be opened. \n") ;
-   		exit (1) ;			}
-   	fileicingl16 = fopen("icingl16.out","w");
-   	if (fileicingl16 == 0)			{
-   		fprintf(stderr,"icingl16.out Error--file could not be opened. \n") ;
-   		exit (1) ;			}
-   	fileicingh18 = fopen("icingh18.out","w");
-   	if (fileicingh18 == 0)			{
-   		fprintf(stderr,"icingh18.out Error--file could not be opened. \n") ;
-   		exit (1) ;			}
-   	fileicingh20 = fopen("icingh20.out","w");
-   	if (fileicingh20 == 0)			{
-   		fprintf(stderr,"icingh20.out Error--file could not be opened. \n") ;
-   		exit (1) ;			}
-   	fileicingh22 = fopen("icingh22.out","w");
-   	if (fileicingh22 == 0)			{
-   		fprintf(stderr,"icingh22.out Error--file could not be opened. \n") ;
-   		exit (1) ;			}
-   	fileicingh24 = fopen("icingh24.out","w");
-   	if (fileicingh24 == 0)			{
-   		fprintf(stderr,"icingh24.out Error--file could not be opened. \n") ;
-   		exit (1) ;			}
+//   	fileicingl2 = fopen("icingl2.out","w");
+//   	if (fileicingl2 == 0)			{
+ //  		fprintf(stderr,"icingl2.out Error--file could not be opened. \n") ;
+ //  		exit (1) ;			}
+//   	fileicingl4 = fopen("icingl4.out","w");
+//  	if (fileicingl4 == 0)			{
+//   		fprintf(stderr,"icingl4.out Error--file could not be opened. \n") ;
+//   		exit (1) ;			}
+ //  	fileicingl6 = fopen("icingl6.out","w");
+ //  	if (fileicingl6 == 0)			{
+ //  		fprintf(stderr,"icingl6.out Error--file could not be opened. \n") ;
+//   		exit (1) ;			}
+//   	fileicingl8 = fopen("icingl8.out","w");
+//   	if (fileicingl8 == 0)			{
+ //  		fprintf(stderr,"icingl8.out Error--file could not be opened. \n") ;
+//   		exit (1) ;			}
+//   	fileicingl10 = fopen("icingl10.out","w");
+//   	if (fileicingl10 == 0)			{
+ //  		fprintf(stderr,"icingl10.out Error--file could not be opened. \n") ;
+ //  		exit (1) ;			}
+ //  	fileicingl12 = fopen("icingl12.out","w");
+//   	if (fileicingl12 == 0)			{
+ //  		fprintf(stderr,"icingl12.out Error--file could not be opened. \n") ;
+//   		exit (1) ;			}
+//   	fileicingl14 = fopen("icingl14.out","w");
+//   	if (fileicingl14 == 0)			{
+//   		fprintf(stderr,"icingl14.out Error--file could not be opened. \n") ;
+//   		exit (1) ;			}
+//   	fileicingl16 = fopen("icingl16.out","w");
+ //  	if (fileicingl16 == 0)			{
+//   		fprintf(stderr,"icingl16.out Error--file could not be opened. \n") ;
+//   		exit (1) ;			}
+//   	fileicingh18 = fopen("icingh18.out","w");
+//   	if (fileicingh18 == 0)			{
+//   		fprintf(stderr,"icingh18.out Error--file could not be opened. \n") ;
+//   		exit (1) ;			}
+//   	fileicingh20 = fopen("icingh20.out","w");
+//   	if (fileicingh20 == 0)			{
+//   		fprintf(stderr,"icingh20.out Error--file could not be opened. \n") ;
+//   		exit (1) ;			}
+ //  	fileicingh22 = fopen("icingh22.out","w");
+//   	if (fileicingh22 == 0)			{
+//  		fprintf(stderr,"icingh22.out Error--file could not be opened. \n") ;
+//   		exit (1) ;			}
+//   	fileicingh24 = fopen("icingh24.out","w");
+//   	if (fileicingh24 == 0)			{
+ //  		fprintf(stderr,"icingh24.out Error--file could not be opened. \n") ;
+//   		exit (1) ;			}
    	filecloudt = fopen("cloudt.out","w");
    	if (filecloudt == 0)			{
    		fprintf(stderr,"cloudt.out Error--file could not be opened. \n") ;
    		exit (1) ;			}
-   	fileturbl2 = fopen("turbl2.out","w");
-   	if (fileturbl2 == 0)			{
-   		fprintf(stderr,"turbl2.out Error--file could not be opened. \n") ;
-   		exit (1) ;			}
-   	fileturbl4 = fopen("turbl4.out","w");
-   	if (fileturbl4 == 0)			{
-   		fprintf(stderr,"turbl4.out Error--file could not be opened. \n") ;
-   		exit (1) ;}
-   	fileturbl6 = fopen("turbl6.out","w");
-   	if (fileturbl6 == 0)			{
-   		fprintf(stderr,"turbl6.out Error--file could not be opened. \n") ;
-   		exit (1) ;}
-   	fileturbl8 = fopen("turbl8.out","w");
-   	if (fileturbl8 == 0)			{
-  		fprintf(stderr,"turbl8.out Error--file could not be opened. \n") ;
-		exit (1) ;}
-	fileturbl10 = fopen("turbl10.out","w");
-	if (fileturbl10 == 0)			{
-		fprintf(stderr,"turbl10.out Error--file could not be opened. \n") ;
-		exit (1) ;}
-	fileturbl12 = fopen("turbl12.out","w");
-	if (fileturbl12 == 0)			{
-		fprintf(stderr,"turbl12.out Error--file could not be opened. \n") ;
-		exit (1) ;}
-	fileturbl14 = fopen("turbl14.out","w");
-	if (fileturbl14 == 0)			{
-		fprintf(stderr,"turbl14.out Error--file could not be opened. \n") ;
-		exit (1) ;}
-	fileturbl16 = fopen("turbl16.out","w");
-	if (fileturbl16 == 0)			{
-		fprintf(stderr,"turbl16.out Error--file could not be opened. \n") ;
-		exit (1) ;}
-	fileturbh18 = fopen("turbh18.out","w");
-	if (fileturbh18 == 0)			{
-		fprintf(stderr,"turbh18.out Error--file could not be opened. \n") ;
-		exit (1) ;			}
-	fileturbh20 = fopen("turbh20.out","w");
-	if (fileturbh20 == 0)			{
-		fprintf(stderr,"turbh20.out Error--file could not be opened. \n") ;
-		exit (1) ;			}
-	fileturbh22 = fopen("turbh22.out","w");
-	if (fileturbh22 == 0)			{
-		fprintf(stderr,"turbh22.out Error--file could not be opened. \n") ;
-		exit (1) ;			}
-	fileturbh24 = fopen("turbh24.out","w");
-	if (fileturbh24 == 0)			{
-		fprintf(stderr,"turbh24.out Error--file could not be opened. \n") ;
-		exit (1) ;			}
+//   	fileturbl2 = fopen("turbl2.out","w");
+ //  	if (fileturbl2 == 0)			{
+//   		fprintf(stderr,"turbl2.out Error--file could not be opened. \n") ;
+//   		exit (1) ;			}
+//   	fileturbl4 = fopen("turbl4.out","w");
+//   	if (fileturbl4 == 0)			{
+//   		fprintf(stderr,"turbl4.out Error--file could not be opened. \n") ;
+//   		exit (1) ;}
+//   	fileturbl6 = fopen("turbl6.out","w");
+//   	if (fileturbl6 == 0)			{
+ //  		fprintf(stderr,"turbl6.out Error--file could not be opened. \n") ;
+ //  		exit (1) ;}
+//   	fileturbl8 = fopen("turbl8.out","w");
+//   	if (fileturbl8 == 0)			{
+//  		fprintf(stderr,"turbl8.out Error--file could not be opened. \n") ;
+//		exit (1) ;}
+//	fileturbl10 = fopen("turbl10.out","w");
+//	if (fileturbl10 == 0)			{
+//		fprintf(stderr,"turbl10.out Error--file could not be opened. \n") ;
+//		exit (1) ;}
+//	fileturbl12 = fopen("turbl12.out","w");
+//	if (fileturbl12 == 0)			{
+//		fprintf(stderr,"turbl12.out Error--file could not be opened. \n") ;
+//		exit (1) ;}
+//	fileturbl14 = fopen("turbl14.out","w");
+//	if (fileturbl14 == 0)			{
+//		fprintf(stderr,"turbl14.out Error--file could not be opened. \n") ;
+//		exit (1) ;}
+//	fileturbl16 = fopen("turbl16.out","w");
+//	if (fileturbl16 == 0)			{
+//		fprintf(stderr,"turbl16.out Error--file could not be opened. \n") ;
+//		exit (1) ;}
+//	fileturbh18 = fopen("turbh18.out","w");
+//	if (fileturbh18 == 0)			{
+//		fprintf(stderr,"turbh18.out Error--file could not be opened. \n") ;
+//		exit (1) ;			}
+//	fileturbh20 = fopen("turbh20.out","w");
+//	if (fileturbh20 == 0)			{
+//		fprintf(stderr,"turbh20.out Error--file could not be opened. \n") ;
+//		exit (1) ;			}
+//	fileturbh22 = fopen("turbh22.out","w");
+//	if (fileturbh22 == 0)			{
+//		fprintf(stderr,"turbh22.out Error--file could not be opened. \n") ;
+//		exit (1) ;			}
+//	fileturbh24 = fopen("turbh24.out","w");
+//	if (fileturbh24 == 0)			{
+//		fprintf(stderr,"turbh24.out Error--file could not be opened. \n") ;
+//		exit (1) ;			}
 	filelightng = fopen("lightng.out","w");
 	if (filelightng == 0)			{
 		fprintf(stderr,"lightng.out Error--file could not be opened. \n") ;
+		exit (1) ;			}
+	filecwa = fopen("cwa.out","w");
+	if (filecwa == 0)			{
+		fprintf(stderr,"cwa.out Error--file could not be opened. \n") ;
+		exit (1) ;			}
+
+	filecwajson = fopen("/home/trev/git/map-978/WebContent/cwa.geojson","w");
+	if (filecwajson == 0)			{
+		fprintf(stderr,"cwa.geojson Error--file could not be opened. \n") ;
 		exit (1) ;			}
 
 	struct dump978_reader *reader;

@@ -3,7 +3,7 @@
 // Copyright 2015, Oliver Jowett <oliver@mutability.co.uk>
 // test
 
-#ifndef NULL
+#ifndef NULL   //moo
 #define NULL   ((void *) 0)
 #endif
 
@@ -106,7 +106,7 @@ static void get_gs_name(char *Word,int len){
 		if(*gs_list[i].gs_call == '\0')
 			return;
 
-		if(strcmp(gs_list[i].gs_call, temp_stn)==0){
+		if(strcmp(gs_list[i].gs_call, temp_stn) == 0){
 	  		strncpy(gs_ret,gs_list[i].gs_loc,75);
 	  		strncpy(gs_ret_lat,gs_list[i].gs_lat,25);
 	  		strncpy(gs_ret_lng,gs_list[i].gs_lng,25);
@@ -152,39 +152,39 @@ static void get_sua_text(char *Word, FILE *to){
 	token = strsep(&Word,"|");
 	strcpy(sua_sch_stat,token);
 
-	if (strcmp(sua_sch_stat,"W") ==0){
+	if (strcmp(sua_sch_stat,"W") == 0){
 		fprintf(filesua," Schedule Status : %s Waiting to Start\n",sua_sch_stat);}
-	else if (strcmp(sua_sch_stat,"P")==0){
+	else if (strcmp(sua_sch_stat,"P") == 0){
 		fprintf(filesua," Schedule Status : %s Pending Approval\n",sua_sch_stat);}
-	else if (strcmp(sua_sch_stat,"H")==0){
+	else if (strcmp(sua_sch_stat,"H") == 0){
 		fprintf(filesua," Schedule Status : %s Activated for Use\n",sua_sch_stat);}
 
 	token = strsep(&Word,"|");
 	strcpy(sua_aspc_ty,token);
 
-	if (strcmp(sua_aspc_ty,"W") ==0){
+	if (strcmp(sua_aspc_ty,"W") == 0){
 		fprintf(filesua," Airspace Type   : %s Warning Area\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"R") ==0){
+	else if (strcmp(sua_aspc_ty,"R") == 0){
 		fprintf(filesua," Airspace Type   : %s Restricted Area\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"M") ==0){
+	else if (strcmp(sua_aspc_ty,"M") == 0){
 		fprintf(filesua," Airspace Type   : %s Military Operations Area\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"P") ==0){
+	else if (strcmp(sua_aspc_ty,"P") == 0){
 		fprintf(filesua," Airspace Type   : %s Prohibited Area\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"L") ==0){
+	else if (strcmp(sua_aspc_ty,"L") == 0){
 		fprintf(filesua," Airspace Type   : %s Alert Area\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"A") ==0){
+	else if (strcmp(sua_aspc_ty,"A") == 0){
 		fprintf(filesua," Airspace Type   : %s ATCAA\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"I") ==0){
+	else if (strcmp(sua_aspc_ty,"I") == 0){
 		fprintf(filesua," Airspace Type   : %s Instrument Route\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"V") ==0){
+	else if (strcmp(sua_aspc_ty,"V") == 0){
 		fprintf(filesua," Airspace Type   : %s Visual Route\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"S") ==0){
+	else if (strcmp(sua_aspc_ty,"S") == 0){
 		fprintf(filesua," Airspace Type   : %s Slow Route\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"B") ==0){
+	else if (strcmp(sua_aspc_ty,"B") == 0){
 		fprintf(filesua," Airspace Type   : %s Military Route (Refueling)\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"O") ==0){
+	else if (strcmp(sua_aspc_ty,"O") == 0){
 		fprintf(filesua," Airspace Type   : %s Other\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"T") ==0){
+	else if (strcmp(sua_aspc_ty,"T") == 0){
 		fprintf(filesua," Airspace Type   : %s Refueling Track\n",sua_aspc_ty);}
 
 	token = strsep(&Word,"|");
@@ -221,9 +221,9 @@ static void get_sua_text(char *Word, FILE *to){
 
 	token = strsep(&Word,"|");
 	strcpy(sua_sep_rl,token);
-	if (strcmp(sua_sep_rl,"A") ==0){
+	if (strcmp(sua_sep_rl,"A") == 0){
 		fprintf(filesua," Separation Rule : %s Aircraft Rule ",sua_sep_rl);}
-	else if (strcmp(sua_sep_rl,"O") ==0){
+	else if (strcmp(sua_sep_rl,"O") == 0){
 		fprintf(filesua," Separation Rule : %s Other Rule ",sua_sep_rl);}
 	else {
 		fprintf(filesua," Separation Rule :    Unspecified ");
@@ -231,9 +231,9 @@ static void get_sua_text(char *Word, FILE *to){
 	token = strsep(&Word,"|");
 	if (token){
 		strcpy(sua_shp_ind,token);     	//13
-		if (strcmp(sua_shp_ind,"N") ==0){
+		if (strcmp(sua_shp_ind,"N") == 0){
 			fprintf(filesua," Shape Indicator: %s No Shape Defined\n",sua_shp_ind);}
-		else if	(strcmp(sua_shp_ind,"Y") ==0){
+		else if	(strcmp(sua_shp_ind,"Y") == 0){
 			fprintf(filesua," Shape Indicator: %s Has Shape Defined\n",sua_shp_ind);}
 	}
 	token = strsep(&Word,"|");
@@ -1043,7 +1043,7 @@ static const char *get_fisb_product_name(uint16_t product_id)
     case 12:   	return "Aerodrome and Airspace - SIGMET/Convective SIGMET";
     case 13:   	return "Aerodrome and Airspace - SUA Status";
     case 14:   	return "G-AIRMET";
-    case 15:   	return "Center Weather Advisory (CWAG) ****";
+    case 15:   	return "Center Weather Advisory (CWAG)";
     case 51:   	return "National NEXRAD, Type 0 - 4 Level ****";
     case 52:   	return "National NEXRAD, Type 1 - 8 Level (Quasi 6-Level VIP) ****";
     case 53:   	return "National NEXRAD, Type 2 - 8 Level ****";
@@ -1100,7 +1100,7 @@ static const char *get_fisb_product_format(uint16_t product_id)
     case 402: 	case 405:
         return "Text";
 
-    case 8: 	case 9: 	case 10: 	case 11: case 12: case 13:	case 14:
+    case 8: 	case 9: 	case 10: 	case 11: case 12: case 13:	case 14: case 15:
         return "Text/Graphic";
        
     case 20: 	case 21: 	case 22: 	case 23: case 24: case 25: case 26: case 27:
@@ -1204,9 +1204,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
         	display_generic_data(apdu->data, apdu->length, to);
         	break;
     	}
-    	break;        // switch recf
-
-	break;
+    break;        // switch recf
 
     case 12:            // ** SIGMET **************
     	recf = apdu->data[0] >> 4;
@@ -1262,11 +1260,32 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	}
     break;
 
+    case 15:            // ** CWA **************
+       	recf = apdu->data[0] >> 4;
+
+       	fprintf(to," Record Format   : %d \n",recf );
+       	fprintf(filesigmet," Record Format   : %d \n",recf);
+
+       	switch (recf) {
+       	case 8: 										//graphic
+       		fprintf(to," Report Type     : CWA\n");
+       		fprintf(filesigmet," Report Type     : CWA\n");
+       		get_graphic(apdu, filecwa,to);
+       		break;
+       	case 2:     						// text
+       		get_text(apdu, filecwa,to);
+       		break;
+       	default:
+       		display_generic_data(apdu->data, apdu->length, to);
+       		break;
+       	}
+    break;
+
     case 70:            // ** Icing Low **************
     {
     	int scale_factor = 1;
     	int ns_flag   	 = 0;
-    	FILE * fileicinglow;
+//    	FILE * fileicinglow;
     	int rle_flag  = (apdu->data[0] & 0x80) != 0;
     	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
      	int icel_alt  = (apdu->data[0] & 0x70) >> 4;
@@ -1276,7 +1295,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     	display_generic_data(apdu->data, apdu->length, to);
 
         fprintf(to," rle_flag: %d   Altitude: %d  block: %d\n",rle_flag,icel_alt,block_num);
-
+/*
         switch(icel_alt){
         case 0:        	fileicinglow = fileicingl2;     break;
         case 1:        	fileicinglow = fileicingl4;     break;
@@ -1290,10 +1309,11 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
         	fileicinglow = fileicingl16;
         	break;
         }
+  */
     	// now decode the bins
     	if (rle_flag) {
     		// One bin, 128 values, RLE-encoded
-    		int i;
+ //   		int i;
     		double latN = 0;
     		double lonW = 0;
     		double latSize = 0;
@@ -1301,21 +1321,21 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
-    		fprintf(fileicinglow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    				"CONUS",apdu->hours,
-					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+  //  		fprintf(fileicinglow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+  //  				"CONUS",apdu->hours,
+//					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-    		for (i = 3; i < apdu->length; ++i) {
-    			int num_bins = (apdu->data[i] ) + 1;
-    			i = i+1;
+   // 		for (i = 3; i < apdu->length; ++i) {
+ //   			int num_bins = (apdu->data[i] ) + 1;
+  //  			i = i+1;
 //    			int sld = apdu->data[i] >> 6;
 //    			int ice_sev = (apdu->data[i]) & 56;
-    			int ice_prob = (apdu->data[i]) & 7;
+//    			int ice_prob = (apdu->data[i]) & 7;
 
-    			while (num_bins-- > 0){
-    				fprintf(fileicinglow, "%d", ice_prob);}
-    		}
-    		fprintf(fileicinglow, "\n");
+  //  			while (num_bins-- > 0){
+  //  				fprintf(fileicinglow, "%d", ice_prob);}
+  //  		}
+ //   		fprintf(fileicinglow, "\n");
     	}
     	else {    // Empty
     		int row_start;
@@ -1350,19 +1370,19 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
-    					fprintf(fileicinglow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    							"CONUS",apdu->hours,
-    							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+ //   					fprintf(fileicinglow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+  //  							"CONUS",apdu->hours,
+    //							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-    					for (int k = 0; k < 128; ++k)
-    						fprintf(fileicinglow, "%d", (apdu->product_id == 70 ? 0 : 1));
+    	//				for (int k = 0; k < 128; ++k)
+    		//				fprintf(fileicinglow, "%d", (apdu->product_id == 70 ? 0 : 1));
 
-    					fprintf(fileicinglow, "\n");
+    			//		fprintf(fileicinglow, "\n");
     				}
     			}
     		}
     	}
-    	fflush(fileicinglow);
+ //   	fflush(fileicinglow);
         fflush(to);
     }
     break;
@@ -1371,7 +1391,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     {
     	int scale_factor = 1;
     	int ns_flag   	 = 0;
-    	FILE * fileicinghigh;
+//    	FILE * fileicinghigh;
     	int rle_flag  = (apdu->data[0] & 0x80) != 0;
     	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
      	int iceh_alt  = (apdu->data[0] & 0x70) >> 4;
@@ -1380,15 +1400,15 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     	display_generic_data(apdu->data, apdu->length, to);
 
-    	switch(iceh_alt){
-    	case 0:    		fileicinghigh = fileicingh18;  	break;
-    	case 1:    		fileicinghigh = fileicingh20;  	break;
-    	case 2:    		fileicinghigh = fileicingh22;   break;
-    	case 3:    		fileicinghigh = fileicingh24;   break;
-    	default:
-    		fileicinghigh = fileicingh24;
-    		break;
-    	}
+ //   	switch(iceh_alt){
+ //   	case 0:    		fileicinghigh = fileicingh18;  	break;
+ //   	case 1:    		fileicinghigh = fileicingh20;  	break;
+ //   	case 2:    		fileicinghigh = fileicingh22;   break;
+ //   	case 3:    		fileicinghigh = fileicingh24;   break;
+ //   	default:
+ //   		fileicinghigh = fileicingh24;
+ //   		break;
+  //  	}
         fprintf(to," rle_flag: %d   Altitude: %d block: %d\n",rle_flag,iceh_alt,block_num);
     	// now decode the bins
     	if (rle_flag) {
@@ -1397,21 +1417,21 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
-    		fprintf(fileicinghigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    				"CONUS",apdu->hours,
-					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+ //   		fprintf(fileicinghigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+ //   				"CONUS",apdu->hours,
+//					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-    		for (int i = 3; i < apdu->length; ++i) {
-    			int num_bins = (apdu->data[i] ) + 1;
-    			i = i + 1;
+  //  		for (int i = 3; i < apdu->length; ++i) {
+  //  			int num_bins = (apdu->data[i] ) + 1;
+   // 			i = i + 1;
 //    			int sld = apdu->data[i] >> 6;
 //    			int ice_sev = (apdu->data[i]) & 56;
-    			int ice_prob = (apdu->data[i]) & 7;
+ //   			int ice_prob = (apdu->data[i]) & 7;
 
-    			while (num_bins-- > 0){
-    				fprintf(fileicinghigh, "%d", ice_prob);}
-    		}
-    		fprintf(fileicinghigh, "\n");
+ //   			while (num_bins-- > 0){
+ //   				fprintf(fileicinghigh, "%d", ice_prob);}
+ //   		}
+ //   		fprintf(fileicinghigh, "\n");
     	}
     	else {    // Empty
     		int L = apdu->data[3] & 15;
@@ -1444,19 +1464,19 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
-    					fprintf(fileicinghigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    							"CONUS",apdu->hours,
-    							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+ //   					fprintf(fileicinghigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+  //  							"CONUS",apdu->hours,
+   // 							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-    					for (int k = 0; k < 128; ++k)
-    						fprintf(fileicinghigh, "%d", (apdu->product_id == 71 ? 0 : 1));
+    //					for (int k = 0; k < 128; ++k)
+   // 						fprintf(fileicinghigh, "%d", (apdu->product_id == 71 ? 0 : 1));
 
-    					fprintf(fileicinghigh, "\n");
+    //					fprintf(fileicinghigh, "\n");
     				}
     			}
     		}
     	}
-    	fflush(fileicinghigh);
+  //  	fflush(fileicinghigh);
     	fflush(to);
     }
     break;
@@ -1561,7 +1581,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     case 90:   			// ** Turbulence Low **************
     {
-    	FILE * fileturblow;
+//    	FILE * fileturblow;
     	int ns_flag = 0;
     	int scale_factor = 1;
     	int rle_flag  = (apdu->data[0] & 0x80) != 0;
@@ -1574,19 +1594,19 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     	fprintf(to," rle_flag: %d  Altitude: %d   Block: %d\n",rle_flag,turb_alt,block_num);
 
-        switch(turb_alt){
-        case 0:    	fileturblow = fileturbl2;      	break;
-        case 1:   	fileturblow = fileturbl4;     	break;
-        case 2:    	fileturblow = fileturbl6;     	break;
-        case 3:    	fileturblow = fileturbl8;     	break;
-        case 4:    	fileturblow = fileturbl10;   	break;
-        case 5:    	fileturblow = fileturbl12;    	break;
-        case 6:   	fileturblow = fileturbl14;    	break;
-        case 7:   	fileturblow = fileturbl16;    	break;
-        default:
-        	fileturblow = fileturbl16;
-        	break;
-        }
+//        switch(turb_alt){
+ //       case 0:    	fileturblow = fileturbl2;      	break;
+ //       case 1:   	fileturblow = fileturbl4;     	break;
+ //       case 2:    	fileturblow = fileturbl6;     	break;
+ //       case 3:    	fileturblow = fileturbl8;     	break;
+ //       case 4:    	fileturblow = fileturbl10;   	break;
+ //       case 5:    	fileturblow = fileturbl12;    	break;
+ //       case 6:   	fileturblow = fileturbl14;    	break;
+ //       case 7:   	fileturblow = fileturbl16;    	break;
+ //       default:
+ //       	fileturblow = fileturbl16;
+ //       	break;
+ //       }
     	// now decode the bins
     	if (rle_flag) {
     		// One bin, 128 values, RLE-encoded
@@ -1594,34 +1614,34 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
-    		fprintf(fileturblow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    				"CONUS",apdu->hours,
-					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+ //   		fprintf(fileturblow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+ //   				"CONUS",apdu->hours,
+//					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
     		for (int i = 3; i < apdu->length; ++i) {
-    			char enc = ' ';
-    			int edr_enc  = apdu->data[i] & 15;
+  //  			char enc = ' ';
+    //			int edr_enc  = apdu->data[i] & 15;
     			int num_bins = (apdu->data[i] >> 4) + 1;
 
     			if (num_bins == 15){
     				i = i+1;
     				num_bins = (apdu->data[i])+1;
     			}
-    			switch (edr_enc){
-    			case 10:   	enc='a';  	break;
-    			case 11:  	enc='b';    break;
-    			case 12:  	enc='c'; 	break;
-    			case 13:  	enc='d';  	break;
-    			case 14: 	enc='e';    break;
-    			case 15: 	enc='f';  	break;
-    			default:
-    				enc = edr_enc +'0';
-    			break;
-    			}
-    			while (num_bins-- > 0){
-    				fprintf(fileturblow, "%c", enc);}
+  //  			switch (edr_enc){
+   // 			case 10:   	enc='a';  	break;
+   // 			case 11:  	enc='b';    break;
+   // 			case 12:  	enc='c'; 	break;
+   // 			case 13:  	enc='d';  	break;
+   // 			case 14: 	enc='e';    break;
+   // 			case 15: 	enc='f';  	break;
+   // 			default:
+   // 				enc = edr_enc +'0';
+   // 			break;
+   // 			}
+  //  			while (num_bins-- > 0){
+   // 				fprintf(fileturblow, "%c", enc);}
     		}
-    		fprintf(fileturblow, "\n");
+   // 		fprintf(fileturblow, "\n");
     	}
     	else {
     		int L = apdu->data[3] & 15;
@@ -1654,26 +1674,26 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
-    					fprintf(fileturblow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    							"CONUS",apdu->hours,
-    							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+    //					fprintf(fileturblow, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+    //							"CONUS",apdu->hours,
+    //							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-    					for (int k = 0; k < 128; ++k)
-    						fprintf(fileturblow, "%d", (apdu->product_id == 90 ? 0 : 1));
+    	//				for (int k = 0; k < 128; ++k)
+    	//					fprintf(fileturblow, "%d", (apdu->product_id == 90 ? 0 : 1));
 
-    					fprintf(fileturblow, "\n");
+//    					fprintf(fileturblow, "\n");
     				}
     			}
     		}
     	}
-    	fflush(fileturblow);
+  //  	fflush(fileturblow);
         fflush(to);
     }
     break;
 
     case 91:  			// ** Turbulence High **************
     {
-    	FILE * fileturbhigh;
+//    	FILE * fileturbhigh;
     	int ns_flag = 0;
     	int scale_factor = 1;
     	int rle_flag  = (apdu->data[0] & 0x80) != 0;
@@ -1686,15 +1706,15 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     	fprintf(to," rle_flag: %d  Altitude: %d   Block: %d\n",rle_flag,turb_alt,block_num);
 
-    	switch(turb_alt){
-    	case 0:  	fileturbhigh = fileturbh18; 	break;
-    	case 1: 	fileturbhigh = fileturbh20; 	break;
-    	case 2: 	fileturbhigh = fileturbh22; 	break;
-    	case 3:  	fileturbhigh = fileturbh24; 	break;
-    	default:
-    		fileturbhigh = fileturbh24;
-    		break;
-    	}
+   // 	switch(turb_alt){
+ //   	case 0:  	fileturbhigh = fileturbh18; 	break;
+//    	case 1: 	fileturbhigh = fileturbh20; 	break;
+//    	case 2: 	fileturbhigh = fileturbh22; 	break;
+ //   	case 3:  	fileturbhigh = fileturbh24; 	break;
+ //   	default:
+ //   		fileturbhigh = fileturbh24;
+  //  		break;
+  //  	}
     	// now decode the bins
     	if (rle_flag) {
     		// One bin, 128 values, RLE-encoded
@@ -1702,34 +1722,34 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     		block_location_new(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
-    		fprintf(fileturbhigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    				"CONUS",apdu->hours,
-					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+//    		fprintf(fileturbhigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+//    				"CONUS",apdu->hours,
+//					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
     		for (int i = 3; i < apdu->length; ++i) {
-    			char enc = ' ';
-    			int edr_enc  = apdu->data[i] & 15;
+//    			char enc = ' ';
+  //  			int edr_enc  = apdu->data[i] & 15;
     			int num_bins = (apdu->data[i] >> 4) + 1;
 
     			if (num_bins == 15){
     				i = i + 1;
     				num_bins = (apdu->data[i])+1;
     			}
-    			switch (edr_enc){
-    			case 10:    enc='a';    break;
-    			case 11:    enc='b';    break;
-    			case 12:    enc='c';    break;
-    			case 13:    enc='d';    break;
-    			case 14:    enc='e';    break;
-    			case 15:    enc='f';    break;
-    			default:
-    				enc = edr_enc +'0';
-    			break;
-    			}
-    			while (num_bins-- > 0){
-    				fprintf(fileturbhigh, "%c", enc);}
+  //  			switch (edr_enc){
+   // 			case 10:    enc='a';    break;
+   // 			case 11:    enc='b';    break;
+   // 			case 12:    enc='c';    break;
+  //  			case 13:    enc='d';    break;
+ //   			case 14:    enc='e';    break;
+ //   			case 15:    enc='f';    break;
+ //   			default:
+  //  				enc = edr_enc +'0';
+ //   			break;
+  //  			}
+ //   			while (num_bins-- > 0){
+ //   				fprintf(fileturbhigh, "%c", enc);}
     		}
-    		fprintf(fileturbhigh, "\n");
+ //   		fprintf(fileturbhigh, "\n");
     	}
     	else {
     		int L = apdu->data[3] & 15;
@@ -1762,19 +1782,19 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     					block_location_new(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
-    					fprintf(fileturbhigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    							"CONUS",apdu->hours,
-    							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+ //   					fprintf(fileturbhigh, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+ //  							"CONUS",apdu->hours,
+  //  							apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
 
-    					for (int k = 0; k < 128; ++k)
-    						fprintf(fileturbhigh, "%d", (apdu->product_id == 91 ? 0 : 1));
+    //					for (int k = 0; k < 128; ++k)
+    //						fprintf(fileturbhigh, "%d", (apdu->product_id == 91 ? 0 : 1));
 
-    					fprintf(fileturbhigh, "\n");
+    //					fprintf(fileturbhigh, "\n");
     				}
     			}
     		}
     	}
-    	fflush(fileturbhigh);
+ //   	fflush(fileturbhigh);
     	fflush(to);
     }
     break;
@@ -1976,7 +1996,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
     		r = report_buf;
     		strncpy(taftype,report_buf,7);
-    		if (strcmp(taftype,"TAF COR")== 0){
+    		if (strcmp(taftype,"TAF COR") == 0){
     			report_buf[3]='.';
     		}
     		p = strchr(r, ' ');    // *** RType ***
@@ -2028,7 +2048,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				fprintf(to," RTime: %s\n", r);
     			r = p+1;
     		}
-    		if (strcmp(mtype,"TAF") == 0 || strcmp(mtype,"TAF.AMD" )== 0 || strcmp(mtype,"TAF.COR") == 0){
+    		if (strcmp(mtype,"TAF") == 0 || strcmp(mtype,"TAF.AMD" ) == 0 || strcmp(mtype,"TAF.COR") == 0){
 
     			fprintf(filemetar," Report Name         : %s\n",mtype);
     			fprintf(filemetar," Data:\n%s\n", r);    // *** Text ***
@@ -2077,7 +2097,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     				fprintf(to,"Error METAR Decode\n"); }
     			else {
     				print_decoded_metar( Mptr);
-    				if (metar_count ==0) {
+    				if (metar_count == 0) {
     					fprintf(filemetarjson,"{\"type\": \"FeatureCollection\",\n");
     					fprintf(filemetarjson,"\"features\": [ \n");
     				}
@@ -2157,7 +2177,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
     break;
 
     default:
-    	//display_generic_data(apdu->data, apdu->length, to);
+    	display_generic_data(apdu->data, apdu->length, to);
     break;
     }                
 }            
@@ -2483,9 +2503,9 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 	if (obj_label_flag == 0)
 		strcpy(ob_type_text,object_types_text[obj_type]);
-	if (element_flag==1 && obj_type ==14)
+	if (element_flag == 1 && obj_type == 14)
 		strcpy(ob_ele_text,airspace_element_names[obj_element]);
-	if (element_flag==1 && obj_type ==14 && apdu->product_id == 14)
+	if (element_flag == 1 && obj_type == 14 && apdu->product_id == 14)
 		strcpy(ob_ele_text,gairspace_element_names[obj_element]);
 
 	switch (geo_overlay_opt) {
@@ -2495,7 +2515,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 
 		switch(apdu->product_id ){
 		case 11:       	file3dpoly = fileairmetjson;
-			if (airmet_count ==0) {
+			if (airmet_count == 0) {
 				fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
 				fprintf(file3dpoly,"\"features\": [ \n");
 				fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
@@ -2510,7 +2530,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 			break;
 
 		case 12:     	file3dpoly = filesigmetjson;
-			if (sigmet_count ==0) {
+			if (sigmet_count == 0) {
 				fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
 				fprintf(file3dpoly,"\"features\": [ \n");
 				fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
@@ -2525,7 +2545,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 			break;
 
 		case 14:        file3dpoly = filegairmetjson;
-			if (gairmet_count ==0) {
+			if (gairmet_count == 0) {
 				fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
 				fprintf(file3dpoly,"\"features\": [ \n");
 				fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
@@ -2538,9 +2558,25 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 			}
 			gairmet_count++;
 			break;
+		case 15:        file3dpoly = filecwajson;
+			if (cwa_count == 0) {
+				fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
+				fprintf(file3dpoly,"\"features\": [ \n");
+				fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
+			}
+			else {
+				fseek(file3dpoly, -3, SEEK_CUR);
+				fprintf(file3dpoly,",{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
+			}
+			cwa_count++;
+			break;
+
+
 
 		case 18:        file3dpoly = filenotamjson;
-			if (notam_count ==0) {
+			if (notam_count == 0) {
 				fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
 				fprintf(file3dpoly,"\"features\": [ \n");
 				fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
@@ -2680,11 +2716,11 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 				notam_list[notam_count].notam_lng = lng;
 				strcpy(notam_list[notam_count].notam_stn,gstn);
 				notam_list[notam_count].notam_repid =rep_num;
-				if (notam_count ==0) {
+				if (notam_count == 0) {
 					fprintf(filenotamjson,"{\"type\": \"FeatureCollection\",\n");
 					fprintf(filenotamjson,"\"features\": [ \n");
 				}
-				if (notam_count ==0) {
+				if (notam_count == 0) {
 					fprintf(filenotamjson,"{\"type\": \"Feature\", \"properties\": { \"Location\": \"%s\" ,\"Stuff\": \"%d\"},\n",gstn,rep_num);
 					fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %f , %f ] }}\n",lng,lat);
 					fprintf(filenotamjson,"]}");
@@ -2712,7 +2748,7 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		switch(apdu->product_id ){
 		case 14:        file3dpoly = filegairmetjson;
 			if (qualifier_flag == 0){
-				if (gairmet_count ==0) {
+				if (gairmet_count == 0) {
 					fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
 					fprintf(file3dpoly,"\"features\": [ \n");
 					fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
@@ -2857,7 +2893,7 @@ static void get_text(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to){
    		if (apdu->product_id == 8){
    			int length = strlen(r);
    			  if (r[length-1] == '\n')
-   			    r[length-1]  = '\0';
+   			    r[length-1] = '\0';
    			for(int i = 0; i <= strlen(r); i++)
    			  	{
    			  		if(r[i] == '\n')

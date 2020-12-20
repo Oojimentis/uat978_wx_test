@@ -67,6 +67,7 @@ int metar_count;
 int airmet_count;
 int gairmet_count;
 int sigmet_count;
+int cwa_count;
 
 
 FILE * filemetar;   	// 413
@@ -77,38 +78,40 @@ FILE * fileairmet;		// 11
 FILE * filegairmet;		// 14
 FILE * filepirep;		// PIREP
 FILE * filenexradc;		// NEXRAD Graphics output
-FILE * fileicingl2;		// ICING LOW Graphics output
-FILE * fileicingl4;		// ICING LOW Graphics output
-FILE * fileicingl6;		// ICING LOW Graphics output
-FILE * fileicingl8;		// ICING LOW Graphics output
-FILE * fileicingl10;	// ICING LOW Graphics output
-FILE * fileicingl12;	// ICING LOW Graphics output
-FILE * fileicingl14;	// ICING LOW Graphics output
-FILE * fileicingl16;	// ICING LOW Graphics output
-FILE * fileicingh18;	// ICING HIGH Graphics output
-FILE * fileicingh20;	// ICING HIGH Graphics output
-FILE * fileicingh22;	// ICING HIGH Graphics output
-FILE * fileicingh24;	// ICING HIGH Graphics output
+//FILE * fileicingl2;		// ICING LOW Graphics output
+//FILE * fileicingl4;		// ICING LOW Graphics output
+//FILE * fileicingl6;		// ICING LOW Graphics output
+//FILE * fileicingl8;		// ICING LOW Graphics output
+//FILE * fileicingl10;	// ICING LOW Graphics output
+//FILE * fileicingl12;	// ICING LOW Graphics output
+//FILE * fileicingl14;	// ICING LOW Graphics output
+//FILE * fileicingl16;	// ICING LOW Graphics output
+//FILE * fileicingh18;	// ICING HIGH Graphics output
+//FILE * fileicingh20;	// ICING HIGH Graphics output
+//FILE * fileicingh22;	// ICING HIGH Graphics output
+//FILE * fileicingh24;	// ICING HIGH Graphics output
 FILE * filecloudt;		// CLOUD TOPS Graphics output
-FILE * fileturbl2;		// TURBULENCE LOW Graphics output
-FILE * fileturbl4;		// TURBULENCE LOW Graphics output
-FILE * fileturbl6;		// TURBULENCE LOW Graphics output
-FILE * fileturbl8;		// TURBULENCE LOW Graphics output
-FILE * fileturbl10;		// TURBULENCE LOW Graphics output
-FILE * fileturbl12;		// TURBULENCE LOW Graphics output
-FILE * fileturbl14;		// TURBULENCE LOW Graphics output
-FILE * fileturbl16;		// TURBULENCE LOW Graphics output
-FILE * fileturbh18;		// TURBULENCE HIGH Graphics output
-FILE * fileturbh20;		// TURBULENCE HIGH Graphics output
-FILE * fileturbh22;		// TURBULENCE HIGH Graphics output
-FILE * fileturbh24;		// TURBULENCE HIGH Graphics output
+//FILE * fileturbl2;		// TURBULENCE LOW Graphics output
+//FILE * fileturbl4;		// TURBULENCE LOW Graphics output
+//FILE * fileturbl6;		// TURBULENCE LOW Graphics output
+//FILE * fileturbl8;		// TURBULENCE LOW Graphics output
+//FILE * fileturbl10;		// TURBULENCE LOW Graphics output
+//FILE * fileturbl12;		// TURBULENCE LOW Graphics output
+//FILE * fileturbl14;		// TURBULENCE LOW Graphics output
+//FILE * fileturbl16;		// TURBULENCE LOW Graphics output
+//FILE * fileturbh18;		// TURBULENCE HIGH Graphics output
+//FILE * fileturbh20;		// TURBULENCE HIGH Graphics output
+//FILE * fileturbh22;		// TURBULENCE HIGH Graphics output
+//FILE * fileturbh24;		// TURBULENCE HIGH Graphics output
 FILE * filelightng;		// LIGHTNING Graphics output
+FILE * filecwa;			// Center Weather Advisory
 
 FILE * filenotamjson; 	//notam geojson
 FILE * filemetarjson; 	//metar geojson
 FILE * fileairmetjson; 	//airmet geojson
 FILE * filegairmetjson; //gairmet geojson
 FILE * filesigmetjson; 	//sigmet geojson
+FILE * filecwajson; 	//sigmet geojson
 
 int reccount;
 
