@@ -13,6 +13,7 @@
 
 #include "uat.h"
 #include "uat_decode.h"
+#include "uat_geo.h"
 
 #include "metar.h"
 #include <time.h>
@@ -30,6 +31,7 @@ static char gs_ret_lat[25];
 static char gs_ret_lng[25];
 
 void block_location_new(int bn, int ns, int sf, double *latN, double *lonW, double *latSize, double *lonSize);
+
 
 static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to);
 
@@ -2514,66 +2516,22 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 		alt = alt_raw * 100;
 
 		switch(apdu->product_id ){
-		case 11:       	file3dpoly = fileairmetjson;
-			if (airmet_count == 0) {
-				fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
-				fprintf(file3dpoly,"\"features\": [ \n");
-				fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
-				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
-			}
-			else {
-				fseek(file3dpoly, -3, SEEK_CUR);
-				fprintf(file3dpoly,",{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
-				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
-			}
-			airmet_count++;
+		case 11:
+			file3dpoly = fileairmetjson;
+			airmet_count = ex3dpoly(fileairmetjson,airmet_count,rep_num,alt, ob_ele_text);
 			break;
-
-		case 12:     	file3dpoly = filesigmetjson;
-			if (sigmet_count == 0) {
-				fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
-				fprintf(file3dpoly,"\"features\": [ \n");
-				fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
-				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
-			}
-			else {
-				fseek(file3dpoly, -3, SEEK_CUR);
-				fprintf(file3dpoly,",{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\"},\n",rep_num,alt);
-				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
-			}
-			sigmet_count++;
+		case 12:
+			file3dpoly = filesigmetjson;
+			sigmet_count = ex3dpoly(filesigmetjson,airmet_count,rep_num,alt, ob_ele_text);
 			break;
-
-		case 14:        file3dpoly = filegairmetjson;
-			if (gairmet_count == 0) {
-				fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
-				fprintf(file3dpoly,"\"features\": [ \n");
-				fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
-				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
-			}
-			else {
-				fseek(file3dpoly, -3, SEEK_CUR);
-				fprintf(file3dpoly,",{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
-				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
-			}
-			gairmet_count++;
+		case 14:
+			file3dpoly = filegairmetjson;
+			gairmet_count = ex3dpoly(filegairmetjson,airmet_count,rep_num,alt, ob_ele_text);
 			break;
-		case 15:        file3dpoly = filecwajson;
-			if (cwa_count == 0) {
-				fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
-				fprintf(file3dpoly,"\"features\": [ \n");
-				fprintf(file3dpoly,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
-				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
-			}
-			else {
-				fseek(file3dpoly, -3, SEEK_CUR);
-				fprintf(file3dpoly,",{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
-				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
-			}
-			cwa_count++;
+		case 15:
+			file3dpoly = filecwajson;
+			cwa_count = ex3dpoly(filecwajson,airmet_count,rep_num,alt, ob_ele_text);
 			break;
-
-
 
 		case 18:        file3dpoly = filenotamjson;
 			if (notam_count == 0) {
@@ -2719,8 +2677,6 @@ static void get_graphic(const struct fisb_apdu  *apdu,  FILE *fnm, FILE *to) {
 				if (notam_count == 0) {
 					fprintf(filenotamjson,"{\"type\": \"FeatureCollection\",\n");
 					fprintf(filenotamjson,"\"features\": [ \n");
-				}
-				if (notam_count == 0) {
 					fprintf(filenotamjson,"{\"type\": \"Feature\", \"properties\": { \"Location\": \"%s\" ,\"Stuff\": \"%d\"},\n",gstn,rep_num);
 					fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\", \"coordinates\": [ %f , %f ] }}\n",lng,lat);
 					fprintf(filenotamjson,"]}");
