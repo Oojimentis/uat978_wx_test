@@ -789,3 +789,7 @@ KAWO$Arlington Municipal Airport-Arlington, WA                              $48.
 PAJN$Juneau International Airport-Juneau, AK                                $58.35700                $-134.5640              $
 PACV$Merle K. (Mudhole) Smith Airport-Cordova, AK                           $60.48900                $-145.4510              $
 PAGH$Shungnak Airport-Shungnak, AK                                          $66.88800                $-157.1620              $
+KZJX$Hilliard Jacksonville ARTCC, FL                                        $30.699                  $-81.9083               $
+KSNA$John Wayne Airport	Santa Ana, CA                                       $33.676                  $-117.868               $
+KBLV$Scott AFB/Midamerica Airport Belleville, IL                            $38.545                  $-89.835                $
+KPGR$Kirk Field Airport	Paragould, AR                                       $36.0638056              $-90.5091944            $
