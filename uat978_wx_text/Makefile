@@ -11,16 +11,16 @@ all: dump978 uat2json uat2text uat2esnt extract_nexrad
 dump978: dump978.o fec.o fec/decode_rs_char.o fec/init_rs_char.o
 	$(CC) -g -o $@ $^ $(LDFLAGS) $(LIBS)
 
-uat2json: uat2json.o uat_decode.o more.o reader.o
+uat2json: uat2json.o uat_decode.o uat_geo.o reader.o
 	$(CC) -g -o $@ $^ $(LDFLAGS) $(LIBS)
 
-uat2text: uat2text.o  uat_decode.o more.o reader.o 
+uat2text: uat2text.o  uat_decode.o uat_geo.o reader.o 
 	$(CC) -g -o $@ $^ $(LDFLAGS) $(LIBS)
 
-uat2esnt: uat2esnt.o uat_decode.o more.o reader.o
+uat2esnt: uat2esnt.o uat_decode.o uat_geo.o reader.o
 	$(CC) -g -o $@ $^ $(LDFLAGS) $(LIBS)
 
-extract_nexrad: extract_nexrad.o uat_decode.o more.o reader.o
+extract_nexrad: extract_nexrad.o uat_decode.o uat_geo.o reader.o
 	$(CC) -g -o $@ $^ $(LDFLAGS) $(LIBS)
 
 fec_tests: fec_tests.o fec.o fec/decode_rs_char.o fec/init_rs_char.o
