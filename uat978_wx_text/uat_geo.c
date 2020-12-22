@@ -22,8 +22,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
    	int ice_alt = (apdu->data[0] & 0x70) >> 4;
    	int bin=0;
 
-   	fprintf(to," Record Format   :  Graphic\n");
-    fprintf(to," rle_flag: %d   Altitude: %d block: %d\n",rle_flag,ice_alt,block_num);
+//   	fprintf(to," Record Format   :  Graphic\n");
+//    fprintf(to," rle_flag: %d   Altitude: %d block: %d\n",rle_flag,ice_alt,block_num);
 
 	switch(apdu->product_id) {
 
