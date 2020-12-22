@@ -12,9 +12,9 @@ My programming skills are somewhat limited, and this is my first Github project,
 * Decoding of Cloud Tops, Icing, Lightening, and Turbulence radar graphic reports like nexrad radar in DUMP978
 * SUA and PIREP decode
 * AIRMET, NOTAM, SIGMET, TAF, CWA and Winds aloft text report.
-* AIRMET, G-AIRMET, NOTAM, SIGMET and CWA graphic reports - Decode parameters and coordinates. (Would love to be able to plot on map)
+* AIRMET, G-AIRMET, NOTAM, SIGMET and CWA graphic reports - Decode parameters and coordinates.
 * Use Multitail (https://vanheusden.com/multitail) to colorize log files.
-* Create geojson output.
+* Created geojson output for use with an in-progress mapping Website.
 
 ## Building
 
