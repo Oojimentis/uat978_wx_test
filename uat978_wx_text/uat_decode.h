@@ -1,46 +1,32 @@
 // Part of dump978, a UAT decoder.
-//
 // Copyright 2015, Oliver Jowett <oliver@mutability.co.uk>
 //
-// This file is free software: you may copy, redistribute and/or modify it  
-// under the terms of the GNU General Public License as published by the
-// Free Software Foundation, either version 2 of the License, or (at your  
-// option) any later version.  
-//
-// This file is distributed in the hope that it will be useful, but  
-// WITHOUT ANY WARRANTY; without even the implied warranty of  
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
-// General Public License for more details...
-//
-// You should have received a copy of the GNU General Public License  
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef UAT_DECODE_H
 #define UAT_DECODE_H
 
 #include <stdint.h>
-#include <stdio.h>
 
+#include <stdio.h>
+#include <sqlite3.h>
 #include "uat.h"
 
 //
 // Datatypes
 //
 
+	sqlite3 *db;
+	int rc;
+
 typedef enum { AQ_ADSB_ICAO=0, AQ_NATIONAL=1, AQ_TISB_ICAO=2, AQ_TISB_OTHER=3, AQ_VEHICLE=4,
-               AQ_FIXED_BEACON=5, AQ_RESERVED_6=6, AQ_RESERVED_7=7 } address_qualifier_t;
+	AQ_FIXED_BEACON=5, AQ_RESERVED_6=6, AQ_RESERVED_7=7 } address_qualifier_t;
 typedef enum { ALT_INVALID=0, ALT_BARO, ALT_GEO } altitude_type_t;
 typedef enum { AG_SUBSONIC=0, AG_SUPERSONIC=1, AG_GROUND=2, AG_RESERVED=3 } airground_state_t;
 typedef enum { TT_INVALID=0, TT_TRACK, TT_MAG_HEADING, TT_TRUE_HEADING } track_type_t;
 typedef enum { HT_INVALID=0, HT_MAGNETIC, HT_TRUE } heading_type_t;
 typedef enum { CS_INVALID=0, CS_CALLSIGN, CS_SQUAWK } callsign_type_t;
 
-struct MyStruct{
-	char gs_call[5];
-	char gs_loc[75];
-}  gs_list[900];
-
-// SEgmentation
+// Segmentation
 struct MySegStruct{
 	uint16_t seg_prodid;
 	uint16_t seg_prolen;
@@ -53,7 +39,6 @@ struct MySegStruct{
 
 int seg_count;
 
-
 struct NotamJsonStruct{
 	float notam_lat;
 	float notam_lng;
@@ -62,7 +47,11 @@ struct NotamJsonStruct{
 } notam_list[5000];
 
 int notam_count;
-
+int metar_count;
+int airmet_count;
+int gairmet_count;
+int sigmet_count;
+int cwa_count;
 
 
 FILE * filemetar;   	// 413
@@ -99,14 +88,18 @@ FILE * fileturbh20;		// TURBULENCE HIGH Graphics output
 FILE * fileturbh22;		// TURBULENCE HIGH Graphics output
 FILE * fileturbh24;		// TURBULENCE HIGH Graphics output
 FILE * filelightng;		// LIGHTNING Graphics output
+FILE * filecwa;			// Center Weather Advisory
 
-FILE * filejson; //notam geojson
-
-int reccount;
+FILE * filenotamjson; 	//notam geojson
+FILE * filemetarjson; 	//metar geojson
+FILE * fileairmetjson; 	//airmet geojson
+FILE * filegairmetjson; //gairmet geojson
+FILE * filesigmetjson; 	//sigmet geojson
+FILE * filecwajson; 	//sigmet geojson
 
 struct uat_adsb_mdb {
     // presence bits
-    int has_sv : 1;
+	int has_sv : 1;
     int has_ms : 1;
     int has_auxsv : 1;
 

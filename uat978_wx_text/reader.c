@@ -38,14 +38,14 @@ static int hexbyte(char *buf);
 
 struct dump978_reader *dump978_reader_new(int fd, int nonblock)
 {
-    struct dump978_reader *reader = calloc(1, sizeof(*reader));
+	struct dump978_reader *reader = calloc(1, sizeof(*reader));
     if (!reader)
         return NULL;
 
     if (nonblock) {
         int flags = fcntl(fd, F_GETFL);
         if (flags < 0 || fcntl(fd, F_SETFL, flags | O_NONBLOCK) < 0) {
-            int save_errno = errno;
+        	int save_errno = errno;
             free(reader);
             errno = save_errno;
             return NULL;
@@ -58,48 +58,48 @@ struct dump978_reader *dump978_reader_new(int fd, int nonblock)
 }
     
 int dump978_read_frames(struct dump978_reader *reader,
-                        frame_handler_t handler,
-                        void *handler_data)
+		frame_handler_t handler,
+		void *handler_data)
 {
     int framecount = 0;
     ssize_t bytes_read;
 
     if (!reader) {
-        errno = EINVAL;
-        return -1;
+    	errno = EINVAL;
+    	return -1;
     }
 
     for (;;) {
-        if (reader->used == sizeof(reader->buf)) {
+    	if (reader->used == sizeof(reader->buf)) {
             // line too long, ditch input
-            reader->used = 0;
+    		reader->used = 0;
         }
 
-        bytes_read = read(reader->fd,
-                          reader->buf + reader->used,
-                          sizeof(reader->buf) - reader->used);
-        if (bytes_read <= 0)
-            break;
+    	bytes_read = read(reader->fd,
+    			reader->buf + reader->used,
+				sizeof(reader->buf) - reader->used);
+    	if (bytes_read <= 0)
+    		break;
 
-        reader->used += bytes_read;
+    	reader->used += bytes_read;
 
-        framecount += process_input(reader, handler, handler_data);
+    	framecount += process_input(reader, handler, handler_data);
     }
 
     if (bytes_read == 0)
-        return framecount; // EOF
+    	return framecount; // EOF
 
     // only report EAGAIN et al if no frames were read
     if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
-        return (framecount > 0 ? framecount : -1);
+    	return (framecount > 0 ? framecount : -1);
 
     return -1; // propagate unexpected error
 }
 
 void dump978_reader_free(struct dump978_reader *reader)
 {
-    if (!reader)
-        return;
+	if (!reader)
+		return;
 
     free(reader);
 }
@@ -111,11 +111,11 @@ static int process_input(struct dump978_reader *reader, frame_handler_t handler,
     int framecount = 0;
 
     while (p < end) {
-        char *newline;
+    	char *newline;
 
         newline = memchr(p, '\n', end - p);
         if (newline == NULL)
-            break;
+        	break;
         
         if (*p == '-' || *p == '+')
             framecount += process_line(reader, handler, handler_data, p, newline);
@@ -124,7 +124,7 @@ static int process_input(struct dump978_reader *reader, frame_handler_t handler,
     }
 
     if (p >= end) {
-        reader->used = 0;
+    	reader->used = 0;
     } else {
         reader->used = end - p;
         memmove(reader->buf, p, reader->used);
@@ -140,7 +140,7 @@ static int process_line(struct dump978_reader *reader, frame_handler_t handler, 
     frame_type_t frametype;
     
     if (*p == '-')
-        frametype = UAT_DOWNLINK;
+    	frametype = UAT_DOWNLINK;
     else if (*p == '+')
         frametype = UAT_UPLINK;
     else
@@ -149,20 +149,20 @@ static int process_line(struct dump978_reader *reader, frame_handler_t handler, 
     out = reader->frame;
     ++p;
     while (p < end) {
-        int byte;
+    	int byte;
                 
         if (p[0] == ';') {
             // ignore rest of line
-            handler(frametype, reader->frame, len, handler_data);
+        	handler(frametype, reader->frame, len, handler_data);
             return 1;
         }
         
         if (len >= sizeof(reader->frame))
-            return 0; // oversized frame
+        	return 0; // oversized frame
                 
         byte = hexbyte(p);
         if (byte < 0)
-            return 0; // badly formatted byte
+        	return 0; // badly formatted byte
                 
         ++len;
         *out++ = byte;

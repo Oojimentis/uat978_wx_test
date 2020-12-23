@@ -58,6 +58,3 @@ int dump978_read_frames(struct dump978_reader *reader,
                         void *handler_data);
 
 #endif
-
-
-                         

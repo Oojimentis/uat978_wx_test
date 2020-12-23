@@ -11,9 +11,10 @@ My programming skills are somewhat limited, and this is my first Github project,
 * Output files for each FIS-B product. (overkill...)
 * Decoding of Cloud Tops, Icing, Lightening, and Turbulence radar graphic reports like nexrad radar in DUMP978
 * SUA and PIREP decode
-* AIRMET, NOTAM, SIGMET, TAF, and Winds aloft text report.
-* AIRMET, G-AIRMET, NOTAM, SIGMET graphic reports - Decode parameters and coordinates. (Would love to be able to plot on map)
+* AIRMET, NOTAM, SIGMET, TAF, CWA and Winds aloft text report.
+* AIRMET, G-AIRMET, NOTAM, SIGMET and CWA graphic reports - Decode parameters and coordinates.
 * Use Multitail (https://vanheusden.com/multitail) to colorize log files.
+* Created geojson output for use with an in-progress mapping Website.
 
 ## Building
 
@@ -65,7 +66,8 @@ G-AIRMET (Graphical AIRMET)
 ![G-AIRMET text](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/g-airmet_screen.png)
 ![G-AIRMET](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/g-airmet2_screen.png)
 
-Current report list and service status
+Current report list and 
+service status
 
 ![Frame info](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/info_frame_screen.png)
 ![Service status](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/service_status_screen.png)

@@ -46,9 +46,9 @@ static void handle_uplink_frame(uint64_t timestamp, uint8_t *frame, int rs);
 #else
 static inline int16_t phi_difference(uint16_t from, uint16_t to)
 {
-    int32_t difference = to - from; // lies in the range -65535 .. +65535
+	int32_t difference = to - from; // lies in the range -65535 .. +65535
     if (difference >= 32768)        //   +32768..+65535
-        return difference - 65536;  //   -> -32768..-1: always in range
+    	return difference - 65536;  //   -> -32768..-1: always in range
     else if (difference < -32768)   //   -65535..-32769
         return difference + 65536;  //   -> +1..32767: always in range
     else
@@ -58,7 +58,7 @@ static inline int16_t phi_difference(uint16_t from, uint16_t to)
 
 int main(int argc, char **argv)
 {
-    make_atan2_table();
+	make_atan2_table();
     init_fec();
     read_from_stdin();
     return 0;
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 
 static void dump_raw_message(char updown, uint8_t *data, int len, int rs_errors)
 {
-    int i;
+	int i;
 
     fprintf(stdout, "%c", updown);
     for (i = 0; i < len; ++i) {
@@ -86,7 +86,7 @@ static void handle_adsb_frame(uint64_t timestamp, uint8_t *frame, int rs)
 
 static void handle_uplink_frame(uint64_t timestamp, uint8_t *frame, int rs)
 {
-    dump_raw_message('+', frame, UPLINK_FRAME_DATA_BYTES, rs);
+	dump_raw_message('+', frame, UPLINK_FRAME_DATA_BYTES, rs);
     fflush(stdout);
 }
 
@@ -94,16 +94,16 @@ static uint16_t iqphase[65536]; // contains value [0..65536) -> [0, 2*pi)
 
 void make_atan2_table()
 {
-    unsigned i,q;
+	unsigned i,q;
     union {
-        uint8_t iq[2];
+		uint8_t iq[2];
         uint16_t iq16;
     } u;
 
     for (i = 0; i < 256; ++i) {
-        double d_i = (i - 127.5);
+    	double d_i = (i - 127.5);
         for (q = 0; q < 256; ++q) {
-            double d_q = (q - 127.5);
+        	double d_q = (q - 127.5);
             double ang = atan2(d_q, d_i) + M_PI; // atan2 returns [-pi..pi], normalize to [0..2*pi]
             double scaled_ang = round(32768 * ang / M_PI);
 
@@ -120,7 +120,7 @@ static void convert_to_phi(uint16_t *buffer, int n)
 
     // unroll the loop. n is always > 2048, usually 36864
     for (i = 0; i+8 <= n; i += 8) {
-        buffer[i] = iqphase[buffer[i]];
+    	buffer[i] = iqphase[buffer[i]];
         buffer[i+1] = iqphase[buffer[i+1]];
         buffer[i+2] = iqphase[buffer[i+2]];
         buffer[i+3] = iqphase[buffer[i+3]];
@@ -141,7 +141,7 @@ void read_from_stdin()
     uint64_t offset = 0;
     
     while ( (n = read(0, buffer+used, sizeof(buffer)-used)) > 0 ) {
-        int processed;
+    	int processed;
 
         convert_to_phi((uint16_t*) (buffer+(used&~1)), ((used&1)+n)/2);
 
@@ -150,7 +150,7 @@ void read_from_stdin()
         used -= processed * 2;
         offset += processed;
         if (used > 0) {
-            memmove(buffer, buffer+processed*2, used);
+        	memmove(buffer, buffer+processed*2, used);
         }
     }
 }
@@ -159,10 +159,10 @@ void read_from_stdin()
 // Return 1 if word is "equal enough" to expected
 static inline int sync_word_fuzzy_compare(uint64_t word, uint64_t expected)
 {
-    uint64_t diff;
+	uint64_t diff;
 
-    if (word == expected)
-        return 1;
+	if (word == expected)
+		return 1;
 
     diff = word ^ expected; // guaranteed nonzero
 
@@ -253,7 +253,7 @@ int check_sync_word(uint16_t *phi, uint64_t pattern, int16_t *center)
     // recheck sync word using our center value
     error_bits = 0;
     for (i = 0; i < SYNC_BITS; ++i) {
-        int16_t dphi = phi_difference(phi[i*2], phi[i*2+1]);
+    	int16_t dphi = phi_difference(phi[i*2], phi[i*2+1]);
 
         if (pattern & (1UL << (35-i))) {
             if (dphi < *center)
@@ -273,7 +273,7 @@ int check_sync_word(uint16_t *phi, uint64_t pattern, int16_t *center)
 
 int process_buffer(uint16_t *phi, int len, uint64_t offset)    
 {
-    uint64_t sync0 = 0, sync1 = 0;
+	uint64_t sync0 = 0, sync1 = 0;
     int lenbits;
     int bit;
 
@@ -330,7 +330,7 @@ int process_buffer(uint16_t *phi, int len, uint64_t offset)
             skip_0 = demod_adsb_frame(phi+index, demod_buf_a, &rs_0);
             skip_1 = demod_adsb_frame(phi+index+1, demod_buf_b, &rs_1);
             if (skip_0 && rs_0 <= rs_1) {
-                handle_adsb_frame(offset+index, demod_buf_a, rs_0);
+            	handle_adsb_frame(offset+index, demod_buf_a, rs_0);
                 bit = startbit + skip_0;
                 continue;
             } else if (skip_1 && rs_1 <= rs_0) {
