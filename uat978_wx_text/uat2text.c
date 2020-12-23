@@ -1,17 +1,7 @@
 // Copyright 2015, Oliver Jowett <oliver@mutability.co.uk>
-// test
-// This file is free software: you may copy, redistribute and/or modify it  
-// under the terms of the GNU General Public License as published by the
-// Free Software Foundation, either version 2 of the License, or (at your  
-// option) any later version.        
 //
-// This file is distributed in the hope that it will be useful, but  
-// WITHOUT ANY WARRANTY; without even the implied warranty of  
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
-// General Public License for more details.
+// UAT2TEXT.C -
 //
-// You should have received a copy of the GNU General Public License  
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdio.h>
 
@@ -19,16 +9,12 @@
 #include "uat_decode.h"
 #include "reader.h"
 
-
 #include <stdlib.h>
 #include <string.h>
 
 #ifndef NULL
 #define NULL   ((void *) 0)
 #endif
-
-FILE * filehandle;
-
 
 void handle_frame(frame_type_t type, uint8_t *frame, int len, void *extra)
 {
@@ -48,9 +34,6 @@ void handle_frame(frame_type_t type, uint8_t *frame, int len, void *extra)
 
 int main(int argc, char **argv)
  {
-	char lyne[150];
-	char *item;
-
 	seg_count=0;
 	notam_count=0;
 	metar_count=0;
@@ -59,23 +42,15 @@ int main(int argc, char **argv)
 	sigmet_count=0;
 	cwa_count=0;
 
-	fprintf(stderr, "\nOpening file: uat_gs.txt ");
+// Open sqlite3 database
 
-	filehandle = fopen("uat_gs.txt","r");
-
-	while (fgets(lyne,150,filehandle)) {
-		item = strtok(lyne,"$");
-	    strncpy(gs_list[reccount].gs_call,item,5);
-	    item = strtok(NULL,"$");
-	    strncpy(gs_list[reccount].gs_loc,item,70);
-	    item = strtok(NULL,"$");
-	    strncpy(gs_list[reccount].gs_lat,item,24);
-	    item = strtok(NULL,"$");
-	    strncpy(gs_list[reccount].gs_lng,item,24);
-	    reccount++;
+	rc = sqlite3_open("uat978.db", &db);
+	if( rc ) {
+		fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
+		return(0);
+	} else {
+		fprintf(stderr, "uat978.db - Opened database successfully\n");
 	}
-	fprintf(stderr, "- %d Records read\n\n",reccount);
-   	fclose(filehandle);
 
    	filenotamjson = fopen("/home/trev/git/map-978/WebContent/notam.geojson","w");
    	if (filenotamjson == 0)		{

@@ -11,6 +11,10 @@
 #include <string.h>
 #include <assert.h>
 
+#include <stdio.h>
+#include <sqlite3.h>
+
+#include "asprintf.h"
 #include "uat.h"
 #include "uat_decode.h"
 #include "uat_geo.h"
@@ -27,7 +31,7 @@ static char gs_ret_lng[25];
 static void get_graphic(const struct fisb_apdu *apdu,FILE *fnm,FILE *to);
 static void get_text(const struct fisb_apdu *apdu,FILE *fnm,FILE *to);
 static void get_seg_text(const struct fisb_apdu *apdu,FILE *fnm,FILE *to);
-static void get_gs_name(char *Word,int len);
+static void get_gs_name(char *Word);
 static void get_sua_text(char *Word,FILE *to);
 static void get_pirep(char *Word,FILE *to);
 
@@ -82,7 +86,6 @@ static const char *decode_dlac(uint8_t *data,unsigned bytelen,int rec_offset)
 
     return buf;
 }
-
 
 static char base40_alphabet[40] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ  ..";
 
@@ -304,25 +307,32 @@ static const char *info_frame_type_names[16] = {
 		"TIS-B/ADS-R Service Status"
 };
 
+static int stn_callback(void *data, int argc, char **argv, char **azColName){
+//   Station details from database
 
+	strcpy(gs_ret,argv[1]);
+	sprintf(gs_ret_lat, "%s", argv[2]);
+	sprintf(gs_ret_lng, "%s", argv[3]);
+	return 0;
+}
 
-static void get_gs_name(char *Word,int len)
+static void get_gs_name(char *Word)
 {												// Get ground station data
 	char temp_stn[5] = " ";
+	char *sql;
+	char *zErrMsg = 0;
 
 	strncpy(temp_stn,Word,4);
 	strcpy(gs_ret,"not found      ");
+	strcpy(gs_ret_lat,"0.0");
+	strcpy(gs_ret_lng,"0.0");
 
-	for(int i = 0; i < len; i++){
-		if(*gs_list[i].gs_call == '\0')
-			return;
+	asprintf(&sql,"SELECT * from stations where stn_call = '%s'",temp_stn);
 
-		if(strcmp(gs_list[i].gs_call,temp_stn) == 0){
-	  		strncpy(gs_ret,gs_list[i].gs_loc,75);
-	  		strncpy(gs_ret_lat,gs_list[i].gs_lat,25);
-	  		strncpy(gs_ret_lng,gs_list[i].gs_lng,25);
-	  		return;
-	  	}
+	rc = sqlite3_exec(db, sql, stn_callback, 0, &zErrMsg);
+	if( rc != SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s\n", zErrMsg);
+		sqlite3_free(zErrMsg);
 	}
 	return;
 }
@@ -480,7 +490,7 @@ static void get_pirep(char *Word,FILE *to)
 	strcpy(pirep_stn,"K");
 	strcat(pirep_stn,token);
 
-    get_gs_name(pirep_stn,reccount);
+    get_gs_name(pirep_stn);
 
     fprintf(filepirep,"PIREP REPORT:\n");
 
@@ -488,7 +498,6 @@ static void get_pirep(char *Word,FILE *to)
  	char * tm=ctime(&current_time);
     tm[strlen(tm)-1] = '\0';
 	fprintf(filepirep," Time           : %s\n",tm);
-//	fprintf(to," Station        : %s - %s\n",pirep_stn,gs_ret);
     fprintf(filepirep," Station        : %s - %s\n",pirep_stn,gs_ret);
 
     token = strtok(0," ");
@@ -922,8 +931,7 @@ void uat_decode_uplink_mdb(uint8_t *frame,struct uat_uplink_mdb *mdb)
 
     /* Even with position_valid = 0,there seems to be plausible data here.
      * Decode it always.
-     */
-    /*if (mdb->position_valid)*/
+    if (mdb->position_valid)*/
 
     uint32_t raw_lat = (frame[0] << 15) | (frame[1] << 7) | (frame[2] >> 1);
     uint32_t raw_lon = ((frame[2] & 0x01) << 23) | (frame[3] << 15) | (frame[4] << 7) | (frame[5] >> 1);
@@ -1133,13 +1141,10 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
     		recf = apdu->data[0] >> 4;
 
     	fprintf(filenotam," Record Format   : %d\n",recf);
-//    	fprintf(to," Record Format   : %d\n",recf);
 
     	switch (recf){
     	case 8:  									//graphic
-//    		fprintf(to," Report Type     : NOTAM\n");
 			fprintf(filenotam," Report Type     : NOTAM\n");
-//			fflush(to);
         	get_graphic(apdu,filenotam,to);
         	break;
     	case 2:                                   	// text
@@ -1150,20 +1155,17 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
     		break;
     	default:
     		fprintf(to," Record Format   : %d\n",recf);
- //       	display_generic_data(apdu->data,apdu->length,to);
+    		display_generic_data(apdu->data,apdu->length,to);
         	break;
     	}
     break;
 
     case 11:            							// ** AIRMET **************
     	recf = apdu->data[0] >> 4;
-
-//    	fprintf(to," Record Format   : %d \n",recf);
     	fprintf(fileairmet," Record Format   : %d \n",recf);
 
     	switch (recf){
     	case 8:  									//graphic
-//			fprintf(to," Report Type     : AIRMET\n");
 			fprintf(fileairmet," Report Type     : AIRMET\n");
 			get_graphic(apdu,fileairmet,to);
 			break;
@@ -1179,13 +1181,10 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 
     case 12:            							// ** SIGMET **************
     	recf = apdu->data[0] >> 4;
-
-//    	fprintf(to," Record Format   : %d \n",recf );
     	fprintf(filesigmet," Record Format   : %d \n",recf);
 
     	switch (recf) {
     	case 8: 									//graphic
-//    		fprintf(to," Report Type     : SIGMET\n");
     		fprintf(filesigmet," Report Type     : SIGMET\n");
     		get_graphic(apdu,filesigmet,to);
     		break;
@@ -1201,7 +1200,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 
     case 13:            							// ** SUA **************
     	recf = apdu->data[0] >> 4;
-//    	fprintf(to," Record Format   : %d \n",recf);
     	fprintf(filesua," Record Format   : %d \n",recf);
 
     	switch (recf) {
@@ -1217,8 +1215,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 
     case 14:            							// ** G-AIRMET **************
     	recf = apdu->data[0] >> 4;
-
-//    	fprintf(to," Record Format   : %d \n",recf);
     	fprintf(filegairmet," Record Format   : %d \n",recf);
 
     	switch (recf) {
@@ -1236,13 +1232,10 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 
     case 15:            							// ** CWA **************
        	recf = apdu->data[0] >> 4;
-
-//     	fprintf(to," Record Format   : %d \n",recf );
        	fprintf(filesigmet," Record Format   : %d \n",recf);
 
        	switch (recf) {
        	case 8: 									//graphic
-//    		fprintf(to," Report Type     : CWA\n");
        		fprintf(filesigmet," Report Type     : CWA\n");
        		get_graphic(apdu,filecwa,to);
        		break;
@@ -1257,37 +1250,22 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
     break;
 
     case 63: case 64:								// ** NEXRAD **************
-//    	fprintf(to," Record Format   :  Graphic\n");
-
-//    	display_generic_data(apdu->data,apdu->length,to);
     	graphic_nexrad(apdu,to);
     	break;
 
     case 70: case 71:								// ** Icing Low/High **************
-//    	fprintf(to," Record Format   :  Graphic\n");
-
-//    	display_generic_data(apdu->data,apdu->length,to);
     	graphic_nexrad(apdu,to);
     	break;
 
     case 84:  										// ** Cloud Tops **************
-//     	fprintf(to," Record Format   :  Graphic\n");
-
-//     	display_generic_data(apdu->data,apdu->length,to);
     	graphic_nexrad(apdu,to);
     	break;
 
     case 90: case 91:   							// ** Turbulence Low/high **************
-//     	fprintf(to," Record Format   :  Graphic\n");
-
-//    	display_generic_data(apdu->data,apdu->length,to);
     	graphic_nexrad(apdu,to);
         break;
 
     case 103:  										// ** Lightning  **************
-//     	fprintf(to," Record Format   :  Graphic\n");
-
-//     	display_generic_data(apdu->data,apdu->length,to);
     	graphic_nexrad(apdu,to);
         break;
 
@@ -1342,7 +1320,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
     			strcat(observation," ");
     			strcat(observation,r);
     			if (strcmp(mtype,"PIREP") == 0) {
-  //  				fprintf(to," RLoc:  See Below\n");
     			}
     			else {
     				if( strcmp(mtype,"WINDS") == 0) {
@@ -1355,9 +1332,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
     						|| strcmp(mtype,"TAF.COR") == 0 ) {
     					strncpy(gstn,r,5); }
 
-    				get_gs_name(gstn,reccount);
-
-//    				fprintf(to," RLoc:  %s - %s\n",gstn,gs_ret);
+    				get_gs_name(gstn);
 
     				time_t current_time = time(NULL);
     				struct tm *tm = localtime(&current_time);
@@ -1371,8 +1346,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
     			*p = 0;
     			strcat(observation," ");
     			strcat(observation,r);
-//    			if( strcmp(mtype,"METAR") != 0 && strcmp(mtype,"SPECI") != 0   )
-//    				fprintf(to," RTime: %s\n",r);
     			r = p+1;
     		}
     		if (strcmp(mtype,"TAF") == 0 || strcmp(mtype,"TAF.AMD" ) == 0 || strcmp(mtype,"TAF.COR") == 0){
@@ -1506,9 +1479,6 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 	int lidflag;
 	int prod_range;
 	int num_crl;
-//	int rep_yr;
-//	int txt;
-//	int grph;
 	uint16_t prodt;
 	uint16_t repid = 0;
 
@@ -1551,18 +1521,12 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
     	      		if (q % 4 == 0)
     	      			fprintf(to,"\n");
     	      		q++;
-//    	      		rep_yr = (frame->data[j] & (~( 1<< 0))) ;
-//    	      		txt = (frame->data[j+1] >> 7) & 1;
-//    	      		grph = (frame->data[j+1] >> 6) & 1;
     	      		repid = (frame->data[j+1] & ((1<<6)-1)) << 8 |  frame->data[j+2];
 
     	      		fprintf(to,"Rpt ID: %d  ",repid);
-//    	      		fprintf(to," #%3d Year: 20%d T%d G%d Rpt ID: %d",
-//    	      		    	      				i+1,rep_yr,txt,grph,repid);
     	      		j = j+3;
     	      	}
     	      	fprintf(to,"\n");
-//    	      	display_generic_data(frame->data,frame->length,to);
     		}
     		else
     			display_generic_data(frame->data,frame->length,to);
@@ -1657,7 +1621,7 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 		rec_offset = 2;
 		const char *text = decode_dlac(apdu->data,5,rec_offset);
 		strncpy(gstn,text,5);
-		get_gs_name(gstn,reccount);
+		get_gs_name(gstn);
 
 		fprintf(fnm," Location ID     : %s\n",location_id);
 		fprintf(fnm," RLoc            : %s - %s\n",gstn,gs_ret);
@@ -2102,7 +2066,6 @@ static void get_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to){
    		p = strchr(r,' ');
    		if (p) {
    			*p = 0;
-//   			fprintf(to," Report Type     : %s\n",r);
    			fprintf(fnm," Report Type     : %s\n",r);
    			r = p+1;
    		}
@@ -2115,8 +2078,7 @@ static void get_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to){
    			if (p) {
    				*p = 0;
    				strncpy(gstn,r,5);
-   				get_gs_name(gstn,reccount);
-//   				fprintf(to," RLoc            : %s - %s\n",gstn,gs_ret);
+   				get_gs_name(gstn);
    				fprintf(fnm," RLoc            : %s - %s\n",gstn,gs_ret);
    				r = p + 1;
    			}
@@ -2124,16 +2086,13 @@ static void get_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to){
    		p = strchr(r,' ');   //  *** RTime ***
 		if (p) {
 			*p = 0;
-//			fprintf(to," RTime           : %s\n",r);
 			fprintf(fnm," RTime           : %s\n",r);
 			r = p + 1;
 		}
 
 		rep_num = ((apdu->data[8]  << 6) | (apdu->data[9] & 0xFC) >> 2);
-//		fprintf(to," Report Number   : %6d  ",rep_num);
 		fprintf(fnm," Report Number   : %6d  ",rep_num);
     	report_year = (((apdu->data[9]) & 0x03) << 5 | ((apdu->data[10])  & 0xF8) >> 3) ;
-//    	fprintf(to,"     Report Year       : 20%02d\n ",report_year);
     	fprintf(fnm,"     Report Year       : 20%02d\n ",report_year);
 
    		time_t current_time = time(NULL);
@@ -2147,6 +2106,8 @@ static void get_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to){
    		}
 
    		if (apdu->product_id == 8){
+   			char *zErrMsg = 0;
+   			char *sql;
    			int length = strlen(r);
    			if (r[length-1] == '\n')
    			    r[length-1] = '\0';
@@ -2172,7 +2133,16 @@ static void get_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to){
    			fprintf(filenotamjson,"]}\n");
 
    			notam_count++;
+
+   			// add to database
+  			asprintf(&sql,"INSERT INTO notam (station_name,station_loc,report_num) VALUES ('%s','%s',%d )",gstn,gs_ret,rep_num);
+   			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
+   			if( rc != SQLITE_OK ){
+   				fprintf(stderr, "SQL error: %s\n", zErrMsg);
+   				sqlite3_free(zErrMsg);
+   			}
    		}
+
    		fprintf(fnm," Data:\n%s\n",r);
 		fflush(fnm);
    	}
@@ -2241,13 +2211,9 @@ static void get_seg_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 				}
 				char_cnt = char_cnt + seg_list[i].seg_text_len;	  // 550
 
-//				fprintf(to," Report Type     : NOTAM - Segmented\n");
 				fprintf(fnm," Report Type     : NOTAM - Segmented\n");
-//				fprintf(to," Num of Segments : %d\n",seg_list[i].seg_prolen);
 				fprintf(fnm," Num of Segments : %d\n",seg_list[i].seg_prolen);
-//				fprintf(to," Report Number   : %6d  ",seg_list[i].seg_rpt_num);
 				fprintf(fnm," Report Number   : %6d  ",seg_list[i].seg_rpt_num);
-//		    	fprintf(to,"     Report Year       : 20%02d\n ",seg_list[i].seg_rpt_year);
 		    	fprintf(fnm,"     Report Year       : 20%02d\n ",seg_list[i].seg_rpt_year);
 			}
 		}
@@ -2274,7 +2240,6 @@ static void get_seg_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 
 		time_t current_time = time(NULL);
 		struct tm *tm = localtime(&current_time);
-//		fprintf(to,"Time            : %s",asctime(tm));
 		fprintf(fnm,"Time            : %s",asctime(tm));
 		fprintf(fnm," Data:\n%s\n\n",seg_text_all);
 	}

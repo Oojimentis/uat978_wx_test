@@ -1,31 +1,22 @@
 // Part of dump978, a UAT decoder.
-// test
 // Copyright 2015, Oliver Jowett <oliver@mutability.co.uk>
 //
-// This file is free software: you may copy, redistribute and/or modify it  
-// under the terms of the GNU General Public License as published by the
-// Free Software Foundation, either version 2 of the License, or (at your  
-// option) any later version.  
-//
-// This file is distributed in the hope that it will be useful, but  
-// WITHOUT ANY WARRANTY; without even the implied warranty of  
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  
-// General Public License for more details...
-//
-// You should have received a copy of the GNU General Public License  
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef UAT_DECODE_H
 #define UAT_DECODE_H
 
 #include <stdint.h>
-#include <stdio.h>
 
+#include <stdio.h>
+#include <sqlite3.h>
 #include "uat.h"
 
 //
 // Datatypes
 //
+
+	sqlite3 *db;
+	int rc;
 
 typedef enum { AQ_ADSB_ICAO=0, AQ_NATIONAL=1, AQ_TISB_ICAO=2, AQ_TISB_OTHER=3, AQ_VEHICLE=4,
 	AQ_FIXED_BEACON=5, AQ_RESERVED_6=6, AQ_RESERVED_7=7 } address_qualifier_t;
@@ -34,13 +25,6 @@ typedef enum { AG_SUBSONIC=0, AG_SUPERSONIC=1, AG_GROUND=2, AG_RESERVED=3 } airg
 typedef enum { TT_INVALID=0, TT_TRACK, TT_MAG_HEADING, TT_TRUE_HEADING } track_type_t;
 typedef enum { HT_INVALID=0, HT_MAGNETIC, HT_TRUE } heading_type_t;
 typedef enum { CS_INVALID=0, CS_CALLSIGN, CS_SQUAWK } callsign_type_t;
-
-struct MyStruct{
-	char gs_call[5];
-	char gs_loc[75];
-	char gs_lat[25];
-	char gs_lng[25];
-}  gs_list[900];
 
 // Segmentation
 struct MySegStruct{
@@ -112,8 +96,6 @@ FILE * fileairmetjson; 	//airmet geojson
 FILE * filegairmetjson; //gairmet geojson
 FILE * filesigmetjson; 	//sigmet geojson
 FILE * filecwajson; 	//sigmet geojson
-
-int reccount;
 
 struct uat_adsb_mdb {
     // presence bits
@@ -266,13 +248,7 @@ struct uat_uplink_mdb {
     struct uat_uplink_info_frame info_frames[UPLINK_MAX_INFO_FRAMES];    
 };
 
-
-
-
 void uat_decode_uplink_mdb(uint8_t *frame, struct uat_uplink_mdb *mdb);
 void uat_display_uplink_mdb(const struct uat_uplink_mdb *mdb, FILE *to);
-
-
-
 
 #endif
