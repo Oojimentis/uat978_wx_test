@@ -1606,8 +1606,16 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	int obj_param_type = 0;
 	uint16_t ob_par_val;
 
+	char qual_text[200];
+	char *start_date;
+	char *stop_date;
+
+	char *sql;
+	char *zErrMsg = 0;
+	int recf;
 	FILE * file3dpoly;
 
+	recf = apdu->data[0] >> 4;
 	product_ver = ((apdu->data[0]) & 0x0F);
 	rec_count = ((apdu->data[1]) & 0xF0) >> 4;
 	rec_ref = ((apdu->data[5]));
@@ -1626,6 +1634,10 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 		fprintf(fnm," Location ID     : %s\n",location_id);
 		fprintf(fnm," RLoc            : %s - %s\n",gstn,gs_ret);
 	}
+	else
+		strcpy(gstn,"    ");
+
+
 	rep_num = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]); 	//7 8
 	rec_len = ((apdu->data[datoff + 0]) << 2) | (((apdu->data[datoff + 1]) & 0xC0) >> 6);    	// 6 7
 	report_year = ((apdu->data[datoff + 3]) & 0xFE) >> 1;                            // 9
@@ -1638,6 +1650,7 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	fprintf(fnm,"Ovrlay RcID     : %d",overlay_rec_id);                       					//10
 	fprintf(fnm,"            Object Label Flag: %d \n",obj_label_flag);
 
+	obj_labelt ="  ";
 	if (obj_label_flag == 0) { // Numeric index.
 		obj_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);   				// 11 12
 		fprintf(fnm," Ob Lbl Num      : %d    ",obj_label);
@@ -1661,34 +1674,58 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	fprintf(fnm,"         Object Type      : %d \n",obj_type);
 	fprintf(fnm," Qualifier Flag  : %d  ",qualifier_flag);
 	fprintf(fnm,"          Parameter Flag   : %d \n",param_flag);
-
+	 strcpy(qual_text," ");
 	if (qualifier_flag == 0){
 		datoff = datoff + 2;     													// 13 > datoff=15
 	}
 	else {
 		object_qualifier = ((apdu->data[datoff + 2]) << 16) | ((apdu->data[datoff + 3]) << 8) | (apdu->data[datoff + 4]);
 
+        strcpy(qual_text,"Qualifier: ");
 		if (apdu->product_id == 14) {
-			if (apdu->data[datoff + 2] & (1 << 7))                                  //15
+			if (apdu->data[datoff + 2] & (1 << 7)){                                  //15
 				fprintf(fnm," Qualifier       : Unspecified\n");
-			if (apdu->data[datoff + 3] & (1 << 0))                                  //16
+				strcat(qual_text," Unspecified, ");
+			}
+
+			if (apdu->data[datoff + 3] & (1 << 0)) {                                  //16
 				fprintf(fnm," Qualifier       : Ash\n");
-			if (apdu->data[datoff + 4] & (1 << 0))                                  //17
+				strcat(qual_text," Ash, ");
+			}
+
+			if (apdu->data[datoff + 4] & (1 << 0)) {                                 //17
 				fprintf(fnm," Qualifier       : Precipitation\n");
-			if (apdu->data[datoff + 4] & (1 << 1))
+				strcat(qual_text," Precipitation, ");
+			}
+
+			if (apdu->data[datoff + 4] & (1 << 1))  {
 				fprintf(fnm," Qualifier       : Mist\n");
-			if (apdu->data[datoff + 4] & (1 << 2))
+				strcat(qual_text," Mist, ");
+			}
+			if (apdu->data[datoff + 4] & (1 << 2)){
 				fprintf(fnm," Qualifier       : Fog\n");
-			if (apdu->data[datoff + 4] & (1 << 3))
+				strcat(qual_text," Fog, ");
+			}
+			if (apdu->data[datoff + 4] & (1 << 3)){
 				fprintf(fnm," Qualifier       : Haze\n");
-			if (apdu->data[datoff + 4] & (1 << 4))
+				strcat(qual_text," Haze, ");
+			}
+			if (apdu->data[datoff + 4] & (1 << 4)) {
 				fprintf(fnm," Qualifier       : Smoke\n");
-			if (apdu->data[datoff + 4] & (1 << 5))
+				strcat(qual_text," Smoke, ");
+			}
+			if (apdu->data[datoff + 4] & (1 << 5)) {
 				fprintf(fnm," Qualifier       : Blowing Snow\n");
-			if (apdu->data[datoff + 4] & (1 << 6))
+				strcat(qual_text," Blowing Snow, ");
+			}
+			if (apdu->data[datoff + 4] & (1 << 6)) {
 				fprintf(fnm," Qualifier       : Clouds\n");
-			if (apdu->data[datoff + 4] & (1 << 7))
+				strcat(qual_text," Clouds, ");
+			}
+			if (apdu->data[datoff + 4] & (1 << 7)) {
 				fprintf(fnm," Qualifier      : Dust\n");
+				strcat(qual_text," Dust, ");
+			}
 		}
 		obj_param_type = apdu->data[18] >> 3;              					        //18
 		ob_par_val = (apdu->data[18] & 0x7)<< 8 | apdu->data[19];					//19
@@ -1714,6 +1751,8 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	switch (rec_app_opt) {
 	case 0:  									// No times given. UFN.  (record_data[2:],date_time_format)
 		fprintf(fnm,"No Dates Given\n");
+		asprintf(&start_date,"0");
+		asprintf(&stop_date,"0");
 		datoff = datoff +2;
 		break;
 
@@ -1723,7 +1762,8 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 		d3 = apdu->data[datoff + 4];
 		d4 = apdu->data[datoff + 5];
 		fprintf(fnm," Only Start Date : %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
-
+		asprintf(&start_date,"%02d/%02d %02d:%02d",d1,d2,d3,d4);
+		asprintf(&stop_date,"0");
 		datoff = datoff + 6;
 		break;
 
@@ -1733,7 +1773,8 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 		d3 = apdu->data[datoff + 4];
 		d4 = apdu->data[datoff + 5];
 		fprintf(fnm," Only End Date: %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
-
+		asprintf(&start_date,"0");
+		asprintf(&stop_date,"%02d/%02d %02d:%02d",d1,d2,d3,d4);
 		datoff = datoff + 6;
 		break;
 
@@ -1743,13 +1784,13 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 		d3 = apdu->data[datoff + 4];
 		d4 = apdu->data[datoff + 5];
 		fprintf(fnm," Start Date      : %02d/%02d %02d:%02d  ",d1,d2,d3,d4);
-
+		asprintf(&start_date,"%02d/%02d %02d:%02d",d1,d2,d3,d4);
 		d1 = apdu->data[datoff + 6];
 		d2 = apdu->data[datoff + 7];
 		d3 = apdu->data[datoff + 8];
 		d4 = apdu->data[datoff + 9];
 		fprintf(fnm,"End Date         : %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
-
+		asprintf(&stop_date,"%02d/%02d %02d:%02d",d1,d2,d3,d4);
 		datoff = datoff + 10;
 		break;
 	}
@@ -1773,6 +1814,23 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 		strcpy(ob_ele_text,airspace_element_names[obj_element]);
 	if (element_flag == 1 && obj_type == 14 && apdu->product_id == 14)
 		strcpy(ob_ele_text,gairspace_element_names[obj_element]);
+
+	time_t current_time = time(NULL);
+	struct tm *tm = localtime(&current_time);
+	fprintf(fnm,"Time            : %s",asctime(tm));
+
+	asprintf(&sql,"INSERT INTO reports (prod_id,rec_format,stn_call,prod_ver,rec_count,rec_ref,"
+			"rep_number,rec_length,rep_year,ovrly_recid,obj_lbl_flag,obj_lbl_number,obj_lbl_alpha,"
+			"element_flag,obj_element,obj_status,obj_type,qual_flag,param_flag,rec_app_option,"
+			"app_opt_fmt,start_date,stop_date,geo_ovrly_opt,ovrly_operator,ovrly_vertices,qual_text,rep_rec_time)"
+			"VALUES(%d,%d,'%s',%d,%d,%d,%d,%d,%d,%d,%d,%d,'%s',%d,%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d,%d,%d,'%s','%s')",
+			apdu->product_id,recf,gstn,product_ver,rec_count,rec_ref,rep_num,rec_len,report_year,overlay_rec_id,obj_label_flag,obj_label,obj_labelt,element_flag,obj_element,obj_status,obj_type,qualifier_flag,param_flag,rec_app_opt,date_time_format,start_date,stop_date,geo_overlay_opt,overlay_op,overlay_vert_cnt,qual_text,asctime(tm));
+
+	rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
+	if( rc != SQLITE_OK ){
+		fprintf(stderr, "SQL error: %s\n", zErrMsg);
+		sqlite3_free(zErrMsg);
+	}
 
 	switch (geo_overlay_opt) {
 	case 3:  case 4: 								// Extended Range 3D Polygon
