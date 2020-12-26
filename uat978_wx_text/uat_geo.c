@@ -10,10 +10,11 @@
 #include <math.h>
 #include "uat_decode.h"
 #include "uat_geo.h"
+#include "asprintf.h"
 
 void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 {
-   	FILE * filenexrad;
+ //  	FILE * filenexrad;
    	int scale_factor = 1;
    	int ns_flag = 0;
 
@@ -22,30 +23,33 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
    	int ice_alt = (apdu->data[0] & 0x70) >> 4;
    	int bin=0;
 
-//   	fprintf(to," Record Format   :  Graphic\n");
-//    fprintf(to," rle_flag: %d   Altitude: %d block: %d\n",rle_flag,ice_alt,block_num);
+   	char *sql;
+	char *zErrMsg = 0;
+   	char block[200];
+   	char nexrad_time[6];
+	char charValue;
 
 	switch(apdu->product_id) {
 
 	case 63: case 64:								// ** NEXRAD **************
 		scale_factor = (apdu->data[0] & 0x30) >> 4;
-		filenexrad = filenexradc;
+//		filenexrad = filenexradc;
 		if (apdu->product_id == 64)
 			bin = 1;
 		break;
 
 	case 70:										// ** Icing Low **************
 	    switch(ice_alt) {
-	    	case 0: 	filenexrad = fileicingl2;   break;
-	        case 1:     filenexrad = fileicingl4;   break;
-	        case 2:     filenexrad = fileicingl6;   break;
-	        case 3:     filenexrad = fileicingl8;   break;
-	        case 4:     filenexrad = fileicingl10;  break;
-	        case 5:     filenexrad = fileicingl12;  break;
-	        case 6:     filenexrad = fileicingl14;  break;
-	        case 7:     filenexrad = fileicingl16;  break;
+	    	case 0: 	//filenexrad = fileicingl2;   break;
+	        case 1:     //filenexrad = fileicingl4;   break;
+	        case 2:     //filenexrad = fileicingl6;   break;
+	        case 3:     //filenexrad = fileicingl8;   break;
+	        case 4:     //filenexrad = fileicingl10;  break;
+	        case 5:     //filenexrad = fileicingl12;  break;
+	        case 6:     //filenexrad = fileicingl14;  break;
+	        case 7:     //filenexrad = fileicingl16;  break;
 	        default:
-	        	filenexrad = fileicingl16;
+//	        	filenexrad = fileicingl16;
 	        	break;
 	    }
 	    break;
@@ -53,33 +57,33 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 	case 71:										// ** Icing High **************
 		bin = 1;
 		switch(ice_alt) {
-			case 0:    	filenexrad = fileicingh18;  break;
-			case 1:    	filenexrad = fileicingh20;  break;
-			case 2:    	filenexrad = fileicingh22;  break;
-			case 3:    	filenexrad = fileicingh24;  break;
+			case 0:    //	filenexrad = fileicingh18;  break;
+			case 1:    //	filenexrad = fileicingh20;  break;
+			case 2:    //	filenexrad = fileicingh22;  break;
+			case 3:    //	filenexrad = fileicingh24;  break;
 			default:
-				filenexrad = fileicingh24;
+	//			filenexrad = fileicingh24;
 				break;
 		}
 		break;
 
 	case 84:										// ** Cloud Tops **************
 		scale_factor = (apdu->data[0] & 0x30) >> 4;
-		filenexrad = filecloudt;
+//		filenexrad = filecloudt;
 		break;
 
 	case 90:										// ** Turbulence Low **************
 	    switch(ice_alt){
-	        case 0:    	filenexrad = fileturbl2;    break;
-	        case 1:   	filenexrad = fileturbl4;    break;
-	        case 2:    	filenexrad = fileturbl6;    break;
-	        case 3:    	filenexrad = fileturbl8;    break;
-	        case 4:    	filenexrad = fileturbl10;   break;
-	        case 5:    	filenexrad = fileturbl12;   break;
-	        case 6:   	filenexrad = fileturbl14;   break;
-	        case 7:   	filenexrad = fileturbl16;   break;
+	        case 0:   // 	filenexrad = fileturbl2;    break;
+	        case 1:   //	filenexrad = fileturbl4;    break;
+	        case 2:   // 	filenexrad = fileturbl6;    break;
+	        case 3:   // 	filenexrad = fileturbl8;    break;
+	        case 4:   // 	filenexrad = fileturbl10;   break;
+	        case 5:  //  	filenexrad = fileturbl12;   break;
+	        case 6:  // 	filenexrad = fileturbl14;   break;
+	        case 7:  // 	filenexrad = fileturbl16;   break;
 	        default:
-	        	filenexrad = fileturbl16;
+	    //    	filenexrad = fileturbl16;
 	        	break;
 	    }
 	    break;
@@ -87,22 +91,24 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 	case 91:										// ** Turbulence High **************
     	bin = 1;
 	    switch(ice_alt){
-	    	case 0:  	filenexrad = fileturbh18; 	break;
-	    	case 1: 	filenexrad = fileturbh20; 	break;
-	    	case 2: 	filenexrad = fileturbh22; 	break;
-	    	case 3:  	filenexrad = fileturbh24; 	break;
+	    	case 0:  	//	filenexrad = fileturbh18; 	break;
+	    	case 1: 	//	filenexrad = fileturbh20; 	break;
+	    	case 2: 	//	filenexrad = fileturbh22; 	break;
+	    	case 3:	 	// 	filenexrad = fileturbh24; 	break;
 	    	default:
-	    		filenexrad = fileturbh24;
+	   // 		filenexrad = fileturbh24;
 	    		break;
 	    }
 	    break;
 
 	case 103:										// ** Lightning  **************
 	    	scale_factor = (apdu->data[0] & 0x30) >> 4;
-	    	filenexrad = filelightng;
+	  //  	filenexrad = filelightng;
 	    	break;
 
 	}
+
+	sprintf(nexrad_time,"%02d%02d",	apdu->hours,apdu->minutes);
 
     // now decode the bins
     if (rle_flag) {
@@ -116,27 +122,47 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 
     	block_location_graphic(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
+    	sprintf(block," ");
+
     	if (apdu->product_id == 63){
-    		fprintf(filenexrad, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-    				"CONUS",apdu->hours,
-					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+ //   		fprintf(filenexrad, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+ //   				"CONUS",apdu->hours,
+//					apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+
+    		asprintf(&sql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
+    				"lat_size,lon_size,block_data) "
+    				"VALUES(%d,'NEXRAD','CONUS','%s',%d,%.0f,%.0f,%.0f,%.0f,",
+					apdu->product_id,nexrad_time,
+    						scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
     	}
     	else {
-        	fprintf(filenexrad, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-        			"Regional",apdu->hours,
-    				apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+ //       	fprintf(filenexrad, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+ //       			"Regional",apdu->hours,
+//    				apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+    		asprintf(&sql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
+    				"lat_size,lon_size,block_data) "
+    				"VALUES(%d,'NEXRAD','Regional','%s',%d,%.0f,%.0f,%.0f,%.0f,",
+					apdu->product_id,nexrad_time,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
     	}
 
 		if (apdu->product_id == 63 || apdu->product_id == 64) {
 	    	for (int i = 3; i < apdu->length; ++i) {
 	    		int intensity = apdu->data[i] & 7;
 	    		int runlength = (apdu->data[i] >> 3) + 1;
+	    		while (runlength-- > 0){
+//	    			fprintf(filenexrad, "%d", intensity);
+	    			charValue=intensity+'0';
+	    			sprintf(block,"%s%c",block,charValue);
+	    		}
+	    	}
+	    	asprintf(&sql,"%s '%s')",sql,block);
 
-	    		while (runlength-- > 0)
-	    			fprintf(filenexrad, "%d", intensity);
+	    	rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
+	    	if( rc != SQLITE_OK ){
+	    		fprintf(stderr, "SQL error: %s\n", zErrMsg);
+	    		sqlite3_free(zErrMsg);
 	    	}
 		}
-
 		if (apdu->product_id == 70 || apdu->product_id == 71) {
 			for (int i = 3; i < apdu->length; ++i) {
     			num_bins = (apdu->data[i] ) + 1;
@@ -144,9 +170,20 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 //    		int sld = apdu->data[i] >> 6;
 //    		int ice_sev = (apdu->data[i]) & 56;
     			ice_prob = (apdu->data[i]) & 7;
+
     			while (num_bins-- > 0){
-        			fprintf(filenexrad, "%d", ice_prob);}
-    		}
+//        			fprintf(filenexrad, "%d", ice_prob);
+    				charValue=ice_prob+'0';
+    				sprintf(block,"%s%c",block,charValue);
+    			}
+			}
+	    	asprintf(&sql,"%s '%s')",sql,block);
+
+	    	rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
+	    	if( rc != SQLITE_OK ){
+	    		fprintf(stderr, "SQL error: %s\n", zErrMsg);
+	    		sqlite3_free(zErrMsg);
+	    	}
 		}
 		if (apdu->product_id == 103) {
 	       	for (int i = 3; i < apdu->length; ++i) {
@@ -160,8 +197,19 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 	       		}
 
 	       		while (num_bins-- > 0){
-	       			fprintf(filenexrad, "%d", lgt_cnt);}
+//	       			fprintf(filenexrad, "%d", lgt_cnt);
+    				charValue=lgt_cnt+'0';
+    				sprintf(block,"%s%c",block,charValue);
+	       		}
 	       	}
+
+	    	asprintf(&sql,"%s '%s')",sql,block);
+
+	       	rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
+	    	if( rc != SQLITE_OK ){
+	    		fprintf(stderr, "SQL error: %s\n", zErrMsg);
+	    		sqlite3_free(zErrMsg);
+	    	}
 		}
     	if (apdu->product_id == 90 || apdu->product_id == 91 || apdu->product_id == 84) {
         	for (int i = 3; i < apdu->length; ++i) {
@@ -185,10 +233,18 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
         			break;
         		}
         		while (num_bins-- > 0){
-        			fprintf(filenexrad, "%c", enc);}
+ //       			fprintf(filenexrad, "%c", enc);
+        		sprintf(block,"%s%c",block,enc);
+        		}
         	}
+	    	asprintf(&sql,"%s '%s')",sql,block);
+	    	rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
+	    	if( rc != SQLITE_OK ){
+	    		fprintf(stderr, "SQL error: %s\n", zErrMsg);
+	    		sqlite3_free(zErrMsg);
+	    	}
     	}
-    	fprintf(filenexrad, "\n");
+//    	fprintf(filenexrad, "\n");
     }
     else {    // Empty
    		int row_start;
@@ -222,26 +278,46 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
    					block_location_graphic(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
    			    	if (apdu->product_id == 63){
-   			    		fprintf(filenexrad, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-   			    				"CONUS",apdu->hours,
-								apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+ //  			    		fprintf(filenexrad, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+ //  			    				"ONUS",apdu->hours,
+//								apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+
+   			    		asprintf(&sql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
+   			    				"lat_size,lon_size,block_data) "
+   			    				"VALUES(%d,'NEXRAD','KONUS','%s',%d,%.0f,%.0f,%.0f,%.0f,",
+   								apdu->product_id,nexrad_time,
+   			    						scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
    			    	}
    			    	else {
-   			        	fprintf(filenexrad, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
-   			        			"Regional",apdu->hours,
-   			    				apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+ //  			        	fprintf(filenexrad, "NEXRAD %s %02d:%02d %d %.0f %.0f %.0f %.0f ",
+ //  			        			"Regional",apdu->hours,
+ //  			    				apdu->minutes,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
+
+   			        	asprintf(&sql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
+   			        			"lat_size,lon_size,block_data) "
+   			    				"VALUES(%d,'NEXRAD','Segional','%s',%d,%.0f,%.0f,%.0f,%.0f,",
+   								apdu->product_id,nexrad_time,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60);
    			    	}
 
+   			    	sprintf(block," ");
    					for (int k = 0; k < 128; ++k){
-						fprintf(filenexrad, "%d", bin);
+//						fprintf(filenexrad, "%d", bin);
+	    				charValue=bin+'0';
+	    				sprintf(block,"%s%c",block,charValue);
    					}
+   			    	asprintf(&sql,"%s '%s')",sql,block);
+   			    	rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
+   			    	if( rc != SQLITE_OK ){
+   			    		fprintf(stderr, "SQL error: %s\n", zErrMsg);
+   			    		sqlite3_free(zErrMsg);
+   			    	}
 
-   					fprintf(filenexrad, "\n");
+//   					fprintf(filenexrad, "\n");
    				}
     		}
     	}
     }
-   	fflush(filenexrad);
+//   	fflush(filenexrad);
     fflush(to);
 }
 

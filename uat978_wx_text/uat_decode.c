@@ -1819,7 +1819,7 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	struct tm *tm = localtime(&current_time);
 	fprintf(fnm,"Time            : %s",asctime(tm));
 
-	asprintf(&sql,"INSERT INTO reports (prod_id,rec_format,stn_call,prod_ver,rec_count,rec_ref,"
+	asprintf(&sql,"INSERT INTO graphic_reports (prod_id,rec_format,stn_call,prod_ver,rec_count,rec_ref,"
 			"rep_number,rec_length,rep_year,ovrly_recid,obj_lbl_flag,obj_lbl_number,obj_lbl_alpha,"
 			"element_flag,obj_element,obj_status,obj_type,qual_flag,param_flag,rec_app_option,"
 			"app_opt_fmt,start_date,stop_date,geo_ovrly_opt,ovrly_operator,ovrly_vertices,qual_text,rep_rec_time)"

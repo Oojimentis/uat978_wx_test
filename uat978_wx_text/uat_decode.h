@@ -61,6 +61,7 @@ FILE * filesigmet;    	// 12
 FILE * fileairmet;		// 11
 FILE * filegairmet;		// 14
 FILE * filepirep;		// PIREP
+/*
 FILE * filenexradc;		// NEXRAD Graphics output
 FILE * fileicingl2;		// ICING LOW Graphics output
 FILE * fileicingl4;		// ICING LOW Graphics output
@@ -88,6 +89,7 @@ FILE * fileturbh20;		// TURBULENCE HIGH Graphics output
 FILE * fileturbh22;		// TURBULENCE HIGH Graphics output
 FILE * fileturbh24;		// TURBULENCE HIGH Graphics output
 FILE * filelightng;		// LIGHTNING Graphics output
+*/
 FILE * filecwa;			// Center Weather Advisory
 
 FILE * filenotamjson; 	//notam geojson

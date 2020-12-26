@@ -110,6 +110,7 @@ int main(int argc, char **argv)
    	if (filepirep == 0)			{
    		fprintf(stderr,"pirep.out Error--file could not be opened. \n") ;
    		exit (1) ;			}
+ /*
    	filenexradc = fopen("nexradc.out","w");
    	if (filenexradc == 0)			{
    		fprintf(stderr,"nexradc.out Error--file could not be opened. \n") ;
@@ -218,6 +219,8 @@ int main(int argc, char **argv)
 	if (filelightng == 0)			{
 		fprintf(stderr,"lightng.out Error--file could not be opened. \n") ;
 		exit (1) ;			}
+*/
+
 	filecwa = fopen("cwa.out","w");
 	if (filecwa == 0)			{
 		fprintf(stderr,"cwa.out Error--file could not be opened. \n") ;
