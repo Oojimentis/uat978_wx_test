@@ -1249,25 +1249,10 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
        	}
     break;
 
-    case 63: case 64:								// ** NEXRAD **************
-    	graphic_nexrad(apdu,to);
-    	break;
-
-    case 70: case 71:								// ** Icing Low/High **************
-    	graphic_nexrad(apdu,to);
-    	break;
-
-    case 84:  										// ** Cloud Tops **************
-    	graphic_nexrad(apdu,to);
-    	break;
-
-    case 90: case 91:   							// ** Turbulence Low/high **************
-    	graphic_nexrad(apdu,to);
-        break;
-
-    case 103:  										// ** Lightning  **************
-    	graphic_nexrad(apdu,to);
-        break;
+    // ** Graphics - NEXRAD(63,64), Icing(70,71), Cloud Tops(84), Turbulence(90,91), Lightning(103)
+    case 63: case 64: case 70: case 71: case 84: case 90: case 91: case 103:
+        	graphic_nexrad(apdu,to);
+        	    	break;
 
     case 413:  										// ** Generic text,DLAC *****************
     {

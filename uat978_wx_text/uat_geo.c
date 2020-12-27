@@ -65,24 +65,24 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 
 	case 90:										// ** Turbulence Low **************
 	    switch(ice_alt){
-    	case 0: 	alt_level = 2000; break;
-        case 1:     alt_level = 4000; break;
-        case 2:     alt_level = 6000; break;
-        case 3:     alt_level = 8000; break;
-        case 4:     alt_level = 10000; break;
-        case 5:     alt_level = 12000; break;
-        case 6:     alt_level = 14000; break;
-        case 7:     alt_level = 16000; break;
+    	case 0: 	alt_level = 2000; 	break;
+        case 1:     alt_level = 4000; 	break;
+        case 2:     alt_level = 6000; 	break;
+        case 3:     alt_level = 8000; 	break;
+        case 4:     alt_level = 10000; 	break;
+        case 5:     alt_level = 12000; 	break;
+        case 6:     alt_level = 14000; 	break;
+        case 7:     alt_level = 16000; 	break;
 	    }
 	    break;
 
 	case 91:										// ** Turbulence High **************
     	bin = 1;
 	    switch(ice_alt){
-			case 0:    alt_level = 18000; break;	//	filenexrad = fileicingh18;  break;
-			case 1:    alt_level = 20000; break;	//	filenexrad = fileicingh20;  break;
-			case 2:    alt_level = 22000; break;	//	filenexrad = fileicingh22;  break;
-			case 3:    alt_level = 24000; break;	//	filenexrad = fileicingh24;  break;
+			case 0:    alt_level = 18000; break;
+			case 1:    alt_level = 20000; break;
+			case 2:    alt_level = 22000; break;
+			case 3:    alt_level = 24000; break;
 	    }
 	    break;
 
@@ -143,8 +143,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 			for (int i = 3; i < apdu->length; ++i) {
     			num_bins = (apdu->data[i] ) + 1;
     			i = i + 1;
-//    		int sld = apdu->data[i] >> 6;
-//    		int ice_sev = (apdu->data[i]) & 56;
+//**    		int sld = apdu->data[i] >> 6;
+//**    		int ice_sev = (apdu->data[i]) & 56;
     			ice_prob = (apdu->data[i]) & 7;
 
     			while (num_bins-- > 0){
@@ -162,7 +162,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 		}
 		if (apdu->product_id == 103) {
 	       	for (int i = 3; i < apdu->length; ++i) {
-//	       		int lgt_pol = apdu->data[i] & 8;
+//**       		int lgt_pol = apdu->data[i] & 8;
 	       		int lgt_cnt = apdu->data[i] & 7;
 	       		num_bins = (apdu->data[i] >> 4) + 1;
 
@@ -278,7 +278,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
     		}
     	}
     }
-
     fflush(to);
 }
 
