@@ -58,7 +58,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 		case 3:    alt_level = 24000; break;
 		}
 		break;
-//this is a test
+//this is
 	case 84:										// ** Cloud Tops **************
 		scale_factor = (apdu->data[0] & 0x30) >> 4;
 		break;
