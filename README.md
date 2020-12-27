@@ -4,17 +4,25 @@ This is a clone of DUMP978 (https://github.com/mutability/dump978) written by Ol
 
 My programming skills are somewhat limited, and this is my first Github project, so be nice! I am just doing this for my own amusement, and the hope that someone more experienced can take it further.
 
+## Working on..
+* Website to display AIRMET, G-AIRMET, SIGMET, METAR and NOTAM using Leflet.
+* Put DUMP978 data/reports in database for use with Leaflet map. 
+
 ## Added
+* Starting to add graphics data to database. (12/27/20)
+* NEXRAD and other radar data captured in database. (12/27/20)
+* sqlite database added for station/airport location data. (12/27/20)
+* Created geojson output for use with an in-progress mapping Website.(12/2020)
 * WX station and airport lookup
 * METAR decode (libmetar.a)
 * Attempt at handling segmented NOTAM-TFR reports
-* Output files for each FIS-B product. (overkill...)
+* Output files for each FIS-B product.
 * Decoding of Cloud Tops, Icing, Lightening, and Turbulence radar graphic reports like nexrad radar in DUMP978
 * SUA and PIREP decode
-* AIRMET, NOTAM, SIGMET, TAF, CWA and Winds aloft text report.
+* AIRMET, NOTAM, SIGMET, TAF, CWA and Winds aloft text reports.
 * AIRMET, G-AIRMET, NOTAM, SIGMET and CWA graphic reports - Decode parameters and coordinates.
 * Use Multitail (https://vanheusden.com/multitail) to colorize log files.
-* Created geojson output for use with an in-progress mapping Website.
+
 
 ## Building
 
