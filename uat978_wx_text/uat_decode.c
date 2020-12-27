@@ -482,9 +482,9 @@ static void get_pirep(char *Word,FILE *to)
 	char pirep_WX[30];					// Weather
 	char pirep_TA[10];					// Temperature
 	char pirep_WV[15];					// Wind Speed Direction
-	char pirep_TB[30];  					// Turbulence
+	char pirep_TB[30];  				// Turbulence
 	char pirep_IC[30];					// Icing
-	char pirep_RM[100]; 					// Remarks
+	char pirep_RM[100]; 				// Remarks
 
 	token = strtok(Word," ");
 	strcpy(pirep_stn,"K");
@@ -753,18 +753,18 @@ static void uat_decode_ms(uint8_t *frame,struct uat_adsb_mdb *mdb)
 	}
 
 	mdb->emergency_status = (frame[23] >> 5) & 7;
-	mdb->uat_version	= (frame[23] >> 2) & 7;
-	mdb->sil 		= (frame[23] & 3);
-	mdb->transmit_mso 	= (frame[24] >> 2) & 0x3f;
-	mdb->nac_p 		= (frame[25] >> 4) & 15;
-	mdb->nac_v 		= (frame[25] >> 1) & 7;
-	mdb->nic_baro 	= (frame[25] & 1);
-	mdb->has_cdti 	= (frame[26] & 0x80 ? 1 : 0);
-	mdb->has_acas 	= (frame[26] & 0x40 ? 1 : 0);
+	mdb->uat_version = (frame[23] >> 2) & 7;
+	mdb->sil = (frame[23] & 3);
+	mdb->transmit_mso = (frame[24] >> 2) & 0x3f;
+	mdb->nac_p = (frame[25] >> 4) & 15;
+	mdb->nac_v = (frame[25] >> 1) & 7;
+	mdb->nic_baro = (frame[25] & 1);
+	mdb->has_cdti = (frame[26] & 0x80 ? 1 : 0);
+	mdb->has_acas = (frame[26] & 0x40 ? 1 : 0);
 	mdb->acas_ra_active = (frame[26] & 0x20 ? 1 : 0);
-	mdb->ident_active 	= (frame[26] & 0x10 ? 1 : 0);
-	mdb->atc_services 	= (frame[26] & 0x08 ? 1 : 0);
-	mdb->heading_type 	= (frame[26] & 0x04 ? HT_MAGNETIC : HT_TRUE);
+	mdb->ident_active = (frame[26] & 0x10 ? 1 : 0);
+	mdb->atc_services = (frame[26] & 0x08 ? 1 : 0);
+	mdb->heading_type = (frame[26] & 0x04 ? HT_MAGNETIC : HT_TRUE);
 
 	if (mdb->callsign[0])
 		mdb->callsign_type = (frame[26] & 0x02 ? CS_CALLSIGN : CS_SQUAWK);
@@ -868,39 +868,39 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
 	switch (t_opt) {
 	case 0: // Hours,Minutes
 		frame->fisb.monthday_valid = 0;
-		frame->fisb.seconds_valid  = 0;
+		frame->fisb.seconds_valid = 0;
 		frame->fisb.hours = (frame->data[2] & 0x7c) >> 2;
 		frame->fisb.minutes = ((frame->data[2] & 0x03) << 4) | (frame->data[3] >> 4);
-		frame->fisb.length  = frame->length - 4;
-		frame->fisb.data    = frame->data + 4;
+		frame->fisb.length = frame->length - 4;
+		frame->fisb.data = frame->data + 4;
 		break;
 	case 1: // Hours,Minutes,Seconds
 		if (frame->length < 5)
 			return;
 		frame->fisb.monthday_valid = 0;
 		frame->fisb.seconds_valid  = 1;
-		frame->fisb.hours   = (frame->data[2] & 0x7c) >> 2;
+		frame->fisb.hours = (frame->data[2] & 0x7c) >> 2;
 		frame->fisb.minutes = ((frame->data[2] & 0x03) << 4) | (frame->data[3] >> 4);
 		frame->fisb.seconds = ((frame->data[3] & 0x0f) << 2) | (frame->data[4] >> 6);
-		frame->fisb.length  = frame->length - 5;
-		frame->fisb.data    = frame->data + 5;
+		frame->fisb.length = frame->length - 5;
+		frame->fisb.data = frame->data + 5;
 		break;
 	case 2: // Month,Day,Hours,Minutes
 		if (frame->length < 5)
 			return;
 		frame->fisb.monthday_valid = 1;
-		frame->fisb.seconds_valid  = 0;
-		frame->fisb.month   = (frame->data[2] & 0x78) >> 3;
-		frame->fisb.day     = ((frame->data[2] & 0x07) << 2) | (frame->data[3] >> 6);
-		frame->fisb.hours   = (frame->data[3] & 0x3e) >> 1;
+		frame->fisb.seconds_valid = 0;
+		frame->fisb.month = (frame->data[2] & 0x78) >> 3;
+		frame->fisb.day = ((frame->data[2] & 0x07) << 2) | (frame->data[3] >> 6);
+		frame->fisb.hours = (frame->data[3] & 0x3e) >> 1;
 		frame->fisb.minutes = ((frame->data[3] & 0x01) << 5) | (frame->data[4] >> 3);
 
 		if (frame->data[1] & 0x02){
 			frame->fisb.length = frame->length ; // ???
-			frame->fisb.data   = frame->data ; }
+			frame->fisb.data = frame->data ; }
 		else {
 		frame->fisb.length = frame->length - 5; // ???
-		frame->fisb.data   = frame->data + 5;
+		frame->fisb.data = frame->data + 5;
 		}
 		break;
 	case 3: // Month,Day,Hours,Minutes,Seconds
@@ -910,7 +910,7 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
 		frame->fisb.seconds_valid  = 1;
 		frame->fisb.month = (frame->data[2] & 0x78) >> 3;
 		frame->fisb.day = ((frame->data[2] & 0x07) << 2) | (frame->data[3] >> 6);
-		frame->fisb.hours   = (frame->data[3] & 0x3e) >> 1;
+		frame->fisb.hours = (frame->data[3] & 0x3e) >> 1;
 		frame->fisb.minutes = ((frame->data[3] & 0x01) << 5) | (frame->data[4] >> 3);
 		frame->fisb.seconds = ((frame->data[4] & 0x03) << 3) | (frame->data[5] >> 5);
 		frame->fisb.length = frame->length - 6;
@@ -921,7 +921,7 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
 	frame->fisb.g_flag = (frame->data[0] & 0x40) ? 1 : 0;
 	frame->fisb.p_flag = (frame->data[0] & 0x20) ? 1 : 0;
 	frame->fisb.product_id = ((frame->data[0] & 0x1f) << 6) | (frame->data[1] >> 2);
-	frame->fisb.s_flag 	   = (frame->data[1] & 0x02) ? 1 : 0;
+	frame->fisb.s_flag = (frame->data[1] & 0x02) ? 1 : 0;
 	frame->is_fisb = 1;
 }
 
@@ -944,10 +944,10 @@ void uat_decode_uplink_mdb(uint8_t *frame,struct uat_uplink_mdb *mdb)
 	if (mdb->lon > 180)
 		mdb->lon -= 360;
 
-	mdb->utc_coupled 	= (frame[6] & 0x80) ? 1 : 0;
+	mdb->utc_coupled = (frame[6] & 0x80) ? 1 : 0;
 	mdb->app_data_valid = (frame[6] & 0x20) ? 1 : 0;
-	mdb->slot_id    = (frame[6] & 0x1f);
-	mdb->tisb_site_id 	= (frame[7] >> 4);
+	mdb->slot_id = (frame[6] & 0x1f);
+	mdb->tisb_site_id = (frame[7] >> 4);
 
 	if (mdb->app_data_valid) {
 		uint8_t *data,*end;
@@ -956,12 +956,12 @@ void uat_decode_uplink_mdb(uint8_t *frame,struct uat_uplink_mdb *mdb)
 		mdb->num_info_frames = 0;
 
 		data = mdb->app_data;
-		end  = mdb->app_data + 424;
+		end = mdb->app_data + 424;
 
 		while (mdb->num_info_frames < UPLINK_MAX_INFO_FRAMES && data+2 <= end) {
 			struct uat_uplink_info_frame *frame = &mdb->info_frames[mdb->num_info_frames];
 			frame->length = (data[0] << 1) | (data[1] >> 7);
-			frame->type   = (data[1] & 0x0f);
+			frame->type = (data[1] & 0x0f);
 			if (data + frame->length + 2 > end) {
 				// overrun?
 				break;
@@ -1013,12 +1013,12 @@ static const char *get_fisb_product_name(uint16_t product_id)
 	case 5:		case 25:	return "PIREP ****";
 	case 6:		case 26:	return "AWW ****";
 	case 7:		case 27:	return "Winds and Temperatures Aloft ****";
-	case 8:		return "NOTAM (Including TFRs) and Service Status";
-	case 9:		return "Aerodrome and Airspace – D-ATIS ****";
+	case 8:		return "NOTAM";
+	case 9:		return "Aerodrome and Airspace - D-ATIS ****";
 	case 10:	return "Aerodrome and Airspace - TWIP ****";
-	case 11:	return "Aerodrome and Airspace - AIRMET";
-	case 12:	return "Aerodrome and Airspace - SIGMET/Convective SIGMET";
-	case 13:	return "Aerodrome and Airspace - SUA Status";
+	case 11:	return "AIRMET";
+	case 12:	return "SIGMET";
+	case 13:	return "SUA Status";
 	case 14:	return "G-AIRMET";
 	case 15:	return "Center Weather Advisory (CWAG)";
 	case 51:	return "National NEXRAD,Type 0 - 4 Level ****";
@@ -1033,8 +1033,8 @@ static const char *get_fisb_product_name(uint16_t product_id)
 	case 60:	return "Individual NEXRAD,Type 1 - 8 Level (quasi 6-Level VIP) ****";
 	case 61:	return "Individual NEXRAD,Type 2 - 8 Level ****";
 	case 62:	return "Individual NEXRAD,Type 3 - 16 Level ****";
-	case 63:	return "Global Block Representation - Regional NEXRAD,Type 4 - 8 Level";
-	case 64:	return "Global Block Representation - CONUS NEXRAD,Type 4 - 8 Level";
+	case 63:	return "Regional NEXRAD,Type 4 - 8 Level";
+	case 64:	return "CONUS NEXRAD,Type 4 - 8 Level";
 	case 70:	return "Icing Forecast - Low";
 	case 71:	return "Icing Forecast - High";
 	case 81:	return "Radar Echo Tops Graphic,Scheme 1: 16-Level ****";
@@ -1134,7 +1134,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 	fprintf(to,"\n");
 
 	switch (apdu->product_id) {
-	case 8:									// ** NOTAM **************
+	case 8:										// ** NOTAM **************
 		if ( apdu->s_flag)
 			recf = apdu->data[9] >> 4;
 		else
@@ -1143,14 +1143,14 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 		fprintf(filenotam," Record Format   : %d\n",recf);
 
 		switch (recf){
-		case 8:								//graphic
+		case 8:									//	Graphic
 			fprintf(filenotam," Report Type     : NOTAM\n");
 			get_graphic(apdu,filenotam,to);
 			break;
-		case 2:								// text
-			if (apdu->s_flag)					// segmented text
+		case 2:									// Text
+			if (apdu->s_flag)					// Segmented text
 				get_seg_text(apdu,filenotam,to);
-			else							// text
+			else								// Text
 				get_text(apdu,filenotam,to);
 			break;
 		default:
@@ -1160,16 +1160,16 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 		}
 	break;
 
-	case 11:								// ** AIRMET **************
+	case 11:									// ** AIRMET **************
 		recf = apdu->data[0] >> 4;
 		fprintf(fileairmet," Record Format   : %d \n",recf);
 
 		switch (recf){
-		case 8:								//graphic
+		case 8:									// Graphic
 			fprintf(fileairmet," Report Type     : AIRMET\n");
 			get_graphic(apdu,fileairmet,to);
 			break;
-		case 2:								// text
+		case 2:									// Text
 			get_text(apdu,fileairmet,to);
 			break;
 		default:
@@ -1179,16 +1179,16 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 		}
 	break;
 
-	case 12:								// ** SIGMET **************
+	case 12:									// ** SIGMET **************
 		recf = apdu->data[0] >> 4;
 		fprintf(filesigmet," Record Format   : %d \n",recf);
 
 		switch (recf) {
-		case 8:								//graphic
+		case 8:									// Graphic
 			fprintf(filesigmet," Report Type     : SIGMET\n");
 			get_graphic(apdu,filesigmet,to);
 			break;
-		case 2:								// text
+		case 2:									// Text
 			get_text(apdu,filesigmet,to);
 			break;
 		default:
@@ -1198,12 +1198,12 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 		}
 	break;
 
-	case 13:								// ** SUA **************
+	case 13:									// ** SUA **************
 		recf = apdu->data[0] >> 4;
 		fprintf(filesua," Record Format   : %d \n",recf);
 
 		switch (recf) {
-		case 2:								//text
+		case 2:									// Text
 			get_text(apdu,filesua,to);
 			break;
 		default:
@@ -1213,12 +1213,12 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 		}
 	break;
 
-	case 14:								// ** G-AIRMET **************
+	case 14:									// ** G-AIRMET **************
 		recf = apdu->data[0] >> 4;
 		fprintf(filegairmet," Record Format   : %d \n",recf);
 
 		switch (recf) {
-		case 8:								//graphic
+		case 8:									// Graphic
 			fprintf(to," Report Type     : G-AIRMET\n");
 			fprintf(filegairmet," Report Type     : G-AIRMET\n");
 			get_graphic(apdu,filegairmet,to);
@@ -1230,16 +1230,16 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 		}
 	break;
 
-	case 15:								// ** CWA **************
+	case 15:									// ** CWA **************
 			recf = apdu->data[0] >> 4;
 			fprintf(filesigmet," Record Format   : %d \n",recf);
 
 			switch (recf) {
-			case 8:							//graphic
+			case 8:								// Graphic
 			fprintf(filesigmet," Report Type     : CWA\n");
 			get_graphic(apdu,filecwa,to);
 			break;
-			case 2:							// text
+			case 2:								// Text
 			get_text(apdu,filecwa,to);
 			break;
 			default:
@@ -1254,7 +1254,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 			graphic_nexrad(apdu,to);
 					break;
 
-	case 413:								// ** Generic text,DLAC *****************
+	case 413:									// ** Generic text,DLAC *****************
 	{
 		int rec_offset = 0;
 		const char *text = decode_dlac(apdu->data,apdu->length,rec_offset);
@@ -1271,7 +1271,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 
 			Decoded_METAR MetarStruct,*Mptr = &MetarStruct;
 
-			next_report = strchr(report,'\x1e');	// RS
+			next_report = strchr(report,'\x1e');		// RS
 			if (!next_report)
 				next_report = strchr(report,'\x03');	// ETX
 			if (next_report) {
@@ -1482,7 +1482,8 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 				while (i < rec_offset ) {
 					if (j % 10 == 0)
 						fprintf(to,"\n");
-						j++;
+
+					j++;
 					fprintf(to,"%02x%02x%02x ",frame->data[i],frame->data[i+1],frame->data[i+2]);
 					i = i +4;
 				}
@@ -1505,8 +1506,9 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 				for (int i = 0; i < num_crl; ++i) {
 					if (q % 4 == 0)
 						fprintf(to,"\n");
-						q++;
-						repid = (frame->data[j+1] & ((1<<6)-1)) << 8 |  frame->data[j+2];
+
+					q++;
+					repid = (frame->data[j+1] & ((1<<6)-1)) << 8 |  frame->data[j+2];
 
 					fprintf(to,"Rpt ID: %d  ",repid);
 						j = j+3;
@@ -1623,35 +1625,35 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 		strcpy(gstn,"    ");
 
 
-	rep_num = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]); 	/	/7 8
+	rep_num = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]); 			// 7 8
 	rec_len = ((apdu->data[datoff + 0]) << 2) | (((apdu->data[datoff + 1]) & 0xC0) >> 6);	// 6 7
-	report_year = ((apdu->data[datoff + 3]) & 0xFE) >> 1;                            	// 9
-	overlay_rec_id = (((apdu->data[datoff + 4]) & 0x1E) >> 1) + 1;				// Document instructs to add 1.
-	obj_label_flag = (apdu->data[datoff + 4] & 0x01);					//10
+	report_year = ((apdu->data[datoff + 3]) & 0xFE) >> 1;                            		// 9
+	overlay_rec_id = (((apdu->data[datoff + 4]) & 0x1E) >> 1) + 1;		// Document instructs to add 1.
+	obj_label_flag = (apdu->data[datoff + 4] & 0x01);										// 10
 
 	fprintf(fnm," Report Number   : %6d  ",rep_num);
 	fprintf(fnm,"     Record Length    : %03d ",rec_len);
 	fprintf(fnm,"     Report Year        : 20%02d\n ",report_year);
-	fprintf(fnm,"Ovrlay RcID     : %d",overlay_rec_id);					//10
+	fprintf(fnm,"Ovrlay RcID     : %d",overlay_rec_id);										//10
 	fprintf(fnm,"            Object Label Flag: %d \n",obj_label_flag);
 
 	obj_labelt ="  ";
 	if (obj_label_flag == 0) { // Numeric index.
-		obj_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);		// 11 12
+		obj_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);				// 11 12
 		fprintf(fnm," Ob Lbl Num      : %d    ",obj_label);
-		datoff = datoff +7;	}																		//datoff=13
+		datoff = datoff +7;	}																// datoff=13
 	else {
 		obj_labelt = decode_dlac(apdu->data,5,2);
 		fprintf(fnm," Ob Lbl Alph     : %s ",obj_labelt);
 		datoff = datoff + 14;
 	}
 
-	element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;					//13
+	element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;				//13
 	obj_element = (apdu->data[datoff + 0]) & 0x1F;						//13
 	obj_status = (apdu->data[datoff +1]) & 0x0F;						//14
 	obj_type = (apdu->data[datoff +1] & 0xF0) >> 4;						//14
-	qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;				//13
-	param_flag = ((apdu->data[datoff + 0]) & 0x20) >> 5;					//13
+	qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;			//13
+	param_flag = ((apdu->data[datoff + 0]) & 0x20) >> 5;				//13
 
 	fprintf(fnm,"        Element Flag     : %d  ",element_flag);
 	fprintf(fnm,"      Object Element     : %d\n",obj_element);
@@ -1661,24 +1663,24 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	fprintf(fnm,"          Parameter Flag   : %d \n",param_flag);
 	 strcpy(qual_text," ");
 	if (qualifier_flag == 0){
-		datoff = datoff + 2;								// 13 > datoff=15
+		datoff = datoff + 2;											// 13 > datoff=15
 	}
 	else {
 		object_qualifier = ((apdu->data[datoff + 2]) << 16) | ((apdu->data[datoff + 3]) << 8) | (apdu->data[datoff + 4]);
 
 		strcpy(qual_text,"Qualifier: ");
 		if (apdu->product_id == 14) {
-			if (apdu->data[datoff + 2] & (1 << 7)){					//15
+			if (apdu->data[datoff + 2] & (1 << 7)){						// 15
 				fprintf(fnm," Qualifier       : Unspecified\n");
 				strcat(qual_text," Unspecified, ");
 			}
 
-			if (apdu->data[datoff + 3] & (1 << 0)) {				//16
+			if (apdu->data[datoff + 3] & (1 << 0)) {					// 16
 				fprintf(fnm," Qualifier       : Ash\n");
 				strcat(qual_text," Ash, ");
 			}
 
-			if (apdu->data[datoff + 4] & (1 << 0)) {				//17
+			if (apdu->data[datoff + 4] & (1 << 0)) {					// 17
 				fprintf(fnm," Qualifier       : Precipitation\n");
 				strcat(qual_text," Precipitation, ");
 			}
@@ -1712,18 +1714,18 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 				strcat(qual_text," Dust, ");
 			}
 		}
-		obj_param_type = apdu->data[18] >> 3;						//18
-		ob_par_val = (apdu->data[18] & 0x7)<< 8 | apdu->data[19];			//19
+		obj_param_type = apdu->data[18] >> 3;							// 18
+		ob_par_val = (apdu->data[18] & 0x7)<< 8 | apdu->data[19];		// 19
 
 		fprintf(fnm,"Obj Qualfr: %d  Obj Prm Tp: %d  Obj Par Val: %d\n",
 				object_qualifier,obj_param_type,ob_par_val);
 
-		datoff = datoff+7;								//13 datoff =20
+		datoff = datoff+7;												// 13 datoff =20
 	}
 
-	geo_overlay_opt = (apdu->data[datoff + 0]) & 0x0F;					//13
+	geo_overlay_opt = (apdu->data[datoff + 0]) & 0x0F;					// 13
 	overlay_op = ((apdu->data[datoff +1]) & 0xC0) >> 6;
-	overlay_vert_cnt = ((apdu->data[datoff +1]) & 0x3F) + 1;		// Document instructs to add 1)
+	overlay_vert_cnt = ((apdu->data[datoff +1]) & 0x3F) + 1;			// Document instructs to add 1)
 	rec_app_opt = ((apdu->data[datoff + 0]) & 0xC0) >> 6;
 	date_time_format = ((apdu->data[datoff + 0]) & 0x30) >> 4;
 
@@ -1734,7 +1736,7 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	fprintf(fnm,"          Rec App Date     : %d \n",date_time_format );
 
 	switch (rec_app_opt) {
-	case 0:									// No times given. UFN.  (record_data[2:],date_time_format)
+	case 0:									// No times given. UFN. (record_data[2:],date_time_format)
 		fprintf(fnm,"No Dates Given\n");
 		asprintf(&start_date,"0");
 		asprintf(&stop_date,"0");
@@ -1840,7 +1842,8 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 			cwa_count = ex3dpoly(filecwajson,cwa_count,rep_num,alt,ob_ele_text);
 			break;
 
-		case 18:       file3dpoly = filenotamjson;
+		case 18:
+			file3dpoly = filenotamjson;
 			if (notam_count == 0) {
 				fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
 				fprintf(file3dpoly,"\"features\": [ \n");
@@ -2003,7 +2006,7 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 		break;
 
 	case 11: case 12:							// Extended Range 3D Polyline
-										// Don't write geojson for items with qualifier flag set.
+												// Don't write geojson for items with qualifier flag set.
 
 		alt_raw = (((apdu->data[datoff +4]) & 0x03) << 8) | (apdu->data[datoff +5]);
 		alt = alt_raw * 100;
@@ -2155,7 +2158,7 @@ static void get_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to){
 			if (r[length-1] == '\n')
 				r[length-1] = '\0';
 
-				for(int i = 0; i <= strlen(r); i++)
+			for(int i = 0; i <= strlen(r); i++)
 			{
 				if(r[i] == '\n')
 				{
