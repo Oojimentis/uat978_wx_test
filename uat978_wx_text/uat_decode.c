@@ -94,172 +94,171 @@ static double dimensions_widths[16] = {
 };
 
 static const char *object_types_text[16] = {
-		"Airport(or Heliport)",
-		"Runway(or Helipad)",
-		"Taxiway",
-		"Apron",
-		"Frequency Area",
-		"Signage",
-		"Approach Lighting",
-		"Airport Lighting",
-		"Obstruction OBST",
-		"Construction Area",
-		"Communication Equipment",
-		"Navigation Equipment",
-		"Surveillance Equipment",
-		"Weather Equipment",
-		"Airspace",
-		"Future Use"
+	"Airport(or Heliport)",
+	"Runway(or Helipad)",
+	"Taxiway",
+	"Apron",
+	"Frequency Area",
+	"Signage",
+	"Approach Lighting",
+	"Airport Lighting",
+	"Obstruction OBST",
+	"Construction Area",
+	"Communication Equipment",
+	"Navigation Equipment",
+	"Surveillance Equipment",
+	"Weather Equipment",
+	"Airspace",
+	"Future Use"
 };
 
 static const char *object_status_text[16] = {
-		"Closed",
-		"Closed-Conditional",
-		"Arrival Only",
-		"Departure Only",
-		"Displaced",
-		"Braking Action",
-		"Obscured or Missing",
-		"Unmarked",
-		"Unlighted",
-		"In Service",
-		"Inoperative",
-		"Unavailable",
-		"Surface Condition",
-		"Cancelled",
-		"Unsafe",
-		"In Effect"
+	"Closed",
+	"Closed-Conditional",
+	"Arrival Only",
+	"Departure Only",
+	"Displaced",
+	"Braking Action",
+	"Obscured or Missing",
+	"Unmarked",
+	"Unlighted",
+	"In Service",
+	"Inoperative",
+	"Unavailable",
+	"Surface Condition",
+	"Cancelled",
+	"Unsafe",
+	"In Effect"
 };
 
 static const char *overlay_options_text[16] = {
-		"No Geometry",                              // 0
-		"Low Resolution 2D Polygon",
-		"High Resolution 3D Polygon",
-		"Extended Range 3D Polygon (MSL)",
-		"Extended Range 3D Polygon (AGL)",
-		"Low Resolution 2D Ellipse",
-		"High Resolution 3D Ellipse",
-		"Extended Range Circular Prism (MSL)",
-		"Extended Range Circular Prism (AGL)",
-		"Extended Range 3D Point (AGL)",
-		"Extended Range 3D Point (MSL)",                  //10
-		"Extended Range 3D Polyline (MSL)",               // 11
-		"Extended Range 3D Polyline (AGL)",               // 12
-		"Future Use",
-		"Future Use",
-		"Future Use"
+	"No Geometry",                              // 0
+	"Low Resolution 2D Polygon",
+	"High Resolution 3D Polygon",
+	"Extended Range 3D Polygon (MSL)",
+	"Extended Range 3D Polygon (AGL)",
+	"Low Resolution 2D Ellipse",
+	"High Resolution 3D Ellipse",
+	"Extended Range Circular Prism (MSL)",
+	"Extended Range Circular Prism (AGL)",
+	"Extended Range 3D Point (AGL)",
+	"Extended Range 3D Point (MSL)",                  //10
+	"Extended Range 3D Polyline (MSL)",               // 11
+	"Extended Range 3D Polyline (AGL)",               // 12
+	"Future Use",
+	"Future Use",
+	"Future Use"
 };
 
 static const char *airspace_element_names[14] = {
-		"Temporary Flight Restriction",
-		"Parachute Jumping /Sky Diving",
-		"Terminal Radar Service Area",
-		"Airport Advisory Area",
-		"VFR Flyway",
-		"VFR Corridor",
-		"VFR Transition Route",
-		"Terminal Area VFR Route",
-		"Prohibited Area ",
-		"Restricted Area ",
-		"Military Operations Area",
-		"Warning Area",
-		"Military Training Route",
-		"Air Defense Identification Zone"
+	"Temporary Flight Restriction",
+	"Parachute Jumping /Sky Diving",
+	"Terminal Radar Service Area",
+	"Airport Advisory Area",
+	"VFR Flyway",
+	"VFR Corridor",
+	"VFR Transition Route",
+	"Terminal Area VFR Route",
+	"Prohibited Area ",
+	"Restricted Area ",
+	"Military Operations Area",
+	"Warning Area",
+	"Military Training Route",
+	"Air Defense Identification Zone"
 };
 
 static const char *gairspace_element_names[16] = {
-		"Temporary Flight Restriction",
-		"Turbulence",
-		"Low Level Wind Shear",
-		"Surface Winds",
-		"Icing",
-		"Freezing Level",
-		"IFR Conditions",
-		"Mountain Obscuration",
-		"Future Use",
-		"Future Use",
-		"Future Use",
-		"Future Use",
-		"Future Use",
-		"Future Use",
-		"Future Use",
-		"Future Use"
+	"Temporary Flight Restriction",
+	"Turbulence",
+	"Low Level Wind Shear",
+	"Surface Winds",
+	"Icing",
+	"Freezing Level",
+	"IFR Conditions",
+	"Mountain Obscuration",
+	"Future Use",
+	"Future Use",
+	"Future Use",
+	"Future Use",
+	"Future Use",
+	"Future Use",
+	"Future Use",
+	"Future Use"
 };
 
 static const char *obj_param_type_names[31] = {
-		"Reserved",
-		"Distance Nautical Miles",
-		"Distance Statute Miles",
-		"Length Feet",
-		"Length Meters",
-		"Height Feet (MSL)",
-		"Height Feet (AGL)",
-		"Height Meters",
-		"Width Feet",
-		"Width Meters",
-		"Depth Fractional Inches",
-		"Depth Inches",
-		"Depth Feet",
-		"Weight Pounds",
-		"Friction Measure (MU)",
-		"Direction (Magnetic)",
-		"Direction (True)",
-		"Visibility Feet",
-		"Visibility Meters",
-		"Visibility Statute Miles",
-		"Speed Knots",
-		"Speed Meters",
-		"Frequency in MHz (25)",
-		"Frequency in MHz (8.33)",
-		"Future Use",
-		"Future Use",
-		"Future Use",
-		"Future Use",
-		"Future Use",
-		"Future Use",
-		"Future Use"
+	"Reserved",
+	"Distance Nautical Miles",
+	"Distance Statute Miles",
+	"Length Feet",
+	"Length Meters",
+	"Height Feet (MSL)",
+	"Height Feet (AGL)",
+	"Height Meters",
+	"Width Feet",
+	"Width Meters",
+	"Depth Fractional Inches",
+	"Depth Inches",
+	"Depth Feet",
+	"Weight Pounds",
+	"Friction Measure (MU)",
+	"Direction (Magnetic)",
+	"Direction (True)",
+	"Visibility Feet",
+	"Visibility Meters",
+	"Visibility Statute Miles",
+	"Speed Knots",
+	"Speed Meters",
+	"Frequency in MHz (25)",
+	"Frequency in MHz (8.33)",
+	"Future Use",
+	"Future Use",
+	"Future Use",
+	"Future Use",
+	"Future Use",
+	"Future Use",
+	"Future Use"
 };
 
 static const char *address_qualifier_names[8] = {
-		"ICAO address via ADS-B",
-		"reserved (national use)",
-		"ICAO address via TIS-B",
-		"TIS-B track file address",
-		"Vehicle address",
-		"Fixed ADS-B Beacon Address",
-		"reserved (6)",
-		"reserved (7)"
+	"ICAO address via ADS-B",
+	"reserved (national use)",
+	"ICAO address via TIS-B",
+	"TIS-B track file address",
+	"Vehicle address",
+	"Fixed ADS-B Beacon Address",
+	"reserved (6)",
+	"reserved (7)"
 };
 
 static const char *emitter_category_names[40] = {
-
-		"No aircraft type information",
-		"Light < 15 500 lbs",
-		"Small – 15,500 to 75,000 lbs",
-		"Large – 75,000 to 300,000 lbs",
-		"High Vortex Large",
-		"Heavy - > 300,000 lbs",
-		"Highly Maneuverable",
-		"Rotocraft",
-		"Unassigned 8",
-		"Glider/sailplane",
-		"Lighter than air",
-		"Parachutist/sky diver",
-		"Ultra light/hang glider/paraglider",
-		"Unassigned 13",
-		"Unmanned aerial vehicle",
-		"Space/trans-atmospheric vehicle",
-		"Unassigned 16",
-		"Surface vehicle—emergency vehicle",
-		"Surface vehicle—service vehicle",
-		"Point Obstacle (includes tethered balloons)",
-		"Cluster Obstacle"
-		"Line Obstacle",
+	"No aircraft type information",
+	"Light < 15 500 lbs",
+	"Small – 15,500 to 75,000 lbs",
+	"Large – 75,000 to 300,000 lbs",
+	"High Vortex Large",
+	"Heavy - > 300,000 lbs",
+	"Highly Maneuverable",
+	"Rotocraft",
+	"Unassigned 8",
+	"Glider/sailplane",
+	"Lighter than air",
+	"Parachutist/sky diver",
+	"Ultra light/hang glider/paraglider",
+	"Unassigned 13",
+	"Unmanned aerial vehicle",
+	"Space/trans-atmospheric vehicle",
+	"Unassigned 16",
+	"Surface vehicle—emergency vehicle",
+	"Surface vehicle—service vehicle",
+	"Point Obstacle (includes tethered balloons)",
+	"Cluster Obstacle"
+	"Line Obstacle",
         "reserved (22)",
-		"reserved (23)",                           // C7
-		"reserved (24)",
-		"reserved (25)",
-		"reserved (26)",
+	"reserved (23)",                           // C7
+	"reserved (24)",
+	"reserved (25)",
+	"reserved (26)",
     	"reserved (27)",
     	"reserved (28)",
     	"reserved (29)",
@@ -276,35 +275,33 @@ static const char *emitter_category_names[40] = {
 };
 
 static const char *emergency_status_names[8] = {
-
-		"No emergency",
-		"**** General emergency ****",
-		"**** Lifeguard / Medical emergency ****",
-		"**** Minimum fuel ****",
-		"**** No communications ****",
-		"**** Unlawful interference ****",
-		"**** Downed aircraft ****",
-		"reserved"
+	"No emergency",
+	"**** General emergency ****",
+	"**** Lifeguard / Medical emergency ****",
+	"**** Minimum fuel ****",
+	"**** No communications ****",
+	"**** Unlawful interference ****",
+	"**** Downed aircraft ****",
+	"reserved"
 };
 
 static const char *info_frame_type_names[16] = {
-
-		"FIS-B APDU",
-		"Reserved for Developmental Use",
-		"Reserved for Future Use (2)",
-		"Reserved for Future Use (3)",
-		"Reserved for Future Use (4)",
-		"Reserved for Future Use (5)",
-		"Reserved for Future Use (6)",
-		"Reserved for Future Use (7)",
-		"Reserved for Future Use (8)",
-		"Reserved for Future Use (9)",
-		"Reserved for Future Use (10)",
-		"Reserved for Future Use (11)",
-		"Reserved for Future Use (12)",
-		"Reserved for Future Use (13)",
-		"Current Report List (14)    ",
-		"TIS-B/ADS-R Service Status"
+	"FIS-B APDU",
+	"Reserved for Developmental Use",
+	"Reserved for Future Use (2)",
+	"Reserved for Future Use (3)",
+	"Reserved for Future Use (4)",
+	"Reserved for Future Use (5)",
+	"Reserved for Future Use (6)",
+	"Reserved for Future Use (7)",
+	"Reserved for Future Use (8)",
+	"Reserved for Future Use (9)",
+	"Reserved for Future Use (10)",
+	"Reserved for Future Use (11)",
+	"Reserved for Future Use (12)",
+	"Reserved for Future Use (13)",
+	"Current Report List (14)    ",
+	"TIS-B/ADS-R Service Status"
 };
 
 static int stn_callback(void *data, int argc, char **argv, char **azColName){
@@ -474,21 +471,21 @@ static void get_pirep(char *Word,FILE *to)
 {
     char *token;
     char pirep_stn[5];
-    char pirep_OV[30];										// Location
+    char pirep_OV[30];						// Location
     char pirep_TM[10]; char pirep_hr[5]; char pirep_mn[3];	// DateTime
-    char pirep_FL[10];										// Flight Level
-    char pirep_TP[10];										// a/c type
-    char pirep_SK[50];										// Cloud
-    char pirep_WX[30];										// Weather
-    char pirep_TA[10];										// Temperature
-    char pirep_WV[15];										// Wind Speed Direction
-    char pirep_TB[30];  									// Turbulence
-    char pirep_IC[30];										// Icing
-    char pirep_RM[100]; 									// Remarks
+    char pirep_FL[10];						// Flight Level
+    char pirep_TP[10];						// a/c type
+    char pirep_SK[50];						// Cloud
+    char pirep_WX[30];						// Weather
+    char pirep_TA[10];						// Temperature
+    char pirep_WV[15];						// Wind Speed Direction
+    char pirep_TB[30];  					// Turbulence
+    char pirep_IC[30];						// Icing
+    char pirep_RM[100]; 					// Remarks
 
-	token = strtok(Word," ");
-	strcpy(pirep_stn,"K");
-	strcat(pirep_stn,token);
+    token = strtok(Word," ");
+    strcpy(pirep_stn,"K");
+    strcat(pirep_stn,token);
 
     get_gs_name(pirep_stn);
 
@@ -586,7 +583,7 @@ static void uat_display_hdr(const struct uat_adsb_mdb *mdb,FILE *to)
 
 static void uat_decode_sv(uint8_t *frame,struct uat_adsb_mdb *mdb)
 {
-    uint32_t raw_lat;
+    	uint32_t raw_lat;
 	uint32_t raw_lon;
 	uint32_t raw_alt;
 
@@ -752,19 +749,19 @@ static void uat_decode_ms(uint8_t *frame,struct uat_adsb_mdb *mdb)
             break;
     }
 
-    mdb->emergency_status 	= (frame[23] >> 5) & 7;
-    mdb->uat_version		= (frame[23] >> 2) & 7;
-    mdb->sil 				= (frame[23] & 3);
-    mdb->transmit_mso 		= (frame[24] >> 2) & 0x3f;
-    mdb->nac_p 				= (frame[25] >> 4) & 15;
-    mdb->nac_v 				= (frame[25] >> 1) & 7;
-    mdb->nic_baro 			= (frame[25] & 1);
-    mdb->has_cdti 			= (frame[26] & 0x80 ? 1 : 0);
-    mdb->has_acas 			= (frame[26] & 0x40 ? 1 : 0);
-    mdb->acas_ra_active 	= (frame[26] & 0x20 ? 1 : 0);
-    mdb->ident_active 		= (frame[26] & 0x10 ? 1 : 0);
-    mdb->atc_services 		= (frame[26] & 0x08 ? 1 : 0);
-    mdb->heading_type 		= (frame[26] & 0x04 ? HT_MAGNETIC : HT_TRUE);
+    mdb->emergency_status = (frame[23] >> 5) & 7;
+    mdb->uat_version	= (frame[23] >> 2) & 7;
+    mdb->sil 		= (frame[23] & 3);
+    mdb->transmit_mso 	= (frame[24] >> 2) & 0x3f;
+    mdb->nac_p 		= (frame[25] >> 4) & 15;
+    mdb->nac_v 		= (frame[25] >> 1) & 7;
+    mdb->nic_baro 	= (frame[25] & 1);
+    mdb->has_cdti 	= (frame[26] & 0x80 ? 1 : 0);
+    mdb->has_acas 	= (frame[26] & 0x40 ? 1 : 0);
+    mdb->acas_ra_active = (frame[26] & 0x20 ? 1 : 0);
+    mdb->ident_active 	= (frame[26] & 0x10 ? 1 : 0);
+    mdb->atc_services 	= (frame[26] & 0x08 ? 1 : 0);
+    mdb->heading_type 	= (frame[26] & 0x04 ? HT_MAGNETIC : HT_TRUE);
 
     if (mdb->callsign[0])
         mdb->callsign_type = (frame[26] & 0x02 ? CS_CALLSIGN : CS_SQUAWK);
@@ -869,7 +866,7 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
     case 0: // Hours,Minutes
         frame->fisb.monthday_valid = 0;
         frame->fisb.seconds_valid  = 0;
-        frame->fisb.hours	= (frame->data[2] & 0x7c) >> 2;
+        frame->fisb.hours = (frame->data[2] & 0x7c) >> 2;
         frame->fisb.minutes = ((frame->data[2] & 0x03) << 4) | (frame->data[3] >> 4);
         frame->fisb.length  = frame->length - 4;
         frame->fisb.data    = frame->data + 4;
@@ -908,13 +905,13 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
             return;
         frame->fisb.monthday_valid = 1;
         frame->fisb.seconds_valid  = 1;
-        frame->fisb.month 	= (frame->data[2] & 0x78) >> 3;
-        frame->fisb.day 	= ((frame->data[2] & 0x07) << 2) | (frame->data[3] >> 6);
+        frame->fisb.month = (frame->data[2] & 0x78) >> 3;
+        frame->fisb.day = ((frame->data[2] & 0x07) << 2) | (frame->data[3] >> 6);
         frame->fisb.hours   = (frame->data[3] & 0x3e) >> 1;
         frame->fisb.minutes = ((frame->data[3] & 0x01) << 5) | (frame->data[4] >> 3);
         frame->fisb.seconds = ((frame->data[4] & 0x03) << 3) | (frame->data[5] >> 5);
-        frame->fisb.length 	= frame->length - 6;
-        frame->fisb.data 	= frame->data + 6;
+        frame->fisb.length = frame->length - 6;
+        frame->fisb.data = frame->data + 6;
         break;
     }
     frame->fisb.a_flag = (frame->data[0] & 0x80) ? 1 : 0;
@@ -946,7 +943,7 @@ void uat_decode_uplink_mdb(uint8_t *frame,struct uat_uplink_mdb *mdb)
 
     mdb->utc_coupled 	= (frame[6] & 0x80) ? 1 : 0;
     mdb->app_data_valid = (frame[6] & 0x20) ? 1 : 0;
-    mdb->slot_id 	    = (frame[6] & 0x1f);
+    mdb->slot_id    = (frame[6] & 0x1f);
     mdb->tisb_site_id 	= (frame[7] >> 4);
 
     if (mdb->app_data_valid) {
