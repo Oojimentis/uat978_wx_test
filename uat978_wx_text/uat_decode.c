@@ -1377,10 +1377,12 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 				get_pirep(pirep_copy,to);
 			}
 			if (strcmp(mtype,"METAR") == 0 || strcmp(mtype,"SPECI") == 0  ) {
+				fprintf(to,"Data: %s",observation);
 				if( decode_metar(observation,Mptr) != 0 ) {
 					fprintf(to,"Error METAR Decode\n"); }
 				else {
 					print_decoded_metar( Mptr);
+					metar_data( Mptr,to);
 					if (metar_count == 0) {
 						fprintf(filemetarjson,"{\"type\": \"FeatureCollection\",\n");
 						fprintf(filemetarjson,"\"features\": [ \n");

@@ -8,9 +8,11 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include "uat_decode.h"
 #include "uat_geo.h"
 #include "asprintf.h"
+#include "metar.h"
 
 void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 {
@@ -50,7 +52,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 		break;
 
 	case 71:										// ** Icing High **************
-		bin = 1;
 		switch(ice_alt) {
 		case 0:    alt_level = 18000; break;
 		case 1:    alt_level = 20000; break;
@@ -77,7 +78,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 		break;
 
 	case 91:										// ** Turbulence High **************
-		bin = 1;
 		switch(ice_alt){
 		case 0:    alt_level = 18000; break;
 		case 1:    alt_level = 20000; break;
@@ -110,13 +110,13 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 		if (apdu->product_id == 63){
 			asprintf(&sql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
 			"lat_size,lon_size,level,block_data) "
-				"VALUES(%d,'NEXRAD','CONUS','%s',%d,%.0f,%.0f,%.0f,%.0f,%d,",
+				"VALUES(%d,'NEXRAD','Regional','%s',%d,%.0f,%.0f,%.0f,%.0f,%d,",
 				apdu->product_id,nexrad_time,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60,alt_level);
 		}
 		else {
 			asprintf(&sql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
 				"lat_size,lon_size,level,block_data) "
-				"VALUES(%d,'NEXRAD','Regional','%s',%d,%.0f,%.0f,%.0f,%.0f,%d,",
+				"VALUES(%d,'NEXRAD','CONUS','%s',%d,%.0f,%.0f,%.0f,%.0f,%d,",
 				apdu->product_id,nexrad_time,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60,alt_level);
 		}
 
@@ -254,13 +254,13 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 					if (apdu->product_id == 63){
 						asprintf(&sql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
 							"lat_size,lon_size,level,block_data) "
-							"VALUES(%d,'NEXRAD','KONUS','%s',%d,%.0f,%.0f,%.0f,%.0f,%d,",
+							"VALUES(%d,'NEXRAD','Regional','%s',%d,%.0f,%.0f,%.0f,%.0f,%d,",
 							apdu->product_id,nexrad_time,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60,alt_level);
 					}
 					else {
 						asprintf(&sql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
 							"lat_size,lon_size,level,block_data) "
-							"VALUES(%d,'NEXRAD','Segional','%s',%d,%.0f,%.0f,%.0f,%.0f,%d,",
+							"VALUES(%d,'NEXRAD','CONUS','%s',%d,%.0f,%.0f,%.0f,%.0f,%d,",
 							apdu->product_id,nexrad_time,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60,alt_level);
 					}
 
@@ -340,4 +340,55 @@ double raw_lat; double raw_lon; double scale;
 		// adjust to the northwest corner
 		*latN = raw_lat + BLOCK_HEIGHT;
 	}
+}
+
+void metar_data( Decoded_METAR *Mptr,FILE *to)
+{
+	char *sql;
+	char *zErrMsg = 0;
+	char obs_date[10]=" ";
+
+	if (Mptr->temp > 1000)
+		Mptr->temp = 999;
+	else
+		Mptr->temp = Mptr->temp * 9/5  +32;
+	if (Mptr->dew_pt_temp > 1000)
+			Mptr->dew_pt_temp = 999;
+	else
+		Mptr->dew_pt_temp = Mptr->dew_pt_temp * 9/5  +32;
+
+	if (Mptr->winData.windSpeed> 1000)
+		Mptr->winData.windSpeed=999;
+
+	if (Mptr->winData.windDir> 1000)
+		Mptr->winData.windDir=999;
+
+	if (Mptr->inches_altstng> 1000)
+		Mptr->inches_altstng=999;
+
+	if (Mptr->prevail_vsbySM)
+		Mptr->prevail_vsbySM = 999;
+
+	if (Mptr->SLP)
+		Mptr->SLP = 999;
+
+	sprintf(obs_date,"%02d %02d:%02d",Mptr->ob_date,Mptr->ob_hour,Mptr->ob_minute);
+
+	fprintf(to," moo %d \n",Mptr->temp);
+
+	asprintf(&sql,"INSERT INTO metar (type,station,obs_date,temp,dew_point,visibility,sea_lev_pr,alt_inches,wind_dir,"
+			"wind_sp,cloud_type1,cloud_height1,cloud_type2,cloud_height2,cloud_type3,cloud_height3,cloud_type4,cloud_height4) "
+			"VALUES ('%s','%s','%s',%d,%d,%.2f,%.2f,%.2f,%d,%d,'%s','%s','%s','%s','%s','%s','%s','%s')"
+			,Mptr->codeName,Mptr->stnid,obs_date,Mptr->temp,Mptr->dew_pt_temp,Mptr->prevail_vsbySM,Mptr->SLP,Mptr->inches_altstng,Mptr->winData.windDir,
+			Mptr->winData.windSpeed,Mptr->cloudGroup[0].cloud_type,Mptr->cloudGroup[0].cloud_hgt_char,Mptr->cloudGroup[1].cloud_type,
+			Mptr->cloudGroup[1].cloud_hgt_char,Mptr->cloudGroup[2].cloud_type,Mptr->cloudGroup[2].cloud_hgt_char,
+			Mptr->cloudGroup[3].cloud_type,Mptr->cloudGroup[3].cloud_hgt_char);
+
+	rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
+	if( rc != SQLITE_OK ){
+		fprintf(stderr, "SQL error: %s\n", zErrMsg);
+		sqlite3_free(zErrMsg);
+	}
+
+
 }
