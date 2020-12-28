@@ -2095,6 +2095,7 @@ static void get_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to){
 		char report_buf[1024];
 		char *p,*r;
 		const char *next_report; uint16_t report_year;
+		int report_stat;
 		uint16_t rep_num = 0;
 
 		next_report = strchr(report,'\x1e');		// RS
@@ -2144,6 +2145,9 @@ static void get_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to){
 		fprintf(fnm," Report Number   : %6d  ",rep_num);
 		report_year = (((apdu->data[9]) & 0x03) << 5 | ((apdu->data[10])  & 0xF8) >> 3) ;
 		fprintf(fnm,"     Report Year       : 20%02d\n ",report_year);
+
+		report_stat= (apdu->data[10] & (1 << 2));
+		fprintf(fnm,"Moose: %d",report_stat);
 
 		time_t current_time = time(NULL);
 		struct tm *tm = localtime(&current_time);
