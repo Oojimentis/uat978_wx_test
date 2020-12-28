@@ -1382,7 +1382,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 					fprintf(to,"Error METAR Decode\n"); }
 				else {
 					print_decoded_metar( Mptr);
-					metar_data( Mptr,to);
+
 					if (metar_count == 0) {
 						fprintf(filemetarjson,"{\"type\": \"FeatureCollection\",\n");
 						fprintf(filemetarjson,"\"features\": [ \n");
@@ -1444,6 +1444,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 								gs_ret_lng,gs_ret_lat);
 						fprintf(filemetarjson,"]}");
 					}
+					metar_data( Mptr,to);
+
 					fflush(filemetarjson);
 					metar_count ++;
 				}
