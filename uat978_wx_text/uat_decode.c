@@ -92,87 +92,6 @@ static char base40_alphabet[40] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ  ..";
 static double dimensions_widths[16] = {
     11.5,23,28.5,34,33,38,39.5,45,45,52,59.5,67,72.5,80,80,90
 };
-/*
-static const char *object_types_text[16] = {
-	"Airport(or Heliport)",
-	"Runway(or Helipad)",
-	"Taxiway",
-	"Apron",
-	"Frequency Area",
-	"Signage",
-	"Approach Lighting",
-	"Airport Lighting",
-	"Obstruction OBST",
-	"Construction Area",
-	"Communication Equipment",
-	"Navigation Equipment",
-	"Surveillance Equipment",
-	"Weather Equipment",
-	"Airspace",
-	"Future Use"
-};
-*/
-
-/*
-static const char *object_status_text[16] = {
-	"Closed",
-	"Closed-Conditional",
-	"Arrival Only",
-	"Departure Only",
-	"Displaced",
-	"Braking Action",
-	"Obscured or Missing",
-	"Unmarked",
-	"Unlighted",
-	"In Service",
-	"Inoperative",
-	"Unavailable",
-	"Surface Condition",
-	"Cancelled",
-	"Unsafe",
-	"In Effect"
-};
-*/
-
-/*
-static const char *overlay_options_text[16] = {
-	"No Geometry",
-	"Low Resolution 2D Polygon",
-	"High Resolution 3D Polygon",
-	"Extended Range 3D Polygon (MSL)",
-	"Extended Range 3D Polygon (AGL)",
-	"Low Resolution 2D Ellipse",
-	"High Resolution 3D Ellipse",
-	"Extended Range Circular Prism (MSL)",
-	"Extended Range Circular Prism (AGL)",
-	"Extended Range 3D Point (AGL)",
-	"Extended Range 3D Point (MSL)",
-	"Extended Range 3D Polyline (MSL)",
-	"Extended Range 3D Polyline (AGL)",
-	"Future Use",
-	"Future Use",
-	"Future Use"
-};
-*/
-
-/*
-static const char *airspace_element_names[14] = {
-	"Temporary Flight Restriction",
-	"Parachute Jumping /Sky Diving",
-	"Terminal Radar Service Area",
-	"Airport Advisory Area",
-	"VFR Flyway",
-	"VFR Corridor",
-	"VFR Transition Route",
-	"Terminal Area VFR Route",
-	"Prohibited Area ",
-	"Restricted Area ",
-	"Military Operations Area",
-	"Warning Area",
-	"Military Training Route",
-	"Air Defense Identification Zone"
-};
-*/
 
 static const char *gairspace_element_names[16] = {
 	"Temporary Flight Restriction",
@@ -192,42 +111,6 @@ static const char *gairspace_element_names[16] = {
 	"Future Use",
 	"Future Use"
 };
-
-/*
-static const char *obj_param_type_names[31] = {
-	"Reserved",
-	"Distance Nautical Miles",
-	"Distance Statute Miles",
-	"Length Feet",
-	"Length Meters",
-	"Height Feet (MSL)",
-	"Height Feet (AGL)",
-	"Height Meters",
-	"Width Feet",
-	"Width Meters",
-	"Depth Fractional Inches",
-	"Depth Inches",
-	"Depth Feet",
-	"Weight Pounds",
-	"Friction Measure (MU)",
-	"Direction (Magnetic)",
-	"Direction (True)",
-	"Visibility Feet",
-	"Visibility Meters",
-	"Visibility Statute Miles",
-	"Speed Knots",
-	"Speed Meters",
-	"Frequency in MHz (25)",
-	"Frequency in MHz (8.33)",
-	"Future Use",
-	"Future Use",
-	"Future Use",
-	"Future Use",
-	"Future Use",
-	"Future Use",
-	"Future Use"
-};
-*/
 
 static const char *address_qualifier_names[8] = {
 	"ICAO address via ADS-B",
@@ -1813,7 +1696,7 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	fprintf(fnm,"\n");
 
 //	strcpy(ob_type_text,"Unknown Object");
-//	strcpy(ob_ele_text,"Unknown Element");
+	strcpy(ob_ele_text," ");
 //	strcpy(ob_status_text,"Unknown Status");
 //	strcpy(ob_status_text,object_status_text[obj_status]);
 //	strcpy(geo_overlay_text,overlay_options_text[geo_overlay_opt]);
