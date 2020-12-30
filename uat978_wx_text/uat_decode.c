@@ -92,7 +92,7 @@ static char base40_alphabet[40] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ  ..";
 static double dimensions_widths[16] = {
     11.5,23,28.5,34,33,38,39.5,45,45,52,59.5,67,72.5,80,80,90
 };
-
+/*
 static const char *object_types_text[16] = {
 	"Airport(or Heliport)",
 	"Runway(or Helipad)",
@@ -111,7 +111,9 @@ static const char *object_types_text[16] = {
 	"Airspace",
 	"Future Use"
 };
+*/
 
+/*
 static const char *object_status_text[16] = {
 	"Closed",
 	"Closed-Conditional",
@@ -130,7 +132,9 @@ static const char *object_status_text[16] = {
 	"Unsafe",
 	"In Effect"
 };
+*/
 
+/*
 static const char *overlay_options_text[16] = {
 	"No Geometry",
 	"Low Resolution 2D Polygon",
@@ -149,7 +153,9 @@ static const char *overlay_options_text[16] = {
 	"Future Use",
 	"Future Use"
 };
+*/
 
+/*
 static const char *airspace_element_names[14] = {
 	"Temporary Flight Restriction",
 	"Parachute Jumping /Sky Diving",
@@ -166,6 +172,7 @@ static const char *airspace_element_names[14] = {
 	"Military Training Route",
 	"Air Defense Identification Zone"
 };
+*/
 
 static const char *gairspace_element_names[16] = {
 	"Temporary Flight Restriction",
@@ -186,6 +193,7 @@ static const char *gairspace_element_names[16] = {
 	"Future Use"
 };
 
+/*
 static const char *obj_param_type_names[31] = {
 	"Reserved",
 	"Distance Nautical Miles",
@@ -219,6 +227,7 @@ static const char *obj_param_type_names[31] = {
 	"Future Use",
 	"Future Use"
 };
+*/
 
 static const char *address_qualifier_names[8] = {
 	"ICAO address via ADS-B",
@@ -331,7 +340,9 @@ static void get_gs_name(char *Word)
 
 	rc = sqlite3_exec(db, sql, stn_callback, 0, &zErrMsg);
 	if( rc != SQLITE_OK ) {
-		fprintf(stderr, "SQL error: %s\n", zErrMsg);
+		if (rc != 19)
+			fprintf(stderr, "3 SQL error: %s\n", zErrMsg);
+
 		sqlite3_free(zErrMsg);
 	}
 	return;
@@ -1237,18 +1248,18 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 	break;
 
 	case 15:									// ** CWA **************
-			recf = apdu->data[0] >> 4;
-			fprintf(filesigmet," Record Format   : %d \n",recf);
+		recf = apdu->data[0] >> 4;
+		fprintf(filesigmet," Record Format   : %d \n",recf);
 
-			switch (recf) {
-			case 8:								// Graphic
+		switch (recf) {
+		case 8:								// Graphic
 			fprintf(filesigmet," Report Type     : CWA\n");
 			get_graphic(apdu,filecwa,to);
 			break;
-			case 2:								// Text
+		case 2:								// Text
 			get_text(apdu,filecwa,to);
 			break;
-			default:
+		default:
 			fprintf(to," Record Format   : %d \n",recf );
 				display_generic_data(apdu->data,apdu->length,to);
 			break;
@@ -1265,16 +1276,17 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 		int rec_offset = 0;
 		const char *text = decode_dlac(apdu->data,apdu->length,rec_offset);
 		const char *report = text;
+		const char *next_report;
+
 		char buff[30];
+		char observation[900];
+		char gstn[5];
+		char *pirep_copy;
+		char report_buf[1024];
+		char mtype[9]; char taftype[9];
+		char *p,*r;
 
 		while (report) {
-			char report_buf[1024];
-			const char *next_report;
-			char mtype[9]; char taftype[9];
-			char *p,*r;
-			char observation[900];
-			char gstn[5];
-			char *pirep_copy;
 
 			Decoded_METAR MetarStruct,*Mptr = &MetarStruct;
 
@@ -1352,7 +1364,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 
 				strncpy(winds,r,90);
 				winds[90]= '\0';
-				q=winds;
+				q = winds;
 				tok1 = strsep(&q,"\0");
 
 				fprintf(filemetar," Report Name         : %s\n",mtype);
@@ -1366,7 +1378,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 				fprintf(filemetar,"\n          ");
 
 				u = strchr(r,'\n');
-				u =u + 2;
+				u = u + 2;
 				tok3 = strsep(&u,"\0");
 
 				while ( (tok4 = strsep(&tok3," ")) != NULL ){
@@ -1565,11 +1577,11 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	int obj_label_flag = 0;
 
 	char gstn[5];
-	char ob_type_text[35];
+//	char ob_type_text[35];
 	char ob_ele_text[35];
-	char ob_status_text[45];
-	char geo_overlay_text[45];
-	char obj_par_name_text[45];
+//	char ob_status_text[45];
+//	char geo_overlay_text[45];
+//	char obj_par_name_text[45];
 
 	const char * obj_labelt;
 	const char * location_id;
@@ -1679,7 +1691,8 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	fprintf(fnm,"         Object Type      : %d \n",obj_type);
 	fprintf(fnm," Qualifier Flag  : %d  ",qualifier_flag);
 	fprintf(fnm,"          Parameter Flag   : %d \n",param_flag);
-	 strcpy(qual_text," ");
+
+	strcpy(qual_text," ");
 	if (qualifier_flag == 0){
 		datoff = datoff + 2;											// 13 > datoff=15
 	}
@@ -1692,17 +1705,14 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 				fprintf(fnm," Qualifier       : Unspecified\n");
 				strcat(qual_text," Unspecified, ");
 			}
-
 			if (apdu->data[datoff + 3] & (1 << 0)) {					// 16
 				fprintf(fnm," Qualifier       : Ash\n");
 				strcat(qual_text," Ash, ");
 			}
-
 			if (apdu->data[datoff + 4] & (1 << 0)) {					// 17
 				fprintf(fnm," Qualifier       : Precipitation\n");
 				strcat(qual_text," Precipitation, ");
 			}
-
 			if (apdu->data[datoff + 4] & (1 << 1))  {
 				fprintf(fnm," Qualifier       : Mist\n");
 				strcat(qual_text," Mist, ");
@@ -1802,21 +1812,21 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 
 	fprintf(fnm,"\n");
 
-	strcpy(ob_type_text,"Unknown Object");
-	strcpy(ob_ele_text,"Unknown Element");
-	strcpy(ob_status_text,"Unknown Status");
-	strcpy(ob_status_text,object_status_text[obj_status]);
-	strcpy(geo_overlay_text,overlay_options_text[geo_overlay_opt]);
+//	strcpy(ob_type_text,"Unknown Object");
+//	strcpy(ob_ele_text,"Unknown Element");
+//	strcpy(ob_status_text,"Unknown Status");
+//	strcpy(ob_status_text,object_status_text[obj_status]);
+//	strcpy(geo_overlay_text,overlay_options_text[geo_overlay_opt]);
 
-	if (qualifier_flag == 1)
-		strcpy(obj_par_name_text,obj_param_type_names[obj_param_type]);
-	else
-		strcpy(obj_par_name_text,"n/a");
+//	if (qualifier_flag == 1)
+//		strcpy(obj_par_name_text,obj_param_type_names[obj_param_type]);
+//	else
+//		strcpy(obj_par_name_text,"n/a");
 
-	if (obj_label_flag == 0)
-		strcpy(ob_type_text,object_types_text[obj_type]);
-	if (element_flag == 1 && obj_type == 14)
-		strcpy(ob_ele_text,airspace_element_names[obj_element]);
+//	if (obj_label_flag == 0)
+//		strcpy(ob_type_text,object_types_text[obj_type]);
+//	if (element_flag == 1 && obj_type == 14)
+//		strcpy(ob_ele_text,airspace_element_names[obj_element]);
 	if (element_flag == 1 && obj_type == 14 && apdu->product_id == 14)
 		strcpy(ob_ele_text,gairspace_element_names[obj_element]);
 
@@ -1828,11 +1838,13 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 			apdu->product_id,recf,gstn,product_ver,rec_count,rec_ref,rep_num,rec_len,report_year,
 			overlay_rec_id,obj_label_flag,obj_label,obj_labelt,element_flag,obj_element,obj_status,obj_type,
 			qualifier_flag,param_flag,rec_app_opt,date_time_format,start_date,stop_date,geo_overlay_opt,overlay_op,
-			overlay_vert_cnt,qual_text,asctime(tm));
+			overlay_vert_cnt,qual_text,buff);
 
 	rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
 	if( rc != SQLITE_OK ){
-		fprintf(stderr, "SQL error: %s\n", zErrMsg);
+		if (rc != 19)
+			fprintf(stderr, "2 SQL error: %s\n", zErrMsg);
+
 		sqlite3_free(zErrMsg);
 	}
 
@@ -1858,7 +1870,6 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 			file3dpoly = filecwajson;
 			cwa_count = ex3dpoly(filecwajson,cwa_count,rep_num,alt,ob_ele_text);
 			break;
-
 		case 18:
 			file3dpoly = filenotamjson;
 			if (notam_count == 0) {
@@ -1939,15 +1950,20 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 					((apdu->data[datoff +2]) & 0xC0 >> 6);
 			lat_bot_raw = (((apdu->data[datoff+ 2]) & 0x3F) << 12) | ((apdu->data[datoff +3]) << 4) |
 					(((apdu->data[datoff +4]) & 0xF0) >> 4);
+
 			lng_top_raw = (((apdu->data[datoff +4]) & 0x0F) << 14) | ((apdu->data[datoff +5]) << 6) |
 					(((apdu->data[datoff +6]) & 0xFC) >> 2);
 			lat_top_raw = (((apdu->data[datoff +6]) & 0x03) << 16) | ((apdu->data[datoff +7]) << 8) |
 					(apdu->data[datoff +8]);
+
 			alt_bot_raw = ((apdu->data[datoff +9]) & 0xFE) >> 1;
 			alt_top_raw = (((apdu->data[datoff +9]) & 0x01) << 6) | (((apdu->data[datoff +10]) & 0xFC) >> 2);
+
 			r_lng_raw = (((apdu->data[datoff +10]) & 0x03) << 7) | (((apdu->data[datoff +11]) & 0xFE) >> 1);
 			r_lat_raw = (((apdu->data[datoff +11]) & 0x01) << 8) | (apdu->data[datoff +12]);
+
 			alpha = (apdu->data[datoff +13]);
+
 			lng_bot_raw = (~lng_bot_raw & 0x1FFFF) +1;		// 2's compliment +1
 			lat_bot_raw = (~lat_bot_raw & 0x1FFFF) +1;		// 2's compliment +1
 			lat_bot = lat_bot_raw *  0.001373 ;
@@ -1996,10 +2012,13 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 			lat_raw = (((apdu->data[datoff +2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) |
 					(((apdu->data[datoff + 4]) & 0xFC) >> 2);
 			alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
+
 			lng_raw = (~lng_raw & 0x7FFFF) +1;		// 2's compliment +1
 			lat_raw = (~lat_raw & 0x7FFFF) +1;		// 2's compliment +1
+
 			lat = lat_raw *  0.0006866455078125 ;
 			lng = (lng_raw *  0.0006866455078125) * -1 ;
+
 			if (lat > 90.0)
 				lat = 360.0 - lat;
 			if (lng > 180.0)
@@ -2009,7 +2028,9 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 			if (apdu->product_id == 18) {
 				notam_list[notam_count].notam_lat = lat;
 				notam_list[notam_count].notam_lng = lng;
+
 				strcpy(notam_list[notam_count].notam_stn,gstn);
+
 				notam_list[notam_count].notam_repid =rep_num;
 				if (notam_count == 0) {
 					fprintf(filenotamjson,"{\"type\": \"FeatureCollection\",\n");
@@ -2074,8 +2095,10 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 
 				lng_raw = (~lng_raw & 0x7FFFF) +1;		// 2's compliment +1
 				lat_raw = (~lat_raw & 0x7FFFF) +1;		// 2's compliment +1
+
 				lat = lat_raw *  0.0006866455078125 ;
 				lng = lng_raw * -0.0006866455078125 ;
+
 				if (lat > 90.0)
 					lat = 360.0 - lat;
 				if (lng > 180.0)
@@ -2099,10 +2122,10 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 		}
 		break;
 	}
-	fprintf(fnm,"\n");
-	fprintf(fnm," Object Type: %s  Object Element: %s\n",ob_type_text,ob_ele_text);
-	fprintf(fnm," Object Status: %s Overlay type: %s\n",ob_status_text,geo_overlay_text);
-	fprintf(fnm," obj_par_name_text: %s\n",obj_par_name_text);
+//	fprintf(fnm,"\n");
+//	fprintf(fnm," Object Type: %s  Object Element: %s\n",ob_type_text,ob_ele_text);
+//	fprintf(fnm," Object Status: %s Overlay type: %s\n",ob_status_text,geo_overlay_text);
+//	fprintf(fnm," obj_par_name_text: %s\n",obj_par_name_text);
 	fprintf(fnm,"\n");
 	fflush(fnm);
 
@@ -2112,25 +2135,27 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 static void get_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to){
 
 	int rec_offset = 11;
+	int rep_status;
+	uint16_t rep_num = 0;
+
 	char gstn[5];
+	char prod_name[20];
+	char buff[30];
+	char report_buf[1024];
+
 	char *sua_text;
 	char *rtime;
 	char *data_text;
+	char *notam_name;
+	char *p,*r;
+
 	const char *text = decode_dlac(apdu->data,apdu->length,rec_offset);
 	const char *report = text;
-	char *notam_name;
-	char prod_name[20];
-	char buff[70];
+	const char *next_report; uint16_t report_year;
 
 	strcpy(prod_name,"Unknown");
 
 	while (report) {
-		char report_buf[1024];
-		char *p,*r;
-		const char *next_report; uint16_t report_year;
-		int rep_status;
-		uint16_t rep_num = 0;
-
 		next_report = strchr(report,'\x1e');		// RS
 		if (!next_report)
 			next_report = strchr(report,'\x03');	// ETX
@@ -2223,6 +2248,8 @@ static void get_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to){
 			{
 				if(r[i] == '\n')
 					r[i] = ' ';
+				if(r[i] == '\'')
+					r[i] = '#';
 			}
 
 			data_text = (char *)malloc(strlen(r) + 1);
@@ -2255,7 +2282,9 @@ static void get_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to){
 					apdu->product_id,prod_name,gstn,rtime,report_year,rep_num,buff,data_text);
 			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
 			if( rc != SQLITE_OK ){
-				fprintf(stderr, "SQL error: %s\n", zErrMsg);
+				if (rc != 19)
+					fprintf(stderr, "1 SQL error: %s\n", zErrMsg);
+
 				sqlite3_free(zErrMsg);
 			}
 		}

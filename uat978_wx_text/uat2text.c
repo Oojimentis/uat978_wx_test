@@ -48,7 +48,8 @@ int main(int argc, char **argv)
 	if( rc ) {
 		fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
 		return(0);
-	} else {
+	}
+	else {
 		fprintf(stderr, "uat978.db - Opened database successfully\n");
 	}
 
@@ -82,43 +83,50 @@ int main(int argc, char **argv)
    		exit (1) ;		}
    	fflush(filemetarjson);
 
+	filecwajson = fopen("/home/trev/git/map-978/WebContent/cwa.geojson","w");
+	if (filecwajson == 0)	{
+		fprintf(stderr,"cwa.geojson Error--file could not be opened. \n") ;
+		exit (1) ;		}
+	fflush(filecwajson);
+
    	filemetar = fopen("metar.out","w");
    	if (filemetar == 0)		{
    		fprintf(stderr,"metar.out Error--file could not be opened. \n") ;
    		exit (1) ;		}
+
    	filenotam = fopen("notam.out","w");
    	if (filenotam == 0)			{
    		fprintf(stderr,"notam.out Error--file could not be opened. \n") ;
    		exit (1) ;			}
+
    	filesua = fopen("sua.out","w");
    	if (filesua == 0)			{
    		fprintf(stderr,"sua.out Error--file could not be opened. \n") ;
    		exit (1) ;			}
+
    	filesigmet = fopen("sigmet.out","w");
    	if (filesigmet == 0)			{
    		fprintf(stderr,"sigmet.out Error--file could not be opened. \n") ;
    		exit (1) ;			}
+
    	fileairmet = fopen("airmet.out","w");
    	if (fileairmet == 0)			{
    		fprintf(stderr,"airmet.out Error--file could not be opened. \n") ;
    		exit (1) ;			}
+
    	filegairmet = fopen("gairmet.out","w");
    	if (filegairmet == 0)			{
    		fprintf(stderr,"gairmet.out Error--file could not be opened. \n") ;
    		exit (1) ;			}
+
    	filepirep = fopen("pirep.out","w");
    	if (filepirep == 0)			{
    		fprintf(stderr,"pirep.out Error--file could not be opened. \n") ;
    		exit (1) ;			}
 
-	filecwa = fopen("cwa.out","w");
+   	filecwa = fopen("cwa.out","w");
 	if (filecwa == 0)			{
 		fprintf(stderr,"cwa.out Error--file could not be opened. \n") ;
-		exit (1) ;			}
-
-	filecwajson = fopen("/home/trev/git/map-978/WebContent/cwa.geojson","w");
-	if (filecwajson == 0)			{
-		fprintf(stderr,"cwa.geojson Error--file could not be opened. \n") ;
 		exit (1) ;			}
 
 	struct dump978_reader *reader;

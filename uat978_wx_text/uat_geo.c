@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+
 #include "uat_decode.h"
 #include "uat_geo.h"
 #include "asprintf.h"
@@ -23,13 +24,13 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
 	int ice_alt = (apdu->data[0] & 0x70) >> 4;
 	int bin=0;
+	int alt_level = 0;
 
 	char *sql;
 	char *zErrMsg = 0;
 	char block[200];
 	char nexrad_time[6];
 	char charValue;
-	int alt_level = 0;
 
 	switch(apdu->product_id) {
 	case 63: case 64:								// ** NEXRAD **************
@@ -93,15 +94,18 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 
 	sprintf(nexrad_time,"%02d%02d",	apdu->hours,apdu->minutes);
 
-	// now decode the bins
-	if (rle_flag) {
-	// One bin, 128 values, RLE-encoded
+	if (rle_flag) {				// One bin, 128 values, RLE-encoded
 		double latN = 0;
 		double lonW = 0;
 		double latSize = 0;
 		double lonSize = 0;
+
 		int num_bins;
 		int ice_prob;
+		int intensity;
+		int runlength;
+		int lgt_cnt;
+		int edr_enc;
 
 		block_location_graphic(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
@@ -122,8 +126,9 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 
 		if (apdu->product_id == 63 || apdu->product_id == 64) {
 			for (int i = 3; i < apdu->length; ++i) {
-				int intensity = apdu->data[i] & 7;
-				int runlength = (apdu->data[i] >> 3) + 1;
+				intensity = apdu->data[i] & 7;
+				runlength = (apdu->data[i] >> 3) + 1;
+
 				while (runlength-- > 0){
 					charValue=intensity+'0';
 					sprintf(block,"%s%c",block,charValue);
@@ -133,7 +138,9 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 
 			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
 			if( rc != SQLITE_OK ){
-				fprintf(stderr, "SQL error: %s\n", zErrMsg);
+				if (rc != 19)
+					fprintf(stderr, "4 SQL error: %s\n", zErrMsg);
+
 				sqlite3_free(zErrMsg);
 			}
 		}
@@ -154,14 +161,16 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 
 			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
 			if( rc != SQLITE_OK ){
-				fprintf(stderr, "SQL error: %s\n", zErrMsg);
+				if (rc != 19)
+					fprintf(stderr, "5 SQL error: %s\n", zErrMsg);
+
 				sqlite3_free(zErrMsg);
 			}
 		}
 		if (apdu->product_id == 103) {
 			for (int i = 3; i < apdu->length; ++i) {
 //** 			int lgt_pol = apdu->data[i] & 8;
-				int lgt_cnt = apdu->data[i] & 7;
+				lgt_cnt = apdu->data[i] & 7;
 				num_bins = (apdu->data[i] >> 4) + 1;
 
 				if (num_bins == 15){
@@ -179,14 +188,16 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 
 			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
 			if( rc != SQLITE_OK ){
-				fprintf(stderr, "SQL error: %s\n", zErrMsg);
+				if (rc != 19)
+					fprintf(stderr, "6 SQL error: %s\n", zErrMsg);
+
 				sqlite3_free(zErrMsg);
 			}
 		}
 		if (apdu->product_id == 90 || apdu->product_id == 91 || apdu->product_id == 84) {
 			for (int i = 3; i < apdu->length; ++i) {
 				char enc = ' ';
-				int edr_enc  = apdu->data[i] & 15;
+				edr_enc  = apdu->data[i] & 15;
 				num_bins = (apdu->data[i] >> 4) + 1;
 
 				if (num_bins == 15){
@@ -215,7 +226,9 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 		
 			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
 			if( rc != SQLITE_OK ){
-				fprintf(stderr, "SQL error: %s\n", zErrMsg);
+				if (rc != 19)
+					fprintf(stderr, "7 SQL error: %s\n", zErrMsg);
+
 				sqlite3_free(zErrMsg);
 			}
 		}
@@ -274,7 +287,9 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 
 					rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
 					if( rc != SQLITE_OK ){
-						fprintf(stderr, "SQL error: %s\n", zErrMsg);
+						if (rc != 19)
+							fprintf(stderr, "8 SQL error: %s\n", zErrMsg);
+
 						sqlite3_free(zErrMsg);
 					}		
 				}
@@ -304,6 +319,7 @@ int  ex3dpoly(FILE *fnm, int rep_count, int rep_num, int alt, char *ob_ele_text)
 
 void block_location_graphic(int bn, int ns, int sf, double *latN, double *lonW, double *latSize, double *lonSize)
 {
+
 #define BLOCK_WIDTH (48.0/60.0)
 #define WIDE_BLOCK_WIDTH (96.0/60.0)
 #define BLOCK_HEIGHT (4.0/60.0)
@@ -386,9 +402,9 @@ void metar_data( Decoded_METAR *Mptr,FILE *to)
 
 	rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
 	if( rc != SQLITE_OK ){
-		fprintf(stderr, "SQL error: %s\n", zErrMsg);
+		if (rc != 19)
+			fprintf(stderr, "9 SQL error: %s\n", zErrMsg);
+
 		sqlite3_free(zErrMsg);
 	}
-
-
 }
