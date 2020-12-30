@@ -475,7 +475,9 @@ static void get_pirep(char *Word,FILE *to)
 	char *token;
 	char pirep_stn[5];
 	char pirep_OV[30];					// Location
-	char pirep_TM[10]; char pirep_hr[5]; char pirep_mn[3];	// DateTime
+	char pirep_TM[10]; 					// DateTime
+	char pirep_hr[5]; 					// DateTime
+	char pirep_mn[3];					// DateTime
 	char pirep_FL[10];					// Flight Level
 	char pirep_TP[10];					// a/c type
 	char pirep_SK[50];					// Cloud
@@ -486,6 +488,8 @@ static void get_pirep(char *Word,FILE *to)
 	char pirep_IC[30];					// Icing
 	char pirep_RM[100]; 				// Remarks
 
+	char buff[30];
+
 	token = strtok(Word," ");
 	strcpy(pirep_stn,"K");
 	strcat(pirep_stn,token);
@@ -495,9 +499,9 @@ static void get_pirep(char *Word,FILE *to)
 	fprintf(filepirep,"PIREP REPORT:\n");
 
 	time_t current_time = time(NULL);
-	char * tm=ctime(&current_time);
-	tm[strlen(tm)-1] = '\0';
-	fprintf(filepirep," Time           : %s\n",tm);
+	struct tm *tm = localtime(&current_time);
+	strftime(buff, sizeof buff, "%D %T", tm);
+	fprintf(filepirep," Time           : %s\n",buff);
 	fprintf(filepirep," Station        : %s - %s\n",pirep_stn,gs_ret);
 
 	token = strtok(0," ");
@@ -576,11 +580,13 @@ static void uat_decode_hdr(uint8_t *frame,struct uat_adsb_mdb *mdb)
 
 static void uat_display_hdr(const struct uat_adsb_mdb *mdb,FILE *to)
 {
-	fprintf(to,"HDR:");
+	char buff[30];
 
+	fprintf(to,"HDR:");
 	time_t current_time = time(NULL);
 	struct tm *tm = localtime(&current_time);
-	fprintf(to,"   Time: %s",asctime(tm));
+	strftime(buff, sizeof buff, "%D %T", tm);
+	fprintf(to,"   Time: %s\n",buff);
 	fprintf(to," ICAO:    %06X    (%s)\n",mdb->address,address_qualifier_names[mdb->address_qualifier]);
 }
 
@@ -1259,6 +1265,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 		int rec_offset = 0;
 		const char *text = decode_dlac(apdu->data,apdu->length,rec_offset);
 		const char *report = text;
+		char buff[30];
 
 		while (report) {
 			char report_buf[1024];
@@ -1321,7 +1328,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 
 					time_t current_time = time(NULL);
 					struct tm *tm = localtime(&current_time);
-					fprintf(filemetar,"Time                 : %s",asctime(tm));
+					strftime(buff, sizeof buff, "%D %T", tm);
+					fprintf(filemetar,"Time                 : %s\n",buff);
 					fprintf(filemetar,"WX Station           : %s - %s\n",gstn,gs_ret);
 					}
 				r = p+1;
@@ -1387,10 +1395,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 						fprintf(filemetarjson,"{\"type\": \"FeatureCollection\",\n");
 						fprintf(filemetarjson,"\"features\": [ \n");
 					}
-
 					float fahr;
 					float dewp;
-
 					if (MetarStruct.temp > 1000)
 						fahr = 999;
 					else
@@ -1527,6 +1533,8 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 
 void uat_display_uplink_mdb(const struct uat_uplink_mdb *mdb,FILE *to)
 {
+	char buff[30];
+
 	fprintf(to,"UPLINK: ");
 	fprintf(to," Site: %u  ",mdb->tisb_site_id);
 	fprintf(to," Lat: %+.4f%s Lon: %+.4f%s ",
@@ -1534,9 +1542,9 @@ void uat_display_uplink_mdb(const struct uat_uplink_mdb *mdb,FILE *to)
 			mdb->lon,mdb->position_valid ? "" : " ");
 
 	time_t current_time = time(NULL);
-	char * tm=ctime(&current_time);
-	tm[strlen(tm)-6] = '\0';
-	fprintf(to," Time: %s",tm);
+	struct tm *tm = localtime(&current_time);
+	strftime(buff, sizeof buff, "%D %T", tm);
+	fprintf(to," Time: %s",buff);
 
 	if (mdb->app_data_valid) {
 		unsigned i;
@@ -1606,6 +1614,8 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	int recf;
 	FILE * file3dpoly;
 
+	char buff[30];
+
 	recf = apdu->data[0] >> 4;
 	product_ver = ((apdu->data[0]) & 0x0F);
 	rec_count = ((apdu->data[1]) & 0xF0) >> 4;
@@ -1614,6 +1624,11 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	fprintf(fnm," Product Version : %d ",product_ver);
 	fprintf(fnm,"           Record Count     : %d \n",rec_count);
 	fprintf(fnm," Record Reference: %d \n",rec_ref);
+
+	time_t current_time = time(NULL);
+	struct tm *tm = localtime(&current_time);
+	strftime(buff, sizeof buff, "%D %T", tm);
+	fprintf(fnm," Time            : %s\n",buff);
 
 	if (rec_ref != 255){
 		location_id = decode_dlac(apdu->data,3,2);
@@ -1625,9 +1640,8 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 		fprintf(fnm," Location ID     : %s\n",location_id);
 		fprintf(fnm," RLoc            : %s - %s\n",gstn,gs_ret);
 	}
-	else
-		strcpy(gstn,"    ");
-
+	else{
+		strcpy(gstn,"    ");}
 
 	rep_num = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]); 			// 7 8
 	rec_len = ((apdu->data[datoff + 0]) << 2) | (((apdu->data[datoff + 1]) & 0xC0) >> 6);	// 6 7
@@ -1806,16 +1820,15 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	if (element_flag == 1 && obj_type == 14 && apdu->product_id == 14)
 		strcpy(ob_ele_text,gairspace_element_names[obj_element]);
 
-	time_t current_time = time(NULL);
-	struct tm *tm = localtime(&current_time);
-	fprintf(fnm,"Time            : %s",asctime(tm));
-
 	asprintf(&sql,"INSERT INTO graphic_reports (prod_id,rec_format,stn_call,prod_ver,rec_count,rec_ref,"
 			"rep_number,rec_length,rep_year,ovrly_recid,obj_lbl_flag,obj_lbl_number,obj_lbl_alpha,"
 			"element_flag,obj_element,obj_status,obj_type,qual_flag,param_flag,rec_app_option,"
 			"app_opt_fmt,start_date,stop_date,geo_ovrly_opt,ovrly_operator,ovrly_vertices,qual_text,rep_rec_time)"
 			"VALUES(%d,%d,'%s',%d,%d,%d,%d,%d,%d,%d,%d,%d,'%s',%d,%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d,%d,%d,'%s','%s')",
-			apdu->product_id,recf,gstn,product_ver,rec_count,rec_ref,rep_num,rec_len,report_year,overlay_rec_id,obj_label_flag,obj_label,obj_labelt,element_flag,obj_element,obj_status,obj_type,qualifier_flag,param_flag,rec_app_opt,date_time_format,start_date,stop_date,geo_overlay_opt,overlay_op,overlay_vert_cnt,qual_text,asctime(tm));
+			apdu->product_id,recf,gstn,product_ver,rec_count,rec_ref,rep_num,rec_len,report_year,
+			overlay_rec_id,obj_label_flag,obj_label,obj_labelt,element_flag,obj_element,obj_status,obj_type,
+			qualifier_flag,param_flag,rec_app_opt,date_time_format,start_date,stop_date,geo_overlay_opt,overlay_op,
+			overlay_vert_cnt,qual_text,asctime(tm));
 
 	rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
 	if( rc != SQLITE_OK ){
@@ -1851,12 +1864,14 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 			if (notam_count == 0) {
 				fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
 				fprintf(file3dpoly,"\"features\": [ \n");
-				fprintf(file3dpoly,"{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+				fprintf(file3dpoly,"{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\":"
+						" \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
 				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\",\"coordinates\": [[\n");
 			}
 			else {
 				fseek(file3dpoly,-3,SEEK_CUR);
-				fprintf(file3dpoly,",{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+				fprintf(file3dpoly,",{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\":"
+						" \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
 				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\",\"coordinates\": [[\n");
 			}
 			notam_count++;
@@ -1864,8 +1879,10 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 			}
 
 		for (int i = 0; i < overlay_vert_cnt; i++) {
-			lng_raw = ((apdu->data[datoff + i]) << 11) | ((apdu->data[datoff +i+1]) << 3) | ((apdu->data[datoff +i+2]) & 0xE0 >> 5);
-			lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+3]) << 6) | (((apdu->data[datoff +i+4]) & 0xFC) >> 2);
+			lng_raw = ((apdu->data[datoff + i]) << 11) | ((apdu->data[datoff +i+1]) << 3) |
+					((apdu->data[datoff +i+2]) & 0xE0 >> 5);
+			lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+3]) << 6) |
+					(((apdu->data[datoff +i+4]) & 0xFC) >> 2);
 			alt_raw = (((apdu->data[datoff +i+4]) & 0x03) << 8) | (apdu->data[datoff +i+5]);
 
 			datoff = datoff + 5;
@@ -1918,10 +1935,14 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 
 			float lat_bot,lng_bot,lat_top,lng_top,r_lng,r_lat;
 
-			lng_bot_raw = ((apdu->data[datoff +0]) << 10) | ((apdu->data[datoff +1]) << 2) | ((apdu->data[datoff +2]) & 0xC0 >> 6);
-			lat_bot_raw = (((apdu->data[datoff+ 2]) & 0x3F) << 12) | ((apdu->data[datoff +3]) << 4) | (((apdu->data[datoff +4]) & 0xF0) >> 4);
-			lng_top_raw = (((apdu->data[datoff +4]) & 0x0F) << 14) | ((apdu->data[datoff +5]) << 6) | (((apdu->data[datoff +6]) & 0xFC) >> 2);
-			lat_top_raw = (((apdu->data[datoff +6]) & 0x03) << 16) | ((apdu->data[datoff +7]) << 8) | (apdu->data[datoff +8]);
+			lng_bot_raw = ((apdu->data[datoff +0]) << 10) | ((apdu->data[datoff +1]) << 2) |
+					((apdu->data[datoff +2]) & 0xC0 >> 6);
+			lat_bot_raw = (((apdu->data[datoff+ 2]) & 0x3F) << 12) | ((apdu->data[datoff +3]) << 4) |
+					(((apdu->data[datoff +4]) & 0xF0) >> 4);
+			lng_top_raw = (((apdu->data[datoff +4]) & 0x0F) << 14) | ((apdu->data[datoff +5]) << 6) |
+					(((apdu->data[datoff +6]) & 0xFC) >> 2);
+			lat_top_raw = (((apdu->data[datoff +6]) & 0x03) << 16) | ((apdu->data[datoff +7]) << 8) |
+					(apdu->data[datoff +8]);
 			alt_bot_raw = ((apdu->data[datoff +9]) & 0xFE) >> 1;
 			alt_top_raw = (((apdu->data[datoff +9]) & 0x01) << 6) | (((apdu->data[datoff +10]) & 0xFC) >> 2);
 			r_lng_raw = (((apdu->data[datoff +10]) & 0x03) << 7) | (((apdu->data[datoff +11]) & 0xFE) >> 1);
@@ -1970,8 +1991,10 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 			fprintf(fnm, "Too short\n");
 		}
 		else {
-			lng_raw = ((apdu->data[datoff +0]) << 11) | ((apdu->data[datoff +1]) << 3) | ((apdu->data[datoff +2]) & 0xE0 >> 5);
-			lat_raw = (((apdu->data[datoff +2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) | (((apdu->data[datoff + 4]) & 0xFC) >> 2);
+			lng_raw = ((apdu->data[datoff +0]) << 11) | ((apdu->data[datoff +1]) << 3) |
+					((apdu->data[datoff +2]) & 0xE0 >> 5);
+			lat_raw = (((apdu->data[datoff +2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) |
+					(((apdu->data[datoff + 4]) & 0xFC) >> 2);
 			alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
 			lng_raw = (~lng_raw & 0x7FFFF) +1;		// 2's compliment +1
 			lat_raw = (~lat_raw & 0x7FFFF) +1;		// 2's compliment +1
@@ -1991,13 +2014,15 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 				if (notam_count == 0) {
 					fprintf(filenotamjson,"{\"type\": \"FeatureCollection\",\n");
 					fprintf(filenotamjson,"\"features\": [ \n");
-					fprintf(filenotamjson,"{\"type\": \"Feature\",\"properties\": { \"Location\": \"%s\",\"Stuff\": \"%d\"},\n",gstn,rep_num);
+					fprintf(filenotamjson,"{\"type\": \"Feature\",\"properties\": { \"Location\": \"%s\",\"Stuff\":"
+							" \"%d\"},\n",gstn,rep_num);
 					fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %f,%f ] }}\n",lng,lat);
 					fprintf(filenotamjson,"]}");
 				}
 				else {
 					fseek(filenotamjson,-3,SEEK_CUR);
-					fprintf(filenotamjson,",{\"type\": \"Feature\",\"properties\": { \"Location\": \"%s\",\"Stuff\": \"%d\"},\n",gstn,rep_num);
+					fprintf(filenotamjson,",{\"type\": \"Feature\",\"properties\": { \"Location\": \"%s\",\"Stuff\":"
+							" \"%d\"},\n",gstn,rep_num);
 					fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %f,%f ] }}\n",lng,lat);
 					fprintf(filenotamjson,"]}");
 				}
@@ -2022,12 +2047,14 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 				if (gairmet_count == 0) {
 					fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
 					fprintf(file3dpoly,"\"features\": [ \n");
-					fprintf(file3dpoly,"{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+					fprintf(file3dpoly,"{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\":"
+							" \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
 					fprintf(file3dpoly,"\"geometry\": { \"type\": \"LineString\",\"coordinates\": [\n");
 				}
 				else {
 					fseek(file3dpoly,-3,SEEK_CUR);
-					fprintf(file3dpoly,",{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+					fprintf(file3dpoly,",{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\":"
+							" \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
 					fprintf(file3dpoly,"\"geometry\": { \"type\": \"LineString\",\"coordinates\": [\n");
 				}
 				gairmet_count++;
@@ -2072,7 +2099,6 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 		}
 		break;
 	}
-
 	fprintf(fnm,"\n");
 	fprintf(fnm," Object Type: %s  Object Element: %s\n",ob_type_text,ob_ele_text);
 	fprintf(fnm," Object Status: %s Overlay type: %s\n",ob_status_text,geo_overlay_text);
@@ -2089,10 +2115,16 @@ static void get_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to){
 	char gstn[5];
 	char *sua_text;
 	char *rtime;
+	char *data_text;
 	const char *text = decode_dlac(apdu->data,apdu->length,rec_offset);
 	const char *report = text;
+	char *notam_name;
+	char prod_name[20];
+	char buff[70];
 
-		while (report) {
+	strcpy(prod_name,"Unknown");
+
+	while (report) {
 		char report_buf[1024];
 		char *p,*r;
 		const char *next_report; uint16_t report_year;
@@ -2119,6 +2151,8 @@ static void get_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to){
 		if (p) {
 			*p = 0;
 			fprintf(fnm," Report Type     : %s\n",r);
+			notam_name = (char *)malloc(strlen(r) + 1);
+			strcpy(notam_name,r);
 			r = p+1;
 		}
 		if (apdu->product_id == 8)
@@ -2150,17 +2184,18 @@ static void get_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to){
 		fprintf(fnm,"     Report Year       : 20%02d\n ",report_year);
 
 		if (apdu->data[10] & (1 << 2)){
-				rep_status = 1;
-				fprintf(fnm,"Report Active: %d ",rep_status);
+			rep_status = 1;
+			fprintf(fnm,"Report Active   : %d\n",rep_status);
 		}
 		else{
 			rep_status = 0;
-			fprintf(fnm,"Report NOT Active: %d ",rep_status);
+			fprintf(fnm,"Report Inactive : %d\n",rep_status);
 		}
 
 		time_t current_time = time(NULL);
 		struct tm *tm = localtime(&current_time);
-		fprintf(fnm,"Time            : %s",asctime(tm));
+		strftime(buff, sizeof buff, "%D %T", tm);
+		fprintf(fnm," Time            : %s\n",buff);
 
 		if (apdu->product_id == 13){
 			sua_text = (char *)malloc(strlen(r) + 1);
@@ -2168,44 +2203,62 @@ static void get_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to){
 			get_sua_text(sua_text,to);
 		}
 
-		if (apdu->product_id == 8){
+		if (apdu->product_id == 8  || apdu->product_id == 11 ||
+				apdu->product_id == 12 || apdu->product_id == 15 )  {    // 8 11  12 15
 			char *zErrMsg = 0;
 			char *sql;
 			int length = strlen(r);
+
+			switch (apdu->product_id){
+			case 8: strcpy(prod_name,notam_name); break;
+			case 11: strcpy(prod_name,"AIRMET"); break;
+			case 12: strcpy(prod_name,"SIGMET"); break;
+			case 15: strcpy(prod_name,"CWA");  break;
+			}
+
 			if (r[length-1] == '\n')
 				r[length-1] = '\0';
 
-			for(int i = 0; i <= strlen(r); i++)
+			for(int i = 0; i <= strlen(r); i++)       // Remove line feeds
 			{
 				if(r[i] == '\n')
-				{
 					r[i] = ' ';
+			}
+
+			data_text = (char *)malloc(strlen(r) + 1);
+			strcpy(data_text,r);
+
+			if (apdu->product_id == 8){
+				if (notam_count == 0) {
+					fprintf(filenotamjson,"{\"type\": \"FeatureCollection\",\n");
+					fprintf(filenotamjson,"\"features\": [ \n");
+					fprintf(filenotamjson,"{\"type\": \"Feature\",\"properties\": { \"Data\": \"%s\",\"RepNum\":"
+							" \"%d\",\"Stn\": \"%s\",\"Loc\": \"%s\"},\n",data_text,rep_num,gstn,gs_ret);
+					fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %s,%s ] }}\n",
+							gs_ret_lng,gs_ret_lat);
 				}
-			}
-			if (notam_count == 0) {
-				fprintf(filenotamjson,"{\"type\": \"FeatureCollection\",\n");
-				fprintf(filenotamjson,"\"features\": [ \n");
-				fprintf(filenotamjson,"{\"type\": \"Feature\",\"properties\": { \"Data\": \"%s\",\"RepNum\": \"%d\",\"Stn\": \"%s\",\"Loc\": \"%s\"},\n",r,rep_num,gstn,gs_ret);
-				fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %s,%s ] }}\n",gs_ret_lng,gs_ret_lat);
-			}
-			else {
-				fseek(filenotamjson,-3,SEEK_CUR);
-				fprintf(filenotamjson,",{\"type\": \"Feature\",\"properties\": { \"Data\": \"%s\",\"RepNum\": \"%d\",\"Stn\": \"%s\",\"Loc\": \"%s\"},\n",r,rep_num,gstn,gs_ret);
-				fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %s,%s ] }}\n",gs_ret_lng,gs_ret_lat);
-			}
+				else {
+					fseek(filenotamjson,-3,SEEK_CUR);
+					fprintf(filenotamjson,",{\"type\": \"Feature\",\"properties\": { \"Data\": \"%s\",\"RepNum\":"
+							" \"%d\",\"Stn\": \"%s\",\"Loc\": \"%s\"},\n",data_text,rep_num,gstn,gs_ret);
+					fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %s,%s ] }}\n",
+							gs_ret_lng,gs_ret_lat);
+				}
+
 				fprintf(filenotamjson,"]}\n");
-
 				notam_count++;
-
+			}
 			// add to database
-			asprintf(&sql,"INSERT INTO notam (station_name,station_loc,report_num) VALUES ('%s','%s',%d )",gstn,gs_ret,rep_num);
+			asprintf(&sql,"INSERT INTO text_reports (prod_id,report_type,rec_format,stn_call,rep_time,"
+					"rep_year,rep_number,time,data) "
+					"VALUES (%d,'%s',2,'%s','%s',%d,%d,'%s','%s')",
+					apdu->product_id,prod_name,gstn,rtime,report_year,rep_num,buff,data_text);
 			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
 			if( rc != SQLITE_OK ){
 				fprintf(stderr, "SQL error: %s\n", zErrMsg);
 				sqlite3_free(zErrMsg);
 			}
 		}
-
 		fprintf(fnm," Data:\n%s\n",r);
 		fflush(fnm);
 	}
@@ -2216,6 +2269,8 @@ static void get_seg_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	uint16_t prodid;
 	uint16_t prodfillen;
 	uint16_t apdunum;
+
+	char buff[30];
 
 	prodid = ((apdu->data[4] & 0x7) >> 1) | (apdu->data[5] >> 1);
 	prodfillen = (apdu->data[5] & 0x1) | (apdu->data[6]);
@@ -2301,9 +2356,11 @@ static void get_seg_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 
 		const char *seg_text_all = decode_dlac(rep_all,char_cnt,0);
 
+
 		time_t current_time = time(NULL);
 		struct tm *tm = localtime(&current_time);
-		fprintf(fnm,"Time            : %s",asctime(tm));
+		strftime(buff, sizeof buff, "%D %T", tm);
+		fprintf(fnm,"Time            : %s",buff);
 		fprintf(fnm," Data:\n%s\n\n",seg_text_all);
 	}
 
