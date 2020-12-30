@@ -778,7 +778,7 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
 		if (frame->length < 5)
 			return;
 		frame->fisb.monthday_valid = 0;
-		frame->fisb.seconds_valid  = 1;
+		frame->fisb.seconds_valid = 1;
 		frame->fisb.hours = (frame->data[2] & 0x7c) >> 2;
 		frame->fisb.minutes = ((frame->data[2] & 0x03) << 4) | (frame->data[3] >> 4);
 		frame->fisb.seconds = ((frame->data[3] & 0x0f) << 2) | (frame->data[4] >> 6);
@@ -807,7 +807,7 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
 		if (frame->length < 6)
 			return;
 		frame->fisb.monthday_valid = 1;
-		frame->fisb.seconds_valid  = 1;
+		frame->fisb.seconds_valid = 1;
 		frame->fisb.month = (frame->data[2] & 0x78) >> 3;
 		frame->fisb.day = ((frame->data[2] & 0x07) << 2) | (frame->data[3] >> 6);
 		frame->fisb.hours = (frame->data[3] & 0x3e) >> 1;
@@ -1460,11 +1460,7 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	int obj_label_flag = 0;
 
 	char gstn[5];
-//	char ob_type_text[35];
 	char ob_ele_text[35];
-//	char ob_status_text[45];
-//	char geo_overlay_text[45];
-//	char obj_par_name_text[45];
 
 	const char * obj_labelt;
 	const char * location_id;
@@ -1507,6 +1503,7 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	char *sql;
 	char *zErrMsg = 0;
 	int recf;
+	int rep_exist=0;
 	FILE * file3dpoly;
 
 	char buff[30];
@@ -1695,21 +1692,8 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 
 	fprintf(fnm,"\n");
 
-//	strcpy(ob_type_text,"Unknown Object");
 	strcpy(ob_ele_text," ");
-//	strcpy(ob_status_text,"Unknown Status");
-//	strcpy(ob_status_text,object_status_text[obj_status]);
-//	strcpy(geo_overlay_text,overlay_options_text[geo_overlay_opt]);
 
-//	if (qualifier_flag == 1)
-//		strcpy(obj_par_name_text,obj_param_type_names[obj_param_type]);
-//	else
-//		strcpy(obj_par_name_text,"n/a");
-
-//	if (obj_label_flag == 0)
-//		strcpy(ob_type_text,object_types_text[obj_type]);
-//	if (element_flag == 1 && obj_type == 14)
-//		strcpy(ob_ele_text,airspace_element_names[obj_element]);
 	if (element_flag == 1 && obj_type == 14 && apdu->product_id == 14)
 		strcpy(ob_ele_text,gairspace_element_names[obj_element]);
 
@@ -1727,260 +1711,195 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	if( rc != SQLITE_OK ){
 		if (rc != 19)
 			fprintf(stderr, "2 SQL error: %s\n", zErrMsg);
+		else
+			rep_exist = 1;
 
 		sqlite3_free(zErrMsg);
 	}
-
-	switch (geo_overlay_opt) {
-	case 3:  case 4:							// Extended Range 3D Polygon
-		alt_raw = (((apdu->data[datoff +4]) & 0x03) << 8) | (apdu->data[datoff +5]);
-		alt = alt_raw * 100;
-
-		switch(apdu->product_id ){
-		case 11:
-			file3dpoly = fileairmetjson;
-			airmet_count = ex3dpoly(fileairmetjson,airmet_count,rep_num,alt,ob_ele_text);
-			break;
-		case 12:
-			file3dpoly = filesigmetjson;
-			sigmet_count = ex3dpoly(filesigmetjson,sigmet_count,rep_num,alt,ob_ele_text);
-			break;
-		case 14:
-			file3dpoly = filegairmetjson;
-			gairmet_count = ex3dpoly(filegairmetjson,gairmet_count,rep_num,alt,ob_ele_text);
-			break;
-		case 15:
-			file3dpoly = filecwajson;
-			cwa_count = ex3dpoly(filecwajson,cwa_count,rep_num,alt,ob_ele_text);
-			break;
-		case 18:
-			file3dpoly = filenotamjson;
-			if (notam_count == 0) {
-				fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
-				fprintf(file3dpoly,"\"features\": [ \n");
-				fprintf(file3dpoly,"{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\":"
-						" \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
-				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\",\"coordinates\": [[\n");
-			}
-			else {
-				fseek(file3dpoly,-3,SEEK_CUR);
-				fprintf(file3dpoly,",{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\":"
-						" \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
-				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\",\"coordinates\": [[\n");
-			}
-			notam_count++;
-			break;
-			}
-
-		for (int i = 0; i < overlay_vert_cnt; i++) {
-			lng_raw = ((apdu->data[datoff + i]) << 11) | ((apdu->data[datoff +i+1]) << 3) |
-					((apdu->data[datoff +i+2]) & 0xE0 >> 5);
-			lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+3]) << 6) |
-					(((apdu->data[datoff +i+4]) & 0xFC) >> 2);
-			alt_raw = (((apdu->data[datoff +i+4]) & 0x03) << 8) | (apdu->data[datoff +i+5]);
-
-			datoff = datoff + 5;
-
-			lat = fct_f * lat_raw;
-			lng = fct_f * lng_raw;
-			if (lat > 90.0)
-				lat = lat - 180.0;
-			if (lng > 180.0)
-				lng = lng - 360.0;
+	if (!rep_exist){								// Don't try to add dubplicate
+		switch (geo_overlay_opt) {
+		case 3:  case 4:							// Extended Range 3D Polygon
+			alt_raw = (((apdu->data[datoff +4]) & 0x03) << 8) | (apdu->data[datoff +5]);
 			alt = alt_raw * 100;
 
-			if (lat == lat_save){					// Ignore 2nd altitude data to fix map
-				fseek(file3dpoly,-2,SEEK_CUR);
-				i = overlay_vert_cnt;
-				continue;
-			}
-			lat_save = lat;
-
-			if (i == (overlay_vert_cnt-1))
-				fprintf(file3dpoly,"[ %f, %f ]\n",lng,lat);
-			else
-				fprintf(file3dpoly,"[ %f, %f ],\n",lng,lat);
-
-			fprintf(fnm,"      Coordinates: %11f,%11f    Alt: %d\n",lat,lng,alt);
-		}
-
-		fprintf(file3dpoly,"]]\n");
-		fprintf(file3dpoly,"}}\n");
-		fprintf(file3dpoly,"]}\n");
-		fflush(file3dpoly);
-		break;
-
-	case 7: case 8:								// Extended Range Circular Prism (7 = MSL,8 = AGL)
-		if (rec_len < 14) {
-			fprintf(fnm,"Data too short. Should be 14 bytes; %d seen.\n",rec_len);
-		}
-		else {
-			uint32_t lng_bot_raw;
-			uint32_t lat_bot_raw;
-			uint32_t lng_top_raw;
-			uint32_t lat_top_raw;
-
-			uint32_t alt_bot_raw;
-			uint32_t alt_top_raw;
-			uint32_t r_lng_raw;
-			uint32_t r_lat_raw,alpha;
-			uint32_t alt_bot;
-			uint32_t alt_top;
-
-			float lat_bot,lng_bot,lat_top,lng_top,r_lng,r_lat;
-
-			lng_bot_raw = ((apdu->data[datoff +0]) << 10) | ((apdu->data[datoff +1]) << 2) |
-					((apdu->data[datoff +2]) & 0xC0 >> 6);
-			lat_bot_raw = (((apdu->data[datoff+ 2]) & 0x3F) << 12) | ((apdu->data[datoff +3]) << 4) |
-					(((apdu->data[datoff +4]) & 0xF0) >> 4);
-
-			lng_top_raw = (((apdu->data[datoff +4]) & 0x0F) << 14) | ((apdu->data[datoff +5]) << 6) |
-					(((apdu->data[datoff +6]) & 0xFC) >> 2);
-			lat_top_raw = (((apdu->data[datoff +6]) & 0x03) << 16) | ((apdu->data[datoff +7]) << 8) |
-					(apdu->data[datoff +8]);
-
-			alt_bot_raw = ((apdu->data[datoff +9]) & 0xFE) >> 1;
-			alt_top_raw = (((apdu->data[datoff +9]) & 0x01) << 6) | (((apdu->data[datoff +10]) & 0xFC) >> 2);
-
-			r_lng_raw = (((apdu->data[datoff +10]) & 0x03) << 7) | (((apdu->data[datoff +11]) & 0xFE) >> 1);
-			r_lat_raw = (((apdu->data[datoff +11]) & 0x01) << 8) | (apdu->data[datoff +12]);
-
-			alpha = (apdu->data[datoff +13]);
-
-			lng_bot_raw = (~lng_bot_raw & 0x1FFFF) +1;		// 2's compliment +1
-			lat_bot_raw = (~lat_bot_raw & 0x1FFFF) +1;		// 2's compliment +1
-			lat_bot = lat_bot_raw *  0.001373 ;
-			lng_bot = (lng_bot_raw *  0.001373) * -1 ;
-
-			if (lat_bot > 90.0)
-				lat_bot = (lat_bot - 180.0) * -1 ;
-			if (lng_bot > 180.0)
-				lng_bot = lng_bot - 360.0;
-
-			lng_top_raw = (~lng_top_raw & 0x1FFFF) +1;		// 2's compliment +1
-			lat_top_raw = (~lat_top_raw & 0x1FFFF) +1;		// 2's compliment +1
-			lat_top = lat_top_raw *  0.001373 ;
-			lng_top = (lng_top_raw *  0.001373) * -1 ;
-
-			if (lat_top > 90.0)
-				lat_top = (lat_top - 180.0) * -1 ;
-			if (lng_top > 180.0)
-				lng_top = lng_top - 360.0;
-
-			alt_bot = alt_bot_raw * 5;
-			alt_top = alt_top_raw * 500;
-			r_lng = r_lng_raw * 0.2;
-			r_lat = r_lat_raw * 0.2;
-
-			fprintf(fnm,"lat_bot, lng_bot = %f, %f\n", lat_bot, lng_bot);
-			fprintf(fnm,"lat_top, lng_top = %f, %f\n", lat_top, lng_top);
-
-			if (geo_overlay_opt == 8)
-				fprintf(fnm,"alt_bot, alt_top = %d AGL, %d AGL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
-			else
-				fprintf(fnm,"alt_bot, alt_top = %d MSL, %d MSL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
-
-			fprintf(fnm,"r_lng, r_lat = %f, %f\n", r_lng,r_lat);
-			fprintf(fnm,"alpha=%d\n",alpha);
-		}
-		break;
-
-	case 9:									// Extended Range 3D Point (AGL)
-		if (rec_len < 6) {
-			fprintf(fnm, "Too short\n");
-		}
-		else {
-			lng_raw = ((apdu->data[datoff +0]) << 11) | ((apdu->data[datoff +1]) << 3) |
-					((apdu->data[datoff +2]) & 0xE0 >> 5);
-			lat_raw = (((apdu->data[datoff +2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) |
-					(((apdu->data[datoff + 4]) & 0xFC) >> 2);
-			alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
-
-			lng_raw = (~lng_raw & 0x7FFFF) +1;		// 2's compliment +1
-			lat_raw = (~lat_raw & 0x7FFFF) +1;		// 2's compliment +1
-
-			lat = lat_raw *  0.0006866455078125 ;
-			lng = (lng_raw *  0.0006866455078125) * -1 ;
-
-			if (lat > 90.0)
-				lat = 360.0 - lat;
-			if (lng > 180.0)
-				lng = lng - 360.0;
-			alt = alt_raw * 100;
-
-			if (apdu->product_id == 18) {
-				notam_list[notam_count].notam_lat = lat;
-				notam_list[notam_count].notam_lng = lng;
-
-				strcpy(notam_list[notam_count].notam_stn,gstn);
-
-				notam_list[notam_count].notam_repid =rep_num;
+			switch(apdu->product_id ){
+			case 11:
+				file3dpoly = fileairmetjson;
+				airmet_count = ex3dpoly(fileairmetjson,airmet_count,rep_num,alt,ob_ele_text);
+				break;
+			case 12:
+				file3dpoly = filesigmetjson;
+				sigmet_count = ex3dpoly(filesigmetjson,sigmet_count,rep_num,alt,ob_ele_text);
+				break;
+			case 14:
+				file3dpoly = filegairmetjson;
+				gairmet_count = ex3dpoly(filegairmetjson,gairmet_count,rep_num,alt,ob_ele_text);
+				break;
+			case 15:
+				file3dpoly = filecwajson;
+				cwa_count = ex3dpoly(filecwajson,cwa_count,rep_num,alt,ob_ele_text);
+				break;
+			case 18:
+				file3dpoly = filenotamjson;
 				if (notam_count == 0) {
-					fprintf(filenotamjson,"{\"type\": \"FeatureCollection\",\n");
-					fprintf(filenotamjson,"\"features\": [ \n");
-					fprintf(filenotamjson,"{\"type\": \"Feature\",\"properties\": { \"Location\": \"%s\",\"Stuff\":"
-							" \"%d\"},\n",gstn,rep_num);
-					fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %f,%f ] }}\n",lng,lat);
-					fprintf(filenotamjson,"]}");
-				}
-				else {
-					fseek(filenotamjson,-3,SEEK_CUR);
-					fprintf(filenotamjson,",{\"type\": \"Feature\",\"properties\": { \"Location\": \"%s\",\"Stuff\":"
-							" \"%d\"},\n",gstn,rep_num);
-					fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %f,%f ] }}\n",lng,lat);
-					fprintf(filenotamjson,"]}");
-				}
-
-				fflush(filenotamjson);
-				notam_count ++;
-			}
-			fprintf(fnm,"      Coordinates: %11f,%11f    Alt: %d\n",lat,lng,alt);
-		}
-		break;
-
-	case 11: case 12:							// Extended Range 3D Polyline
-												// Don't write geojson for items with qualifier flag set.
-
-		alt_raw = (((apdu->data[datoff +4]) & 0x03) << 8) | (apdu->data[datoff +5]);
-		alt = alt_raw * 100;
-
-		switch(apdu->product_id ){
-		case 14:
-			file3dpoly = filegairmetjson;
-			if (qualifier_flag == 0){
-				if (gairmet_count == 0) {
 					fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
 					fprintf(file3dpoly,"\"features\": [ \n");
 					fprintf(file3dpoly,"{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\":"
-							" \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
-					fprintf(file3dpoly,"\"geometry\": { \"type\": \"LineString\",\"coordinates\": [\n");
+						" \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+					fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\",\"coordinates\": [[\n");
 				}
 				else {
 					fseek(file3dpoly,-3,SEEK_CUR);
 					fprintf(file3dpoly,",{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\":"
-							" \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
-					fprintf(file3dpoly,"\"geometry\": { \"type\": \"LineString\",\"coordinates\": [\n");
+						" \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+					fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\",\"coordinates\": [[\n");
 				}
-				gairmet_count++;
+				notam_count++;
+				break;
+			}
+
+			for (int i = 0; i < overlay_vert_cnt; i++) {
+				lng_raw = ((apdu->data[datoff + i]) << 11) | ((apdu->data[datoff +i+1]) << 3) |
+					((apdu->data[datoff +i+2]) & 0xE0 >> 5);
+				lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+3]) << 6) |
+					(((apdu->data[datoff +i+4]) & 0xFC) >> 2);
+				alt_raw = (((apdu->data[datoff +i+4]) & 0x03) << 8) | (apdu->data[datoff +i+5]);
+
+				datoff = datoff + 5;
+
+				lat = fct_f * lat_raw;
+				lng = fct_f * lng_raw;
+				if (lat > 90.0)
+					lat = lat - 180.0;
+				if (lng > 180.0)
+					lng = lng - 360.0;
+
+				alt = alt_raw * 100;
+
+				if (lat == lat_save){					// Ignore 2nd altitude data to fix map
+					fseek(file3dpoly,-2,SEEK_CUR);
+					i = overlay_vert_cnt;
+					continue;
+				}
+				lat_save = lat;
+
+				if (i == (overlay_vert_cnt-1))
+					fprintf(file3dpoly,"[ %f, %f ]\n",lng,lat);
+				else
+					fprintf(file3dpoly,"[ %f, %f ],\n",lng,lat);
+
+				fprintf(fnm,"      Coordinates: %11f,%11f    Alt: %d\n",lat,lng,alt);
+
+				asprintf(&sql,"INSERT INTO graphic_coords (prod_id, rep_number, geo_ovrly_opt,"
+					"coord_num,ovrly_vertices, ovrly_lat,ovrly_lng,ovrly_alt) "
+					"VALUES (%d,%d,%d,%d,%d,%f,%f,%d)",
+					apdu->product_id,rep_num,geo_overlay_opt,i,overlay_vert_cnt,lat,lng,alt);
+				rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
+				if( rc != SQLITE_OK ){
+					if (rc != 19)
+						fprintf(stderr, "1 SQL error: %s\n", zErrMsg);
+
+					sqlite3_free(zErrMsg);
+				}
+			}
+
+			fprintf(file3dpoly,"]]\n");
+			fprintf(file3dpoly,"}}\n");
+			fprintf(file3dpoly,"]}\n");
+			fflush(file3dpoly);
+			break;
+
+		case 7: case 8:								// Extended Range Circular Prism (7 = MSL,8 = AGL)
+			if (rec_len < 14) {
+				fprintf(fnm,"Data too short. Should be 14 bytes; %d seen.\n",rec_len);
+			}
+			else {
+				uint32_t lng_bot_raw;
+				uint32_t lat_bot_raw;
+				uint32_t lng_top_raw;
+				uint32_t lat_top_raw;
+
+				uint32_t alt_bot_raw;
+				uint32_t alt_top_raw;
+				uint32_t r_lng_raw;
+				uint32_t r_lat_raw,alpha;
+				uint32_t alt_bot;
+				uint32_t alt_top;
+
+				float lat_bot,lng_bot,lat_top,lng_top,r_lng,r_lat;
+
+				lng_bot_raw = ((apdu->data[datoff +0]) << 10) | ((apdu->data[datoff +1]) << 2) |
+					((apdu->data[datoff +2]) & 0xC0 >> 6);
+				lat_bot_raw = (((apdu->data[datoff+ 2]) & 0x3F) << 12) | ((apdu->data[datoff +3]) << 4) |
+					(((apdu->data[datoff +4]) & 0xF0) >> 4);
+
+				lng_top_raw = (((apdu->data[datoff +4]) & 0x0F) << 14) | ((apdu->data[datoff +5]) << 6) |
+					(((apdu->data[datoff +6]) & 0xFC) >> 2);
+				lat_top_raw = (((apdu->data[datoff +6]) & 0x03) << 16) | ((apdu->data[datoff +7]) << 8) |
+					(apdu->data[datoff +8]);
+
+				alt_bot_raw = ((apdu->data[datoff +9]) & 0xFE) >> 1;
+				alt_top_raw = (((apdu->data[datoff +9]) & 0x01) << 6) | (((apdu->data[datoff +10]) & 0xFC) >> 2);
+
+				r_lng_raw = (((apdu->data[datoff +10]) & 0x03) << 7) | (((apdu->data[datoff +11]) & 0xFE) >> 1);
+				r_lat_raw = (((apdu->data[datoff +11]) & 0x01) << 8) | (apdu->data[datoff +12]);
+
+				alpha = (apdu->data[datoff +13]);
+
+				lng_bot_raw = (~lng_bot_raw & 0x1FFFF) +1;		// 2's compliment +1
+				lat_bot_raw = (~lat_bot_raw & 0x1FFFF) +1;		// 2's compliment +1
+				lat_bot = lat_bot_raw *  0.001373 ;
+				lng_bot = (lng_bot_raw *  0.001373) * -1 ;
+
+				if (lat_bot > 90.0)
+					lat_bot = (lat_bot - 180.0) * -1 ;
+				if (lng_bot > 180.0)
+					lng_bot = lng_bot - 360.0;
+
+				lng_top_raw = (~lng_top_raw & 0x1FFFF) +1;		// 2's compliment +1
+				lat_top_raw = (~lat_top_raw & 0x1FFFF) +1;		// 2's compliment +1
+				lat_top = lat_top_raw *  0.001373 ;
+				lng_top = (lng_top_raw *  0.001373) * -1 ;
+
+				if (lat_top > 90.0)
+					lat_top = (lat_top - 180.0) * -1 ;
+				if (lng_top > 180.0)
+					lng_top = lng_top - 360.0;
+
+				alt_bot = alt_bot_raw * 5;
+				alt_top = alt_top_raw * 500;
+				r_lng = r_lng_raw * 0.2;
+				r_lat = r_lat_raw * 0.2;
+
+				fprintf(fnm,"lat_bot, lng_bot = %f, %f\n", lat_bot, lng_bot);
+				fprintf(fnm,"lat_top, lng_top = %f, %f\n", lat_top, lng_top);
+
+				if (geo_overlay_opt == 8)
+					fprintf(fnm,"alt_bot, alt_top = %d AGL, %d AGL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
+				else
+					fprintf(fnm,"alt_bot, alt_top = %d MSL, %d MSL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
+
+				fprintf(fnm,"r_lng, r_lat = %f, %f\n", r_lng,r_lat);
+				fprintf(fnm,"alpha=%d\n",alpha);
 			}
 			break;
-		}
-		for (int i = 0; i < overlay_vert_cnt; i++) {
+
+		case 9:										// Extended Range 3D Point (AGL)
 			if (rec_len < 6) {
 				fprintf(fnm, "Too short\n");
 			}
 			else {
-				lng_raw = ((apdu->data[datoff +i]) << 11) | ((apdu->data[datoff +i+1]) << 3) | ((apdu->data[datoff +i+2]) >> 5);
-				lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+ 3]) << 6) | (((apdu->data[datoff +i+ 4]) & 0xFC) >> 2);
-				alt_raw = (((apdu->data[datoff +i+ 4]) & 0x03) << 8) | (apdu->data[datoff +i+ 5]);
-
-				datoff = datoff + 5;
+				lng_raw = ((apdu->data[datoff +0]) << 11) | ((apdu->data[datoff +1]) << 3) |
+					((apdu->data[datoff +2]) & 0xE0 >> 5);
+				lat_raw = (((apdu->data[datoff +2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) |
+					(((apdu->data[datoff + 4]) & 0xFC) >> 2);
+				alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
 
 				lng_raw = (~lng_raw & 0x7FFFF) +1;		// 2's compliment +1
 				lat_raw = (~lat_raw & 0x7FFFF) +1;		// 2's compliment +1
 
 				lat = lat_raw *  0.0006866455078125 ;
-				lng = lng_raw * -0.0006866455078125 ;
+				lng = (lng_raw *  0.0006866455078125) * -1 ;
 
 				if (lat > 90.0)
 					lat = 360.0 - lat;
@@ -1988,30 +1907,131 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 					lng = lng - 360.0;
 				alt = alt_raw * 100;
 
-				if (qualifier_flag == 0){
-					if (i == (overlay_vert_cnt-1))
-						fprintf(file3dpoly,"[ %f,%f ]\n",lng,lat);
-					else
-						fprintf(file3dpoly,"[ %f,%f ],\n",lng,lat);
+				if (apdu->product_id == 18) {
+					notam_list[notam_count].notam_lat = lat;
+					notam_list[notam_count].notam_lng = lng;
+
+					strcpy(notam_list[notam_count].notam_stn,gstn);
+
+					notam_list[notam_count].notam_repid =rep_num;
+					if (notam_count == 0) {
+						fprintf(filenotamjson,"{\"type\": \"FeatureCollection\",\n");
+						fprintf(filenotamjson,"\"features\": [ \n");
+						fprintf(filenotamjson,"{\"type\": \"Feature\",\"properties\": { \"Location\": \"%s\",\"Stuff\":"
+							" \"%d\"},\n",gstn,rep_num);
+						fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %f,%f ] }}\n",lng,lat);
+						fprintf(filenotamjson,"]}");
+					}
+					else {
+						fseek(filenotamjson,-3,SEEK_CUR);
+						fprintf(filenotamjson,",{\"type\": \"Feature\",\"properties\": { \"Location\": \"%s\",\"Stuff\":"
+							" \"%d\"},\n",gstn,rep_num);
+						fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %f,%f ] }}\n",lng,lat);
+						fprintf(filenotamjson,"]}");
+					}
+
+					fflush(filenotamjson);
+					notam_count ++;
 				}
 				fprintf(fnm,"      Coordinates: %11f,%11f    Alt: %d\n",lat,lng,alt);
-			}
-		}
-		if (qualifier_flag == 0){
-			fprintf(file3dpoly,"]\n");
-			fprintf(file3dpoly,"}}\n");
-			fprintf(file3dpoly,"]}\n");
-			fflush(file3dpoly);
-		}
-		break;
-	}
-//	fprintf(fnm,"\n");
-//	fprintf(fnm," Object Type: %s  Object Element: %s\n",ob_type_text,ob_ele_text);
-//	fprintf(fnm," Object Status: %s Overlay type: %s\n",ob_status_text,geo_overlay_text);
-//	fprintf(fnm," obj_par_name_text: %s\n",obj_par_name_text);
-	fprintf(fnm,"\n");
-	fflush(fnm);
 
+				asprintf(&sql,"INSERT INTO graphic_coords (prod_id, rep_number, geo_ovrly_opt,"
+					"coord_num,ovrly_vertices, ovrly_lat,ovrly_lng,ovrly_alt) "
+					"VALUES (%d,%d,%d,0,%d,%f,%f,%d)",
+					apdu->product_id,rep_num,geo_overlay_opt,overlay_vert_cnt,lat,lng,alt);
+				rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
+				if( rc != SQLITE_OK ){
+					if (rc != 19)
+						fprintf(stderr, "1 SQL error: %s\n", zErrMsg);
+
+					sqlite3_free(zErrMsg);
+				}
+			}
+			break;
+
+		case 11: case 12:							// Extended Range 3D Polyline
+													// Don't write geojson for items with qualifier flag set.
+
+			alt_raw = (((apdu->data[datoff +4]) & 0x03) << 8) | (apdu->data[datoff +5]);
+			alt = alt_raw * 100;
+
+			switch(apdu->product_id ){
+			case 14:
+				file3dpoly = filegairmetjson;
+				if (qualifier_flag == 0){
+					if (gairmet_count == 0) {
+						fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
+						fprintf(file3dpoly,"\"features\": [ \n");
+						fprintf(file3dpoly,"{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\":"
+							" \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+						fprintf(file3dpoly,"\"geometry\": { \"type\": \"LineString\",\"coordinates\": [\n");
+					}
+					else {
+						fseek(file3dpoly,-3,SEEK_CUR);
+						fprintf(file3dpoly,",{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\":"
+							" \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+						fprintf(file3dpoly,"\"geometry\": { \"type\": \"LineString\",\"coordinates\": [\n");
+					}
+					gairmet_count++;
+				}
+				break;
+			}
+			for (int i = 0; i < overlay_vert_cnt; i++) {
+				if (rec_len < 6) {
+					fprintf(fnm, "Too short\n");
+				}
+				else {
+					lng_raw = ((apdu->data[datoff +i]) << 11) | ((apdu->data[datoff +i+1]) << 3) | ((apdu->data[datoff +i+2]) >> 5);
+					lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+ 3]) << 6) | (((apdu->data[datoff +i+ 4]) & 0xFC) >> 2);
+					alt_raw = (((apdu->data[datoff +i+ 4]) & 0x03) << 8) | (apdu->data[datoff +i+ 5]);
+
+					datoff = datoff + 5;
+
+					lng_raw = (~lng_raw & 0x7FFFF) +1;		// 2's compliment +1
+					lat_raw = (~lat_raw & 0x7FFFF) +1;		// 2's compliment +1
+
+					lat = lat_raw *  0.0006866455078125 ;
+					lng = lng_raw * -0.0006866455078125 ;
+
+					if (lat > 90.0)
+						lat = 360.0 - lat;
+					if (lng > 180.0)
+						lng = lng - 360.0;
+					alt = alt_raw * 100;
+
+					if (qualifier_flag == 0){
+						if (i == (overlay_vert_cnt-1))
+							fprintf(file3dpoly,"[ %f,%f ]\n",lng,lat);
+						else
+							fprintf(file3dpoly,"[ %f,%f ],\n",lng,lat);
+					}
+					fprintf(fnm,"      Coordinates: %11f,%11f    Alt: %d\n",lat,lng,alt);
+
+					asprintf(&sql,"INSERT INTO graphic_coords (prod_id, rep_number, geo_ovrly_opt,"
+						"coord_num,ovrly_vertices, ovrly_lat,ovrly_lng,ovrly_alt) "
+						"VALUES (%d,%d,%d,%d,%d,%f,%f,%d)",
+						apdu->product_id,rep_num,geo_overlay_opt,i,overlay_vert_cnt,lat,lng,alt);
+					rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
+					if( rc != SQLITE_OK ){
+						if (rc != 19)
+							fprintf(stderr, "1 SQL error: %s\n", zErrMsg);
+
+						sqlite3_free(zErrMsg);
+					}
+				}
+			}
+			if (qualifier_flag == 0){
+				fprintf(file3dpoly,"]\n");
+				fprintf(file3dpoly,"}}\n");
+				fprintf(file3dpoly,"]}\n");
+				fflush(file3dpoly);
+			}
+			break;
+		}
+		fprintf(fnm,"\n");
+		fflush(fnm);
+
+	}
 //	display_generic_data(apdu->data,apdu->length,to);
 }
 
@@ -2259,7 +2279,7 @@ static void get_seg_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 		for (int i = 0; i <= seg_count; ++i) {		// 3rd part
 			if ((seg_list[i].seg_prodid == prodid) &&
 					(seg_list[i].seg_prolen == prodfillen) && (seg_list[i].seg_segnum == 3)){
-				for (int d = char_cnt; d  <=  char_cnt + seg_list[i].seg_text_len; ++d) {
+				for (int d = char_cnt; d  <= char_cnt + seg_list[i].seg_text_len; ++d) {
 					rep_all[d] = seg_list[i].seg_data[(d-char_cnt)];
 				}
 				char_cnt = char_cnt + seg_list[i].seg_text_len;
