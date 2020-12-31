@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "asprintf.h"
+
 #ifndef NULL
 #define NULL   ((void *) 0)
 #endif
@@ -41,6 +43,8 @@ int main(int argc, char **argv)
 	gairmet_count=0;
 	sigmet_count=0;
 	cwa_count=0;
+	char *zErrMsg = 0;
+	char *sql;
 
 // Open sqlite3 database
 
@@ -51,6 +55,15 @@ int main(int argc, char **argv)
 	}
 	else {
 		fprintf(stderr, "uat978.db - Opened database successfully\n");
+// Delete table data...
+		asprintf(&sql,"DELETE from metar; delete from graphic_reports; delete from graphic_coords; delete from text_reports; delete from nexrad;");
+		rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
+		if( rc != SQLITE_OK ){
+			if (rc != 19)
+				fprintf(stderr, "1 SQL error: %s\n", zErrMsg);
+
+			sqlite3_free(zErrMsg);
+		}
 	}
 
    	filenotamjson = fopen("/home/trev/git/map-978/WebContent/notam.geojson","w");
@@ -102,21 +115,6 @@ int main(int argc, char **argv)
    	filesua = fopen("sua.out","w");
    	if (filesua == 0)			{
    		fprintf(stderr,"sua.out Error--file could not be opened. \n") ;
-   		exit (1) ;			}
-
-   	filesigmet = fopen("sigmet.out","w");
-   	if (filesigmet == 0)			{
-   		fprintf(stderr,"sigmet.out Error--file could not be opened. \n") ;
-   		exit (1) ;			}
-
-   	fileairmet = fopen("airmet.out","w");
-   	if (fileairmet == 0)			{
-   		fprintf(stderr,"airmet.out Error--file could not be opened. \n") ;
-   		exit (1) ;			}
-
-   	filegairmet = fopen("gairmet.out","w");
-   	if (filegairmet == 0)			{
-   		fprintf(stderr,"gairmet.out Error--file could not be opened. \n") ;
    		exit (1) ;			}
 
    	filepirep = fopen("pirep.out","w");

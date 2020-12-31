@@ -11,10 +11,6 @@
 #include <sqlite3.h>
 #include "uat.h"
 
-//
-// Datatypes
-//
-
 	sqlite3 *db;
 	int rc;
 
@@ -53,13 +49,9 @@ int gairmet_count;
 int sigmet_count;
 int cwa_count;
 
-
 FILE * filemetar;   	// 413
 FILE * filenotam;   	// 8
 FILE * filesua;      	// 13
-FILE * filesigmet;    	// 12
-FILE * fileairmet;		// 11
-FILE * filegairmet;		// 14
 FILE * filepirep;		// PIREP
 FILE * filecwa;			// Center Weather Advisory
 
@@ -82,17 +74,12 @@ struct uat_adsb_mdb {
     int speed_valid : 1;
     int dimensions_valid : 1;
 
-    //
     // HDR
-    //
     uint8_t mdb_type;
     address_qualifier_t address_qualifier;
     uint32_t address;
 
-    //
     // SV
-    //
-
     // if position_valid:
     double lat;
     double lon;
@@ -126,10 +113,7 @@ struct uat_adsb_mdb {
     int utc_coupled : 1;      // true if UTC Coupled flag is set (ADS-B)
     uint8_t tisb_site_id;     // TIS-B site ID, or zero in ADS-B messages
     
-    //
     // MS
-    //
-
     uint8_t emitter_category;
     callsign_type_t callsign_type;
     char callsign[9];
@@ -151,24 +135,16 @@ struct uat_adsb_mdb {
 
     heading_type_t heading_type;
 
-    //
     // AUXSV
-
     altitude_type_t sec_altitude_type;
     int32_t sec_altitude; // in feet
 };
 
-//
 // Decode/display prototypes
-//
-
 void uat_decode_adsb_mdb(uint8_t *frame, struct uat_adsb_mdb *mdb);
 void uat_display_adsb_mdb(const struct uat_adsb_mdb *mdb, FILE *to);
 
-//
 // UPLINK 
-//
-
 // assume 6 byte frames: 2 header bytes, 4 byte payload
 // (TIS-B heartbeat with one address, or empty FIS-B APDU)
 #define UPLINK_MAX_INFO_FRAMES (424/6)

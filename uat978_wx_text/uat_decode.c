@@ -28,8 +28,9 @@ static char gs_ret[80];
 static char gs_ret_lat[25];
 static char gs_ret_lng[25];
 
-static void get_graphic(const struct fisb_apdu *apdu,FILE *fnm,FILE *to);
-static void get_text(const struct fisb_apdu *apdu,FILE *fnm,FILE *to);
+//static void get_graphic(const struct fisb_apdu *apdu,FILE *fnm,FILE *to);
+static void get_graphic(const struct fisb_apdu *apdu,FILE *to);
+static void get_text(const struct fisb_apdu *apdu,FILE *to);
 static void get_seg_text(const struct fisb_apdu *apdu,FILE *fnm,FILE *to);
 static void get_gs_name(char *Word);
 static void get_sua_text(char *Word,FILE *to);
@@ -1040,18 +1041,15 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 		else
 			recf = apdu->data[0] >> 4;
 
-		fprintf(filenotam," Record Format   : %d\n",recf);
-
 		switch (recf){
 		case 8:									//	Graphic
-			fprintf(filenotam," Report Type     : NOTAM\n");
-			get_graphic(apdu,filenotam,to);
+			get_graphic(apdu,to);
 			break;
 		case 2:									// Text
 			if (apdu->s_flag)					// Segmented text
 				get_seg_text(apdu,filenotam,to);
 			else								// Text
-				get_text(apdu,filenotam,to);
+				get_text(apdu,to);
 			break;
 		default:
 			fprintf(to," Record Format   : %d\n",recf);
@@ -1062,15 +1060,13 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 
 	case 11:									// ** AIRMET **************
 		recf = apdu->data[0] >> 4;
-		fprintf(fileairmet," Record Format   : %d \n",recf);
 
 		switch (recf){
 		case 8:									// Graphic
-			fprintf(fileairmet," Report Type     : AIRMET\n");
-			get_graphic(apdu,fileairmet,to);
+			get_graphic(apdu,to);
 			break;
 		case 2:									// Text
-			get_text(apdu,fileairmet,to);
+			get_text(apdu,to);
 			break;
 		default:
 			fprintf(to," Record Format   : %d \n",recf);
@@ -1081,15 +1077,13 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 
 	case 12:									// ** SIGMET **************
 		recf = apdu->data[0] >> 4;
-		fprintf(filesigmet," Record Format   : %d \n",recf);
 
 		switch (recf) {
 		case 8:									// Graphic
-			fprintf(filesigmet," Report Type     : SIGMET\n");
-			get_graphic(apdu,filesigmet,to);
+			get_graphic(apdu,to);
 			break;
 		case 2:									// Text
-			get_text(apdu,filesigmet,to);
+			get_text(apdu,to);
 			break;
 		default:
 			fprintf(to," Record Format   : %d \n",recf );
@@ -1104,7 +1098,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 
 		switch (recf) {
 		case 2:									// Text
-			get_text(apdu,filesua,to);
+			get_text(apdu,to);
 			break;
 		default:
 			fprintf(to," Record Format   : %d \n",recf);
@@ -1115,13 +1109,11 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 
 	case 14:									// ** G-AIRMET **************
 		recf = apdu->data[0] >> 4;
-		fprintf(filegairmet," Record Format   : %d \n",recf);
 
 		switch (recf) {
 		case 8:									// Graphic
 			fprintf(to," Report Type     : G-AIRMET\n");
-			fprintf(filegairmet," Report Type     : G-AIRMET\n");
-			get_graphic(apdu,filegairmet,to);
+			get_graphic(apdu,to);
 			break;
 		default:
 			fprintf(to," Record Format   : %d \n",recf);
@@ -1132,15 +1124,15 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 
 	case 15:									// ** CWA **************
 		recf = apdu->data[0] >> 4;
-		fprintf(filesigmet," Record Format   : %d \n",recf);
+		fprintf(filecwa," Record Format   : %d \n",recf);
 
 		switch (recf) {
 		case 8:								// Graphic
-			fprintf(filesigmet," Report Type     : CWA\n");
-			get_graphic(apdu,filecwa,to);
+			fprintf(filecwa," Report Type     : CWA\n");
+			get_graphic(apdu,to);
 			break;
 		case 2:								// Text
-			get_text(apdu,filecwa,to);
+			get_text(apdu,to);
 			break;
 		default:
 			fprintf(to," Record Format   : %d \n",recf );
@@ -1448,7 +1440,9 @@ void uat_display_uplink_mdb(const struct uat_uplink_mdb *mdb,FILE *to)
 	}
 }
 
-static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
+//static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
+static void get_graphic(const struct fisb_apdu  *apdu,FILE *to)
+
 {
 	int rec_offset = 11;
 	int datoff = 6;
@@ -1463,7 +1457,6 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	char ob_ele_text[35];
 
 	const char * obj_labelt;
-	const char * location_id;
 
 	uint16_t rec_len = 0;
 	uint16_t rep_num = 0;
@@ -1492,9 +1485,9 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	float fct_f =0.000687;		// float_t fct_t =0.001373;    raw_lon * 360.0 / 16777216.0;
 //	float fct_f = 16777216.0;
 
-	uint32_t object_qualifier;
-	int obj_param_type = 0;
-	uint16_t ob_par_val;
+//	uint32_t object_qualifier;
+//	int obj_param_type = 0;
+//	uint16_t ob_par_val;
 
 	char qual_text[200];
 	char *start_date;
@@ -1502,35 +1495,25 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 
 	char *sql;
 	char *zErrMsg = 0;
-	int recf;
+
 	int rep_exist=0;
 	FILE * file3dpoly;
 
 	char buff[30];
 
-	recf = apdu->data[0] >> 4;
 	product_ver = ((apdu->data[0]) & 0x0F);
 	rec_count = ((apdu->data[1]) & 0xF0) >> 4;
 	rec_ref = ((apdu->data[5]));
 
-	fprintf(fnm," Product Version : %d ",product_ver);
-	fprintf(fnm,"           Record Count     : %d \n",rec_count);
-	fprintf(fnm," Record Reference: %d \n",rec_ref);
-
 	time_t current_time = time(NULL);
 	struct tm *tm = localtime(&current_time);
 	strftime(buff, sizeof buff, "%D %T", tm);
-	fprintf(fnm," Time            : %s\n",buff);
 
 	if (rec_ref != 255){
-		location_id = decode_dlac(apdu->data,3,2);
 		rec_offset = 2;
 		const char *text = decode_dlac(apdu->data,5,rec_offset);
 		strncpy(gstn,text,5);
 		get_gs_name(gstn);
-
-		fprintf(fnm," Location ID     : %s\n",location_id);
-		fprintf(fnm," RLoc            : %s - %s\n",gstn,gs_ret);
 	}
 	else{
 		strcpy(gstn,"    ");}
@@ -1541,20 +1524,12 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	overlay_rec_id = (((apdu->data[datoff + 4]) & 0x1E) >> 1) + 1;		// Document instructs to add 1.
 	obj_label_flag = (apdu->data[datoff + 4] & 0x01);										// 10
 
-	fprintf(fnm," Report Number   : %6d  ",rep_num);
-	fprintf(fnm,"     Record Length    : %03d ",rec_len);
-	fprintf(fnm,"     Report Year        : 20%02d\n ",report_year);
-	fprintf(fnm,"Ovrlay RcID     : %d",overlay_rec_id);										//10
-	fprintf(fnm,"            Object Label Flag: %d \n",obj_label_flag);
-
 	obj_labelt ="  ";
 	if (obj_label_flag == 0) { // Numeric index.
 		obj_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);				// 11 12
-		fprintf(fnm," Ob Lbl Num      : %d    ",obj_label);
 		datoff = datoff +7;	}																// datoff=13
 	else {
 		obj_labelt = decode_dlac(apdu->data,5,2);
-		fprintf(fnm," Ob Lbl Alph     : %s ",obj_labelt);
 		datoff = datoff + 14;
 	}
 
@@ -1565,68 +1540,48 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;			//13
 	param_flag = ((apdu->data[datoff + 0]) & 0x20) >> 5;				//13
 
-	fprintf(fnm,"        Element Flag     : %d  ",element_flag);
-	fprintf(fnm,"      Object Element     : %d\n",obj_element);
-	fprintf(fnm," Object Status   : %d  ",obj_status);
-	fprintf(fnm,"         Object Type      : %d \n",obj_type);
-	fprintf(fnm," Qualifier Flag  : %d  ",qualifier_flag);
-	fprintf(fnm,"          Parameter Flag   : %d \n",param_flag);
-
 	strcpy(qual_text," ");
 	if (qualifier_flag == 0){
 		datoff = datoff + 2;											// 13 > datoff=15
 	}
 	else {
-		object_qualifier = ((apdu->data[datoff + 2]) << 16) | ((apdu->data[datoff + 3]) << 8) | (apdu->data[datoff + 4]);
+//		object_qualifier = ((apdu->data[datoff + 2]) << 16) | ((apdu->data[datoff + 3]) << 8) | (apdu->data[datoff + 4]);
 
 		strcpy(qual_text,"Qualifier: ");
 		if (apdu->product_id == 14) {
 			if (apdu->data[datoff + 2] & (1 << 7)){						// 15
-				fprintf(fnm," Qualifier       : Unspecified\n");
 				strcat(qual_text," Unspecified, ");
 			}
 			if (apdu->data[datoff + 3] & (1 << 0)) {					// 16
-				fprintf(fnm," Qualifier       : Ash\n");
 				strcat(qual_text," Ash, ");
 			}
 			if (apdu->data[datoff + 4] & (1 << 0)) {					// 17
-				fprintf(fnm," Qualifier       : Precipitation\n");
 				strcat(qual_text," Precipitation, ");
 			}
 			if (apdu->data[datoff + 4] & (1 << 1))  {
-				fprintf(fnm," Qualifier       : Mist\n");
 				strcat(qual_text," Mist, ");
 			}
 			if (apdu->data[datoff + 4] & (1 << 2)){
-				fprintf(fnm," Qualifier       : Fog\n");
 				strcat(qual_text," Fog, ");
 			}
 			if (apdu->data[datoff + 4] & (1 << 3)){
-				fprintf(fnm," Qualifier       : Haze\n");
 				strcat(qual_text," Haze, ");
 			}
 			if (apdu->data[datoff + 4] & (1 << 4)) {
-				fprintf(fnm," Qualifier       : Smoke\n");
 				strcat(qual_text," Smoke, ");
 			}
 			if (apdu->data[datoff + 4] & (1 << 5)) {
-				fprintf(fnm," Qualifier       : Blowing Snow\n");
 				strcat(qual_text," Blowing Snow, ");
 			}
 			if (apdu->data[datoff + 4] & (1 << 6)) {
-				fprintf(fnm," Qualifier       : Clouds\n");
 				strcat(qual_text," Clouds, ");
 			}
 			if (apdu->data[datoff + 4] & (1 << 7)) {
-				fprintf(fnm," Qualifier      : Dust\n");
 				strcat(qual_text," Dust, ");
 			}
 		}
-		obj_param_type = apdu->data[18] >> 3;							// 18
-		ob_par_val = (apdu->data[18] & 0x7)<< 8 | apdu->data[19];		// 19
-
-		fprintf(fnm,"Obj Qualfr: %d  Obj Prm Tp: %d  Obj Par Val: %d\n",
-				object_qualifier,obj_param_type,ob_par_val);
+//		obj_param_type = apdu->data[18] >> 3;							// 18
+//		ob_par_val = (apdu->data[18] & 0x7)<< 8 | apdu->data[19];		// 19
 
 		datoff = datoff+7;												// 13 datoff =20
 	}
@@ -1637,15 +1592,8 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 	rec_app_opt = ((apdu->data[datoff + 0]) & 0xC0) >> 6;
 	date_time_format = ((apdu->data[datoff + 0]) & 0x30) >> 4;
 
-	fprintf(fnm," Geo Overlay Opts: %02d  ",geo_overlay_opt);
-	fprintf(fnm,"         Overlay Operator : %d  ",overlay_op);
-	fprintf(fnm,"      Overlay Vertices # : %d \n",overlay_vert_cnt);
-	fprintf(fnm," Rec App Option  : %d  ",rec_app_opt);
-	fprintf(fnm,"          Rec App Date     : %d \n",date_time_format );
-
 	switch (rec_app_opt) {
 	case 0:									// No times given. UFN. (record_data[2:],date_time_format)
-		fprintf(fnm,"No Dates Given\n");
 		asprintf(&start_date,"0");
 		asprintf(&stop_date,"0");
 		datoff = datoff +2;
@@ -1656,7 +1604,7 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 		d2 = apdu->data[datoff + 3];
 		d3 = apdu->data[datoff + 4];
 		d4 = apdu->data[datoff + 5];
-		fprintf(fnm," Only Start Date : %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
+
 		asprintf(&start_date,"%02d/%02d %02d:%02d",d1,d2,d3,d4);
 		asprintf(&stop_date,"0");
 		datoff = datoff + 6;
@@ -1667,7 +1615,7 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 		d2 = apdu->data[datoff + 3];
 		d3 = apdu->data[datoff + 4];
 		d4 = apdu->data[datoff + 5];
-		fprintf(fnm," Only End Date: %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
+
 		asprintf(&start_date,"0");
 		asprintf(&stop_date,"%02d/%02d %02d:%02d",d1,d2,d3,d4);
 		datoff = datoff + 6;
@@ -1678,31 +1626,29 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 		d2 = apdu->data[datoff + 3];
 		d3 = apdu->data[datoff + 4];
 		d4 = apdu->data[datoff + 5];
-		fprintf(fnm," Start Date      : %02d/%02d %02d:%02d  ",d1,d2,d3,d4);
+
 		asprintf(&start_date,"%02d/%02d %02d:%02d",d1,d2,d3,d4);
 		d1 = apdu->data[datoff + 6];
 		d2 = apdu->data[datoff + 7];
 		d3 = apdu->data[datoff + 8];
 		d4 = apdu->data[datoff + 9];
-		fprintf(fnm,"End Date         : %02d/%02d %02d:%02d \n",d1,d2,d3,d4);
+
 		asprintf(&stop_date,"%02d/%02d %02d:%02d",d1,d2,d3,d4);
 		datoff = datoff + 10;
 		break;
 	}
-
-	fprintf(fnm,"\n");
 
 	strcpy(ob_ele_text," ");
 
 	if (element_flag == 1 && obj_type == 14 && apdu->product_id == 14)
 		strcpy(ob_ele_text,gairspace_element_names[obj_element]);
 
-	asprintf(&sql,"INSERT INTO graphic_reports (prod_id,rec_format,stn_call,prod_ver,rec_count,rec_ref,"
+	asprintf(&sql,"INSERT INTO graphic_reports (prod_id,stn_call,prod_ver,rec_count,rec_ref,"
 			"rep_number,rec_length,rep_year,ovrly_recid,obj_lbl_flag,obj_lbl_number,obj_lbl_alpha,"
 			"element_flag,obj_element,obj_status,obj_type,qual_flag,param_flag,rec_app_option,"
 			"app_opt_fmt,start_date,stop_date,geo_ovrly_opt,ovrly_operator,ovrly_vertices,qual_text,rep_rec_time)"
-			"VALUES(%d,%d,'%s',%d,%d,%d,%d,%d,%d,%d,%d,%d,'%s',%d,%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d,%d,%d,'%s','%s')",
-			apdu->product_id,recf,gstn,product_ver,rec_count,rec_ref,rep_num,rec_len,report_year,
+			"VALUES(%d,'%s',%d,%d,%d,%d,%d,%d,%d,%d,%d,'%s',%d,%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d,%d,%d,'%s','%s')",
+			apdu->product_id,gstn,product_ver,rec_count,rec_ref,rep_num,rec_len,report_year,
 			overlay_rec_id,obj_label_flag,obj_label,obj_labelt,element_flag,obj_element,obj_status,obj_type,
 			qualifier_flag,param_flag,rec_app_opt,date_time_format,start_date,stop_date,geo_overlay_opt,overlay_op,
 			overlay_vert_cnt,qual_text,buff);
@@ -1788,8 +1734,6 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 				else
 					fprintf(file3dpoly,"[ %f, %f ],\n",lng,lat);
 
-				fprintf(fnm,"      Coordinates: %11f,%11f    Alt: %d\n",lat,lng,alt);
-
 				asprintf(&sql,"INSERT INTO graphic_coords (prod_id, rep_number, geo_ovrly_opt,"
 					"coord_num,ovrly_vertices, ovrly_lat,ovrly_lng,ovrly_alt) "
 					"VALUES (%d,%d,%d,%d,%d,%f,%f,%d)",
@@ -1810,8 +1754,9 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 			break;
 
 		case 7: case 8:								// Extended Range Circular Prism (7 = MSL,8 = AGL)
+/*
 			if (rec_len < 14) {
-				fprintf(fnm,"Data too short. Should be 14 bytes; %d seen.\n",rec_len);
+//				fprintf(fnm,"Data too short. Should be 14 bytes; %d seen.\n",rec_len);
 			}
 			else {
 				uint32_t lng_bot_raw;
@@ -1871,82 +1816,78 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 				r_lng = r_lng_raw * 0.2;
 				r_lat = r_lat_raw * 0.2;
 
-				fprintf(fnm,"lat_bot, lng_bot = %f, %f\n", lat_bot, lng_bot);
-				fprintf(fnm,"lat_top, lng_top = %f, %f\n", lat_top, lng_top);
+//				fprintf(fnm,"lat_bot, lng_bot = %f, %f\n", lat_bot, lng_bot);
+//				fprintf(fnm,"lat_top, lng_top = %f, %f\n", lat_top, lng_top);
 
-				if (geo_overlay_opt == 8)
-					fprintf(fnm,"alt_bot, alt_top = %d AGL, %d AGL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
-				else
-					fprintf(fnm,"alt_bot, alt_top = %d MSL, %d MSL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
+//				if (geo_overlay_opt == 8)
+//					fprintf(fnm,"alt_bot, alt_top = %d AGL, %d AGL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
+//				else
+//					fprintf(fnm,"alt_bot, alt_top = %d MSL, %d MSL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
 
-				fprintf(fnm,"r_lng, r_lat = %f, %f\n", r_lng,r_lat);
-				fprintf(fnm,"alpha=%d\n",alpha);
+//				fprintf(fnm,"r_lng, r_lat = %f, %f\n", r_lng,r_lat);
+//				fprintf(fnm,"alpha=%d\n",alpha);
 			}
+*/
 			break;
 
 		case 9:										// Extended Range 3D Point (AGL)
-			if (rec_len < 6) {
-				fprintf(fnm, "Too short\n");
-			}
-			else {
-				lng_raw = ((apdu->data[datoff +0]) << 11) | ((apdu->data[datoff +1]) << 3) |
-					((apdu->data[datoff +2]) & 0xE0 >> 5);
-				lat_raw = (((apdu->data[datoff +2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) |
-					(((apdu->data[datoff + 4]) & 0xFC) >> 2);
-				alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
+			lng_raw = ((apdu->data[datoff +0]) << 11) | ((apdu->data[datoff +1]) << 3) |
+				((apdu->data[datoff +2]) & 0xE0 >> 5);
+			lat_raw = (((apdu->data[datoff +2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) |
+				(((apdu->data[datoff + 4]) & 0xFC) >> 2);
+			alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
 
-				lng_raw = (~lng_raw & 0x7FFFF) +1;		// 2's compliment +1
-				lat_raw = (~lat_raw & 0x7FFFF) +1;		// 2's compliment +1
+			lng_raw = (~lng_raw & 0x7FFFF) +1;		// 2's compliment +1
+			lat_raw = (~lat_raw & 0x7FFFF) +1;		// 2's compliment +1
 
-				lat = lat_raw *  0.0006866455078125 ;
-				lng = (lng_raw *  0.0006866455078125) * -1 ;
+			lat = lat_raw *  0.0006866455078125 ;
+			lng = (lng_raw *  0.0006866455078125) * -1 ;
 
-				if (lat > 90.0)
-					lat = 360.0 - lat;
-				if (lng > 180.0)
-					lng = lng - 360.0;
-				alt = alt_raw * 100;
+			if (lat > 90.0)
+				lat = 360.0 - lat;
+			if (lng > 180.0)
+				lng = lng - 360.0;
+			alt = alt_raw * 100;
 
-				if (apdu->product_id == 18) {
-					notam_list[notam_count].notam_lat = lat;
-					notam_list[notam_count].notam_lng = lng;
+			if (apdu->product_id == 18) {
+				notam_list[notam_count].notam_lat = lat;
+				notam_list[notam_count].notam_lng = lng;
 
-					strcpy(notam_list[notam_count].notam_stn,gstn);
+				strcpy(notam_list[notam_count].notam_stn,gstn);
 
-					notam_list[notam_count].notam_repid =rep_num;
-					if (notam_count == 0) {
-						fprintf(filenotamjson,"{\"type\": \"FeatureCollection\",\n");
-						fprintf(filenotamjson,"\"features\": [ \n");
-						fprintf(filenotamjson,"{\"type\": \"Feature\",\"properties\": { \"Location\": \"%s\",\"Stuff\":"
-							" \"%d\"},\n",gstn,rep_num);
-						fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %f,%f ] }}\n",lng,lat);
-						fprintf(filenotamjson,"]}");
-					}
-					else {
-						fseek(filenotamjson,-3,SEEK_CUR);
-						fprintf(filenotamjson,",{\"type\": \"Feature\",\"properties\": { \"Location\": \"%s\",\"Stuff\":"
-							" \"%d\"},\n",gstn,rep_num);
-						fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %f,%f ] }}\n",lng,lat);
-						fprintf(filenotamjson,"]}");
-					}
-
-					fflush(filenotamjson);
-					notam_count ++;
+				notam_list[notam_count].notam_repid =rep_num;
+				if (notam_count == 0) {
+					fprintf(filenotamjson,"{\"type\": \"FeatureCollection\",\n");
+					fprintf(filenotamjson,"\"features\": [ \n");
+					fprintf(filenotamjson,"{\"type\": \"Feature\",\"properties\": { \"Location\": \"%s\",\"Stuff\":"
+						" \"%d\"},\n",gstn,rep_num);
+					fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %f,%f ] }}\n",lng,lat);
+					fprintf(filenotamjson,"]}");
 				}
-				fprintf(fnm,"      Coordinates: %11f,%11f    Alt: %d\n",lat,lng,alt);
+				else {
+					fseek(filenotamjson,-3,SEEK_CUR);
+					fprintf(filenotamjson,",{\"type\": \"Feature\",\"properties\": { \"Location\": \"%s\",\"Stuff\":"
+						" \"%d\"},\n",gstn,rep_num);
+					fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %f,%f ] }}\n",lng,lat);
+					fprintf(filenotamjson,"]}");
+				}
 
-				asprintf(&sql,"INSERT INTO graphic_coords (prod_id, rep_number, geo_ovrly_opt,"
+				fflush(filenotamjson);
+				notam_count ++;
+			}
+
+			asprintf(&sql,"INSERT INTO graphic_coords (prod_id, rep_number, geo_ovrly_opt,"
 					"coord_num,ovrly_vertices, ovrly_lat,ovrly_lng,ovrly_alt) "
 					"VALUES (%d,%d,%d,0,%d,%f,%f,%d)",
 					apdu->product_id,rep_num,geo_overlay_opt,overlay_vert_cnt,lat,lng,alt);
-				rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
-				if( rc != SQLITE_OK ){
-					if (rc != 19)
-						fprintf(stderr, "1 SQL error: %s\n", zErrMsg);
+			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
+			if( rc != SQLITE_OK ){
+				if (rc != 19)
+					fprintf(stderr, "1 SQL error: %s\n", zErrMsg);
 
-					sqlite3_free(zErrMsg);
-				}
+				sqlite3_free(zErrMsg);
 			}
+
 			break;
 
 		case 11: case 12:							// Extended Range 3D Polyline
@@ -1977,47 +1918,44 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 				break;
 			}
 			for (int i = 0; i < overlay_vert_cnt; i++) {
-				if (rec_len < 6) {
-					fprintf(fnm, "Too short\n");
+				lng_raw = ((apdu->data[datoff +i]) << 11) | ((apdu->data[datoff +i+1]) << 3) |
+						((apdu->data[datoff +i+2]) >> 5);
+				lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+ 3]) << 6) |
+						(((apdu->data[datoff +i+ 4]) & 0xFC) >> 2);
+				alt_raw = (((apdu->data[datoff +i+ 4]) & 0x03) << 8) | (apdu->data[datoff +i+ 5]);
+
+				datoff = datoff + 5;
+
+				lng_raw = (~lng_raw & 0x7FFFF) +1;		// 2's compliment +1
+				lat_raw = (~lat_raw & 0x7FFFF) +1;		// 2's compliment +1
+
+				lat = lat_raw *  0.0006866455078125 ;
+				lng = lng_raw * -0.0006866455078125 ;
+
+				if (lat > 90.0)
+					lat = 360.0 - lat;
+				if (lng > 180.0)
+					lng = lng - 360.0;
+
+				alt = alt_raw * 100;
+
+				if (qualifier_flag == 0){
+					if (i == (overlay_vert_cnt-1))
+						fprintf(file3dpoly,"[ %f,%f ]\n",lng,lat);
+					else
+						fprintf(file3dpoly,"[ %f,%f ],\n",lng,lat);
 				}
-				else {
-					lng_raw = ((apdu->data[datoff +i]) << 11) | ((apdu->data[datoff +i+1]) << 3) | ((apdu->data[datoff +i+2]) >> 5);
-					lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+ 3]) << 6) | (((apdu->data[datoff +i+ 4]) & 0xFC) >> 2);
-					alt_raw = (((apdu->data[datoff +i+ 4]) & 0x03) << 8) | (apdu->data[datoff +i+ 5]);
 
-					datoff = datoff + 5;
-
-					lng_raw = (~lng_raw & 0x7FFFF) +1;		// 2's compliment +1
-					lat_raw = (~lat_raw & 0x7FFFF) +1;		// 2's compliment +1
-
-					lat = lat_raw *  0.0006866455078125 ;
-					lng = lng_raw * -0.0006866455078125 ;
-
-					if (lat > 90.0)
-						lat = 360.0 - lat;
-					if (lng > 180.0)
-						lng = lng - 360.0;
-					alt = alt_raw * 100;
-
-					if (qualifier_flag == 0){
-						if (i == (overlay_vert_cnt-1))
-							fprintf(file3dpoly,"[ %f,%f ]\n",lng,lat);
-						else
-							fprintf(file3dpoly,"[ %f,%f ],\n",lng,lat);
-					}
-					fprintf(fnm,"      Coordinates: %11f,%11f    Alt: %d\n",lat,lng,alt);
-
-					asprintf(&sql,"INSERT INTO graphic_coords (prod_id, rep_number, geo_ovrly_opt,"
+				asprintf(&sql,"INSERT INTO graphic_coords (prod_id, rep_number, geo_ovrly_opt,"
 						"coord_num,ovrly_vertices, ovrly_lat,ovrly_lng,ovrly_alt) "
 						"VALUES (%d,%d,%d,%d,%d,%f,%f,%d)",
 						apdu->product_id,rep_num,geo_overlay_opt,i,overlay_vert_cnt,lat,lng,alt);
-					rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
-					if( rc != SQLITE_OK ){
-						if (rc != 19)
-							fprintf(stderr, "1 SQL error: %s\n", zErrMsg);
+				rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
+				if( rc != SQLITE_OK ){
+					if (rc != 19)
+						fprintf(stderr, "1 SQL error: %s\n", zErrMsg);
 
-						sqlite3_free(zErrMsg);
-					}
+					sqlite3_free(zErrMsg);
 				}
 			}
 			if (qualifier_flag == 0){
@@ -2028,17 +1966,14 @@ static void get_graphic(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 			}
 			break;
 		}
-		fprintf(fnm,"\n");
-		fflush(fnm);
-
 	}
 //	display_generic_data(apdu->data,apdu->length,to);
 }
 
-static void get_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to){
+static void get_text(const struct fisb_apdu  *apdu, FILE *to){
 
 	int rec_offset = 11;
-	int rep_status;
+//	int rep_status;
 	uint16_t rep_num = 0;
 
 	char gstn[5];
@@ -2078,7 +2013,9 @@ static void get_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to){
 		p = strchr(r,' ');
 		if (p) {
 			*p = 0;
-			fprintf(fnm," Report Type     : %s\n",r);
+			if (apdu->product_id == 13)
+				fprintf(filesua," Report Type     : %s\n",r);
+
 			notam_name = (char *)malloc(strlen(r) + 1);
 			strcpy(notam_name,r);
 			r = p+1;
@@ -2093,7 +2030,9 @@ static void get_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to){
 				*p = 0;
 				strncpy(gstn,r,5);
 				get_gs_name(gstn);
-				fprintf(fnm," RLoc            : %s - %s\n",gstn,gs_ret);
+				if (apdu->product_id == 13)
+					fprintf(filesua," RLoc            : %s - %s\n",gstn,gs_ret);
+
 				r = p + 1;
 			}
 		}
@@ -2102,28 +2041,32 @@ static void get_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to){
 			*p = 0;
 			rtime = (char *)malloc(strlen(r) + 1);
 			strcpy(rtime,r);
-			fprintf(fnm," RTime           : %s\n",r);
+			if (apdu->product_id == 13)
+				fprintf(filesua," RTime           : %s\n",r);
+
 			r = p + 1;
 		}
 
 		rep_num = ((apdu->data[8]  << 6) | (apdu->data[9] & 0xFC) >> 2);
-		fprintf(fnm," Report Number   : %6d  ",rep_num);
 		report_year = (((apdu->data[9]) & 0x03) << 5 | ((apdu->data[10])  & 0xF8) >> 3) ;
-		fprintf(fnm,"     Report Year       : 20%02d\n ",report_year);
-
-		if (apdu->data[10] & (1 << 2)){
-			rep_status = 1;
-			fprintf(fnm,"Report Active   : %d\n",rep_status);
+		if (apdu->product_id == 13){
+			fprintf(filesua," Report Year     : 20%02d\n ",report_year);
+			fprintf(filesua,"Report Number   : %6d  ",rep_num);
 		}
-		else{
-			rep_status = 0;
-			fprintf(fnm,"Report Inactive : %d\n",rep_status);
-		}
+//		if (apdu->data[10] & (1 << 2)){
+//			rep_status = 1;
+//			fprintf(fnm,"Report Active   : %d\n",rep_status);
+//		}
+//		else{
+//			rep_status = 0;
+//			fprintf(fnm,"Report Inactive : %d\n",rep_status);
+//		}
 
 		time_t current_time = time(NULL);
 		struct tm *tm = localtime(&current_time);
 		strftime(buff, sizeof buff, "%D %T", tm);
-		fprintf(fnm," Time            : %s\n",buff);
+		if (apdu->product_id == 13)
+			fprintf(filesua," Time            : %s\n",buff);
 
 		if (apdu->product_id == 13){
 			sua_text = (char *)malloc(strlen(r) + 1);
@@ -2179,9 +2122,9 @@ static void get_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to){
 				notam_count++;
 			}
 			// add to database
-			asprintf(&sql,"INSERT INTO text_reports (prod_id,report_type,rec_format,stn_call,rep_time,"
+			asprintf(&sql,"INSERT INTO text_reports (prod_id,report_type,stn_call,rep_time,"
 					"rep_year,rep_number,time,data) "
-					"VALUES (%d,'%s',2,'%s','%s',%d,%d,'%s','%s')",
+					"VALUES (%d,'%s','%s','%s',%d,%d,'%s','%s')",
 					apdu->product_id,prod_name,gstn,rtime,report_year,rep_num,buff,data_text);
 			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
 			if( rc != SQLITE_OK ){
@@ -2191,8 +2134,10 @@ static void get_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to){
 				sqlite3_free(zErrMsg);
 			}
 		}
-		fprintf(fnm," Data:\n%s\n",r);
-		fflush(fnm);
+		if (apdu->product_id == 13){
+			fprintf(filesua," Data:\n%s\n",r);
+			fflush(filesua);
+		}
 	}
 }
 
@@ -2287,7 +2232,6 @@ static void get_seg_text(const struct fisb_apdu  *apdu, FILE *fnm,FILE *to)
 		}
 
 		const char *seg_text_all = decode_dlac(rep_all,char_cnt,0);
-
 
 		time_t current_time = time(NULL);
 		struct tm *tm = localtime(&current_time);
