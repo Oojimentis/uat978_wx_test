@@ -1156,10 +1156,11 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 		char buff[30];
 		char observation[900];
 		char gstn[5];
-		char *pirep_copy;
+		char *pirep_copy, *taf_copy, *time_copy;
 		char report_buf[1024];
 		char mtype[9]; char taftype[9];
 		char *p,*r;
+		char temp[100];
 
 		while (report) {
 
@@ -1226,11 +1227,43 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 				*p = 0;
 				strcat(observation," ");
 				strcat(observation,r);
+				time_copy = (char *)malloc(strlen(r) + 1);
+				strcpy(time_copy,r);
 				r = p+1;
 			}
 			if (strcmp(mtype,"TAF") == 0 || strcmp(mtype,"TAF.AMD" ) == 0 || strcmp(mtype,"TAF.COR") == 0){
+
+				char c1[4],c2[4];
+//							   char c3[3];
+
 				fprintf(filemetar," Report Name         : %s\n",mtype);
 				fprintf(filemetar," Data:\n%s\n",r);		// *** Text ***
+/*
+			220100Z	2201/2307 36009KT 9999 OVC040 620402 QNH3048INS
+				     BECMG 2203/2204 06006KT 9999 BKN030 620302 QNH3042INS
+				     BECMG 2214/2215 09006KT 9999 SCT030 BKN150 QNH3035INS
+				     BECMG 2217/2218 11006KT 8000 -SN BKN030 620309 QNH3022INS
+				     BECMG 2220/2221 08009KT 8000 -RA OVC010 620804 QNH2993INS
+				     BECMG 2302/2303 15020G30KT 8000 -RA OVC010 620804 520002
+				     QNH2980INS TX03/2218Z TNM01/2209Z=
+*/
+
+				taf_copy = (char *)malloc(strlen(r) + 1);
+				strcpy(taf_copy,r);
+				strncpy(temp,taf_copy,12);
+				strncpy(c1,taf_copy,5);
+				strncpy(c2,taf_copy+5,5);
+
+				fprintf(filemetar," time: %s - %s:%s\n",temp,c1,c2);
+				fprintf(filemetar,"moose: %s\n",taf_copy);
+				char *aa;
+                aa=taf_copy;
+                for (int i = 0; i < 8; ++i) {
+                char *aaa = strsep(&aa,"\n");
+                fprintf(stderr,"moose: %s\n",aaa);
+                }
+
+
 			}
 			if (strcmp(mtype,"WINDS") == 0){
 				char *tok1;  char *tok2; char *tok3; char *tok4;

@@ -13,7 +13,7 @@
 #include "uat_decode.h"
 #include "uat_geo.h"
 #include "asprintf.h"
-#include "metar.h"
+//#include "metar.h"
 
 void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 {
