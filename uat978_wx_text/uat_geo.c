@@ -390,8 +390,6 @@ void metar_data( Decoded_METAR *Mptr,FILE *to)
 
 	sprintf(obs_date,"%02d %02d:%02d",Mptr->ob_date,Mptr->ob_hour,Mptr->ob_minute);
 
-	fprintf(to," moo %d \n",Mptr->temp);
-
 	asprintf(&sql,"INSERT INTO metar (type,station,obs_date,temp,dew_point,visibility,sea_lev_pr,alt_inches,wind_dir,"
 			"wind_sp,cloud_type1,cloud_height1,cloud_type2,cloud_height2,cloud_type3,cloud_height3,cloud_type4,cloud_height4) "
 			"VALUES ('%s','%s','%s',%d,%d,%.2f,%.2f,%.2f,%d,%d,'%s','%s','%s','%s','%s','%s','%s','%s')"

@@ -10,7 +10,7 @@
 #include <math.h>
 #include <string.h>
 #include <assert.h>
-
+#include <ctype.h>
 #include <stdio.h>
 #include <sqlite3.h>
 
@@ -89,6 +89,70 @@ static const char *decode_dlac(uint8_t *data,unsigned bytelen,int rec_offset)
 }
 
 static char base40_alphabet[40] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ  ..";
+
+void validDates(char *sd,char *sz, char *ed, char *ez, char *str)
+{  //TAF valid dates
+	strncpy(sd,str,2);
+	sd[2]='\0';
+	strncpy(sz,str+2,2);
+	sz[2]='\0';
+	strncpy(ed,str+5,2);
+	ed[2]='\0';
+	strncpy(ez,str+7,2);
+	ez[2]='\0';
+}
+
+void tafWind(char *d,char *s,char *gs,char *temp)
+{
+	char kt[3];
+	int w_len = strlen(temp);
+	gs[0]='\0';
+
+	if (w_len == 7){
+		strncpy(kt,temp+5,2);
+		if (strcmp(kt,"KT") != 0)
+			fprintf(stderr,"not a wind type: %s\n",temp);
+		else{
+			strncpy(d,temp,3);
+			d[3]='\0';
+			strncpy(s,temp+3,2);
+			s[3]='\0';
+		}
+	}
+	else if (w_len == 10){
+		strncpy(kt,temp+8,2);
+		if (strcmp(kt,"KT") != 0)
+			fprintf(stderr,"not a wind type: %s\n",temp);
+		else{
+			strncpy(d,temp,3);
+			d[3]='\0';
+			strncpy(s,temp+3,2);
+			s[3]='\0';
+			strncpy(gs,temp+6,2);
+			gs[3]='\0';
+		}
+	}
+}
+
+void trimSpaces(char *s)
+{
+	int  i,j;
+
+	for(i=0;s[i]==' '||s[i]=='\t';i++);
+
+	for(j=0;s[i];i++)
+	{
+		s[j++]=s[i];
+	}
+	s[j]='\0';
+	for(i=0;s[i]!='\0';i++)
+	{
+		if(s[i]!=' '&& s[i]!='\t')
+				j=i;
+	}
+	s[j+1]='\0';
+}
+
 
 static double dimensions_widths[16] = {
     11.5,23,28.5,34,33,38,39.5,45,45,52,59.5,67,72.5,80,80,90
@@ -1160,7 +1224,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 		char report_buf[1024];
 		char mtype[9]; char taftype[9];
 		char *p,*r;
-		char temp[100];
+//		char temp[100];
 
 		while (report) {
 
@@ -1233,36 +1297,119 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 			}
 			if (strcmp(mtype,"TAF") == 0 || strcmp(mtype,"TAF.AMD" ) == 0 || strcmp(mtype,"TAF.COR") == 0){
 
-				char c1[4],c2[4];
-//							   char c3[3];
+				// TAF Decode
+				char *taf_lines[10];
 
 				fprintf(filemetar," Report Name         : %s\n",mtype);
 				fprintf(filemetar," Data:\n%s\n",r);		// *** Text ***
-/*
-			220100Z	2201/2307 36009KT 9999 OVC040 620402 QNH3048INS
-				     BECMG 2203/2204 06006KT 9999 BKN030 620302 QNH3042INS
-				     BECMG 2214/2215 09006KT 9999 SCT030 BKN150 QNH3035INS
-				     BECMG 2217/2218 11006KT 8000 -SN BKN030 620309 QNH3022INS
-				     BECMG 2220/2221 08009KT 8000 -RA OVC010 620804 QNH2993INS
-				     BECMG 2302/2303 15020G30KT 8000 -RA OVC010 620804 520002
-				     QNH2980INS TX03/2218Z TNM01/2209Z=
-*/
 
 				taf_copy = (char *)malloc(strlen(r) + 1);
 				strcpy(taf_copy,r);
-				strncpy(temp,taf_copy,12);
-				strncpy(c1,taf_copy,5);
-				strncpy(c2,taf_copy+5,5);
+				int i=0;
+				int j=0;
+				while (j==0){
+					taf_lines[i] = strsep(&taf_copy,"\n");
+					if (strcmp(taf_lines[i],"") == 0)
+						j=1;
+					else{
+					trimSpaces(taf_lines[i]);
+						i++;
+					}
+				}
 
-				fprintf(filemetar," time: %s - %s:%s\n",temp,c1,c2);
-				fprintf(filemetar,"moose: %s\n",taf_copy);
-				char *aa;
-                aa=taf_copy;
-                for (int i = 0; i < 8; ++i) {
-                char *aaa = strsep(&aa,"\n");
-                fprintf(stderr,"moose: %s\n",aaa);
-                }
+				for (int j = 0; j < i; ++j) {
+				// Valid dates
+					char sd[3],sz[3],ed[3],ez[3];
+					char fsz[5];
+					char taf_t[5];
+					char d[4], s[4],gs[4];
+					char *temp;
+					strncpy(taf_t,taf_lines[j],2);
+					taf_t[2]='\0';
 
+					if(isdigit(taf_t[0])) {
+						fprintf(to,"numeric %s\n",taf_lines[j]);
+						temp = strsep(&taf_lines[j]," ");
+						validDates(sd,sz,ed,ez,temp);
+						fprintf(to,"Start day: %s  Start hour: %sz  ",sd,sz);
+						fprintf(to,"End day  : %s  End hour: %sz\n",ed,ez);
+				// winds
+						temp = strsep(&taf_lines[j]," ");
+						tafWind(d,s,gs,temp);
+						if (strcmp(d,"VRB") == 0)
+							fprintf(to,"Direction: Variable  Speed: %s KTs",s);
+						else
+							fprintf(to,"Direction: %s degrees  Speed: %s KTs",d,s);
+						if (strcmp(gs,"\0") ==0)
+							fprintf(to," No gusts\n");
+						else
+							fprintf(to," Gusts: %s KTs\n",gs);
+				//visibility
+						temp = strsep(&taf_lines[j]," ");
+						if (strncmp(temp,"P",1) == 0){
+							fprintf(to,"Visibility more than: %s \n",temp+1);
+						}
+						else if (strncmp(temp,"M",1) == 0){
+								fprintf(to,"Visibility less than: %s\n ",temp+1);
+						}
+						else if (strncmp(temp,"9999",4) == 0)
+							fprintf(to,"Visibility: Clear\n");
+							else
+								fprintf(to,"Visibility: %s meters\n",temp);
+
+
+					}
+					else if (strcmp(taf_t,"BE") == 0){
+						fprintf(to,"Becoming %s\n",taf_lines[j]);
+						temp = strsep(&taf_lines[j]," ");
+						temp = strsep(&taf_lines[j]," ");
+						validDates(sd,sz,ed,ez,temp);
+						fprintf(to,"Start day: %s  Start hour: %sz ",sd,sz);
+						fprintf(to,"End day  : %s  End hour: %sz\n",ed,ez);
+				// winds
+						temp = strsep(&taf_lines[j]," ");
+						tafWind(d,s,gs,temp);
+						if (strcmp(d,"VRB") == 0)
+							fprintf(to,"Direction: Variable  Speed: %s KTs",s);
+						else
+							fprintf(to,"Direction: %s degrees  Speed: %s KTs",d,s);
+						if (strcmp(gs,"\0") ==0)
+							fprintf(to," No gusts\n");
+						else
+							fprintf(to," Gusts: %s KTs\n",gs);
+					}
+					else if  (strcmp(taf_t,"FM") == 0){
+						 fprintf(to,"From %s\n",taf_lines[j]);
+							temp = strsep(&taf_lines[j]," ");
+							strncpy(sd,temp+2,2);
+							strncpy(fsz,temp+4,4);
+							fsz[4]='\0';
+							fprintf(to,"From day: %s  at %sz\n",sd,fsz);
+					// winds
+							temp = strsep(&taf_lines[j]," ");
+							tafWind(d,s,gs,temp);
+							if (strcmp(d,"VRB") == 0)
+								fprintf(to,"Direction: Variable  Speed: %s KTs",s);
+							else
+								fprintf(to,"Direction: %s degrees  Speed: %s KTs",d,s);
+							if (strcmp(gs,"\0") ==0)
+								fprintf(to," No gusts\n");
+							else
+								fprintf(to," Gusts: %s KTs\n",gs);
+					}
+					else if  (strcmp(taf_t,"TE") == 0){
+						fprintf(to,"Temporary %s\n",taf_lines[j]);
+						temp = strsep(&taf_lines[j]," ");
+						validDates(sd,sz,ed,ez,taf_lines[j]);
+						fprintf(to,"Start day: %s  Start hour: %sz ",sd,sz);
+						fprintf(to,"End day  : %s  End hour: %sz\n",ed,ez);
+					}
+					else
+						fprintf(to,"Not found %s\n",taf_lines[j]);
+				}
+
+
+     // End TAF decode
 
 			}
 			if (strcmp(mtype,"WINDS") == 0){
