@@ -36,7 +36,7 @@ void handle_frame(frame_type_t type, uint8_t *frame, int len, void *extra)
 }
 
 int main(int argc, char **argv)
- {
+{
 	seg_count=0;
 	notam_count=0;
 	metar_count=0;
