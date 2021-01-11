@@ -136,7 +136,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 			}
 			asprintf(&sql,"%s '%s')",sql,block);
 
-			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
+//			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
 			if( rc != SQLITE_OK ){
 				if (rc != 19)
 					fprintf(stderr, "4 SQL error: %s\n", zErrMsg);
@@ -159,7 +159,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 			}
 			asprintf(&sql,"%s '%s')",sql,block);
 
-			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
+//			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
 			if( rc != SQLITE_OK ){
 				if (rc != 19)
 					fprintf(stderr, "5 SQL error: %s\n", zErrMsg);
@@ -186,7 +186,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 
 			asprintf(&sql,"%s '%s')",sql,block);
 
-			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
+//			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
 			if( rc != SQLITE_OK ){
 				if (rc != 19)
 					fprintf(stderr, "6 SQL error: %s\n", zErrMsg);
@@ -224,7 +224,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
     
 			asprintf(&sql,"%s '%s')",sql,block);
 		
-			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
+//			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
 			if( rc != SQLITE_OK ){
 				if (rc != 19)
 					fprintf(stderr, "7 SQL error: %s\n", zErrMsg);
@@ -285,7 +285,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
    			    	
 					asprintf(&sql,"%s '%s')",sql,block);
 
-					rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
+//					rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
 					if( rc != SQLITE_OK ){
 						if (rc != 19)
 							fprintf(stderr, "8 SQL error: %s\n", zErrMsg);
@@ -398,7 +398,7 @@ void metar_data( Decoded_METAR *Mptr,FILE *to)
 			Mptr->cloudGroup[1].cloud_hgt_char,Mptr->cloudGroup[2].cloud_type,Mptr->cloudGroup[2].cloud_hgt_char,
 			Mptr->cloudGroup[3].cloud_type,Mptr->cloudGroup[3].cloud_hgt_char);
 
-	rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
+//	rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
 	if( rc != SQLITE_OK ){
 		if (rc != 19)
 			fprintf(stderr, "9 SQL error: %s\n", zErrMsg);

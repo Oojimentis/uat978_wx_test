@@ -13,7 +13,7 @@
 #include <string.h>
 
 #include "asprintf.h"
-#include "/usr/include/postgresql/libpq-fe.h"
+//#include "/usr/include/postgresql/libpq-fe.h"
 
 #ifndef NULL
 #define NULL   ((void *) 0)
