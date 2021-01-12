@@ -90,14 +90,8 @@ static const char *decode_dlac(uint8_t *data,unsigned bytelen,int rec_offset)
 
 static char base40_alphabet[40] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ  ..";
 
-void validDates(char *sd,char *sz, char *ed, char *ez, char *str)
-{  //TAF valid dates
-	int d;
-	char dt[3];
-	sd[2]='\0';
-	ed[2]='\0';
-	strncpy(sd,str,2);
-	d=atoi(sd);
+void daySuffix(int d ,char *dt)
+{
 	switch (d){
 		case 1: case 21: case 31: strcpy(dt,"st"); break;
 		case 2: case 22: strcpy(dt,"nd"); break;
@@ -105,19 +99,30 @@ void validDates(char *sd,char *sz, char *ed, char *ez, char *str)
 		default: strcpy(dt,"th"); break;
 	}
 	dt[2]='\0';
+}
+
+void validDates(char *sd,char *sz, char *ed, char *ez, char *str)
+{  //TAF valid dates
+
+	int d;
+	char dt[3];
+
+	sd[2]='\0';
+	ed[2]='\0';
+
+	strncpy(sd,str,2);
+	d=atoi(sd);
+
+	daySuffix(d ,dt);
 	sprintf(sd,"%d%s",d,dt);
 
 	strncpy(sz,str+2,2);
 	sz[2]='\0';
+
 	strncpy(ed,str+5,2);
 	d=atoi(ed);
-	switch (d){
-		case 1: case 21: case 31: strcpy(dt,"st"); break;
-		case 2: case 22: strcpy(dt,"nd"); break;
-		case 3: case 23: strcpy(dt,"rd"); break;
-		default: strcpy(dt,"th"); break;
-	}
-	dt[2]='\0';
+
+	daySuffix(d ,dt);
 	sprintf(ed,"%d%s",d,dt);
 
 	strncpy(ez,str+7,2);
@@ -136,10 +141,6 @@ void tafWeather(char *taf_list,char *taf_wx)
 	while (temp !=NULL){
 		if (strcmp(temp,"BR") == 0)
 			sprintf(taf_wx,"%s Mist ",taf_wx);
-
-		else if (strncmp(temp,"VV",2) == 0)					// **************
-			sprintf(taf_wx,"%s Verical visibilty ",taf_wx);
-
 		else if (strncmp(temp,"BKN",3) == 0){
 			units = atoi(temp+3);
 			sprintf(taf_wx,"%s Broken clouds %d00ft",taf_wx,units);
@@ -163,10 +164,40 @@ void tafWeather(char *taf_list,char *taf_wx)
 			units_f=atof(temp2);
 			sprintf(taf_wx,"%s Altimeter %2.2fHg",taf_wx,units_f/100);
 		}
-		else if (strncmp(temp,"-RA",3) == 0)
+		else if (strcmp(temp,"-DZ") == 0)
+			sprintf(taf_wx,"%s Light drizzle ",taf_wx);
+		else if (strcmp(temp,"DZ") == 0)
+			sprintf(taf_wx,"%s Drizzle ",taf_wx);
+		else if (strcmp(temp,"FG") == 0)
+			sprintf(taf_wx,"%s Fog ",taf_wx);
+		else if (strcmp(temp,"-FZRA") == 0)
+			sprintf(taf_wx,"%s Light freezing rain ",taf_wx);
+		else if (strcmp(temp,"HZ") == 0)
+			sprintf(taf_wx,"%s Haze ",taf_wx);
+		else if (strcmp(temp,"NSW") == 0)
+			sprintf(taf_wx,"%s No significant weather ",taf_wx);
+		else if (strcmp(temp,"-RA") == 0)
 			sprintf(taf_wx,"%s Light rain ",taf_wx);
-		else if (strncmp(temp,"-SHRA",5) == 0)
+		else if (strcmp(temp,"RA") == 0)
+			sprintf(taf_wx,"%s Rain ",taf_wx);
+		else if (strcmp(temp,"-RADZ") == 0)
+			sprintf(taf_wx,"%s Light rain\\drizzle ",taf_wx);
+		else if (strcmp(temp,"-RASN") == 0)
+			sprintf(taf_wx,"%s Light rain\\snow ",taf_wx);
+		else if (strcmp(temp,"-SHRA") == 0)
 			sprintf(taf_wx,"%s Light rain showers ",taf_wx);
+		else if (strcmp(temp,"SHRA") == 0)
+			sprintf(taf_wx,"%s Rain showers ",taf_wx);
+		else if (strcmp(temp,"-SN") == 0)
+			sprintf(taf_wx,"%s Light snow ",taf_wx);
+		else if (strcmp(temp,"SN") == 0)
+			sprintf(taf_wx,"%s Snow ",taf_wx);
+		else if (strcmp(temp,"-SNRA") == 0)
+			sprintf(taf_wx,"%s Light snow\\rain ",taf_wx);
+		else if (strcmp(temp,"-SHSN") == 0)
+			sprintf(taf_wx,"%s Light snow shower",taf_wx);
+		else if (strcmp(temp,"TSRA") == 0)
+			sprintf(taf_wx,"%s Thunderstorm and rain ",taf_wx);
 		else if (strncmp(temp,"6",1) == 0){
 			units=strlen(temp);
 			if (units==6){
@@ -190,31 +221,27 @@ void tafWeather(char *taf_list,char *taf_wx)
 					case 8: strcpy(ice_int,"Severe Rime Icing In Cloud"); break;
 					case 9: strcpy(ice_int,"Severe Clear Icing In Precipitation"); break;
 				}
-
 				strncpy(temp2,temp+2,3);
 				temp2[3]='\0';
-				ice2=atoi(temp2);
+				ice2=(atoi(temp2)*100);
 				strncpy(temp2,temp+5,1);
 				temp2[1]='\0';
-				ice3=atoi(temp2);
+				ice3=(atoi(temp2)*1000);
 
-				sprintf(taf_wx,"%s %s from %d00ft to %d00ft",taf_wx,ice_int,ice2,ice2+ice3);
+				sprintf(taf_wx,"%s %s from %dft to %dft",taf_wx,ice_int,ice2,ice2+ice3);
 			}
 			else
 				sprintf(taf_wx,"%s (unknown %s) ",taf_wx,temp);
 		}
-
-		else if (strncmp(temp,"RA",2) == 0)
-			sprintf(taf_wx,"%s Rain ",taf_wx);
-		else if (strncmp(temp,"SHRA",4) == 0)
-			sprintf(taf_wx,"%s Rain showers ",taf_wx);
-		else if (strncmp(temp,"VCSH",4) == 0)
+		else if (strcmp(temp,"VCSH") == 0)
 			sprintf(taf_wx,"%s Showers in the vicinity ",taf_wx);
-		else if (strncmp(temp,"VCTS",4) == 0)
+		else if (strcmp(temp,"VCTS") == 0)
 			sprintf(taf_wx,"%s Thunderstorm in vicinity ",taf_wx);
-		else if (strncmp(temp,"NSW",3) == 0)
-			sprintf(taf_wx,"%s No significant weather ",taf_wx);
-		else if (strncmp(temp,"TX",2) == 0) {					// TX20/0418Z ****************
+		else if (strncmp(temp,"VV",2) == 0)													// **************
+			sprintf(taf_wx,"%s Verical visibilty ",taf_wx);
+
+
+		else if ((strncmp(temp,"TX",2) == 0) || (strncmp(temp,"TM",2) == 0)) {
 			char dt[3];
 			float fahr;
 			strncpy(temp2,temp+2,2);
@@ -224,44 +251,78 @@ void tafWeather(char *taf_list,char *taf_wx)
 			strncpy(temp2,temp+5,2);
 			int d=atoi(temp2);
 
-			switch (d){
-				case 1: case 21: case 31: strcpy(dt,"st"); break;
-				case 2: case 22: strcpy(dt,"nd"); break;
-				case 3: case 23: strcpy(dt,"rd"); break;
-				default: strcpy(dt,"th"); break;
-			}
-			dt[2]='\0';
+			daySuffix(d ,dt);
+
 			strncpy(temp2,temp+7,2);
 			temp2[2]='\0';
 
-			sprintf(taf_wx,"%s Temp max %.1ff on %d%s at %s:00z",taf_wx,fahr,d,dt,temp2);
-
+			if (strncmp(temp,"TX",2) == 0)
+				sprintf(taf_wx,"%s Temp max %.1ff on %d%s at %s:00z",taf_wx,fahr,d,dt,temp2);
+			else
+				sprintf(taf_wx,"%s Temp min %.1ff on %d%s at %s:00z",taf_wx,fahr,d,dt,temp2);
 		}
-		else if (strncmp(temp,"FG",2) == 0)
-			sprintf(taf_wx,"%s Fog ",taf_wx);
-		else if (strncmp(temp,"DZ",2) == 0)
-			sprintf(taf_wx,"%s Drizzle ",taf_wx);
-		else if (strncmp(temp,"-DZ",3) == 0)
-			sprintf(taf_wx,"%s Light drizzle ",taf_wx);
+		else if ((strncmp(temp,"T",1) == 0) &&  (strncmp(temp+3,"/",1) == 0) ) {
+			char dt[3];
+			float fahr;
+			strncpy(temp2,temp+1,2);
+			temp2[2]='\0';
+			units=atoi(temp2);
+			fahr = (units * 9/5 ) +32;
+			strncpy(temp2,temp+4,2);
+			int d=atoi(temp2);
+
+			daySuffix(d ,dt);
+
+			strncpy(temp2,temp+6,2);
+			temp2[2]='\0';
+
+			sprintf(taf_wx,"%s Temperature %.1ff on %d%s at %s:00z",taf_wx,fahr,d,dt,temp2);
+		}
 
 		else if (strncmp(temp,"WS",2) == 0)					// *********************
 			sprintf(taf_wx,"%s Wind shear ",taf_wx);
-
 		else if (strncmp(temp,"PROB",4) == 0)				// ********************
 			sprintf(taf_wx,"%s Probability ",taf_wx);
 
-		else if (strncmp(temp,"TSRA",4) == 0)
-			sprintf(taf_wx,"%s Thunderstorm and rain ",taf_wx);
-		else if (strncmp(temp,"5",1) == 0)
-			sprintf(taf_wx,"%s Turbulence ",taf_wx);
-		else if (strncmp(temp,"-SN",3) == 0)
-			sprintf(taf_wx,"%s Light snow ",taf_wx);
-		else if (strncmp(temp,"-SHSN",2) == 0)
-			sprintf(taf_wx,"%s Light snow shower",taf_wx);
-		else if (strncmp(temp,"-FZRa",2) == 0)
-			sprintf(taf_wx,"%s Light freezing rain ",taf_wx);
-		else if (strncmp(temp,"SN",2) == 0)
-			sprintf(taf_wx,"%s Snow ",taf_wx);
+		else if (strncmp(temp,"5",1) == 0){
+			units=strlen(temp);
+			if (units==6){
+				int turb1,turb2,turb3;
+				char turb_int[50];
+
+				turb_int[0]='\0';
+				strncpy(temp2,temp+1,1);
+				temp2[1]='\0';
+				if (temp2[0] == 'X')
+					strcpy(turb_int,"Extreme turbulence");
+				else {
+					turb1=atoi(temp2);
+
+					switch(turb1){
+						case 0: strcpy(turb_int,"None"); break;
+						case 1: strcpy(turb_int,"Light turbulence"); break;
+						case 2: strcpy(turb_int,"Moderate turbulence in clear air, occasional"); break;
+						case 3: strcpy(turb_int,"Moderate turbulence in clear air, frequent"); break;
+						case 4: strcpy(turb_int,"Moderate turbulence in cloud, occasional"); break;
+						case 5: strcpy(turb_int,"Moderate turbulence in cloud, frequent"); break;
+						case 6: strcpy(turb_int,"Severe turbulence in clear air, occasional"); break;
+						case 7: strcpy(turb_int,"Severe turbulence in clear air, frequent"); break;
+						case 8: strcpy(turb_int,"Severe turbulence in cloud, occasional"); break;
+						case 9: strcpy(turb_int,"Severe turbulence in cloud, frequent"); break;
+					}
+				}
+				strncpy(temp2,temp+2,3);
+				temp2[3]='\0';
+				turb2=(atoi(temp2)*100);
+				strncpy(temp2,temp+5,1);
+				temp2[1]='\0';
+				turb3=(atoi(temp2)*1000);
+
+				sprintf(taf_wx,"%s %s from %dft to %dft",taf_wx,turb_int,turb2,turb2+turb3);
+			}
+			else
+				sprintf(taf_wx,"%s (unknown %s) ",taf_wx,temp);
+		}
 		else
 			sprintf(taf_wx,"%s Unknown (%s)",taf_wx,temp);
 
@@ -1520,11 +1581,17 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 				for (int j = 0; j < i; ++j) {
 				// Valid dates
 					char sd[5],sz[3],ed[5],ez[3];
+					char dt[3];
 					char fsz[5];
 					char taf_t[5];
 					char d[4], s[4],gs[4];
 					char *temp;
 					char taf_temp[200];
+					char taf_cld[50];
+					int dx;
+					int temp_len;
+					int sw=0;
+
 					strncpy(taf_t,taf_lines[j],2);
 					taf_t[2]='\0';
 
@@ -1581,17 +1648,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 						temp = strsep(&taf_lines[j]," ");
 						strncpy(sd,temp+2,2);
 						sd[2]='\0';
-						char dt[3];
-						int dx=atoi(sd);
-						switch (dx){
-							case 1: case 21: case 31: strcpy(dt,"st"); break;
-							case 2: case 22: strcpy(dt,"nd"); break;
-							case 3: case 23: strcpy(dt,"rd"); break;
-							default: strcpy(dt,"th"); break;
-						}
-						dt[2]='\0';
+						dx=atoi(sd);
+						daySuffix(dx ,dt);
 						sprintf(sd,"%i%s",dx,dt);
-
 						strncpy(fsz,temp+4,4);
 						fsz[4]='\0';
 						fprintf(to,"  From %s at %sz\n",sd,fsz);
@@ -1622,9 +1681,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 						temp = strsep(&taf_lines[j]," ");
 						temp = strsep(&taf_lines[j]," ");
 
-						int temp_len;
 						temp_len=strlen(temp);
-						int sw=0;
+
 						if (strncmp(temp+(temp_len-2),"KT",2) == 0){
 							tafWind(d,s,gs,temp,taf_temp);
 							fprintf(to,"  %s\n",taf_temp);
@@ -1651,7 +1709,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 						}
 
 					// WX Sky
-						char taf_cld[50];
+
 						taf_temp[0] = '\0';
 
 						if (taf_lines[j]){
@@ -1669,6 +1727,22 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 							fprintf(to,"%s\n",temp);
 							tafWeather(temp,taf_temp);
 						}
+						fprintf(to,"  Weather: %s\n\n",taf_temp);
+					}
+					else if (strcmp(taf_t,"VR") == 0){			// Military?
+						fprintf(to,"Military %s\n",taf_lines[j]);
+						temp = strsep(&taf_lines[j]," ");
+
+						tafWind(d,s,gs,temp,taf_temp);
+						fprintf(to,"  %s\n",taf_temp);
+
+						temp = strsep(&taf_lines[j]," ");
+
+						tafVisibilty(temp,taf_temp);
+						fprintf(to,"  %s\n",taf_temp);
+						taf_temp[0] = '\0';
+
+						tafWeather(taf_lines[j],taf_temp);
 						fprintf(to,"  Weather: %s\n\n",taf_temp);
 					}
 					else
