@@ -250,14 +250,16 @@ void tafWeather(char *taf_list,char *taf_wx)
 		else if (strncmp(temp,"PROB",4) == 0)				// ********************
 			sprintf(taf_wx,"%s Probability ",taf_wx);
 
-
-
 		else if (strncmp(temp,"TSRA",4) == 0)
 			sprintf(taf_wx,"%s Thunderstorm and rain ",taf_wx);
 		else if (strncmp(temp,"5",1) == 0)
 			sprintf(taf_wx,"%s Turbulence ",taf_wx);
 		else if (strncmp(temp,"-SN",3) == 0)
 			sprintf(taf_wx,"%s Light snow ",taf_wx);
+		else if (strncmp(temp,"-SHSN",2) == 0)
+			sprintf(taf_wx,"%s Light snow shower",taf_wx);
+		else if (strncmp(temp,"-FZRa",2) == 0)
+			sprintf(taf_wx,"%s Light freezing rain ",taf_wx);
 		else if (strncmp(temp,"SN",2) == 0)
 			sprintf(taf_wx,"%s Snow ",taf_wx);
 		else
