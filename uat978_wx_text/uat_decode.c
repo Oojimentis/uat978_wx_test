@@ -129,10 +129,32 @@ void validDates(char *sd,char *sz, char *ed, char *ez, char *str)
 	ez[2]='\0';
 }
 
+void tafVisibilty(char *temp, char *taf_vis)
+{
+	int len_v;
+	char vis[10];
+	len_v = strlen(temp);
+
+	strncpy(vis,temp,len_v-2);
+	if (strncmp(temp,"P",1) == 0){
+		sprintf(taf_vis,"Visibility: more than: %s",temp+1);
+	}
+	else if (strncmp(temp,"M",1) == 0){
+		sprintf(taf_vis,"Visibility: less than: %s",temp+1);
+	}
+	else if (strncmp(temp+(len_v-2),"SM",2) == 0){
+		sprintf(taf_vis,"Visibility: %s",temp);
+	}
+	else if (strncmp(temp,"9999",4) == 0)
+		sprintf(taf_vis,"Visibility: Clear");
+	else
+		sprintf(taf_vis,"Visibility: %s meters",temp);
+}
+
 void tafWeather(char *taf_list,char *taf_wx)
 {
 	char *temp;
-	char temp2[10];
+	char temp2[30];
 	int units;
 	float units_f;
 
@@ -164,6 +186,46 @@ void tafWeather(char *taf_list,char *taf_wx)
 			units_f=atof(temp2);
 			sprintf(taf_wx,"%s Altimeter %2.2fHg",taf_wx,units_f/100);
 		}
+		else if (strcmp(temp,"BC") == 0)
+			sprintf(taf_wx,"%s Patches ",taf_wx);
+		else if (strcmp(temp,"BL") == 0)
+			sprintf(taf_wx,"%s Blowing ",taf_wx);
+		else if (strcmp(temp,"DR") == 0)
+			sprintf(taf_wx,"%s Low drifting ",taf_wx);
+		else if (strcmp(temp,"DS") == 0)
+			sprintf(taf_wx,"%s Duststorm ",taf_wx);
+		else if (strcmp(temp,"DU") == 0)
+			sprintf(taf_wx,"%s Widespread dust ",taf_wx);
+		else if (strcmp(temp,"FC") == 0)
+			sprintf(taf_wx,"%s Funnel clouds ",taf_wx);
+		else if (strcmp(temp,"FU") == 0)
+			sprintf(taf_wx,"%s Smoke ",taf_wx);
+		else if (strcmp(temp,"GR") == 0)
+			sprintf(taf_wx,"%s Hail ",taf_wx);
+		else if (strcmp(temp,"GS") == 0)
+			sprintf(taf_wx,"%s Small hail and/or snow pellets ",taf_wx);
+		else if (strcmp(temp,"IC") == 0)
+			sprintf(taf_wx,"%s Ice crystals ",taf_wx);
+		else if (strcmp(temp,"MI	") == 0)
+			sprintf(taf_wx,"%s Shallow ",taf_wx);
+		else if (strcmp(temp,"PL") == 0)
+			sprintf(taf_wx,"%s Ice pellets ",taf_wx);
+		else if (strcmp(temp,"PO") == 0)
+			sprintf(taf_wx,"%s Dust/sand whirls ",taf_wx);
+		else if (strcmp(temp,"PR") == 0)
+			sprintf(taf_wx,"%s Partial ",taf_wx);
+		else if (strcmp(temp,"SA") == 0)
+			sprintf(taf_wx,"%s Sand	 ",taf_wx);
+		else if (strcmp(temp,"SG") == 0)
+			sprintf(taf_wx,"%s Snow grains ",taf_wx);
+		else if (strcmp(temp,"SQ") == 0)
+			sprintf(taf_wx,"%s Squall(s) ",taf_wx);
+		else if (strcmp(temp,"SS") == 0)
+			sprintf(taf_wx,"%s Sandstorm ",taf_wx);
+		else if (strcmp(temp,"VA") == 0)
+			sprintf(taf_wx,"%s Volcanic ash ",taf_wx);
+		else if (strcmp(temp,"UP") == 0)
+			sprintf(taf_wx,"%s Unknown precipitation ",taf_wx);
 		else if (strcmp(temp,"-DZ") == 0)
 			sprintf(taf_wx,"%s Light drizzle ",taf_wx);
 		else if (strcmp(temp,"DZ") == 0)
@@ -193,7 +255,7 @@ void tafWeather(char *taf_list,char *taf_wx)
 		else if (strcmp(temp,"SN") == 0)
 			sprintf(taf_wx,"%s Snow ",taf_wx);
 		else if (strcmp(temp,"-SNRA") == 0)
-			sprintf(taf_wx,"%s Light snow\\rain ",taf_wx);
+			sprintf(taf_wx,"%s Light snow\rain ",taf_wx);
 		else if (strcmp(temp,"-SHSN") == 0)
 			sprintf(taf_wx,"%s Light snow shower",taf_wx);
 		else if (strcmp(temp,"TSRA") == 0)
@@ -240,7 +302,6 @@ void tafWeather(char *taf_list,char *taf_wx)
 		else if (strncmp(temp,"VV",2) == 0)													// **************
 			sprintf(taf_wx,"%s Verical visibilty ",taf_wx);
 
-
 		else if ((strncmp(temp,"TX",2) == 0) || (strncmp(temp,"TM",2) == 0)) {
 			char dt[3];
 			float fahr;
@@ -281,9 +342,18 @@ void tafWeather(char *taf_list,char *taf_wx)
 
 		else if (strncmp(temp,"WS",2) == 0)					// *********************
 			sprintf(taf_wx,"%s Wind shear ",taf_wx);
-		else if (strncmp(temp,"PROB",4) == 0)				// ********************
-			sprintf(taf_wx,"%s Probability ",taf_wx);
+		else if (strncmp(temp,"PROB",4) == 0) {
+			char sd[5],sz[3],ed[5],ez[3];
+			char perc[3];
+			strncpy(perc,temp+4,2);
+			perc[2]='\0';
+			temp = strsep(&taf_list," ");
+			validDates(sd,sz,ed,ez,temp);
 
+			temp = strsep(&taf_list," ");
+			tafVisibilty(temp,temp2);
+			sprintf(taf_wx,"%s %s%% Probability on %s at %s:00z to %s at %s:00z %s ",taf_wx,perc,sd,sz,ed,ez,temp2);
+		}
 		else if (strncmp(temp,"5",1) == 0){
 			units=strlen(temp);
 			if (units==6){
@@ -330,27 +400,6 @@ void tafWeather(char *taf_list,char *taf_wx)
 		}
 }
 
-void tafVisibilty(char *temp, char *taf_vis)
-{
-	int len_v;
-	char vis[10];
-	len_v = strlen(temp);
-
-	strncpy(vis,temp,len_v-2);
-	if (strncmp(temp,"P",1) == 0){
-		sprintf(taf_vis,"Visibility: more than: %s",temp+1);
-	}
-	else if (strncmp(temp,"M",1) == 0){
-		sprintf(taf_vis,"Visibility: less than: %s",temp+1);
-	}
-	else if (strncmp(temp+(len_v-2),"SM",2) == 0){
-		sprintf(taf_vis,"Visibility: %s",temp);
-	}
-	else if (strncmp(temp,"9999",4) == 0)
-		sprintf(taf_vis,"Visibility: Clear");
-	else
-		sprintf(taf_vis,"Visibility: %s meters",temp);
-}
 
 void tafWind(char *d,char *s,char *gs,char *temp, char *taf_wind)
 {
