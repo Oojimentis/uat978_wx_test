@@ -55,12 +55,15 @@ FILE * filesua;      	// 13
 FILE * filepirep;		// PIREP
 FILE * filecwa;			// Center Weather Advisory
 
-FILE * filenotamjson; 	//notam geojson
-FILE * filemetarjson; 	//metar geojson
-FILE * fileairmetjson; 	//airmet geojson
-FILE * filegairmetjson; //gairmet geojson
-FILE * filesigmetjson; 	//sigmet geojson
-FILE * filecwajson; 	//sigmet geojson
+FILE * filenotamjson; 	// NOTAM geojson
+FILE * filemetarjson; 	// METAR geojson
+FILE * fileairmetjson; 	// AIRMET geojson
+FILE * filegairmetjson; // G-AIRMET geojson
+FILE * filesigmetjson; 	// SIGMET geojson
+FILE * filecwajson; 	// CWA geojson
+
+FILE * filetaf;			// test file for TAF
+
 
 struct uat_adsb_mdb {
     // presence bits
