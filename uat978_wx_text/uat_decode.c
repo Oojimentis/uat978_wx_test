@@ -325,6 +325,8 @@ void tafWeather(char *taf_list,char *taf_wx)
 			sprintf(taf_wx,"%s Drizzle ",taf_wx);
 		else if (strcmp(temp,"FG") == 0)
 			sprintf(taf_wx,"%s Fog ",taf_wx);
+		else if (strcmp(temp,"FZFG") == 0)
+			sprintf(taf_wx,"%s Freezing fog ",taf_wx);
 		else if (strcmp(temp,"-FZRA") == 0)
 			sprintf(taf_wx,"%s Light freezing rain ",taf_wx);
 		else if (strcmp(temp,"HZ") == 0)
