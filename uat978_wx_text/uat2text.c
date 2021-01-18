@@ -2,7 +2,8 @@
 //
 // UAT2TEXT.C -
 //
-
+//#include <libpq-fe.h>
+#include "/usr/include/postgresql/libpq-fe.h"
 #include <stdio.h>
 
 #include "uat.h"
@@ -13,7 +14,8 @@
 #include <string.h>
 
 #include "asprintf.h"
-//#include "/usr/include/postgresql/libpq-fe.h"
+
+
 
 #ifndef NULL
 #define NULL   ((void *) 0)
@@ -67,6 +69,19 @@ int main(int argc, char **argv)
 		}
 	}
 
+//    PGconn *conn = PQconnectdb("user=trev password=moose dbname=uat978");
+	conn = PQconnectdb("user=trev password=moose dbname=uat978");
+
+    if (PQstatus(conn) == CONNECTION_BAD) {
+
+        fprintf(stderr, "Connection to database failed: %s\n",
+            PQerrorMessage(conn));
+        PQfinish(conn);
+         exit(1);
+    }
+    else{
+        fprintf(stderr, "Connected to database uat978\n");
+    }
    	filenotamjson = fopen("/home/trev/git/map-978/WebContent/notam.geojson","w");
    	if (filenotamjson == 0)		{
    		fprintf(stderr,"notam.geojson Error--file could not be opened. \n") ;

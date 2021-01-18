@@ -2080,6 +2080,7 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 				apdu->product_id == 12 || apdu->product_id == 15) {	// 8 11 12 15
 			char *zErrMsg = 0;
 			char *sql;
+			char *postsql;
 			int length = strlen(r);
 
 			switch (apdu->product_id) {
@@ -2124,6 +2125,17 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 					"rep_year,rep_number,time,data) "
 					"VALUES (%d,'%s','%s','%s',%d,%d,'%s','%s')",
 					apdu->product_id,prod_name,gstn,rtime,report_year,rep_num,buff,data_text);
+
+			asprintf(&postsql,"INSERT INTO notam (coords,stn_call,stn_loc,rep_num) "
+					"VALUES (ST_SetSRID (ST_GeomFromGeoJSON('{\"type\":\"Point\",\"coordinates\":[%s,%s]}'),4326),'%s','%s',%d)",gs_ret_lng, gs_ret_lat, gstn,gs_ret,rep_num);
+
+			PGresult *res = PQexec(conn, postsql);
+
+		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+		       fprintf(stderr,"bad sql %s\n",PQerrorMessage(conn));
+
+		    PQclear(res);
+
 			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
 			if (rc != SQLITE_OK) {
 				if (rc != 19)
