@@ -1345,7 +1345,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 								MetarStruct.inches_altstng,	MetarStruct.prevail_vsbySM,gs_ret,dewp);
 
 						fprintf(filemetarjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %s,%s ] }}\n",
-								gs_ret_lng,gs_ret_lat);
+								gs_ret_lat,gs_ret_lng);
 						fprintf(filemetarjson,"]}");
 						}
 					else {
@@ -1365,7 +1365,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 								MetarStruct.inches_altstng,MetarStruct.prevail_vsbySM,gs_ret,dewp);
 
 						fprintf(filemetarjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %s,%s ] }}\n",
-								gs_ret_lng,gs_ret_lat);
+								gs_ret_lat,gs_ret_lng);
 						fprintf(filemetarjson,"]}");
 					}
 					metar_data( Mptr,to);
@@ -1676,7 +1676,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 //		if (rc != 19)
 //			fprintf(stderr, "2 SQL error: %s\n", zErrMsg);
 //		else
-			rep_exist = 1;
+			rep_exist = 0;    //was 1
 
 //		sqlite3_free(zErrMsg);
 //	}
@@ -2093,20 +2093,20 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 					fprintf(filenotamjson,"{\"type\": \"Feature\",\"properties\": { \"Data\": \"%s\",\"RepNum\":"
 							" \"%d\",\"Stn\": \"%s\",\"Loc\": \"%s\"},\n",data_text,rep_num,gstn,gs_ret);
 					fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %s,%s ] }}\n",
-							gs_ret_lng,gs_ret_lat);
+							gs_ret_lat,gs_ret_lng);
 				}
 				else {
 					fseek(filenotamjson,-3,SEEK_CUR);
 					fprintf(filenotamjson,",{\"type\": \"Feature\",\"properties\": { \"Data\": \"%s\",\"RepNum\":"
 							" \"%d\",\"Stn\": \"%s\",\"Loc\": \"%s\"},\n",data_text,rep_num,gstn,gs_ret);
 					fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %s,%s ] }}\n",
-							gs_ret_lng,gs_ret_lat);
+							gs_ret_lat,gs_ret_lng);
 				}
 				fprintf(filenotamjson,"]}\n");
 				notam_count++;
 
 				asprintf(&postsql,"INSERT INTO notam (coords,stn_call,stn_loc,rep_num) "
-						"VALUES (ST_SetSRID (ST_GeomFromGeoJSON('{\"type\":\"Point\",\"coordinates\":[%s,%s]}'),4326),'%s','%s',%d)",gs_ret_lng, gs_ret_lat, gstn,gs_ret,rep_num);
+						"VALUES (ST_SetSRID (ST_GeomFromGeoJSON('{\"type\":\"Point\",\"coordinates\":[%s,%s]}'),4326),'%s','%s',%d)",gs_ret_lat, gs_ret_lng, gstn,gs_ret,rep_num);
 
 				PGresult *res = PQexec(conn, postsql);
 
