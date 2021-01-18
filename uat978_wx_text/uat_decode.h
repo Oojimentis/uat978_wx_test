@@ -1,19 +1,16 @@
 // Part of dump978, a UAT decoder.
 // Copyright 2015, Oliver Jowett <oliver@mutability.co.uk>
 //
+
 #include "/usr/include/postgresql/libpq-fe.h"
 #ifndef UAT_DECODE_H
 #define UAT_DECODE_H
 
 #include <stdint.h>
-
 #include <stdio.h>
-#include <sqlite3.h>
 #include "uat.h"
 
-	sqlite3 *db;
-	int rc;
-	 PGconn *conn;
+PGconn *conn;
 
 typedef enum { AQ_ADSB_ICAO=0, AQ_NATIONAL=1, AQ_TISB_ICAO=2, AQ_TISB_OTHER=3, AQ_VEHICLE=4,
 	AQ_FIXED_BEACON=5, AQ_RESERVED_6=6, AQ_RESERVED_7=7 } address_qualifier_t;
@@ -64,7 +61,6 @@ FILE * filesigmetjson; 	// SIGMET geojson
 FILE * filecwajson; 	// CWA geojson
 
 FILE * filetaf;			// test file for TAF
-
 
 struct uat_adsb_mdb {
     // presence bits

@@ -10,18 +10,15 @@
 #include <math.h>
 #include <string.h>
 #include <assert.h>
-#include <sqlite3.h>
+#include <time.h>
+#include "asprintf.h"
+#include <stdlib.h>
 
 #include "uat_taf.h"
-#include "asprintf.h"
 #include "uat.h"
 #include "uat_decode.h"
 #include "uat_geo.h"
-
 #include "metar.h"
-#include <time.h>
-
-#include <stdlib.h>
 
 static char gs_ret[80];
 static char gs_ret_lat[25];
@@ -210,36 +207,44 @@ static const char *info_frame_type_names[16] = {
 	"Current Report List (14)",
 	"TIS-B/ADS-R Service Status"
 };
-static int stn_callback(void *data, int argc, char **argv, char **azColName)
-{
-	// Station details from database
 
-	strcpy(gs_ret,argv[1]);
-	sprintf(gs_ret_lat, "%s", argv[2]);
-	sprintf(gs_ret_lng, "%s", argv[3]);
-	return 0;
-}
 static void get_gs_name(char *Word)
 {
-	// Get ground station data
+	// Get ground station data from Postgresql database
 
 	char temp_stn[5] = " ";
 	char *sql;
-	char *zErrMsg = 0;
 
 	strncpy(temp_stn,Word,4);
 	strcpy(gs_ret,"not found      ");
 	strcpy(gs_ret_lat,"0.0");
 	strcpy(gs_ret_lng,"0.0");
 
-	asprintf(&sql,"SELECT * from stations where stn_call = '%s'",temp_stn);
+	asprintf(&sql,"SELECT * FROM stations WHERE stn_call = '%s'",temp_stn);
+	PGresult *res = PQexec(conn, sql);
+	if (PQresultStatus(res) != PGRES_TUPLES_OK) {
+		 printf("No data retrieved\n");
+		 PQclear(res);
+	}
+	else {
+		int rows = PQntuples(res);
 
-	rc = sqlite3_exec(db, sql, stn_callback, 0, &zErrMsg);
-	if (rc != SQLITE_OK) {
-		if (rc != 19)
-			fprintf(stderr, "3 SQL error: %s\n", zErrMsg);
+		if (rows == 1) {
+			strcpy(gs_ret, PQgetvalue(res, 0, 3));
+			sprintf(gs_ret_lat, "%s", PQgetvalue(res, 0, 0));
+			sprintf(gs_ret_lng, "%s", PQgetvalue(res, 0, 1));
+		 }
+		else {
+			fprintf(stderr,"Multple entries for %s\n",temp_stn);
 
-		sqlite3_free(zErrMsg);
+			for(int i=0; i<rows; i++) {
+				fprintf(stderr,"%s %s %s %s %s\n", PQgetvalue(res, i, 0),
+						PQgetvalue(res, i, 1), PQgetvalue(res, i, 2),
+						PQgetvalue(res, i, 3), PQgetvalue(res, i, 4));
+			}
+
+			PQclear(res);
+		}
 	}
 	return;
 }
@@ -792,8 +797,8 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
 		frame->fisb.minutes = ((frame->data[3] & 0x01) << 5) | (frame->data[4] >> 3);
 
 		if (frame->data[1] & 0x02) {
-			frame->fisb.length = frame->length ; // ???
-			frame->fisb.data = frame->data ;
+			frame->fisb.length = frame->length; // ???
+			frame->fisb.data = frame->data;
 		}
 		else {
 			frame->fisb.length = frame->length - 5; // ???
@@ -1515,7 +1520,6 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 	char *stop_date;
 
 	char *sql;
-	char *zErrMsg = 0;
 
 	int rep_exist = 0;
 	FILE * file3dpoly;
@@ -1668,15 +1672,14 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 			qualifier_flag,param_flag,rec_app_opt,date_time_format,start_date,stop_date,geo_overlay_opt,overlay_op,
 			overlay_vert_cnt,qual_text,buff);
 
-	rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
-	if (rc != SQLITE_OK) {
-		if (rc != 19)
-			fprintf(stderr, "2 SQL error: %s\n", zErrMsg);
-		else
+//	if (rc != SQLITE_OK) {
+//		if (rc != 19)
+//			fprintf(stderr, "2 SQL error: %s\n", zErrMsg);
+//		else
 			rep_exist = 1;
 
-		sqlite3_free(zErrMsg);
-	}
+//		sqlite3_free(zErrMsg);
+//	}
 	if (!rep_exist) {																		// Don't try to add dubplicate
 		switch (geo_overlay_opt) {
 		case 3: case 4:																		// Extended Range 3D Polygon
@@ -1752,13 +1755,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 					"coord_num,ovrly_vertices, ovrly_lat,ovrly_lng,ovrly_alt) "
 					"VALUES (%d,%d,%d,%d,%d,%f,%f,%d)",
 					apdu->product_id,rep_num,geo_overlay_opt,i,overlay_vert_cnt,lat,lng,alt);
-				rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
-				if (rc != SQLITE_OK) {
-					if (rc != 19)
-						fprintf(stderr, "1 SQL error: %s\n", zErrMsg);
 
-					sqlite3_free(zErrMsg);
-				}
 			}
 			fprintf(file3dpoly,"]]\n");
 			fprintf(file3dpoly,"}}\n");
@@ -1805,21 +1802,21 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 
 				lng_bot_raw = (~lng_bot_raw & 0x1FFFF) +1;		// 2's compliment +1
 				lat_bot_raw = (~lat_bot_raw & 0x1FFFF) +1;		// 2's compliment +1
-				lat_bot = lat_bot_raw * 0.001373 ;
-				lng_bot = (lng_bot_raw * 0.001373) * -1 ;
+				lat_bot = lat_bot_raw * 0.001373;
+				lng_bot = (lng_bot_raw * 0.001373) * -1;
 
 				if (lat_bot > 90.0)
-					lat_bot = (lat_bot - 180.0) * -1 ;
+					lat_bot = (lat_bot - 180.0) * -1;
 				if (lng_bot > 180.0)
 					lng_bot = lng_bot - 360.0;
 
 				lng_top_raw = (~lng_top_raw & 0x1FFFF) +1;		// 2's compliment +1
 				lat_top_raw = (~lat_top_raw & 0x1FFFF) +1;		// 2's compliment +1
-				lat_top = lat_top_raw * 0.001373 ;
-				lng_top = (lng_top_raw * 0.001373) * -1 ;
+				lat_top = lat_top_raw * 0.001373;
+				lng_top = (lng_top_raw * 0.001373) * -1;
 
 				if (lat_top > 90.0)
-					lat_top = (lat_top - 180.0) * -1 ;
+					lat_top = (lat_top - 180.0) * -1;
 				if (lng_top > 180.0)
 					lng_top = lng_top - 360.0;
 
@@ -1851,8 +1848,8 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 			lng_raw = (~lng_raw & 0x7FFFF) +1;												// 2's compliment +1
 			lat_raw = (~lat_raw & 0x7FFFF) +1;												// 2's compliment +1
 
-			lat = lat_raw * 0.0006866455078125 ;
-			lng = (lng_raw * 0.0006866455078125) * -1 ;
+			lat = lat_raw * 0.0006866455078125;
+			lng = (lng_raw * 0.0006866455078125) * -1;
 
 			if (lat > 90.0)
 				lat = 360.0 - lat;
@@ -1889,13 +1886,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 					"coord_num,ovrly_vertices, ovrly_lat,ovrly_lng,ovrly_alt) "
 					"VALUES (%d,%d,%d,0,%d,%f,%f,%d)",
 					apdu->product_id,rep_num,geo_overlay_opt,overlay_vert_cnt,lat,lng,alt);
-			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
-			if (rc != SQLITE_OK) {
-				if (rc != 19)
-					fprintf(stderr, "1 SQL error: %s\n", zErrMsg);
 
-				sqlite3_free(zErrMsg);
-			}
 			break;
 		case 11: case 12:													// Extended Range 3D Polyline
 																			// Don't write geojson for items with qualifier flag set.
@@ -1935,8 +1926,8 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 				lng_raw = (~lng_raw & 0x7FFFF) +1;											// 2's compliment +1
 				lat_raw = (~lat_raw & 0x7FFFF) +1;											// 2's compliment +1
 
-				lat = lat_raw * 0.0006866455078125 ;
-				lng = lng_raw * -0.0006866455078125 ;
+				lat = lat_raw * 0.0006866455078125;
+				lng = lng_raw * -0.0006866455078125;
 
 				if (lat > 90.0)
 					lat = 360.0 - lat;
@@ -1955,13 +1946,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 						"coord_num,ovrly_vertices, ovrly_lat,ovrly_lng,ovrly_alt) "
 						"VALUES (%d,%d,%d,%d,%d,%f,%f,%d)",
 						apdu->product_id,rep_num,geo_overlay_opt,i,overlay_vert_cnt,lat,lng,alt);
-				rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
-				if (rc != SQLITE_OK) {
-					if (rc != 19)
-						fprintf(stderr, "1 SQL error: %s\n", zErrMsg);
 
-					sqlite3_free(zErrMsg);
-				}
 			}
 			if (qualifier_flag == 0) {
 				fprintf(file3dpoly,"]\n");
@@ -2051,7 +2036,7 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 			r = p + 1;
 		}
 		rep_num = ((apdu->data[8] << 6) | (apdu->data[9] & 0xFC) >> 2);
-		report_year = (((apdu->data[9]) & 0x03) << 5 | ((apdu->data[10]) & 0xF8) >> 3) ;
+		report_year = (((apdu->data[9]) & 0x03) << 5 | ((apdu->data[10]) & 0xF8) >> 3);
 		if (apdu->product_id == 13) {
 			fprintf(filesua," Report Year     : 20%02d\n ",report_year);
 			fprintf(filesua,"Report Number   : %6d  ",rep_num);
@@ -2078,7 +2063,7 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 		}
 		if (apdu->product_id == 8 || apdu->product_id == 11 ||
 				apdu->product_id == 12 || apdu->product_id == 15) {	// 8 11 12 15
-			char *zErrMsg = 0;
+
 			char *sql;
 			char *postsql;
 			int length = strlen(r);
@@ -2101,7 +2086,7 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 			data_text = (char *)malloc(strlen(r) + 1);
 			strcpy(data_text,r);
 
-			if (apdu->product_id == 8) {
+			if (apdu->product_id == 8) {				// NOTAM
 				if (notam_count == 0) {
 					fprintf(filenotamjson,"{\"type\": \"FeatureCollection\",\n");
 					fprintf(filenotamjson,"\"features\": [ \n");
@@ -2119,30 +2104,22 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 				}
 				fprintf(filenotamjson,"]}\n");
 				notam_count++;
+
+				asprintf(&postsql,"INSERT INTO notam (coords,stn_call,stn_loc,rep_num) "
+						"VALUES (ST_SetSRID (ST_GeomFromGeoJSON('{\"type\":\"Point\",\"coordinates\":[%s,%s]}'),4326),'%s','%s',%d)",gs_ret_lng, gs_ret_lat, gstn,gs_ret,rep_num);
+
+				PGresult *res = PQexec(conn, postsql);
+
+			    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+			       fprintf(stderr,"bad sql %s\n",PQerrorMessage(conn));
+
+			    PQclear(res);
 			}
 			// add to database
 			asprintf(&sql,"INSERT INTO text_reports (prod_id,report_type,stn_call,rep_time,"
 					"rep_year,rep_number,time,data) "
 					"VALUES (%d,'%s','%s','%s',%d,%d,'%s','%s')",
 					apdu->product_id,prod_name,gstn,rtime,report_year,rep_num,buff,data_text);
-
-			asprintf(&postsql,"INSERT INTO notam (coords,stn_call,stn_loc,rep_num) "
-					"VALUES (ST_SetSRID (ST_GeomFromGeoJSON('{\"type\":\"Point\",\"coordinates\":[%s,%s]}'),4326),'%s','%s',%d)",gs_ret_lng, gs_ret_lat, gstn,gs_ret,rep_num);
-
-			PGresult *res = PQexec(conn, postsql);
-
-		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
-		       fprintf(stderr,"bad sql %s\n",PQerrorMessage(conn));
-
-		    PQclear(res);
-
-			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
-			if (rc != SQLITE_OK) {
-				if (rc != 19)
-					fprintf(stderr, "1 SQL error: %s\n", zErrMsg);
-
-				sqlite3_free(zErrMsg);
-			}
 		}
 		if (apdu->product_id == 13) {
 			fprintf(filesua," Data:\n%s\n",r);
@@ -2180,13 +2157,13 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm,FILE *to)
 			offx = 20;
 			seg_list[seg_count].seg_text_len = apdu->length-20;
 			seg_list[seg_count].seg_rpt_num = ((apdu->data[17] << 6) | (apdu->data[18] >> 2));			//7 8
-			seg_list[seg_count].seg_rpt_year = (((apdu->data[18]) & 0x03) << 5 | ((apdu->data[19]) & 0xF8) >> 3) ;
+			seg_list[seg_count].seg_rpt_year = (((apdu->data[18]) & 0x03) << 5 | ((apdu->data[19]) & 0xF8) >> 3);
 		}
 		else {
 			offx = 15;
 			seg_list[seg_count].seg_text_len = apdu->length-15;
 			seg_list[seg_count].seg_rpt_num = 0;
-			seg_list[seg_count].seg_rpt_year = 0 ;
+			seg_list[seg_count].seg_rpt_year = 0;
 		}
 		for ( int x = offx; x <= apdu->length; ++x) {
 			int c = apdu->data[x];

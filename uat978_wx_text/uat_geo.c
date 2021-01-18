@@ -27,7 +27,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 	int alt_level = 0;
 
 	char *sql;
-	char *zErrMsg = 0;
 	char block[200];
 	char nexrad_time[6];
 	char charValue;
@@ -136,13 +135,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 			}
 			asprintf(&sql,"%s '%s')",sql,block);
 
-//			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
-			if( rc != SQLITE_OK ){
-				if (rc != 19)
-					fprintf(stderr, "4 SQL error: %s\n", zErrMsg);
-
-				sqlite3_free(zErrMsg);
-			}
 		}
 		if (apdu->product_id == 70 || apdu->product_id == 71) {
 			for (int i = 3; i < apdu->length; ++i) {
@@ -159,13 +151,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 			}
 			asprintf(&sql,"%s '%s')",sql,block);
 
-//			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
-			if( rc != SQLITE_OK ){
-				if (rc != 19)
-					fprintf(stderr, "5 SQL error: %s\n", zErrMsg);
-
-				sqlite3_free(zErrMsg);
-			}
 		}
 		if (apdu->product_id == 103) {
 			for (int i = 3; i < apdu->length; ++i) {
@@ -186,13 +171,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 
 			asprintf(&sql,"%s '%s')",sql,block);
 
-//			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
-			if( rc != SQLITE_OK ){
-				if (rc != 19)
-					fprintf(stderr, "6 SQL error: %s\n", zErrMsg);
 
-				sqlite3_free(zErrMsg);
-			}
 		}
 		if (apdu->product_id == 90 || apdu->product_id == 91 || apdu->product_id == 84) {
 			for (int i = 3; i < apdu->length; ++i) {
@@ -224,13 +203,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
     
 			asprintf(&sql,"%s '%s')",sql,block);
 		
-//			rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
-			if( rc != SQLITE_OK ){
-				if (rc != 19)
-					fprintf(stderr, "7 SQL error: %s\n", zErrMsg);
 
-				sqlite3_free(zErrMsg);
-			}
 		}
 	}
 	else {    // Empty
@@ -285,13 +258,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
    			    	
 					asprintf(&sql,"%s '%s')",sql,block);
 
-//					rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
-					if( rc != SQLITE_OK ){
-						if (rc != 19)
-							fprintf(stderr, "8 SQL error: %s\n", zErrMsg);
 
-						sqlite3_free(zErrMsg);
-					}		
 				}
 			}
 		}
@@ -361,7 +328,6 @@ double raw_lat; double raw_lon; double scale;
 void metar_data( Decoded_METAR *Mptr,FILE *to)
 {
 	char *sql;
-	char *zErrMsg = 0;
 	char obs_date[10]=" ";
 
 	if (Mptr->temp > 1000)
@@ -398,11 +364,5 @@ void metar_data( Decoded_METAR *Mptr,FILE *to)
 			Mptr->cloudGroup[1].cloud_hgt_char,Mptr->cloudGroup[2].cloud_type,Mptr->cloudGroup[2].cloud_hgt_char,
 			Mptr->cloudGroup[3].cloud_type,Mptr->cloudGroup[3].cloud_hgt_char);
 
-//	rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
-	if( rc != SQLITE_OK ){
-		if (rc != 19)
-			fprintf(stderr, "9 SQL error: %s\n", zErrMsg);
 
-		sqlite3_free(zErrMsg);
-	}
 }

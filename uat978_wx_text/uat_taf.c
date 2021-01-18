@@ -8,7 +8,6 @@
 
 #include <string.h>
 #include <ctype.h>
-#include <sqlite3.h>
 #include <stdlib.h>
 
 #include "uat_taf.h"
