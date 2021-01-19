@@ -1192,11 +1192,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 						strcpy(gstn,"K");
 						strcat(gstn,r);
 					}
-					else if (strcmp(mtype,"METAR") == 0 || strcmp(mtype,"SPECI") == 0) {
-						strncpy(gstn,r,5); }
-					else if (strcmp(mtype,"TAF") == 0 || strcmp(mtype,"TAF.AMD") == 0
-							|| strcmp(mtype,"TAF.COR") == 0) {
-						strncpy(gstn,r,5); }
+					else
+						strncpy(gstn,r,5);
 
 					get_gs_name(gstn);
 
@@ -1309,69 +1306,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 				else {
 					print_decoded_metar( Mptr);
 
-					if (metar_count == 0) {
-						fprintf(filemetarjson,"{\"type\": \"FeatureCollection\",\n");
-						fprintf(filemetarjson,"\"features\": [ \n");
-					}
-					float fahr;
-					float dewp;
-					if (MetarStruct.temp > 1000)
-						fahr = 999;
-					else
-						fahr = (MetarStruct.temp * 9/5) +32;
-					if (MetarStruct.dew_pt_temp > 1000)
-						dewp = 999;
-					else
-						dewp = (MetarStruct.dew_pt_temp * 9/5) +32;
-					if (MetarStruct.winData.windSpeed > 1000)
-						MetarStruct.winData.windSpeed = 999;
-					if (MetarStruct.winData.windDir > 1000)
-						MetarStruct.winData.windDir = 999;
-					if (MetarStruct.inches_altstng > 1000)
-						MetarStruct.inches_altstng = 999;
-					if (metar_count == 0) {
-						fprintf(filemetarjson,"{\"type\": \"Feature\",\"properties\": { \"Stn\": \"%s\","
-								"\"ObDate\": \"%d %d:%d\","
-								"\"Temp\": \"%.2f\","
-								"\"WindSp\": \"%d\","
-								"\"WindDir\": \"%d\","
-								"\"Alt\": \"%3.2f\","
-								"\"Vsby\": \"%3.2f\","
-								"\"Loc\": \"%s\","
-								"\"DewP\": \"%.2f\""
-								"},\n",
-								gstn,MetarStruct.ob_date,MetarStruct.ob_hour,MetarStruct.ob_minute,
-								fahr,MetarStruct.winData.windSpeed,MetarStruct.winData.windDir,
-								MetarStruct.inches_altstng,	MetarStruct.prevail_vsbySM,gs_ret,dewp);
-
-						fprintf(filemetarjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %s,%s ] }}\n",
-								gs_ret_lat,gs_ret_lng);
-						fprintf(filemetarjson,"]}");
-						}
-					else {
-						fseek(filemetarjson,-3,SEEK_CUR);
-						fprintf(filemetarjson,",{\"type\": \"Feature\",\"properties\": { \"Stn\": \"%s\","
-								"\"ObDate\": \"%d %d:%d\","
-								"\"Temp\": \"%.2f\","
-								"\"WindSp\": \"%d\","
-								"\"WindDir\": \"%d\","
-								"\"Alt\": \"%3.2f\","
-								"\"Vsby\": \"%3.2f\","
-								"\"Loc\": \"%s\","
-								"\"DewP\": \"%.2f\""
-								"},\n",
-								gstn,MetarStruct.ob_date,MetarStruct.ob_hour,MetarStruct.ob_minute,
-								fahr,MetarStruct.winData.windSpeed,	MetarStruct.winData.windDir,
-								MetarStruct.inches_altstng,MetarStruct.prevail_vsbySM,gs_ret,dewp);
-
-						fprintf(filemetarjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %s,%s ] }}\n",
-								gs_ret_lat,gs_ret_lng);
-						fprintf(filemetarjson,"]}");
-					}
 					metar_data( Mptr,to);
-
-					fflush(filemetarjson);
-					metar_count ++;
 				}
 			}
 			memset(&MetarStruct,0,sizeof(MetarStruct));
@@ -1703,7 +1638,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 				file3dpoly = filecwajson;
 				cwa_count = ex3dpoly(filecwajson,cwa_count,rep_num,alt,ob_ele_text);
 				break;
-			case 18:
+			case 8:
 				file3dpoly = filenotamjson;
 				if (notam_count == 0) {
 					fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
@@ -2087,26 +2022,9 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 			strcpy(data_text,r);
 
 			if (apdu->product_id == 8) {				// NOTAM
-				if (notam_count == 0) {
-					fprintf(filenotamjson,"{\"type\": \"FeatureCollection\",\n");
-					fprintf(filenotamjson,"\"features\": [ \n");
-					fprintf(filenotamjson,"{\"type\": \"Feature\",\"properties\": { \"Data\": \"%s\",\"RepNum\":"
-							" \"%d\",\"Stn\": \"%s\",\"Loc\": \"%s\"},\n",data_text,rep_num,gstn,gs_ret);
-					fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %s,%s ] }}\n",
-							gs_ret_lat,gs_ret_lng);
-				}
-				else {
-					fseek(filenotamjson,-3,SEEK_CUR);
-					fprintf(filenotamjson,",{\"type\": \"Feature\",\"properties\": { \"Data\": \"%s\",\"RepNum\":"
-							" \"%d\",\"Stn\": \"%s\",\"Loc\": \"%s\"},\n",data_text,rep_num,gstn,gs_ret);
-					fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %s,%s ] }}\n",
-							gs_ret_lat,gs_ret_lng);
-				}
-				fprintf(filenotamjson,"]}\n");
-				notam_count++;
 
-				asprintf(&postsql,"INSERT INTO notam (coords,stn_call,stn_loc,rep_num,notam_text) "
-						"VALUES (ST_SetSRID (ST_GeomFromGeoJSON('{\"type\":\"Point\",\"coordinates\":[%s,%s]}'),4326),'%s','%s',%d,'%s')",gs_ret_lat, gs_ret_lng, gstn,gs_ret,rep_num,data_text);
+				asprintf(&postsql,"INSERT INTO notam (stn_call,rep_num,notam_text) "
+						"VALUES ('%s',%d,'%s')",gstn,rep_num,data_text);
 
 				PGresult *res = PQexec(conn, postsql);
 

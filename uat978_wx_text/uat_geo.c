@@ -13,7 +13,6 @@
 #include "uat_decode.h"
 #include "uat_geo.h"
 #include "asprintf.h"
-//#include "metar.h"
 
 void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 {
@@ -327,7 +326,6 @@ double raw_lat; double raw_lon; double scale;
 
 void metar_data( Decoded_METAR *Mptr,FILE *to)
 {
-	char *sql;
 	char *postsql;
 	char obs_date[10]=" ";
 
@@ -356,14 +354,6 @@ void metar_data( Decoded_METAR *Mptr,FILE *to)
 		Mptr->SLP = 999;
 
 	sprintf(obs_date,"%02d %02d:%02d",Mptr->ob_date,Mptr->ob_hour,Mptr->ob_minute);
-
-	asprintf(&sql,"INSERT INTO metar (type,station,obs_date,temp,dew_point,visibility,sea_lev_pr,alt_inches,wind_dir,"
-			"wind_sp,cloud_type1,cloud_height1,cloud_type2,cloud_height2,cloud_type3,cloud_height3,cloud_type4,cloud_height4) "
-			"VALUES ('%s','%s','%s',%d,%d,%.2f,%.2f,%.2f,%d,%d,'%s','%s','%s','%s','%s','%s','%s','%s')"
-			,Mptr->codeName,Mptr->stnid,obs_date,Mptr->temp,Mptr->dew_pt_temp,Mptr->prevail_vsbySM,Mptr->SLP,Mptr->inches_altstng,Mptr->winData.windDir,
-			Mptr->winData.windSpeed,Mptr->cloudGroup[0].cloud_type,Mptr->cloudGroup[0].cloud_hgt_char,Mptr->cloudGroup[1].cloud_type,
-			Mptr->cloudGroup[1].cloud_hgt_char,Mptr->cloudGroup[2].cloud_type,Mptr->cloudGroup[2].cloud_hgt_char,
-			Mptr->cloudGroup[3].cloud_type,Mptr->cloudGroup[3].cloud_hgt_char);
 
 	asprintf(&postsql,"INSERT INTO metar (stn_call,ob_date,temp,windsp,winddir,altimeter,visby,dewp) "
 			"VALUES ('%s','%s',%d,%d,%d,%.2f,%.2f,%d)",Mptr->stnid,obs_date,Mptr->temp,Mptr->winData.windSpeed,

@@ -41,7 +41,6 @@ struct NotamJsonStruct{
 } notam_list[5000];
 
 int notam_count;
-int metar_count;
 int airmet_count;
 int gairmet_count;
 int sigmet_count;
@@ -54,7 +53,6 @@ FILE * filepirep;		// PIREP
 FILE * filecwa;			// Center Weather Advisory
 
 FILE * filenotamjson; 	// NOTAM geojson
-FILE * filemetarjson; 	// METAR geojson
 FILE * fileairmetjson; 	// AIRMET geojson
 FILE * filegairmetjson; // G-AIRMET geojson
 FILE * filesigmetjson; 	// SIGMET geojson

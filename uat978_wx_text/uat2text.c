@@ -38,7 +38,6 @@ int main(int argc, char **argv)
 {
 	seg_count = 0;
 	notam_count = 0;
-	metar_count = 0;
 	airmet_count = 0;
 	gairmet_count = 0;
 	sigmet_count = 0;
@@ -89,12 +88,6 @@ int main(int argc, char **argv)
 		fprintf(stderr,"sigmet.geojson Error--file could not be opened. \n");
 		exit (1); }
 	fflush(filesigmetjson);
-
-	filemetarjson = fopen("/home/trev/git/map-978/WebContent/metar.geojson","w");
-	if (filemetarjson == 0)	{
-		fprintf(stderr,"metar.geojson Error--file could not be opened. \n");
-		exit (1); }
-	fflush(filemetarjson);
 
 	filecwajson = fopen("/home/trev/git/map-978/WebContent/cwa.geojson","w");
 	if (filecwajson == 0){
