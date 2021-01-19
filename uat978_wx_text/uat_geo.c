@@ -5,7 +5,7 @@
  *      Author: TJH
  *      Keep graphics and geojson together
  */
-
+#include "/usr/include/postgresql/libpq-fe.h"
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
@@ -328,6 +328,7 @@ double raw_lat; double raw_lon; double scale;
 void metar_data( Decoded_METAR *Mptr,FILE *to)
 {
 	char *sql;
+	char *postsql;
 	char obs_date[10]=" ";
 
 	if (Mptr->temp > 1000)
@@ -348,10 +349,10 @@ void metar_data( Decoded_METAR *Mptr,FILE *to)
 	if (Mptr->inches_altstng> 1000)
 		Mptr->inches_altstng=999;
 
-	if (Mptr->prevail_vsbySM)
+	if (Mptr->prevail_vsbySM> 1000)
 		Mptr->prevail_vsbySM = 999;
 
-	if (Mptr->SLP)
+	if (Mptr->SLP> 1000)
 		Mptr->SLP = 999;
 
 	sprintf(obs_date,"%02d %02d:%02d",Mptr->ob_date,Mptr->ob_hour,Mptr->ob_minute);
@@ -364,5 +365,14 @@ void metar_data( Decoded_METAR *Mptr,FILE *to)
 			Mptr->cloudGroup[1].cloud_hgt_char,Mptr->cloudGroup[2].cloud_type,Mptr->cloudGroup[2].cloud_hgt_char,
 			Mptr->cloudGroup[3].cloud_type,Mptr->cloudGroup[3].cloud_hgt_char);
 
+	asprintf(&postsql,"INSERT INTO metar (stn_call,ob_date,temp,windsp,winddir,altimeter,visby,dewp) "
+			"VALUES ('%s','%s',%d,%d,%d,%.2f,%.2f,%d)",Mptr->stnid,obs_date,Mptr->temp,Mptr->winData.windSpeed,
+			Mptr->winData.windDir,Mptr->inches_altstng,Mptr->prevail_vsbySM,Mptr->dew_pt_temp);
 
+	PGresult *res = PQexec(conn, postsql);
+
+    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+       fprintf(stderr,"bad sql %s\n",PQerrorMessage(conn));
+
+    PQclear(res);
 }

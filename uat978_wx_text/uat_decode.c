@@ -2105,8 +2105,8 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 				fprintf(filenotamjson,"]}\n");
 				notam_count++;
 
-				asprintf(&postsql,"INSERT INTO notam (coords,stn_call,stn_loc,rep_num) "
-						"VALUES (ST_SetSRID (ST_GeomFromGeoJSON('{\"type\":\"Point\",\"coordinates\":[%s,%s]}'),4326),'%s','%s',%d)",gs_ret_lat, gs_ret_lng, gstn,gs_ret,rep_num);
+				asprintf(&postsql,"INSERT INTO notam (coords,stn_call,stn_loc,rep_num,notam_text) "
+						"VALUES (ST_SetSRID (ST_GeomFromGeoJSON('{\"type\":\"Point\",\"coordinates\":[%s,%s]}'),4326),'%s','%s',%d,'%s')",gs_ret_lat, gs_ret_lng, gstn,gs_ret,rep_num,data_text);
 
 				PGresult *res = PQexec(conn, postsql);
 
