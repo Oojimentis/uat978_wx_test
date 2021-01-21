@@ -6,7 +6,7 @@ My programming skills are somewhat limited, and this is my first Github project,
 
 ## Working on..
 * Website to display AIRMET, G-AIRMET, SIGMET, METAR and NOTAM using Leflet.
-* Put DUMP978 data/reports in database for use with Leaflet map. 
+* Put DUMP978 data/reports into PostgreSQL database for use with Leaflet map. 
 
 ## Added
 * Starting to add graphics data to database. (12/27/20)
