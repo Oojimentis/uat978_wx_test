@@ -43,6 +43,36 @@ int main(int argc, char **argv)
 	sigmet_count = 0;
 	cwa_count = 0;
 
+	char line[75];
+	char pg_user[20];
+	char pg_pwd[20];
+	char pg_db[20];
+	char file_path[75];
+	char pg_connect[100];
+	char file_name[100];
+
+	fileconfig = fopen("config.txt","r");
+	if (fileconfig == 0)	{
+		fprintf(stderr,"config.txt Error--file could not be opened. \n");
+		exit (1); }
+	else {
+		fgets(line, 75, fileconfig);
+		if (!feof(fileconfig))
+			 strcpy(pg_user,line);
+		fgets(line, 75, fileconfig);
+		if (!feof(fileconfig))
+			strcpy(pg_pwd,line);
+		fgets(line, 75, fileconfig);
+		if (!feof(fileconfig))
+			 strcpy(pg_db,line);
+		fgets(line, 75, fileconfig);
+		if (!feof(fileconfig)){
+			 line[strlen(line)-1] = '\0';
+			 strcpy(file_path,line);
+		}
+	}
+	fclose(fileconfig);
+
 // Delete table data...
 //		asprintf(&sql,"DELETE from metar; delete from graphic_reports; delete from graphic_coords; delete from text_reports; delete from nexrad;");
 //		rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
@@ -54,42 +84,47 @@ int main(int argc, char **argv)
 //	}
 
 //   Open Postgresql database
-	conn = PQconnectdb("user=trev password=moose dbname=uat978");
-
+	sprintf(pg_connect,"user=%s password=%s dbname=%s",pg_user,pg_pwd,pg_db);
+	conn = PQconnectdb(pg_connect);
 	if (PQstatus(conn) == CONNECTION_BAD) {
 		fprintf(stderr, "Connection to database failed: %s\n",PQerrorMessage(conn));
 		PQfinish(conn);
 		exit(1);
 	}
 	else {
-		fprintf(stderr, "Connected to database uat978\n");
+		fprintf(stderr, "Connected to database\n");
 	}
 
-	filenotamjson = fopen("/home/trev/git/map-978/WebContent/notam.geojson","w");
+	sprintf(file_name,"%snotam.geojson",file_path);
+	filenotamjson = fopen(file_name,"w");
 	if (filenotamjson == 0)	{
 		fprintf(stderr,"notam.geojson Error--file could not be opened. \n");
 		exit (1); }
 	fflush(filenotamjson);
 
-	fileairmetjson = fopen("/home/trev/git/map-978/WebContent/airmet.geojson","w");
+	sprintf(file_name,"%sairmet.geojson",file_path);
+	fileairmetjson = fopen(file_name,"w");
 	if (fileairmetjson == 0) {
 		fprintf(stderr,"airmet.geojson Error--file could not be opened. \n");
    		exit (1); }
 	fflush(fileairmetjson);
 
-	filegairmetjson = fopen("/home/trev/git/map-978/WebContent/gairmet.geojson","w");
+	sprintf(file_name,"%sgairmet.geojson",file_path);
+	filegairmetjson = fopen(file_name,"w");
 	if (filegairmetjson == 0) {
 		fprintf(stderr,"gairmet.geojson Error--file could not be opened. \n");
 		exit (1); }
 	fflush(filegairmetjson);
 
-	filesigmetjson = fopen("/home/trev/git/map-978/WebContent/sigmet.geojson","w");
+	sprintf(file_name,"%ssigmet.geojson",file_path);
+	filesigmetjson = fopen(file_name,"w");
 	if (filesigmetjson == 0) {
 		fprintf(stderr,"sigmet.geojson Error--file could not be opened. \n");
 		exit (1); }
 	fflush(filesigmetjson);
 
-	filecwajson = fopen("/home/trev/git/map-978/WebContent/cwa.geojson","w");
+	sprintf(file_name,"%scwa.geojson",file_path);
+	filecwajson = fopen(file_name,"w");
 	if (filecwajson == 0){
 		fprintf(stderr,"cwa.geojson Error--file could not be opened. \n");
 		exit (1); }

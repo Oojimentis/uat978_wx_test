@@ -59,6 +59,7 @@ FILE * filesigmetjson; 	// SIGMET geojson
 FILE * filecwajson; 	// CWA geojson
 
 FILE * filetaf;			// test file for TAF
+FILE * fileconfig;			// Credentials.
 
 struct uat_adsb_mdb {
     // presence bits
