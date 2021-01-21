@@ -3,6 +3,7 @@
 // Copyright 2015, Oliver Jowett <oliver@mutability.co.uk>
 //
 
+
 #ifndef NULL
 #define NULL ((void *) 0)
 #endif
