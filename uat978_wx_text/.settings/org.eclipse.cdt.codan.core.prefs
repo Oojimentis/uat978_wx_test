@@ -99,7 +99,7 @@ org.eclipse.cdt.codan.internal.checkers.UnusedFunctionDeclarationProblem=Warning
 org.eclipse.cdt.codan.internal.checkers.UnusedFunctionDeclarationProblem.params={launchModes\=>{RUN_ON_FULL_BUILD\=>true,RUN_ON_INC_BUILD\=>true,RUN_ON_FILE_OPEN\=>false,RUN_ON_FILE_SAVE\=>false,RUN_AS_YOU_TYPE\=>true,RUN_ON_DEMAND\=>true},suppression_comment\=>"@suppress(\\"Unused function declaration\\")",macro\=>true}
 org.eclipse.cdt.codan.internal.checkers.UnusedStaticFunctionProblem=Warning
 org.eclipse.cdt.codan.internal.checkers.UnusedStaticFunctionProblem.params={launchModes\=>{RUN_ON_FULL_BUILD\=>true,RUN_ON_INC_BUILD\=>true,RUN_ON_FILE_OPEN\=>false,RUN_ON_FILE_SAVE\=>false,RUN_AS_YOU_TYPE\=>true,RUN_ON_DEMAND\=>true},suppression_comment\=>"@suppress(\\"Unused static function\\")",macro\=>true}
-org.eclipse.cdt.codan.internal.checkers.UnusedVariableDeclarationProblem=Warning
+org.eclipse.cdt.codan.internal.checkers.UnusedVariableDeclarationProblem=-Warning
 org.eclipse.cdt.codan.internal.checkers.UnusedVariableDeclarationProblem.params={launchModes\=>{RUN_ON_FULL_BUILD\=>true,RUN_ON_INC_BUILD\=>true,RUN_ON_FILE_OPEN\=>false,RUN_ON_FILE_SAVE\=>false,RUN_AS_YOU_TYPE\=>true,RUN_ON_DEMAND\=>true},suppression_comment\=>"@suppress(\\"Unused variable declaration in file scope\\")",macro\=>true,exceptions\=>("@(\#)","$Id")}
 org.eclipse.cdt.codan.internal.checkers.UsingInHeaderProblem=-Warning
 org.eclipse.cdt.codan.internal.checkers.UsingInHeaderProblem.params={launchModes\=>{RUN_ON_FULL_BUILD\=>true,RUN_ON_INC_BUILD\=>true,RUN_ON_FILE_OPEN\=>false,RUN_ON_FILE_SAVE\=>false,RUN_AS_YOU_TYPE\=>true,RUN_ON_DEMAND\=>true},suppression_comment\=>"@suppress(\\"Using directive in header\\")"}
