@@ -3,7 +3,6 @@
 // Copyright 2015, Oliver Jowett <oliver@mutability.co.uk>
 //
 
-
 #ifndef NULL
 #define NULL ((void *) 0)
 #endif
@@ -107,9 +106,11 @@ void trimSpaces(char *s)
 	}
 	s[j+1] = '\0';
 }
+
 static double dimensions_widths[16] = {
     11.5,23,28.5,34,33,38,39.5,45,45,52,59.5,67,72.5,80,80,90
 };
+
 static const char *gairspace_element_names[16] = {
 	"Temporary Flight Restriction",
 	"Turbulence",
@@ -128,6 +129,7 @@ static const char *gairspace_element_names[16] = {
 	"Future Use",
 	"Future Use"
 };
+
 static const char *address_qualifier_names[8] = {
 	"ICAO address via ADS-B",
 	"reserved (national use)",
@@ -138,6 +140,7 @@ static const char *address_qualifier_names[8] = {
 	"reserved (6)",
 	"reserved (7)"
 };
+
 static const char *emitter_category_names[40] = {
 	"No aircraft type information",
 	"Light < 15 500 lbs",
@@ -180,6 +183,7 @@ static const char *emitter_category_names[40] = {
 	"reserved (38)",
 	"reserved (39)"
 };
+
 static const char *emergency_status_names[8] = {
 	"No emergency",
 	"**** General emergency ****",
@@ -190,6 +194,7 @@ static const char *emergency_status_names[8] = {
 	"**** Downed aircraft ****",
 	"reserved"
 };
+
 static const char *info_frame_type_names[16] = {
 	"FIS-B APDU",
 	"Reserved for Developmental Use",
@@ -231,17 +236,17 @@ static void get_gs_name(char *Word)
 		int rows = PQntuples(res);
 
 		if (rows == 1) {
-			strcpy(gs_ret, PQgetvalue(res, 0, 3));
-			sprintf(gs_ret_lat, "%s", PQgetvalue(res, 0, 0));
-			sprintf(gs_ret_lng, "%s", PQgetvalue(res, 0, 1));
+			strcpy(gs_ret,PQgetvalue(res,0,3));
+			sprintf(gs_ret_lat,"%s",PQgetvalue(res,0,0));
+			sprintf(gs_ret_lng,"%s",PQgetvalue(res,0,1));
 		 }
 		else {
 			fprintf(stderr,"Multple entries for %s\n",temp_stn);
 
 			for(int i=0; i<rows; i++) {
-				fprintf(stderr,"%s %s %s %s %s\n", PQgetvalue(res, i, 0),
-						PQgetvalue(res, i, 1), PQgetvalue(res, i, 2),
-						PQgetvalue(res, i, 3), PQgetvalue(res, i, 4));
+				fprintf(stderr,"%s %s %s %s %s\n",PQgetvalue(res,i,0),
+						PQgetvalue(res,i,1),PQgetvalue(res,i,2),
+						PQgetvalue(res,i,3),PQgetvalue(res,i,4));
 			}
 
 			PQclear(res);
@@ -249,6 +254,7 @@ static void get_gs_name(char *Word)
 	}
 	return;
 }
+
 static void get_sua_text(char *Word,FILE *to)
 {																			// SUA Decode
 	char *token;
@@ -381,6 +387,7 @@ static void get_sua_text(char *Word,FILE *to)
 	}
 	fflush(filesua);
 }
+
 static void get_pirep(char *Word,FILE *to)
 {
 	char *token;
@@ -398,8 +405,28 @@ static void get_pirep(char *Word,FILE *to)
 	char pirep_TB[30];		// Turbulence
 	char pirep_IC[30];		// Icing
 	char pirep_RM[100]; 	// Remarks
+	char pirep_TY[30];		// Type urgent/regular
+	char pirep_TI[10];		// Time
+
+
+	pirep_OV[0]='\0';		// Location
+	pirep_TM[0]='\0'; 		// DateTime
+	pirep_hr[0]='\0'; 		// DateTime
+	pirep_mn[0]='\0';		// DateTime
+	pirep_FL[0]='\0';		// Flight Level
+	pirep_TP[0]='\0';		// a/c type
+	pirep_SK[0]='\0';		// Cloud
+	pirep_WX[0]='\0';		// Weather
+	pirep_TA[0]='\0';		// Temperature
+	pirep_WV[0]='\0';		// Wind Speed Direction
+	pirep_TB[0]='\0';		// Turbulence
+	pirep_IC[0]='\0';		// Icing
+	pirep_RM[0]='\0';	 	// Remarks
+	pirep_TY[0]='\0';		// Type urgent/regular
+	pirep_TI[0]='\0';		// Time
 
 	char buff[30];
+	char *postsql;
 
 	token = strtok(Word," ");
 	strcpy(pirep_stn,"K");
@@ -418,9 +445,11 @@ static void get_pirep(char *Word,FILE *to)
 	token = strtok(0," ");
 	if (strcmp(token,"UUA") == 0) {
 		fprintf(filepirep," URGENT REPORT\n");
+		strcpy(pirep_TY,"Urgent Report");
 	}
 	else if (strcmp(token,"UA") == 0) {
 		fprintf(filepirep," Routine Report\n");
+		strcpy(pirep_TY,"Routine Report");
 	}
 	else {
 		fprintf(filepirep," Unknown Report\n");
@@ -435,6 +464,7 @@ static void get_pirep(char *Word,FILE *to)
 			snprintf(pirep_hr,3,"%s",pirep_TM+3);
 			snprintf(pirep_mn,3,"%s",pirep_TM+5);
 			fprintf(filepirep," Time           : %s:%sz\n",pirep_hr,pirep_mn);
+			sprintf(pirep_TI,"%s%s",pirep_hr,pirep_mn);
 		}
 		else if (strncmp(token,"FL",2) == 0) {
 			strcpy(pirep_FL,token+2);
@@ -481,7 +511,19 @@ static void get_pirep(char *Word,FILE *to)
 		}
 	}
 	fflush(filepirep);
+	asprintf(&postsql,"INSERT INTO pirep (rep_type,rep_time,fl_lev,ac_type,cloud,weather,temperature,wind_spd_dir,"
+			"turbulence,icing,remarks,stn_call,location)  "
+			"VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+			pirep_TY,pirep_TI,pirep_FL,pirep_TP,pirep_SK,pirep_WV,pirep_TA,pirep_WV,pirep_TB,pirep_IC,pirep_RM,
+			pirep_stn,pirep_OV);
+
+	PGresult *res = PQexec(conn, postsql);
+    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+       fprintf(stderr,"bad sql %s\n%s \n",PQerrorMessage(conn),postsql);
+
+    PQclear(res);
 }
+
 static void uat_decode_hdr(uint8_t *frame,struct uat_adsb_mdb *mdb)
 {
 	mdb->mdb_type = (frame[0] >> 3) & 0x1f;
@@ -500,6 +542,7 @@ static void uat_display_hdr(const struct uat_adsb_mdb *mdb,FILE *to)
 	fprintf(to,"   Time: %s\n",buff);
 	fprintf(to," ICAO:    %06X    (%s)\n",mdb->address,address_qualifier_names[mdb->address_qualifier]);
 }
+
 static void uat_decode_sv(uint8_t *frame,struct uat_adsb_mdb *mdb)
 {
 	uint32_t raw_lat;
@@ -636,6 +679,7 @@ static void uat_display_sv(const struct uat_adsb_mdb *mdb,FILE *to)
 		fprintf(to," Size: %.1fm L x %.1fm W%s\n",mdb->length,mdb->width,
 				mdb->position_offset ? " (position offset applied)" : "");
 }
+
 static void uat_decode_ms(uint8_t *frame,struct uat_adsb_mdb *mdb)
 {
 	uint16_t v;
@@ -681,6 +725,7 @@ static void uat_decode_ms(uint8_t *frame,struct uat_adsb_mdb *mdb)
 	if (mdb->callsign[0])
 		mdb->callsign_type = (frame[26] & 0x02 ? CS_CALLSIGN : CS_SQUAWK);
 }
+
 static void uat_display_ms(const struct uat_adsb_mdb *mdb,FILE *to)
 {
 	if (!mdb->has_ms)
@@ -692,6 +737,7 @@ static void uat_display_ms(const struct uat_adsb_mdb *mdb,FILE *to)
 			emitter_category_names[mdb->emitter_category],
 			emergency_status_names[mdb->emergency_status]);
 }
+
 static void uat_decode_auxsv(uint8_t *frame,struct uat_adsb_mdb *mdb)
 {
 	int raw_alt = (frame[29] << 4) | ((frame[30] & 0xf0) >> 4);
@@ -705,11 +751,13 @@ static void uat_decode_auxsv(uint8_t *frame,struct uat_adsb_mdb *mdb)
 	}
 	mdb->has_auxsv = 1;
 }
+
 static void uat_display_auxsv(const struct uat_adsb_mdb *mdb,FILE *to)
 {
 	if (!mdb->has_auxsv)
 		return;
 }
+
 void uat_decode_adsb_mdb(uint8_t *frame,struct uat_adsb_mdb *mdb)
 {
 	static struct uat_adsb_mdb mdb_zero;
@@ -746,6 +794,7 @@ void uat_decode_adsb_mdb(uint8_t *frame,struct uat_adsb_mdb *mdb)
 		break;
 	}
 }
+
 void uat_display_adsb_mdb(const struct uat_adsb_mdb *mdb,FILE *to)
 {
 	uat_display_hdr(mdb,to);
@@ -753,6 +802,7 @@ void uat_display_adsb_mdb(const struct uat_adsb_mdb *mdb,FILE *to)
 	uat_display_ms(mdb,to);
 	uat_display_auxsv(mdb,to);
 }
+
 static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
 {
 	unsigned t_opt;
@@ -827,6 +877,7 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
 	frame->fisb.s_flag = (frame->data[1] & 0x02) ? 1 : 0;
 	frame->is_fisb = 1;
 }
+
 void uat_decode_uplink_mdb(uint8_t *frame,struct uat_uplink_mdb *mdb)
 {
 	mdb->position_valid = (frame[5] & 0x01) ? 1 : 0;
@@ -880,6 +931,7 @@ void uat_decode_uplink_mdb(uint8_t *frame,struct uat_uplink_mdb *mdb)
 		}
 	}
 }
+
 static void display_generic_data(uint8_t *data,uint16_t length,FILE *to)
 {
 	unsigned i;
@@ -902,6 +954,7 @@ static void display_generic_data(uint8_t *data,uint16_t length,FILE *to)
 		fprintf(to,"\n");
 	}
 }
+
 static const char *get_fisb_product_name(uint16_t product_id)
 {
 	switch (product_id) {
@@ -968,6 +1021,7 @@ static const char *get_fisb_product_name(uint16_t product_id)
 	default: 	return 	"****Unknown";
 	}
 }
+
 static const char *get_fisb_product_format(uint16_t product_id)
 {
 	switch (product_id) {
@@ -1002,6 +1056,7 @@ static const char *get_fisb_product_format(uint16_t product_id)
 		return "Unknown";
 	}
 }
+
 static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 {
 	int recf;
@@ -1320,6 +1375,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 	break;
 	}
 }
+
 static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *frame,FILE *to)
 {
 	int tfr;
@@ -1382,6 +1438,7 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 		}
 	}
 }
+
 void uat_display_uplink_mdb(const struct uat_uplink_mdb *mdb,FILE *to)
 {
 	char buff[30];
@@ -1403,7 +1460,9 @@ void uat_display_uplink_mdb(const struct uat_uplink_mdb *mdb,FILE *to)
 			uat_display_uplink_info_frame(&mdb->info_frames[i],to);
 	}
 }
+
 //static void get_graphic(const struct fisb_apdu *apdu, FILE *fnm,FILE *to)
+
 static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 {
 	int rec_offset = 11;
@@ -1895,6 +1954,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 	}
 //	display_generic_data(apdu->data,apdu->length,to);
 }
+
 static void get_text(const struct fisb_apdu *apdu, FILE *to)
 {
 	int rec_offset = 11;
@@ -2046,6 +2106,7 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 		}
 	}
 }
+
 static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm,FILE *to)
 {
 	uint16_t prodid;
