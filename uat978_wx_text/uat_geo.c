@@ -5,6 +5,7 @@
  *      Author: TJH
  *      Keep graphics and geojson together
  */
+
 #include "/usr/include/postgresql/libpq-fe.h"
 #include <stdio.h>
 #include <math.h>
@@ -25,7 +26,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 	int bin=0;
 	int alt_level = 0;
 
-	char *sql;
+	char *postsql;
 	char block[200];
 	char nexrad_time[6];
 	char charValue;
@@ -110,13 +111,13 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 		sprintf(block," ");
 
 		if (apdu->product_id == 63){
-			asprintf(&sql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
+			asprintf(&postsql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
 			"lat_size,lon_size,level,block_data) "
 				"VALUES(%d,'NEXRAD','Regional','%s',%d,%.0f,%.0f,%.0f,%.0f,%d,",
 				apdu->product_id,nexrad_time,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60,alt_level);
 		}
 		else {
-			asprintf(&sql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
+			asprintf(&postsql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
 				"lat_size,lon_size,level,block_data) "
 				"VALUES(%d,'NEXRAD','CONUS','%s',%d,%.0f,%.0f,%.0f,%.0f,%d,",
 				apdu->product_id,nexrad_time,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60,alt_level);
@@ -132,8 +133,13 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 					sprintf(block,"%s%c",block,charValue);
 				}
 			}
-			asprintf(&sql,"%s '%s')",sql,block);
+			asprintf(&postsql,"%s '%s')",postsql,block);
 
+			PGresult *res = PQexec(conn, postsql);
+		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+		       fprintf(stderr,"bad sql %s\n%s \n",PQerrorMessage(conn),postsql);
+
+		    PQclear(res);
 		}
 		if (apdu->product_id == 70 || apdu->product_id == 71) {
 			for (int i = 3; i < apdu->length; ++i) {
@@ -148,8 +154,13 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 					sprintf(block,"%s%c",block,charValue);
 				}
 			}
-			asprintf(&sql,"%s '%s')",sql,block);
+			asprintf(&postsql,"%s '%s')",postsql,block);
 
+			PGresult *res = PQexec(conn,postsql);
+		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+		       fprintf(stderr,"bad sql %s\n%s \n",PQerrorMessage(conn),postsql);
+
+		    PQclear(res);
 		}
 		if (apdu->product_id == 103) {
 			for (int i = 3; i < apdu->length; ++i) {
@@ -168,9 +179,13 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 				}
 			}
 
-			asprintf(&sql,"%s '%s')",sql,block);
+			asprintf(&postsql,"%s '%s')",postsql,block);
 
+			PGresult *res = PQexec(conn, postsql);
+		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+		       fprintf(stderr,"bad sql %s\n%s \n",PQerrorMessage(conn),postsql);
 
+		    PQclear(res);
 		}
 		if (apdu->product_id == 90 || apdu->product_id == 91 || apdu->product_id == 84) {
 			for (int i = 3; i < apdu->length; ++i) {
@@ -200,9 +215,13 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 				}
 			}
     
-			asprintf(&sql,"%s '%s')",sql,block);
-		
+			asprintf(&postsql,"%s '%s')",postsql,block);
 
+			PGresult *res = PQexec(conn, postsql);
+		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+		       fprintf(stderr,"bad sql %s\n%s \n",PQerrorMessage(conn),postsql);
+
+		    PQclear(res);
 		}
 	}
 	else {    // Empty
@@ -237,13 +256,13 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 					block_location_graphic(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
 					if (apdu->product_id == 63){
-						asprintf(&sql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
+						asprintf(&postsql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
 							"lat_size,lon_size,level,block_data) "
 							"VALUES(%d,'NEXRAD','Regional','%s',%d,%.0f,%.0f,%.0f,%.0f,%d,",
 							apdu->product_id,nexrad_time,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60,alt_level);
 					}
 					else {
-						asprintf(&sql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
+						asprintf(&postsql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
 							"lat_size,lon_size,level,block_data) "
 							"VALUES(%d,'NEXRAD','CONUS','%s',%d,%.0f,%.0f,%.0f,%.0f,%d,",
 							apdu->product_id,nexrad_time,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60,alt_level);
@@ -255,9 +274,13 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 						sprintf(block,"%s%c",block,charValue);
 					}
    			    	
-					asprintf(&sql,"%s '%s')",sql,block);
+					asprintf(&postsql,"%s '%s')",postsql,block);
 
+					PGresult *res = PQexec(conn, postsql);
+				    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+				       fprintf(stderr,"bad sql %s\n%s \n",PQerrorMessage(conn),postsql);
 
+				    PQclear(res);
 				}
 			}
 		}
@@ -360,7 +383,6 @@ void metar_data( Decoded_METAR *Mptr,FILE *to)
 			Mptr->winData.windDir,Mptr->inches_altstng,Mptr->prevail_vsbySM,Mptr->dew_pt_temp);
 
 	PGresult *res = PQexec(conn, postsql);
-
     if (PQresultStatus(res) != PGRES_COMMAND_OK)
        fprintf(stderr,"bad sql %s\n",PQerrorMessage(conn));
 
