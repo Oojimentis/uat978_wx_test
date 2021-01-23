@@ -102,26 +102,12 @@ int main(int argc, char **argv)
 		exit (1); }
 	fflush(filenotamjson);
 
-	sprintf(file_name,"%sairmet.geojson",file_path);
-	fileairmetjson = fopen(file_name,"w");
-	if (fileairmetjson == 0) {
-		fprintf(stderr,"airmet.geojson Error--file could not be opened. \n");
-   		exit (1); }
-	fflush(fileairmetjson);
-
 	sprintf(file_name,"%sgairmet.geojson",file_path);
 	filegairmetjson = fopen(file_name,"w");
 	if (filegairmetjson == 0) {
 		fprintf(stderr,"gairmet.geojson Error--file could not be opened. \n");
 		exit (1); }
 	fflush(filegairmetjson);
-
-	sprintf(file_name,"%ssigmet.geojson",file_path);
-	filesigmetjson = fopen(file_name,"w");
-	if (filesigmetjson == 0) {
-		fprintf(stderr,"sigmet.geojson Error--file could not be opened. \n");
-		exit (1); }
-	fflush(filesigmetjson);
 
 	sprintf(file_name,"%scwa.geojson",file_path);
 	filecwajson = fopen(file_name,"w");
@@ -143,11 +129,6 @@ int main(int argc, char **argv)
 	filesua = fopen("sua.out","w");
 	if (filesua == 0) {
 		fprintf(stderr,"sua.out Error--file could not be opened. \n");
-		exit (1); }
-
-	filepirep = fopen("pirep.out","w");
-	if (filepirep == 0) {
-		fprintf(stderr,"pirep.out Error--file could not be opened. \n");
 		exit (1); }
 
 	filecwa = fopen("cwa.out","w");

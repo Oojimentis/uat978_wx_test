@@ -236,9 +236,9 @@ static void get_gs_name(char *Word)
 		int rows = PQntuples(res);
 
 		if (rows == 1) {
-			strcpy(gs_ret,PQgetvalue(res,0,3));
-			sprintf(gs_ret_lat,"%s",PQgetvalue(res,0,0));
-			sprintf(gs_ret_lng,"%s",PQgetvalue(res,0,1));
+			strcpy(gs_ret,PQgetvalue(res,0,2));
+			sprintf(gs_ret_lat,"%s",PQgetvalue(res,0,3));
+			sprintf(gs_ret_lng,"%s",PQgetvalue(res,0,4));
 		 }
 		else {
 			fprintf(stderr,"Multple entries for %s\n",temp_stn);
@@ -434,87 +434,72 @@ static void get_pirep(char *Word,FILE *to)
 
 	get_gs_name(pirep_stn);
 
-	fprintf(filepirep,"PIREP REPORT:\n");
-
 	time_t current_time = time(NULL);
 	struct tm *tm = localtime(&current_time);
 	strftime(buff, sizeof buff, "%D %T", tm);
-	fprintf(filepirep," Time           : %s\n",buff);
-	fprintf(filepirep," Station        : %s - %s\n",pirep_stn,gs_ret);
 
 	token = strtok(0," ");
 	if (strcmp(token,"UUA") == 0) {
-		fprintf(filepirep," URGENT REPORT\n");
 		strcpy(pirep_TY,"Urgent Report");
 	}
 	else if (strcmp(token,"UA") == 0) {
-		fprintf(filepirep," Routine Report\n");
 		strcpy(pirep_TY,"Routine Report");
 	}
 	else {
-		fprintf(filepirep," Unknown Report\n");
+//		fprintf(filepirep," Unknown Report\n");
 	}
 	while ((token = strtok(0,"/"))) {
 		if (strncmp(token,"OV",2) == 0) {
 			strcpy(pirep_OV,token+3);
-			fprintf(filepirep," Location       : %s\n",pirep_OV);
-			}
+		}
 		else if (strncmp(token,"TM",2) == 0) {
 			strcpy(pirep_TM,token);
 			snprintf(pirep_hr,3,"%s",pirep_TM+3);
 			snprintf(pirep_mn,3,"%s",pirep_TM+5);
-			fprintf(filepirep," Time           : %s:%sz\n",pirep_hr,pirep_mn);
 			sprintf(pirep_TI,"%s%s",pirep_hr,pirep_mn);
 		}
 		else if (strncmp(token,"FL",2) == 0) {
 			strcpy(pirep_FL,token+2);
-			fprintf(filepirep," Flight Level   : %s\n",pirep_FL);
 		}
 		else if (strncmp(token,"TP",2) == 0) {
 			strcpy(pirep_TP,token+3);
-			fprintf(filepirep," A/C Type       : %s\n",pirep_TP);
 		}
 		else if (strncmp(token,"SK",2) == 0) {
 			strcpy(pirep_SK,token+3);
-			fprintf(filepirep," Cloud Layers   : %s\n",pirep_SK);
 		}
 		else if (strncmp(token,"WX",2) == 0) {
 				strcpy(pirep_WX,token+3);
-			fprintf(filepirep," Weather        : %s\n",pirep_WX);
 		}
 		else if (strncmp(token,"TA",2) == 0) {
 			strcpy(pirep_TA,token+3);
-			fprintf(filepirep," Temperature    : %s(c)\n",pirep_TA);
 		}
 		else if (strncmp(token,"WV",2) == 0) {
 			strcpy(pirep_WV,token+3);
-			fprintf(filepirep," WndSpdDir      : %s\n",pirep_WV);
 		}
 		else if (strncmp(token,"TB",2) == 0) {
 			strcpy(pirep_TB,token+3);
-			fprintf(filepirep," Turbulence     : %s\n",pirep_TB);
 		}
 		else if (strncmp(token,"IC",2) == 0) {
 			strcpy(pirep_IC,token+3);
-			fprintf(filepirep," Icing          : %s\n",pirep_IC);
 		}
 		else if (strncmp(token,"RM",2) == 0) {
 			strcpy(pirep_RM,token+3);
 			token = strtok(0,"/");
 			if (token) {
-				fprintf(filepirep," Remarks        : %s",pirep_RM);
-				fprintf(filepirep,"/%s\n",token);
+// *** TODO check
+//				fprintf(filepirep," Remarks        : %s",pirep_RM);
+//				fprintf(filepirep,"/%s\n",token);
 			}
 			else {
-				fprintf(filepirep," Remarks        : %s\n",pirep_RM);
+//				fprintf(filepirep," Remarks        : %s\n",pirep_RM);
 			}
 		}
 	}
-	fflush(filepirep);
+
 	asprintf(&postsql,"INSERT INTO pirep (rep_type,rep_time,fl_lev,ac_type,cloud,weather,temperature,wind_spd_dir,"
 			"turbulence,icing,remarks,stn_call,location)  "
 			"VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
-			pirep_TY,pirep_TI,pirep_FL,pirep_TP,pirep_SK,pirep_WV,pirep_TA,pirep_WV,pirep_TB,pirep_IC,pirep_RM,
+			pirep_TY,pirep_TI,pirep_FL,pirep_TP,pirep_SK,pirep_WX,pirep_TA,pirep_WV,pirep_TB,pirep_IC,pirep_RM,
 			pirep_stn,pirep_OV);
 
 	PGresult *res = PQexec(conn, postsql);
@@ -1202,7 +1187,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 		char report_buf[1024];
 		char mtype[9]; char taftype[9];
 		char *p,*r;
-//		char temp[100];
 
 		while (report) {
 
@@ -1461,8 +1445,6 @@ void uat_display_uplink_mdb(const struct uat_uplink_mdb *mdb,FILE *to)
 	}
 }
 
-//static void get_graphic(const struct fisb_apdu *apdu, FILE *fnm,FILE *to)
-
 static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 {
 	int rec_offset = 11;
@@ -1515,6 +1497,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 	char *stop_date;
 
 	char *sql;
+	char *postsql;
 
 	int rep_exist = 0;
 	FILE * file3dpoly;
@@ -1682,22 +1665,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 			alt = alt_raw * 100;
 
 			switch(apdu->product_id) {
-			case 11:
-				file3dpoly = fileairmetjson;
-				airmet_count = ex3dpoly(fileairmetjson,airmet_count,rep_num,alt,ob_ele_text);
-				break;
-			case 12:
-				file3dpoly = filesigmetjson;
-				sigmet_count = ex3dpoly(filesigmetjson,sigmet_count,rep_num,alt,ob_ele_text);
-				break;
-			case 14:
-				file3dpoly = filegairmetjson;
-				gairmet_count = ex3dpoly(filegairmetjson,gairmet_count,rep_num,alt,ob_ele_text);
-				break;
-			case 15:
-				file3dpoly = filecwajson;
-				cwa_count = ex3dpoly(filecwajson,cwa_count,rep_num,alt,ob_ele_text);
-				break;
+
 			case 8:
 				file3dpoly = filenotamjson;
 				if (notam_count == 0) {
@@ -1716,6 +1684,9 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 				notam_count++;
 				break;
 			}
+			char *coords;
+			char gr[1000];
+			gr[0]='\0';
 			for (int i = 0; i < overlay_vert_cnt; i++) {
 				lng_raw = ((apdu->data[datoff + i]) << 11) | ((apdu->data[datoff +i+1]) << 3) |
 					((apdu->data[datoff +i+2]) & 0xE0 >> 5);
@@ -1741,17 +1712,28 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 				}
 				lat_save = lat;
 
-				if (i == (overlay_vert_cnt-1))
+				if (i == (overlay_vert_cnt-1)){
 					fprintf(file3dpoly,"[ %f, %f ]\n",lng,lat);
-				else
+					asprintf(&coords," [%f,%f]",coords,lng,lat);
+					strcat(gr,coords);
+				}
+				else {
 					fprintf(file3dpoly,"[ %f, %f ],\n",lng,lat);
-
-				asprintf(&sql,"INSERT INTO graphic_coords (prod_id, rep_number, geo_ovrly_opt,"
-					"coord_num,ovrly_vertices, ovrly_lat,ovrly_lng,ovrly_alt) "
-					"VALUES (%d,%d,%d,%d,%d,%f,%f,%d)",
-					apdu->product_id,rep_num,geo_overlay_opt,i,overlay_vert_cnt,lat,lng,alt);
-
+					asprintf(&coords," [%f,%f],",coords,lng,lat);
+					strcat(gr,coords);
+				}
 			}
+			asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele) "
+					"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s' )",
+					gr,apdu->product_id,rep_num,alt,ob_ele_text);
+
+			PGresult *res = PQexec(conn, postsql);
+		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+		       fprintf(stderr,"bad sql %s\n",PQerrorMessage(conn));
+
+		    PQclear(res);
+
+			fprintf(stderr,"%s\n",gr);
 			fprintf(file3dpoly,"]]\n");
 			fprintf(file3dpoly,"}}\n");
 			fprintf(file3dpoly,"]}\n");
@@ -1941,7 +1923,6 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 						"coord_num,ovrly_vertices, ovrly_lat,ovrly_lng,ovrly_alt) "
 						"VALUES (%d,%d,%d,%d,%d,%f,%f,%d)",
 						apdu->product_id,rep_num,geo_overlay_opt,i,overlay_vert_cnt,lat,lng,alt);
-
 			}
 			if (qualifier_flag == 0) {
 				fprintf(file3dpoly,"]\n");

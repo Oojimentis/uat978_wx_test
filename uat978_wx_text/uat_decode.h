@@ -49,13 +49,10 @@ int cwa_count;
 FILE * filemetar;   	// 413
 FILE * filenotam;   	// 8
 FILE * filesua;      	// 13
-FILE * filepirep;		// PIREP
 FILE * filecwa;			// Center Weather Advisory
 
 FILE * filenotamjson; 	// NOTAM geojson
-FILE * fileairmetjson; 	// AIRMET geojson
 FILE * filegairmetjson; // G-AIRMET geojson
-FILE * filesigmetjson; 	// SIGMET geojson
 FILE * filecwajson; 	// CWA geojson
 
 FILE * filetaf;			// test file for TAF
