@@ -41,9 +41,6 @@ struct NotamJsonStruct{
 } notam_list[5000];
 
 int notam_count;
-int airmet_count;
-int gairmet_count;
-int sigmet_count;
 int cwa_count;
 
 FILE * filemetar;   	// 413
@@ -52,11 +49,10 @@ FILE * filesua;      	// 13
 FILE * filecwa;			// Center Weather Advisory
 
 FILE * filenotamjson; 	// NOTAM geojson
-FILE * filegairmetjson; // G-AIRMET geojson
 FILE * filecwajson; 	// CWA geojson
 
 FILE * filetaf;			// test file for TAF
-FILE * fileconfig;			// Credentials.
+FILE * fileconfig;		// Credentials.
 
 struct uat_adsb_mdb {
     // presence bits

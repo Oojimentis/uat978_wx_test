@@ -158,7 +158,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 
 			PGresult *res = PQexec(conn,postsql);
 		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
-		       fprintf(stderr,"bad sql %s\n%s \n",PQerrorMessage(conn),postsql);
+		    	if (PQresultStatus(res) != 7)
+		    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
 
 		    PQclear(res);
 		}
@@ -183,7 +184,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 
 			PGresult *res = PQexec(conn, postsql);
 		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
-		       fprintf(stderr,"bad sql %s\n%s \n",PQerrorMessage(conn),postsql);
+		    	if (PQresultStatus(res) != 7)
+		    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
 
 		    PQclear(res);
 		}
@@ -219,7 +221,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 
 			PGresult *res = PQexec(conn, postsql);
 		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
-		       fprintf(stderr,"bad sql %s\n%s \n",PQerrorMessage(conn),postsql);
+		    	if (PQresultStatus(res) != 7)
+		    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
 
 		    PQclear(res);
 		}
@@ -278,7 +281,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 
 					PGresult *res = PQexec(conn, postsql);
 				    if (PQresultStatus(res) != PGRES_COMMAND_OK)
-				       fprintf(stderr,"bad sql %s\n%s \n",PQerrorMessage(conn),postsql);
+				    	if (PQresultStatus(res) != 7)
+				    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
 
 				    PQclear(res);
 				}
@@ -286,24 +290,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 		}
 	}
 	fflush(to);
-}
-
-int  ex3dpoly(FILE *fnm, int rep_count, int rep_num, int alt, char *ob_ele_text)
-{
-	if (rep_count == 0) {
-		fprintf(fnm,"{\"type\": \"FeatureCollection\",\n");
-		fprintf(fnm,"\"features\": [ \n");
-		fprintf(fnm,"{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
-		fprintf(fnm,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
-	}
-	else {
-		fseek(fnm, -3, SEEK_CUR);
-		fprintf(fnm,",{\"type\": \"Feature\", \"properties\": { \"RepNum\": \"%d\", \"Alt\": \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
-		fprintf(fnm,"\"geometry\": { \"type\": \"Polygon\", \"coordinates\": [[\n");
-	}
-	rep_count++;
-	return rep_count;
-
 }
 
 void block_location_graphic(int bn, int ns, int sf, double *latN, double *lonW, double *latSize, double *lonSize)
@@ -384,7 +370,8 @@ void metar_data( Decoded_METAR *Mptr,FILE *to)
 
 	PGresult *res = PQexec(conn, postsql);
     if (PQresultStatus(res) != PGRES_COMMAND_OK)
-       fprintf(stderr,"bad sql %s\n",PQerrorMessage(conn));
+    	if (PQresultStatus(res) != 7)
+    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
 
     PQclear(res);
 }

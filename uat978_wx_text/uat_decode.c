@@ -240,7 +240,7 @@ static void get_gs_name(char *Word)
 			sprintf(gs_ret_lat,"%s",PQgetvalue(res,0,3));
 			sprintf(gs_ret_lng,"%s",PQgetvalue(res,0,4));
 		 }
-		else {
+		else if (rows > 1){
 			fprintf(stderr,"Multple entries for %s\n",temp_stn);
 
 			for(int i=0; i<rows; i++) {
@@ -446,7 +446,7 @@ static void get_pirep(char *Word,FILE *to)
 		strcpy(pirep_TY,"Routine Report");
 	}
 	else {
-//		fprintf(filepirep," Unknown Report\n");
+		strcpy(pirep_TY,"Unknown Report");
 	}
 	while ((token = strtok(0,"/"))) {
 		if (strncmp(token,"OV",2) == 0) {
@@ -504,7 +504,8 @@ static void get_pirep(char *Word,FILE *to)
 
 	PGresult *res = PQexec(conn, postsql);
     if (PQresultStatus(res) != PGRES_COMMAND_OK)
-       fprintf(stderr,"bad sql %s\n%s \n",PQerrorMessage(conn),postsql);
+    	if (PQresultStatus(res) != 7)
+    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
 
     PQclear(res);
 }
@@ -1706,19 +1707,16 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 				alt = alt_raw * 100;
 
 				if (lat == lat_save) {														// Ignore 2nd altitude data to fix map
-					fseek(file3dpoly,-2,SEEK_CUR);
 					i = overlay_vert_cnt;
 					continue;
 				}
 				lat_save = lat;
 
 				if (i == (overlay_vert_cnt-1)){
-					fprintf(file3dpoly,"[ %f, %f ]\n",lng,lat);
 					asprintf(&coords," [%f,%f]",coords,lng,lat);
 					strcat(gr,coords);
 				}
 				else {
-					fprintf(file3dpoly,"[ %f, %f ],\n",lng,lat);
 					asprintf(&coords," [%f,%f],",coords,lng,lat);
 					strcat(gr,coords);
 				}
@@ -1729,15 +1727,11 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 
 			PGresult *res = PQexec(conn, postsql);
 		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
-		       fprintf(stderr,"bad sql %s\n",PQerrorMessage(conn));
+		    	if (PQresultStatus(res) != 7)
+		    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
 
 		    PQclear(res);
 
-			fprintf(stderr,"%s\n",gr);
-			fprintf(file3dpoly,"]]\n");
-			fprintf(file3dpoly,"}}\n");
-			fprintf(file3dpoly,"]}\n");
-			fflush(file3dpoly);
 			break;
 		case 7: case 8:																		// Extended Range Circular Prism (7 = MSL,8 = AGL)
 /*
@@ -1870,27 +1864,6 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 			alt_raw = (((apdu->data[datoff +4]) & 0x03) << 8) | (apdu->data[datoff +5]);
 			alt = alt_raw * 100;
 
-			switch(apdu->product_id) {
-			case 14:
-				file3dpoly = filegairmetjson;
-				if (qualifier_flag == 0) {
-					if (gairmet_count == 0) {
-						fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
-						fprintf(file3dpoly,"\"features\": [ \n");
-						fprintf(file3dpoly,"{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\":"
-							" \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
-						fprintf(file3dpoly,"\"geometry\": { \"type\": \"LineString\",\"coordinates\": [\n");
-					}
-					else {
-						fseek(file3dpoly,-3,SEEK_CUR);
-						fprintf(file3dpoly,",{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\":"
-							" \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
-						fprintf(file3dpoly,"\"geometry\": { \"type\": \"LineString\",\"coordinates\": [\n");
-					}
-					gairmet_count++;
-				}
-				break;
-			}
 			for (int i = 0; i < overlay_vert_cnt; i++) {
 				lng_raw = ((apdu->data[datoff +i]) << 11) | ((apdu->data[datoff +i+1]) << 3) |
 						((apdu->data[datoff +i+2]) >> 5);
@@ -1913,22 +1886,10 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 
 				alt = alt_raw * 100;
 
-				if (qualifier_flag == 0) {
-					if (i == (overlay_vert_cnt-1))
-						fprintf(file3dpoly,"[ %f,%f ]\n",lng,lat);
-					else
-						fprintf(file3dpoly,"[ %f,%f ],\n",lng,lat);
-				}
 				asprintf(&sql,"INSERT INTO graphic_coords (prod_id, rep_number, geo_ovrly_opt,"
 						"coord_num,ovrly_vertices, ovrly_lat,ovrly_lng,ovrly_alt) "
 						"VALUES (%d,%d,%d,%d,%d,%f,%f,%d)",
 						apdu->product_id,rep_num,geo_overlay_opt,i,overlay_vert_cnt,lat,lng,alt);
-			}
-			if (qualifier_flag == 0) {
-				fprintf(file3dpoly,"]\n");
-				fprintf(file3dpoly,"}}\n");
-				fprintf(file3dpoly,"]}\n");
-				fflush(file3dpoly);
 			}
 			break;
 		}
@@ -2041,7 +2002,6 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 		if (apdu->product_id == 8 || apdu->product_id == 11 ||
 				apdu->product_id == 12 || apdu->product_id == 15) {	// 8 11 12 15
 
-			char *sql;
 			char *postsql;
 			int length = strlen(r);
 
@@ -2071,21 +2031,30 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 				PGresult *res = PQexec(conn, postsql);
 
 			    if (PQresultStatus(res) != PGRES_COMMAND_OK)
-			       fprintf(stderr,"bad sql %s\n",PQerrorMessage(conn));
+			    	if (PQresultStatus(res) != 7)
+			    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
 
 			    PQclear(res);
 			}
 			// add to database
-			asprintf(&sql,"INSERT INTO text_reports (prod_id,report_type,stn_call,rep_time,"
-					"rep_year,rep_number,time,data) "
-					"VALUES (%d,'%s','%s','%s',%d,%d,'%s','%s')",
-					apdu->product_id,prod_name,gstn,rtime,report_year,rep_num,buff,data_text);
+			asprintf(&postsql,"INSERT INTO sigairmet (prod_id,stn_call,rep_time,rep_num,text_data) "
+					"VALUES (%d,'%s','%s',%d,'%s')",
+					apdu->product_id,gstn,rtime,rep_num,data_text);
+
+			PGresult *res = PQexec(conn, postsql);
+		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+		    	if (PQresultStatus(res) != 7)
+		    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+
+		    PQclear(res);
+
 		}
 		if (apdu->product_id == 13) {
 			fprintf(filesua," Data:\n%s\n",r);
 			fflush(filesua);
 		}
 	}
+//	display_generic_data(apdu->data,apdu->length,to);
 }
 
 static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm,FILE *to)
