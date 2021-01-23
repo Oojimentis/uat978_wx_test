@@ -38,9 +38,6 @@ int main(int argc, char **argv)
 {
 	seg_count = 0;
 	notam_count = 0;
-	airmet_count = 0;
-	gairmet_count = 0;
-	sigmet_count = 0;
 	cwa_count = 0;
 
 	char line[75];
@@ -101,13 +98,6 @@ int main(int argc, char **argv)
 		fprintf(stderr,"notam.geojson Error--file could not be opened. \n");
 		exit (1); }
 	fflush(filenotamjson);
-
-	sprintf(file_name,"%sgairmet.geojson",file_path);
-	filegairmetjson = fopen(file_name,"w");
-	if (filegairmetjson == 0) {
-		fprintf(stderr,"gairmet.geojson Error--file could not be opened. \n");
-		exit (1); }
-	fflush(filegairmetjson);
 
 	sprintf(file_name,"%scwa.geojson",file_path);
 	filecwajson = fopen(file_name,"w");
