@@ -1499,6 +1499,9 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 
 	char *sql;
 	char *postsql;
+	char *coords;
+	char gr[2000];
+	gr[0]='\0';
 
 	int rep_exist = 0;
 	FILE * file3dpoly;
@@ -1685,9 +1688,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 				notam_count++;
 				break;
 			}
-			char *coords;
-			char gr[1000];
-			gr[0]='\0';
+
 			for (int i = 0; i < overlay_vert_cnt; i++) {
 				lng_raw = ((apdu->data[datoff + i]) << 11) | ((apdu->data[datoff +i+1]) << 3) |
 					((apdu->data[datoff +i+2]) & 0xE0 >> 5);
@@ -1861,35 +1862,53 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 			break;
 		case 11: case 12:													// Extended Range 3D Polyline
 																			// Don't write geojson for items with qualifier flag set.
-			alt_raw = (((apdu->data[datoff +4]) & 0x03) << 8) | (apdu->data[datoff +5]);
-			alt = alt_raw * 100;
 
-			for (int i = 0; i < overlay_vert_cnt; i++) {
-				lng_raw = ((apdu->data[datoff +i]) << 11) | ((apdu->data[datoff +i+1]) << 3) |
-						((apdu->data[datoff +i+2]) >> 5);
-				lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+ 3]) << 6) |
-						(((apdu->data[datoff +i+ 4]) & 0xFC) >> 2);
-				alt_raw = (((apdu->data[datoff +i+ 4]) & 0x03) << 8) | (apdu->data[datoff +i+ 5]);
-
-				datoff = datoff + 5;
-
-				lng_raw = (~lng_raw & 0x7FFFF) +1;											// 2's compliment +1
-				lat_raw = (~lat_raw & 0x7FFFF) +1;											// 2's compliment +1
-
-				lat = lat_raw * 0.0006866455078125;
-				lng = lng_raw * -0.0006866455078125;
-
-				if (lat > 90.0)
-					lat = 360.0 - lat;
-				if (lng > 180.0)
-					lng = lng - 360.0;
-
+			if (qualifier_flag == 0) {
+				alt_raw = (((apdu->data[datoff +4]) & 0x03) << 8) | (apdu->data[datoff +5]);
 				alt = alt_raw * 100;
 
-				asprintf(&sql,"INSERT INTO graphic_coords (prod_id, rep_number, geo_ovrly_opt,"
-						"coord_num,ovrly_vertices, ovrly_lat,ovrly_lng,ovrly_alt) "
-						"VALUES (%d,%d,%d,%d,%d,%f,%f,%d)",
-						apdu->product_id,rep_num,geo_overlay_opt,i,overlay_vert_cnt,lat,lng,alt);
+				for (int i = 0; i < overlay_vert_cnt; i++) {
+					lng_raw = ((apdu->data[datoff +i]) << 11) | ((apdu->data[datoff +i+1]) << 3) |
+						((apdu->data[datoff +i+2]) >> 5);
+					lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+ 3]) << 6) |
+						(((apdu->data[datoff +i+ 4]) & 0xFC) >> 2);
+					alt_raw = (((apdu->data[datoff +i+ 4]) & 0x03) << 8) | (apdu->data[datoff +i+ 5]);
+
+					datoff = datoff + 5;
+
+					lng_raw = (~lng_raw & 0x7FFFF) +1;											// 2's compliment +1
+					lat_raw = (~lat_raw & 0x7FFFF) +1;											// 2's compliment +1
+
+					lat = lat_raw * 0.0006866455078125;
+					lng = lng_raw * -0.0006866455078125;
+
+					if (lat > 90.0)
+						lat = 360.0 - lat;
+					if (lng > 180.0)
+						lng = lng - 360.0;
+
+					alt = alt_raw * 100;
+
+					if (i == (overlay_vert_cnt-1)){
+						asprintf(&coords," [%f,%f]",coords,lng,lat);
+						strcat(gr,coords);
+					}
+					else {
+						asprintf(&coords," [%f,%f],",coords,lng,lat);
+						strcat(gr,coords);
+					}
+				}
+
+				asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele) "
+					"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ %s ]}'),4326),%d,%d,%d,'%s' )",
+					gr,apdu->product_id,rep_num,alt,ob_ele_text);
+
+				res = PQexec(conn, postsql);
+				if (PQresultStatus(res) != PGRES_COMMAND_OK)
+					if (PQresultStatus(res) != 7)
+						fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+
+				PQclear(res);
 			}
 			break;
 		}
