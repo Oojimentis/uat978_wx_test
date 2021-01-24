@@ -1262,6 +1262,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 				char sd[10];
 				char dt[3];
 				char fsz[5];
+				char issued[50];
 				int dx;
 
 				n[0] = '\0';
@@ -1283,6 +1284,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 					strncpy(fsz,time_copy+2,4);
 					fsz[4] = '\0';
 					fprintf(filetaf,"Issued: %s at %sz\n",sd,fsz);
+					sprintf(issued,"%s at %sz\n",sd,fsz);
 				}
 				taf_copy = (char *)malloc(strlen(r) + 1);
 				strcpy(taf_copy,r);
@@ -1298,7 +1300,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 					}
 				}
 				for (int j = 0; j < i; ++j) {
-					taf_decode(taf_lines[j]);
+					taf_decode(taf_lines[j],issued,fsz,gstn);
 				}
 			}	 // End TAF decode
 			if (strcmp(mtype,"WINDS") == 0) {
@@ -2010,10 +2012,9 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 		time_t current_time = time(NULL);
 		struct tm *tm = localtime(&current_time);
 		strftime(buff, sizeof buff, "%D %T", tm);
-		if (apdu->product_id == 13)
-			fprintf(filesua," Time            : %s\n",buff);
 
 		if (apdu->product_id == 13) {
+			fprintf(filesua," Time            : %s\n",buff);
 			sua_text = (char *)malloc(strlen(r) + 1);
 			strcpy(sua_text,r);
 			get_sua_text(sua_text,to);
@@ -2042,19 +2043,6 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 			data_text = (char *)malloc(strlen(r) + 1);
 			strcpy(data_text,r);
 
-			if (apdu->product_id == 8) {				// NOTAM
-
-				asprintf(&postsql,"INSERT INTO notam (stn_call,rep_num,notam_text) "
-						"VALUES ('%s',%d,'%s')",gstn,rep_num,data_text);
-
-				PGresult *res = PQexec(conn, postsql);
-
-			    if (PQresultStatus(res) != PGRES_COMMAND_OK)
-			    	if (PQresultStatus(res) != 7)
-			    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
-
-			    PQclear(res);
-			}
 			// add to database
 			asprintf(&postsql,"INSERT INTO sigairmet (prod_id,stn_call,rep_time,rep_num,text_data) "
 					"VALUES (%d,'%s','%s',%d,'%s')",
@@ -2066,7 +2054,6 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 		    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
 
 		    PQclear(res);
-
 		}
 		if (apdu->product_id == 13) {
 			fprintf(filesua," Data:\n%s\n",r);

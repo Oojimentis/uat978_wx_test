@@ -8,7 +8,7 @@
 #ifndef UAT_TAF_H_INCLUDED
 #define UAT_TAF_H_INCLUDED
 
-void taf_decode(char *taf_lines);
+void taf_decode(char *taf_lines,char *issued, char *fsz,char *gstn);
 
 void daySuffix(int d ,char *dt);
 

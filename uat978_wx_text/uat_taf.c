@@ -9,6 +9,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include "asprintf.h"
 
 #include "uat_taf.h"
 #include "uat_decode.h"
@@ -87,12 +88,12 @@ void tafWind(char *d,char *s,char *gs,char *temp, char *taf_wind)
 		}
 	}
 	if (strcmp(d,"VRB") == 0)
-		sprintf(taf_wind,"Wind      : Variable - Speed %dkt",kt_int);
+		sprintf(taf_wind,"Variable - Speed %dkt",kt_int);
 	else
-		sprintf(taf_wind,"Wind      : Dir %s deg - Speed %dkt",d,kt_int);
+		sprintf(taf_wind,"Dir %s deg - Speed %dkt",d,kt_int);
 	if (strcmp(gs,"\0") == 0){
 		if (strcmp(temp,"00000KT") == 0)
-			sprintf(taf_wind,"Wind: Calm");
+			sprintf(taf_wind,"Calm");
 			else
 				sprintf(taf_wind,"%s",taf_wind);
 	}
@@ -109,22 +110,22 @@ void tafVisibilty(char *temp, char *taf_vis)
 	if (strncmp(temp,"P",1) == 0){
 		strncpy(vis,temp+1,len_v-3);
 		sm=atoi(vis);
-		sprintf(taf_vis,"Visibility: More than: %d statue miles",sm);
+		sprintf(taf_vis,"More than: %d statue miles",sm);
 	}
 	else if (strncmp(temp,"M",1) == 0){
 		strncpy(vis,temp+1,len_v-3);
 		sm=atoi(vis);
-		sprintf(taf_vis,"Visibility: Mess than: %d statue miles",sm);
+		sprintf(taf_vis,"Less than: %d statue miles",sm);
 	}
 	else if (strncmp(temp+(len_v-2),"SM",2) == 0){
 		strncpy(vis,temp,len_v-2);
 
-		sprintf(taf_vis,"Visibility: %s statue miles",vis);
+		sprintf(taf_vis,"%s statue miles",vis);
 	}
 	else if (strncmp(temp,"9999",4) == 0)
-		sprintf(taf_vis,"Visibility: Clear");
+		sprintf(taf_vis,"Clear");
 	else
-		sprintf(taf_vis,"Visibility: %s meters",temp);
+		sprintf(taf_vis,"%s meters",temp);
 }
 
 void tafWeather(char *taf_list,char *taf_wx)
@@ -449,7 +450,8 @@ void tafWeather(char *taf_list,char *taf_wx)
 		}
 }
 
-void taf_decode(char *taf_lines)
+void taf_decode(char *taf_lines,char *issued, char *reptime, char *gstn)
+
 {													// TAF Decode
 
 	char sd[10],sz[3],ed[5],ez[3];
@@ -464,6 +466,12 @@ void taf_decode(char *taf_lines)
 	int temp_len;
 	int sw = 0;
 
+	char *postsql;
+	char current[50];
+	char wind[50];
+	char visby[50];
+	char condx[200];
+
 	// Valid dates
 	strncpy(taf_t,taf_lines,2);
 	taf_t[2] = '\0';
@@ -473,21 +481,39 @@ void taf_decode(char *taf_lines)
 		validDates(sd,sz,ed,ez,temp);
 		fprintf(filetaf,"Current  : %s at %s:00z ",sd,sz);
 		fprintf(filetaf,"- %s at %s:00z\n",ed,ez);
+		sprintf(current,"%s at %s:00z - %s at %s:00z",sd,sz,ed,ez);
 
 	// winds
 		temp = strsep(&taf_lines," ");
 		tafWind(d,s,gs,temp,taf_temp);
 		fprintf(filetaf,"  %s\n",taf_temp);
+		sprintf(wind,"%s",taf_temp);
+
 
 	// visibility
 		temp = strsep(&taf_lines," ");
 		tafVisibilty(temp,taf_temp);
 		fprintf(filetaf,"  %s\n",taf_temp);
+		sprintf(visby,"%s",taf_temp);
 
 	// WX sky
 		taf_temp[0] = '\0';
 		tafWeather(taf_lines,taf_temp);
 		fprintf(filetaf,"  Conditions:%s\n\n",taf_temp);
+		sprintf(condx,"%s",taf_temp);
+
+		asprintf(&postsql,"INSERT INTO taf( issued,current,wind,visby,condx,rep_time,stn_call) "
+				"VALUES ('%s','%s','%s','%s','%s','%s','%s' )",
+				issued,current,wind,visby,condx,reptime,gstn);
+
+		PGresult *res = PQexec(conn, postsql);
+	    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+	    	if (PQresultStatus(res) != 7)
+	    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+
+	    PQclear(res);
+
+
 	}
 	else if (strcmp(taf_t,"BE") == 0){						// BECMG
 		temp = strsep(&taf_lines," ");

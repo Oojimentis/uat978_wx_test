@@ -38,7 +38,6 @@ int main(int argc, char **argv)
 {
 	seg_count = 0;
 	notam_count = 0;
-	cwa_count = 0;
 
 	char line[75];
 	char pg_user[20];
@@ -98,13 +97,6 @@ int main(int argc, char **argv)
 		fprintf(stderr,"notam.geojson Error--file could not be opened. \n");
 		exit (1); }
 	fflush(filenotamjson);
-
-	sprintf(file_name,"%scwa.geojson",file_path);
-	filecwajson = fopen(file_name,"w");
-	if (filecwajson == 0){
-		fprintf(stderr,"cwa.geojson Error--file could not be opened. \n");
-		exit (1); }
-	fflush(filecwajson);
 
 	filemetar = fopen("metar.out","w");
 	if (filemetar == 0) {
