@@ -1566,6 +1566,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 	if (element_flag == 1 && obj_type == 14 && apdu->product_id == 14)
 		strcpy(ob_ele_text,gairspace_element_names[obj_element]);
 
+
 	asprintf(&sql,"INSERT INTO graphic_reports (prod_id,stn_call,prod_ver,rec_count,rec_ref,"
 			"rep_number,rec_length,rep_year,ovrly_recid,obj_lbl_flag,obj_lbl_number,obj_lbl_alpha,"
 			"element_flag,obj_element,obj_status,obj_type,qual_flag,param_flag,rec_app_option,"
@@ -1634,9 +1635,9 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 				strcat(gr,coords);
 			}
 		}
-		asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele) "
-				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s' )",
-				gr,apdu->product_id,rep_num,alt,ob_ele_text);
+		asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date) "
+				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s','%s','%s')",
+				gr,apdu->product_id,rep_num,alt,ob_ele_text,start_date,stop_date);
 
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK)
