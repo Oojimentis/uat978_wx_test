@@ -24,7 +24,6 @@ static char gs_ret[80];
 static char gs_ret_lat[25];
 static char gs_ret_lng[25];
 
-//static void get_graphic(const struct fisb_apdu *apdu,FILE *fnm,FILE *to);
 static void get_graphic(const struct fisb_apdu *apdu,FILE *to);
 static void get_text(const struct fisb_apdu *apdu,FILE *to);
 static void get_seg_text(const struct fisb_apdu *apdu,FILE *fnm,FILE *to);
@@ -230,7 +229,6 @@ static void get_gs_name(char *Word)
 	PGresult *res = PQexec(conn, sql);
 	if (PQresultStatus(res) != PGRES_TUPLES_OK) {
 		 printf("No data retrieved\n");
-		 PQclear(res);
 	}
 	else {
 		int rows = PQntuples(res);
@@ -248,10 +246,10 @@ static void get_gs_name(char *Word)
 						PQgetvalue(res,i,1),PQgetvalue(res,i,2),
 						PQgetvalue(res,i,3),PQgetvalue(res,i,4));
 			}
-
-			PQclear(res);
 		}
 	}
+	PQclear(res);
+
 	return;
 }
 
@@ -391,39 +389,22 @@ static void get_sua_text(char *Word,FILE *to)
 static void get_pirep(char *Word,FILE *to)
 {
 	char *token;
-	char pirep_stn[5];
-	char pirep_OV[30];		// Location
-	char pirep_TM[10]; 		// DateTime
-	char pirep_hr[5]; 		// DateTime
-	char pirep_mn[3];		// DateTime
-	char pirep_FL[10];		// Flight Level
-	char pirep_TP[10];		// a/c type
-	char pirep_SK[50];		// Cloud
-	char pirep_WX[30];		// Weather
-	char pirep_TA[10];		// Temperature
-	char pirep_WV[15];		// Wind Speed Direction
-	char pirep_TB[30];		// Turbulence
-	char pirep_IC[30];		// Icing
-	char pirep_RM[100]; 	// Remarks
-	char pirep_TY[30];		// Type urgent/regular
-	char pirep_TI[10];		// Time
-
-
-	pirep_OV[0]='\0';		// Location
-	pirep_TM[0]='\0'; 		// DateTime
-	pirep_hr[0]='\0'; 		// DateTime
-	pirep_mn[0]='\0';		// DateTime
-	pirep_FL[0]='\0';		// Flight Level
-	pirep_TP[0]='\0';		// a/c type
-	pirep_SK[0]='\0';		// Cloud
-	pirep_WX[0]='\0';		// Weather
-	pirep_TA[0]='\0';		// Temperature
-	pirep_WV[0]='\0';		// Wind Speed Direction
-	pirep_TB[0]='\0';		// Turbulence
-	pirep_IC[0]='\0';		// Icing
-	pirep_RM[0]='\0';	 	// Remarks
-	pirep_TY[0]='\0';		// Type urgent/regular
-	pirep_TI[0]='\0';		// Time
+	char pirep_stn[5] = "";
+	char pirep_OV[30] = "";		// Location
+	char pirep_TM[10] = ""; 		// DateTime
+	char pirep_hr[5]  = ""; 		// DateTime
+	char pirep_mn[3]  = "";		// DateTime
+	char pirep_FL[10] = "";		// Flight Level
+	char pirep_TP[10] = "";		// a/c type
+	char pirep_SK[50] = "";		// Cloud
+	char pirep_WX[30] = "";		// Weather
+	char pirep_TA[10] = "";		// Temperature
+	char pirep_WV[15] = "";		// Wind Speed Direction
+	char pirep_TB[30] = "";		// Turbulence
+	char pirep_IC[30] = "";		// Icing
+	char pirep_RM[100] = ""; 	// Remarks
+	char pirep_TY[30] = "";		// Type urgent/regular
+	char pirep_TI[10] = "";		// Time
 
 	char buff[30];
 	char *postsql;
@@ -487,11 +468,12 @@ static void get_pirep(char *Word,FILE *to)
 			token = strtok(0,"/");
 			if (token) {
 // *** TODO check
-//				fprintf(filepirep," Remarks        : %s",pirep_RM);
-//				fprintf(filepirep,"/%s\n",token);
+				fprintf(to," Remarks        : %s",pirep_RM);
+				fprintf(to,"/%s\n",token);
+				strcat(pirep_RM,token);
 			}
 			else {
-//				fprintf(filepirep," Remarks        : %s\n",pirep_RM);
+				fprintf(to," Remarks        : %s\n",pirep_RM);
 			}
 		}
 	}
@@ -944,14 +926,6 @@ static void display_generic_data(uint8_t *data,uint16_t length,FILE *to)
 static const char *get_fisb_product_name(uint16_t product_id)
 {
 	switch (product_id) {
-	case 0:		case 20:	return "METAR and SPECI ****";
-	case 1:		case 21:	return "TAF and Amended TAF ****";
-	case 2:		case 22:	return "SIGMET ****";
-	case 3:		case 23:	return "Convective SIGMET ****";
-	case 4:		case 24:	return "AIRMET ****";
-	case 5:		case 25:	return "PIREP ****";
-	case 6:		case 26:	return "AWW ****";
-	case 7:		case 27:	return "Winds and Temperatures Aloft ****";
 	case 8:		return 	"NOTAM";
 	case 9:		return 	"Aerodrome and Airspace - D-ATIS ****";
 	case 10:	return 	"Aerodrome and Airspace - TWIP ****";
@@ -960,50 +934,18 @@ static const char *get_fisb_product_name(uint16_t product_id)
 	case 13:	return 	"SUA Status";
 	case 14:	return 	"G-AIRMET";
 	case 15:	return 	"Center Weather Advisory (CWAG)";
-	case 51:	return 	"National NEXRAD,Type 0 - 4 Level ****";
-	case 52:	return 	"National NEXRAD,Type 1 - 8 Level (Quasi 6-Level VIP) ****";
-	case 53:	return 	"National NEXRAD,Type 2 - 8 Level ****";
-	case 54:	return 	"National NEXRAD,Type 3 - 16 Level ****";
-	case 55:	return 	"Regional NEXRAD,Type 0 - Low Dynamic Range ****";
-	case 56:	return 	"Regional NEXRAD,Type 1 - 8 Level (Quasi 6-Level VIP) ****";
-	case 57:	return 	"Regional NEXRAD,Type 2 - 8 Level ****";
-	case 58:	return 	"Regional NEXRAD,Type 3 - 16 Level ****";
-	case 59:	return 	"Individual NEXRAD,Type 0 - Low Dynamic Range ****";
-	case 60:	return 	"Individual NEXRAD,Type 1 - 8 Level (quasi 6-Level VIP) ****";
-	case 61:	return	"Individual NEXRAD,Type 2 - 8 Level ****";
 	case 62:	return 	"Individual NEXRAD,Type 3 - 16 Level ****";
 	case 63:	return 	"Regional NEXRAD,Type 4 - 8 Level";
 	case 64:	return 	"CONUS NEXRAD,Type 4 - 8 Level";
 	case 70:	return 	"Icing Forecast - Low";
 	case 71:	return 	"Icing Forecast - High";
-	case 81:	return 	"Radar Echo Tops Graphic,Scheme 1: 16-Level ****";
-	case 82:	return 	"Radar Echo Tops Graphic,Scheme 2: 8-Level ****";
-	case 83:	return 	"Storm Tops and Velocity ****";
 	case 84:	return 	"Cloud Tops";
 	case 90:	return 	"Turbulence Forecast - Low";
 	case 91:	return 	"Turbulence Forecast - High";
 	case 101:	return 	"Lightning Strike Type 1 (Pixel Level) ****";
 	case 102:	return 	"Lightning Strike Type 2 (Grid Element Level) ****";
 	case 103:	return 	"Lightning";
-	case 151:	return 	"Point Phenomena,Vector Format ****";
-	case 201:	return 	"Surface Conditions/Winter Precipitation Graphic ****";
-	case 202:	return 	"Surface Weather Systems ****";
-	case 254:	return 	"AIRMET,SIGMET: Bitmap Encoding ****";
-	case 351:	return 	"System Time ****";
-	case 352:	return 	"Operational Status ****";
-	case 353:	return 	"Ground Station Status ****";
-	case 401:	return 		"**** Generic Raster Scan Data Product APDU Payload Format Type 1";
-	case 402:	case 411:	return "**** Generic Textual Data Product APDU Payload Format Type 1";
-	case 403:	return 		"**** Generic Vector Data Product APDU Payload Format Type 1";
-	case 404:	case 412:	return "**** Generic Symbolic Product APDU Payload Format Type 1";
-	case 405:	case 413:	return "Generic Textual Data Product APDU Payload Format Type 2";
-	case 600:	return 		"**** FISDL Products – Proprietary Encoding";
-	case 2000:	return 	"**** FAA/FIS-B Product 1 – Developmental";
-	case 2001:	return 	"**** FAA/FIS-B Product 2 – Developmental";
-	case 2002:	return 	"**** FAA/FIS-B Product 3 – Developmental";
-	case 2003:	return 	"****FAA/FIS-B Product 4 – Developmental";
-	case 2004:	return 	"****WSI Products - Proprietary Encoding";
-	case 2005:	return 	"****WSI Developmental Products";
+	case 413:	return "Generic Textual Data Product APDU Payload Format Type 2";
 	default: 	return 	"****Unknown";
 	}
 }
@@ -1011,33 +953,15 @@ static const char *get_fisb_product_name(uint16_t product_id)
 static const char *get_fisb_product_format(uint16_t product_id)
 {
 	switch (product_id) {
-	case 0:		case 1:		case 2:		case 3:		case 4:		case 5:		case 6:		case 7:
-	case 351:	case 352:	case 353:
-	case 402:	case 405:
-		return "Text";
 	case 8:		case 9:		case 10:	case 11:	case 12:	case 13:	case 14:	case 15:
 		return "Text/Graphic";
-	case 20:	case 21:	case 22:	case 23:	case 24:	case 25:	case 26:	case 27:
-	case 411:	case 413:
+	case 413:
 		return "Text (DLAC)";
-	case 51:	case 52:	case 53:	case 54:	case 55:	case 56:	case 57:	case 58:
-	case 59:	case 60:	case 61:	case 62:	case 63:	case 64:	case 70:	case 71:
-	case 81:	case 82:	case 83:	case 84:
+	case 62:	case 63:	case 64:	case 70:	case 71:
+	case 84:
 	case 90:	case 91:
 	case 101:	case 102:	case 103:	case 104:
-	case 151:
-	case 201:	case 202:
-	case 254:
-	case 401:
-	case 403:
-	case 404:
 		return "Graphic";
-	case 412:
-		return "Graphic (DLAC)";
-	case 600: case 2004:
-		return "Proprietary";
-	case 2000:	case 2001:	case 2002:	case 2003:	case 2005: 
-		return "Developmental";
 	default:
 		return "Unknown";
 	}
@@ -1257,15 +1181,13 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 			}
 			if (strcmp(mtype,"TAF") == 0 || strcmp(mtype,"TAF.AMD") == 0 || strcmp(mtype,"TAF.COR") == 0) {
 				// TAF Decode
-				char n[5];
+				char n[5] = "";
 				char *taf_lines[10];
 				char sd[10];
 				char dt[3];
 				char fsz[5];
 				char issued[50];
 				int dx;
-
-				n[0] = '\0';
 
 				fprintf(filemetar," Report Name         : %s\n",mtype);
 				fprintf(filemetar," Data:\n%s\n",r);		// *** Text ***
@@ -1488,8 +1410,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 	int alt;
 	float lat; float lat_save = 0.0;
 	float lng;
-	float fct_f = 0.000687;		// float_t fct_t = 0.001373; raw_lon * 360.0 / 16777216.0;
-//	float fct_f = 16777216.0;
+	float fct_f = 0.000687;
 
 //	uint32_t object_qualifier;
 //	int obj_param_type = 0;
@@ -1502,10 +1423,9 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 	char *sql;
 	char *postsql;
 	char *coords;
-	char gr[2000];
-	gr[0]='\0';
+	char gr[2000] = "";
 
-	int rep_exist = 0;
+//	int rep_exist = 0;
 	FILE * file3dpoly;
 
 	char buff[30];
@@ -1656,64 +1576,229 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 			qualifier_flag,param_flag,rec_app_opt,date_time_format,start_date,stop_date,geo_overlay_opt,overlay_op,
 			overlay_vert_cnt,qual_text,buff);
 
-//	if (rc != SQLITE_OK) {
-//		if (rc != 19)
-//			fprintf(stderr, "2 SQL error: %s\n", zErrMsg);
-//		else
-			rep_exist = 0;    //was 1
+	switch (geo_overlay_opt) {
+	case 3: case 4:																		// Extended Range 3D Polygon
+		alt_raw = (((apdu->data[datoff +4]) & 0x03) << 8) | (apdu->data[datoff +5]);
+		alt = alt_raw * 100;
 
-//		sqlite3_free(zErrMsg);
-//	}
-	if (!rep_exist) {																		// Don't try to add dubplicate
-		switch (geo_overlay_opt) {
-		case 3: case 4:																		// Extended Range 3D Polygon
+		switch(apdu->product_id) {
+		case 8:
+			file3dpoly = filenotamjson;
+			if (notam_count == 0) {
+				fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
+				fprintf(file3dpoly,"\"features\": [ \n");
+				fprintf(file3dpoly,"{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\":"
+						" \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\",\"coordinates\": [[\n");
+			}
+			else {
+				fseek(file3dpoly,-3,SEEK_CUR);
+				fprintf(file3dpoly,",{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\":"
+						" \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
+				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\",\"coordinates\": [[\n");
+			}
+			notam_count++;
+			break;
+		}
+
+		for (int i = 0; i < overlay_vert_cnt; i++) {
+			lng_raw = ((apdu->data[datoff + i]) << 11) | ((apdu->data[datoff +i+1]) << 3) |
+					((apdu->data[datoff +i+2]) & 0xE0 >> 5);
+			lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+3]) << 6) |
+					(((apdu->data[datoff +i+4]) & 0xFC) >> 2);
+			alt_raw = (((apdu->data[datoff +i+4]) & 0x03) << 8) | (apdu->data[datoff +i+5]);
+
+			datoff = datoff + 5;
+
+			lat = fct_f * lat_raw;
+			lng = fct_f * lng_raw;
+			if (lat > 90.0)
+				lat = lat - 180.0;
+			if (lng > 180.0)
+				lng = lng - 360.0;
+
+			alt = alt_raw * 100;
+
+			if (lat == lat_save) {														// Ignore 2nd altitude data to fix map
+				i = overlay_vert_cnt;
+				continue;
+			}
+			lat_save = lat;
+
+			if (i == (overlay_vert_cnt-1)){
+				asprintf(&coords," [%f,%f]",coords,lng,lat);
+				strcat(gr,coords);
+			}
+			else {
+				asprintf(&coords," [%f,%f],",coords,lng,lat);
+				strcat(gr,coords);
+			}
+		}
+		asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele) "
+				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s' )",
+				gr,apdu->product_id,rep_num,alt,ob_ele_text);
+
+		PGresult *res = PQexec(conn, postsql);
+		if (PQresultStatus(res) != PGRES_COMMAND_OK)
+			if (PQresultStatus(res) != 7)
+				fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+
+		PQclear(res);
+
+		break;
+	case 7: case 8:																		// Extended Range Circular Prism (7 = MSL,8 = AGL)
+/*
+		if (rec_len < 14) {
+//			fprintf(fnm,"Data too short. Should be 14 bytes; %d seen.\n",rec_len);
+		}
+		else {
+			uint32_t lng_bot_raw;
+			uint32_t lat_bot_raw;
+			uint32_t lng_top_raw;
+			uint32_t lat_top_raw;
+
+			uint32_t alt_bot_raw;
+			uint32_t alt_top_raw;
+			uint32_t r_lng_raw;
+			uint32_t r_lat_raw,alpha;
+			uint32_t alt_bot;
+			uint32_t alt_top;
+
+			float lat_bot,lng_bot,lat_top,lng_top,r_lng,r_lat;
+
+			lng_bot_raw = ((apdu->data[datoff +0]) << 10) | ((apdu->data[datoff +1]) << 2) |
+					((apdu->data[datoff +2]) & 0xC0 >> 6);
+			lat_bot_raw = (((apdu->data[datoff+ 2]) & 0x3F) << 12) | ((apdu->data[datoff +3]) << 4) |
+					(((apdu->data[datoff +4]) & 0xF0) >> 4);
+
+			lng_top_raw = (((apdu->data[datoff +4]) & 0x0F) << 14) | ((apdu->data[datoff +5]) << 6) |
+					(((apdu->data[datoff +6]) & 0xFC) >> 2);
+			lat_top_raw = (((apdu->data[datoff +6]) & 0x03) << 16) | ((apdu->data[datoff +7]) << 8) |
+					(apdu->data[datoff +8]);
+
+			alt_bot_raw = ((apdu->data[datoff +9]) & 0xFE) >> 1;
+			alt_top_raw = (((apdu->data[datoff +9]) & 0x01) << 6) | (((apdu->data[datoff +10]) & 0xFC) >> 2);
+
+			r_lng_raw = (((apdu->data[datoff +10]) & 0x03) << 7) | (((apdu->data[datoff +11]) & 0xFE) >> 1);
+			r_lat_raw = (((apdu->data[datoff +11]) & 0x01) << 8) | (apdu->data[datoff +12]);
+
+			alpha = (apdu->data[datoff +13]);
+
+			lng_bot_raw = (~lng_bot_raw & 0x1FFFF) +1;		// 2's compliment +1
+			lat_bot_raw = (~lat_bot_raw & 0x1FFFF) +1;		// 2's compliment +1
+			lat_bot = lat_bot_raw * 0.001373;
+			lng_bot = (lng_bot_raw * 0.001373) * -1;
+
+			if (lat_bot > 90.0)
+				lat_bot = (lat_bot - 180.0) * -1;
+			if (lng_bot > 180.0)
+				lng_bot = lng_bot - 360.0;
+
+			lng_top_raw = (~lng_top_raw & 0x1FFFF) +1;		// 2's compliment +1
+			lat_top_raw = (~lat_top_raw & 0x1FFFF) +1;		// 2's compliment +1
+			lat_top = lat_top_raw * 0.001373;
+			lng_top = (lng_top_raw * 0.001373) * -1;
+
+			if (lat_top > 90.0)
+				lat_top = (lat_top - 180.0) * -1;
+			if (lng_top > 180.0)
+				lng_top = lng_top - 360.0;
+
+			alt_bot = alt_bot_raw * 5;
+			alt_top = alt_top_raw * 500;
+			r_lng = r_lng_raw * 0.2;
+			r_lat = r_lat_raw * 0.2;
+
+//			fprintf(fnm,"lat_bot, lng_bot = %f, %f\n", lat_bot, lng_bot);
+//			fprintf(fnm,"lat_top, lng_top = %f, %f\n", lat_top, lng_top);
+
+//			if (geo_overlay_opt == 8)
+//				fprintf(fnm,"alt_bot, alt_top = %d AGL, %d AGL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
+//			else
+//				fprintf(fnm,"alt_bot, alt_top = %d MSL, %d MSL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
+
+//			fprintf(fnm,"r_lng, r_lat = %f, %f\n", r_lng,r_lat);
+//			fprintf(fnm,"alpha=%d\n",alpha);
+		}
+*/
+		break;
+	case 9:																				// Extended Range 3D Point (AGL)
+		lng_raw = ((apdu->data[datoff +0]) << 11) | ((apdu->data[datoff +1]) << 3) |
+		((apdu->data[datoff +2]) & 0xE0 >> 5);
+		lat_raw = (((apdu->data[datoff +2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) |
+				(((apdu->data[datoff + 4]) & 0xFC) >> 2);
+		alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
+
+		lng_raw = (~lng_raw & 0x7FFFF) +1;												// 2's compliment +1
+		lat_raw = (~lat_raw & 0x7FFFF) +1;												// 2's compliment +1
+
+		lat = lat_raw * 0.0006866455078125;
+		lng = (lng_raw * 0.0006866455078125) * -1;
+
+		if (lat > 90.0)
+			lat = 360.0 - lat;
+		if (lng > 180.0)
+			lng = lng - 360.0;
+		alt = alt_raw * 100;
+
+		if (apdu->product_id == 18) {
+			notam_list[notam_count].notam_lat = lat;
+			notam_list[notam_count].notam_lng = lng;
+
+			strcpy(notam_list[notam_count].notam_stn,gstn);
+
+			notam_list[notam_count].notam_repid =rep_num;
+			if (notam_count == 0) {
+				fprintf(filenotamjson,"{\"type\": \"FeatureCollection\",\n");
+				fprintf(filenotamjson,"\"features\": [ \n");
+				fprintf(filenotamjson,"{\"type\": \"Feature\",\"properties\": { \"Location\": \"%s\",\"Stuff\":"
+						" \"%d\"},\n",gstn,rep_num);
+				fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %f,%f ] }}\n",lng,lat);
+				fprintf(filenotamjson,"]}");
+			}
+			else {
+				fseek(filenotamjson,-3,SEEK_CUR);
+				fprintf(filenotamjson,",{\"type\": \"Feature\",\"properties\": { \"Location\": \"%s\",\"Stuff\":"
+						" \"%d\"},\n",gstn,rep_num);
+				fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %f,%f ] }}\n",lng,lat);
+				fprintf(filenotamjson,"]}");
+			}
+			fflush(filenotamjson);
+			notam_count ++;
+		}
+		asprintf(&sql,"INSERT INTO graphic_coords (prod_id, rep_number, geo_ovrly_opt,"
+				"coord_num,ovrly_vertices, ovrly_lat,ovrly_lng,ovrly_alt) "
+				"VALUES (%d,%d,%d,0,%d,%f,%f,%d)",
+				apdu->product_id,rep_num,geo_overlay_opt,overlay_vert_cnt,lat,lng,alt);
+
+		break;
+	case 11: case 12:													// Extended Range 3D Polyline
+																			// Don't write geojson for items with qualifier flag set.
+		if (qualifier_flag == 0) {
 			alt_raw = (((apdu->data[datoff +4]) & 0x03) << 8) | (apdu->data[datoff +5]);
 			alt = alt_raw * 100;
 
-			switch(apdu->product_id) {
-
-			case 8:
-				file3dpoly = filenotamjson;
-				if (notam_count == 0) {
-					fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
-					fprintf(file3dpoly,"\"features\": [ \n");
-					fprintf(file3dpoly,"{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\":"
-						" \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
-					fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\",\"coordinates\": [[\n");
-				}
-				else {
-					fseek(file3dpoly,-3,SEEK_CUR);
-					fprintf(file3dpoly,",{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\":"
-						" \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
-					fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\",\"coordinates\": [[\n");
-				}
-				notam_count++;
-				break;
-			}
-
 			for (int i = 0; i < overlay_vert_cnt; i++) {
-				lng_raw = ((apdu->data[datoff + i]) << 11) | ((apdu->data[datoff +i+1]) << 3) |
-					((apdu->data[datoff +i+2]) & 0xE0 >> 5);
-				lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+3]) << 6) |
-					(((apdu->data[datoff +i+4]) & 0xFC) >> 2);
-				alt_raw = (((apdu->data[datoff +i+4]) & 0x03) << 8) | (apdu->data[datoff +i+5]);
+				lng_raw = ((apdu->data[datoff +i]) << 11) | ((apdu->data[datoff +i+1]) << 3) |
+						((apdu->data[datoff +i+2]) >> 5);
+				lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+ 3]) << 6) |
+						(((apdu->data[datoff +i+ 4]) & 0xFC) >> 2);
+				alt_raw = (((apdu->data[datoff +i+ 4]) & 0x03) << 8) | (apdu->data[datoff +i+ 5]);
 
 				datoff = datoff + 5;
 
-				lat = fct_f * lat_raw;
-				lng = fct_f * lng_raw;
+				lng_raw = (~lng_raw & 0x7FFFF) +1;											// 2's compliment +1
+				lat_raw = (~lat_raw & 0x7FFFF) +1;											// 2's compliment +1
+
+				lat = lat_raw * 0.0006866455078125;
+				lng = lng_raw * -0.0006866455078125;
+
 				if (lat > 90.0)
-					lat = lat - 180.0;
+					lat = 360.0 - lat;
 				if (lng > 180.0)
 					lng = lng - 360.0;
 
 				alt = alt_raw * 100;
-
-				if (lat == lat_save) {														// Ignore 2nd altitude data to fix map
-					i = overlay_vert_cnt;
-					continue;
-				}
-				lat_save = lat;
 
 				if (i == (overlay_vert_cnt-1)){
 					asprintf(&coords," [%f,%f]",coords,lng,lat);
@@ -1724,199 +1809,22 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 					strcat(gr,coords);
 				}
 			}
+
 			asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele) "
-					"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s' )",
-					gr,apdu->product_id,rep_num,alt,ob_ele_text);
-
-			PGresult *res = PQexec(conn, postsql);
-		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
-		    	if (PQresultStatus(res) != 7)
-		    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
-
-		    PQclear(res);
-
-			break;
-		case 7: case 8:																		// Extended Range Circular Prism (7 = MSL,8 = AGL)
-/*
-			if (rec_len < 14) {
-//				fprintf(fnm,"Data too short. Should be 14 bytes; %d seen.\n",rec_len);
-			}
-			else {
-				uint32_t lng_bot_raw;
-				uint32_t lat_bot_raw;
-				uint32_t lng_top_raw;
-				uint32_t lat_top_raw;
-
-				uint32_t alt_bot_raw;
-				uint32_t alt_top_raw;
-				uint32_t r_lng_raw;
-				uint32_t r_lat_raw,alpha;
-				uint32_t alt_bot;
-				uint32_t alt_top;
-
-				float lat_bot,lng_bot,lat_top,lng_top,r_lng,r_lat;
-
-				lng_bot_raw = ((apdu->data[datoff +0]) << 10) | ((apdu->data[datoff +1]) << 2) |
-					((apdu->data[datoff +2]) & 0xC0 >> 6);
-				lat_bot_raw = (((apdu->data[datoff+ 2]) & 0x3F) << 12) | ((apdu->data[datoff +3]) << 4) |
-					(((apdu->data[datoff +4]) & 0xF0) >> 4);
-
-				lng_top_raw = (((apdu->data[datoff +4]) & 0x0F) << 14) | ((apdu->data[datoff +5]) << 6) |
-					(((apdu->data[datoff +6]) & 0xFC) >> 2);
-				lat_top_raw = (((apdu->data[datoff +6]) & 0x03) << 16) | ((apdu->data[datoff +7]) << 8) |
-					(apdu->data[datoff +8]);
-
-				alt_bot_raw = ((apdu->data[datoff +9]) & 0xFE) >> 1;
-				alt_top_raw = (((apdu->data[datoff +9]) & 0x01) << 6) | (((apdu->data[datoff +10]) & 0xFC) >> 2);
-
-				r_lng_raw = (((apdu->data[datoff +10]) & 0x03) << 7) | (((apdu->data[datoff +11]) & 0xFE) >> 1);
-				r_lat_raw = (((apdu->data[datoff +11]) & 0x01) << 8) | (apdu->data[datoff +12]);
-
-				alpha = (apdu->data[datoff +13]);
-
-				lng_bot_raw = (~lng_bot_raw & 0x1FFFF) +1;		// 2's compliment +1
-				lat_bot_raw = (~lat_bot_raw & 0x1FFFF) +1;		// 2's compliment +1
-				lat_bot = lat_bot_raw * 0.001373;
-				lng_bot = (lng_bot_raw * 0.001373) * -1;
-
-				if (lat_bot > 90.0)
-					lat_bot = (lat_bot - 180.0) * -1;
-				if (lng_bot > 180.0)
-					lng_bot = lng_bot - 360.0;
-
-				lng_top_raw = (~lng_top_raw & 0x1FFFF) +1;		// 2's compliment +1
-				lat_top_raw = (~lat_top_raw & 0x1FFFF) +1;		// 2's compliment +1
-				lat_top = lat_top_raw * 0.001373;
-				lng_top = (lng_top_raw * 0.001373) * -1;
-
-				if (lat_top > 90.0)
-					lat_top = (lat_top - 180.0) * -1;
-				if (lng_top > 180.0)
-					lng_top = lng_top - 360.0;
-
-				alt_bot = alt_bot_raw * 5;
-				alt_top = alt_top_raw * 500;
-				r_lng = r_lng_raw * 0.2;
-				r_lat = r_lat_raw * 0.2;
-
-//				fprintf(fnm,"lat_bot, lng_bot = %f, %f\n", lat_bot, lng_bot);
-//				fprintf(fnm,"lat_top, lng_top = %f, %f\n", lat_top, lng_top);
-
-//				if (geo_overlay_opt == 8)
-//					fprintf(fnm,"alt_bot, alt_top = %d AGL, %d AGL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
-//				else
-//					fprintf(fnm,"alt_bot, alt_top = %d MSL, %d MSL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
-
-//				fprintf(fnm,"r_lng, r_lat = %f, %f\n", r_lng,r_lat);
-//				fprintf(fnm,"alpha=%d\n",alpha);
-			}
-*/
-			break;
-		case 9:																				// Extended Range 3D Point (AGL)
-			lng_raw = ((apdu->data[datoff +0]) << 11) | ((apdu->data[datoff +1]) << 3) |
-				((apdu->data[datoff +2]) & 0xE0 >> 5);
-			lat_raw = (((apdu->data[datoff +2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) |
-				(((apdu->data[datoff + 4]) & 0xFC) >> 2);
-			alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
-
-			lng_raw = (~lng_raw & 0x7FFFF) +1;												// 2's compliment +1
-			lat_raw = (~lat_raw & 0x7FFFF) +1;												// 2's compliment +1
-
-			lat = lat_raw * 0.0006866455078125;
-			lng = (lng_raw * 0.0006866455078125) * -1;
-
-			if (lat > 90.0)
-				lat = 360.0 - lat;
-			if (lng > 180.0)
-				lng = lng - 360.0;
-			alt = alt_raw * 100;
-
-			if (apdu->product_id == 18) {
-				notam_list[notam_count].notam_lat = lat;
-				notam_list[notam_count].notam_lng = lng;
-
-				strcpy(notam_list[notam_count].notam_stn,gstn);
-
-				notam_list[notam_count].notam_repid =rep_num;
-				if (notam_count == 0) {
-					fprintf(filenotamjson,"{\"type\": \"FeatureCollection\",\n");
-					fprintf(filenotamjson,"\"features\": [ \n");
-					fprintf(filenotamjson,"{\"type\": \"Feature\",\"properties\": { \"Location\": \"%s\",\"Stuff\":"
-						" \"%d\"},\n",gstn,rep_num);
-					fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %f,%f ] }}\n",lng,lat);
-					fprintf(filenotamjson,"]}");
-				}
-				else {
-					fseek(filenotamjson,-3,SEEK_CUR);
-					fprintf(filenotamjson,",{\"type\": \"Feature\",\"properties\": { \"Location\": \"%s\",\"Stuff\":"
-						" \"%d\"},\n",gstn,rep_num);
-					fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %f,%f ] }}\n",lng,lat);
-					fprintf(filenotamjson,"]}");
-				}
-				fflush(filenotamjson);
-				notam_count ++;
-			}
-			asprintf(&sql,"INSERT INTO graphic_coords (prod_id, rep_number, geo_ovrly_opt,"
-					"coord_num,ovrly_vertices, ovrly_lat,ovrly_lng,ovrly_alt) "
-					"VALUES (%d,%d,%d,0,%d,%f,%f,%d)",
-					apdu->product_id,rep_num,geo_overlay_opt,overlay_vert_cnt,lat,lng,alt);
-
-			break;
-		case 11: case 12:													// Extended Range 3D Polyline
-																			// Don't write geojson for items with qualifier flag set.
-
-			if (qualifier_flag == 0) {
-				alt_raw = (((apdu->data[datoff +4]) & 0x03) << 8) | (apdu->data[datoff +5]);
-				alt = alt_raw * 100;
-
-				for (int i = 0; i < overlay_vert_cnt; i++) {
-					lng_raw = ((apdu->data[datoff +i]) << 11) | ((apdu->data[datoff +i+1]) << 3) |
-						((apdu->data[datoff +i+2]) >> 5);
-					lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+ 3]) << 6) |
-						(((apdu->data[datoff +i+ 4]) & 0xFC) >> 2);
-					alt_raw = (((apdu->data[datoff +i+ 4]) & 0x03) << 8) | (apdu->data[datoff +i+ 5]);
-
-					datoff = datoff + 5;
-
-					lng_raw = (~lng_raw & 0x7FFFF) +1;											// 2's compliment +1
-					lat_raw = (~lat_raw & 0x7FFFF) +1;											// 2's compliment +1
-
-					lat = lat_raw * 0.0006866455078125;
-					lng = lng_raw * -0.0006866455078125;
-
-					if (lat > 90.0)
-						lat = 360.0 - lat;
-					if (lng > 180.0)
-						lng = lng - 360.0;
-
-					alt = alt_raw * 100;
-
-					if (i == (overlay_vert_cnt-1)){
-						asprintf(&coords," [%f,%f]",coords,lng,lat);
-						strcat(gr,coords);
-					}
-					else {
-						asprintf(&coords," [%f,%f],",coords,lng,lat);
-						strcat(gr,coords);
-					}
-				}
-
-				asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele) "
 					"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ %s ]}'),4326),%d,%d,%d,'%s' )",
 					gr,apdu->product_id,rep_num,alt,ob_ele_text);
 
-				res = PQexec(conn, postsql);
-				if (PQresultStatus(res) != PGRES_COMMAND_OK)
-					if (PQresultStatus(res) != 7)
-						fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+			res = PQexec(conn, postsql);
+			if (PQresultStatus(res) != PGRES_COMMAND_OK)
+				if (PQresultStatus(res) != 7)
+					fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
 
-				PQclear(res);
-			}
-			break;
+			PQclear(res);
 		}
+		break;
 	}
-//	display_generic_data(apdu->data,apdu->length,to);
 }
+//	display_generic_data(apdu->data,apdu->length,to);
 
 static void get_text(const struct fisb_apdu *apdu, FILE *to)
 {
@@ -2043,7 +1951,6 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 			data_text = (char *)malloc(strlen(r) + 1);
 			strcpy(data_text,r);
 
-			// add to database
 			asprintf(&postsql,"INSERT INTO sigairmet (prod_id,stn_call,rep_time,rep_num,text_data) "
 					"VALUES (%d,'%s','%s',%d,'%s')",
 					apdu->product_id,gstn,rtime,rep_num,data_text);
