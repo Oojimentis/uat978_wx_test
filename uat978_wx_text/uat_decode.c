@@ -1578,7 +1578,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 			overlay_vert_cnt,qual_text,buff);
 
 	switch (geo_overlay_opt) {
-	case 3: case 4:																		// Extended Range 3D Polygon
+	case 3: case 4:													// Extended Range 3D Polygon
 		alt_raw = (((apdu->data[datoff +4]) & 0x03) << 8) | (apdu->data[datoff +5]);
 		alt = alt_raw * 100;
 
@@ -1635,9 +1635,9 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 				strcat(gr,coords);
 			}
 		}
-		asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date) "
-				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s','%s','%s')",
-				gr,apdu->product_id,rep_num,alt,ob_ele_text,start_date,stop_date);
+		asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
+				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
+				gr,apdu->product_id,rep_num,alt,ob_ele_text,start_date,stop_date,geo_overlay_opt);
 
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK)
@@ -1647,7 +1647,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 		PQclear(res);
 
 		break;
-	case 7: case 8:																		// Extended Range Circular Prism (7 = MSL,8 = AGL)
+	case 7: case 8:									// Extended Range Circular Prism (7 = MSL,8 = AGL)
 /*
 		if (rec_len < 14) {
 //			fprintf(fnm,"Data too short. Should be 14 bytes; %d seen.\n",rec_len);
@@ -1723,7 +1723,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 		}
 */
 		break;
-	case 9:																				// Extended Range 3D Point (AGL)
+	case 9:														// Extended Range 3D Point (AGL)
 		lng_raw = ((apdu->data[datoff +0]) << 11) | ((apdu->data[datoff +1]) << 3) |
 		((apdu->data[datoff +2]) & 0xE0 >> 5);
 		lat_raw = (((apdu->data[datoff +2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) |
@@ -1742,7 +1742,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 			lng = lng - 360.0;
 		alt = alt_raw * 100;
 
-		if (apdu->product_id == 18) {
+		if (apdu->product_id == 8) {
 			notam_list[notam_count].notam_lat = lat;
 			notam_list[notam_count].notam_lng = lng;
 
@@ -1767,14 +1767,27 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 			fflush(filenotamjson);
 			notam_count ++;
 		}
-		asprintf(&sql,"INSERT INTO graphic_coords (prod_id, rep_number, geo_ovrly_opt,"
-				"coord_num,ovrly_vertices, ovrly_lat,ovrly_lng,ovrly_alt) "
-				"VALUES (%d,%d,%d,0,%d,%f,%f,%d)",
-				apdu->product_id,rep_num,geo_overlay_opt,overlay_vert_cnt,lat,lng,alt);
+
+		asprintf(&coords," [%f,%f]",coords,lng,lat);
+		strcat(gr,coords);
+		asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
+				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Point\",\"coordinates\": %s }'),4326),%d,%d,%d,'%s','%s','%s',%d)",
+				gr,apdu->product_id,rep_num,alt,ob_ele_text,start_date,stop_date,geo_overlay_opt);
+
+		res = PQexec(conn, postsql);
+		if (PQresultStatus(res) != PGRES_COMMAND_OK)
+			if (PQresultStatus(res) != 7)
+				fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+
+		PQclear(res);
+//		asprintf(&sql,"INSERT INTO graphic_coords (prod_id, rep_number, geo_ovrly_opt,"
+//				"coord_num,ovrly_vertices, ovrly_lat,ovrly_lng,ovrly_alt) "
+//				"VALUES (%d,%d,%d,0,%d,%f,%f,%d)",
+//				apdu->product_id,rep_num,geo_overlay_opt,overlay_vert_cnt,lat,lng,alt);
 
 		break;
 	case 11: case 12:													// Extended Range 3D Polyline
-																			// Don't write geojson for items with qualifier flag set.
+																		// Don't write geojson for items with qualifier flag set.
 		if (qualifier_flag == 0) {
 			alt_raw = (((apdu->data[datoff +4]) & 0x03) << 8) | (apdu->data[datoff +5]);
 			alt = alt_raw * 100;
@@ -1811,9 +1824,9 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 				}
 			}
 
-			asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele) "
-					"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ %s ]}'),4326),%d,%d,%d,'%s' )",
-					gr,apdu->product_id,rep_num,alt,ob_ele_text);
+			asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
+					"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ %s ]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
+					gr,apdu->product_id,rep_num,alt,ob_ele_text,start_date,stop_date,geo_overlay_opt);
 
 			res = PQexec(conn, postsql);
 			if (PQresultStatus(res) != PGRES_COMMAND_OK)
