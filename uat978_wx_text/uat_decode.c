@@ -76,7 +76,7 @@ static const char *decode_dlac(uint8_t *data,unsigned bytelen,int rec_offset)
 		else {
 			*p++ = dlac_alphabet[ch];
 		}
-		step = (step+1)%4;
+		step = (step + 1)%4;
 	}
 	*p = 0;
 
@@ -218,15 +218,15 @@ static void get_gs_name(char *Word)
 	// Get ground station data from Postgresql database
 
 	char temp_stn[5] = " ";
-	char *sql;
+	char *postsql;
 
 	strncpy(temp_stn,Word,4);
 	strcpy(gs_ret,"not found      ");
 	strcpy(gs_ret_lat,"0.0");
 	strcpy(gs_ret_lng,"0.0");
 
-	asprintf(&sql,"SELECT * FROM stations WHERE stn_call = '%s'",temp_stn);
-	PGresult *res = PQexec(conn, sql);
+	asprintf(&postsql,"SELECT * FROM stations WHERE stn_call = '%s'",temp_stn);
+	PGresult *res = PQexec(conn, postsql);
 	if (PQresultStatus(res) != PGRES_TUPLES_OK) {
 		 printf("No data retrieved\n");
 	}
@@ -323,20 +323,20 @@ static void get_sua_text(char *Word,FILE *to)
 	token = strsep(&Word,"|");
 	strcpy(sua_st_tm,token);
 	snprintf(sua_st_yy,3,"%s",sua_st_tm);
-	snprintf(sua_st_mm,3,"%s",sua_st_tm+2);
-	snprintf(sua_st_dd,3,"%s",sua_st_tm+4);
-	snprintf(sua_st_hh,3,"%s",sua_st_tm+6);
-	snprintf(sua_st_mn,3,"%s",sua_st_tm+8);
+	snprintf(sua_st_mm,3,"%s",sua_st_tm + 2);
+	snprintf(sua_st_dd,3,"%s",sua_st_tm + 4);
+	snprintf(sua_st_hh,3,"%s",sua_st_tm + 6);
+	snprintf(sua_st_mn,3,"%s",sua_st_tm + 8);
 
 	fprintf(filesua," Start Time      : %s/%s/20%s %s:%s",sua_st_mm,sua_st_dd,sua_st_yy,sua_st_hh,sua_st_mn);
 
 	token = strsep(&Word,"|");
 	strcpy(sua_en_tm,token);
 	snprintf(sua_en_yy,3,"%s",sua_en_tm);
-	snprintf(sua_en_mm,3,"%s",sua_en_tm+2);
-	snprintf(sua_en_dd,3,"%s",sua_en_tm+4);
-	snprintf(sua_en_hh,3,"%s",sua_en_tm+6);
-	snprintf(sua_en_mn,3,"%s",sua_en_tm+8);
+	snprintf(sua_en_mm,3,"%s",sua_en_tm + 2);
+	snprintf(sua_en_dd,3,"%s",sua_en_tm + 4);
+	snprintf(sua_en_hh,3,"%s",sua_en_tm + 6);
+	snprintf(sua_en_mn,3,"%s",sua_en_tm + 8);
 
 	fprintf(filesua," End Time: %s/%s/20%s %s:%s\n",sua_en_mm,sua_en_dd,sua_en_yy,sua_en_hh,sua_en_mn);
 
@@ -431,40 +431,40 @@ static void get_pirep(char *Word,FILE *to)
 	}
 	while ((token = strtok(0,"/"))) {
 		if (strncmp(token,"OV",2) == 0) {
-			strcpy(pirep_OV,token+3);
+			strcpy(pirep_OV,token + 3);
 		}
 		else if (strncmp(token,"TM",2) == 0) {
 			strcpy(pirep_TM,token);
-			snprintf(pirep_hr,3,"%s",pirep_TM+3);
-			snprintf(pirep_mn,3,"%s",pirep_TM+5);
+			snprintf(pirep_hr,3,"%s",pirep_TM + 3);
+			snprintf(pirep_mn,3,"%s",pirep_TM + 5);
 			sprintf(pirep_TI,"%s%s",pirep_hr,pirep_mn);
 		}
 		else if (strncmp(token,"FL",2) == 0) {
 			strcpy(pirep_FL,token+2);
 		}
 		else if (strncmp(token,"TP",2) == 0) {
-			strcpy(pirep_TP,token+3);
+			strcpy(pirep_TP,token + 3);
 		}
 		else if (strncmp(token,"SK",2) == 0) {
-			strcpy(pirep_SK,token+3);
+			strcpy(pirep_SK,token + 3);
 		}
 		else if (strncmp(token,"WX",2) == 0) {
-				strcpy(pirep_WX,token+3);
+				strcpy(pirep_WX,token + 3);
 		}
 		else if (strncmp(token,"TA",2) == 0) {
-			strcpy(pirep_TA,token+3);
+			strcpy(pirep_TA,token + 3);
 		}
 		else if (strncmp(token,"WV",2) == 0) {
-			strcpy(pirep_WV,token+3);
+			strcpy(pirep_WV,token + 3);
 		}
 		else if (strncmp(token,"TB",2) == 0) {
-			strcpy(pirep_TB,token+3);
+			strcpy(pirep_TB,token + 3);
 		}
 		else if (strncmp(token,"IC",2) == 0) {
-			strcpy(pirep_IC,token+3);
+			strcpy(pirep_IC,token + 3);
 		}
 		else if (strncmp(token,"RM",2) == 0) {
-			strcpy(pirep_RM,token+3);
+			strcpy(pirep_RM,token + 3);
 			token = strtok(0,"/");
 			if (token) {
 // *** TODO check
@@ -873,13 +873,13 @@ void uat_decode_uplink_mdb(uint8_t *frame,struct uat_uplink_mdb *mdb)
 	if (mdb->app_data_valid) {
 		uint8_t *data,*end;
 
-		memcpy(mdb->app_data,frame+8,424);
+		memcpy(mdb->app_data,frame + 8,424);
 		mdb->num_info_frames = 0;
 
 		data = mdb->app_data;
 		end = mdb->app_data + 424;
 
-		while (mdb->num_info_frames < UPLINK_MAX_INFO_FRAMES && data+2 <= end) {
+		while (mdb->num_info_frames < UPLINK_MAX_INFO_FRAMES && data + 2 <= end) {
 			struct uat_uplink_info_frame *frame = &mdb->info_frames[mdb->num_info_frames];
 			frame->length = (data[0] << 1) | (data[1] >> 7);
 			frame->type = (data[1] & 0x0f);
@@ -1143,7 +1143,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 				strcpy(observation,r);
 				strncpy(mtype,r,8);
 				fprintf(to," RType: %s\n",mtype);
-				r = p+1;
+				r = p + 1;
 			}
 			p = strchr(r,' ');		// *** RLoc ***
 			if (p) {
@@ -1168,7 +1168,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 					fprintf(filemetar,"Time                 : %s\n",buff);
 					fprintf(filemetar,"WX Station           : %s - %s\n",gstn,gs_ret);
 					}
-				r = p+1;
+				r = p + 1;
 			}
 			p = strchr(r,' ');		// *** RTime ***
 			if (p) {
@@ -1177,7 +1177,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 				strcat(observation,r);
 				time_copy = (char *)malloc(strlen(r) + 1);
 				strcpy(time_copy,r);
-				r = p+1;
+				r = p + 1;
 			}
 			if (strcmp(mtype,"TAF") == 0 || strcmp(mtype,"TAF.AMD") == 0 || strcmp(mtype,"TAF.COR") == 0) {
 				// TAF Decode
@@ -1195,7 +1195,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 				fprintf(filetaf,"%s %s %s\n",mtype,gstn,gs_ret);
 				fprintf(filetaf,"%s\n\n",r);		// *** Text ***
 
-				strncpy(n,time_copy+4,1);
+				strncpy(n,time_copy + 4,1);
 
 				if (strcmp(n,"/") != 0) {
 					strncpy(sd,time_copy,2);
@@ -1203,7 +1203,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 					dx = atoi(sd);
 					daySuffix(dx ,dt);
 					sprintf(sd,"%d%s",dx,dt);
-					strncpy(fsz,time_copy+2,4);
+					strncpy(fsz,time_copy + 2,4);
 					fsz[4] = '\0';
 					fprintf(filetaf,"Issued: %s at %sz\n",sd,fsz);
 					sprintf(issued,"%s at %sz\n",sd,fsz);
@@ -1312,7 +1312,7 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 
 					j++;
 					fprintf(to,"%02x%02x%02x ",frame->data[i],frame->data[i+1],frame->data[i+2]);
-					i = i +4;
+					i = i + 4;
 				}
 				fprintf(to,"\n");
 			}
@@ -1335,10 +1335,10 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 						fprintf(to,"\n");
 
 					q++;
-					repid = (frame->data[j+1] & ((1<<6)-1)) << 8 |  frame->data[j+2];
+					repid = (frame->data[j + 1] & ((1 << 6 )-1)) << 8 |  frame->data[j + 2];
 
 					fprintf(to,"Rpt ID: %d  ",repid);
-						j = j+3;
+						j = j + 3;
 					}
 					fprintf(to,"\n");
 			}
@@ -1420,7 +1420,6 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 	char *start_date;
 	char *stop_date;
 
-	char *sql;
 	char *postsql;
 	char *coords;
 	char gr[2000] = "";
@@ -1455,8 +1454,8 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 
 	obj_labelt = "  ";
 	if (obj_label_flag == 0) { // Numeric index.
-		obj_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff +6]);					// 11 12
-		datoff = datoff +7;	}																	// datoff=13
+		obj_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff + 6]);					// 11 12
+		datoff = datoff + 7;	}																	// datoff=13
 	else {
 		obj_labelt = decode_dlac(apdu->data,5,2);
 		datoff = datoff + 14;
@@ -1511,11 +1510,11 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 //		obj_param_type = apdu->data[18] >> 3;							// 18
 //		ob_par_val = (apdu->data[18] & 0x7)<< 8 | apdu->data[19];		// 19
 
-		datoff = datoff+7;																		// 13 datoff =20
+		datoff = datoff + 7;																		// 13 datoff =20
 	}
 	geo_overlay_opt = (apdu->data[datoff + 0]) & 0x0F;											// 13
-	overlay_op = ((apdu->data[datoff +1]) & 0xC0) >> 6;
-	overlay_vert_cnt = ((apdu->data[datoff +1]) & 0x3F) + 1;									// Docs say to add 1)
+	overlay_op = ((apdu->data[datoff + 1]) & 0xC0) >> 6;
+	overlay_vert_cnt = ((apdu->data[datoff + 1]) & 0x3F) + 1;									// Docs say to add 1)
 	rec_app_opt = ((apdu->data[datoff + 0]) & 0xC0) >> 6;
 	date_time_format = ((apdu->data[datoff + 0]) & 0x30) >> 4;
 
@@ -1523,7 +1522,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 	case 0:									// No times given. UFN. (record_data[2:],date_time_format)
 		asprintf(&start_date,"0");
 		asprintf(&stop_date,"0");
-		datoff = datoff +2;
+		datoff = datoff + 2;
 		break;
 	case 1:									// Start time only. WEF.
 		d1 = apdu->data[datoff + 2];
@@ -1567,7 +1566,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 		strcpy(ob_ele_text,gairspace_element_names[obj_element]);
 
 
-	asprintf(&sql,"INSERT INTO graphic_reports (prod_id,stn_call,prod_ver,rec_count,rec_ref,"
+	asprintf(&postsql,"INSERT INTO graphic_reports (prod_id,stn_call,prod_ver,rec_count,rec_ref,"
 			"rep_number,rec_length,rep_year,ovrly_recid,obj_lbl_flag,obj_lbl_number,obj_lbl_alpha,"
 			"element_flag,obj_element,obj_status,obj_type,qual_flag,param_flag,rec_app_option,"
 			"app_opt_fmt,start_date,stop_date,geo_ovrly_opt,ovrly_operator,ovrly_vertices,qual_text,rep_rec_time)"
@@ -1579,7 +1578,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 
 	switch (geo_overlay_opt) {
 	case 3: case 4:													// Extended Range 3D Polygon
-		alt_raw = (((apdu->data[datoff +4]) & 0x03) << 8) | (apdu->data[datoff +5]);
+		alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
 		alt = alt_raw * 100;
 
 		switch(apdu->product_id) {
@@ -1603,11 +1602,11 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 		}
 
 		for (int i = 0; i < overlay_vert_cnt; i++) {
-			lng_raw = ((apdu->data[datoff + i]) << 11) | ((apdu->data[datoff +i+1]) << 3) |
-					((apdu->data[datoff +i+2]) & 0xE0 >> 5);
-			lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+3]) << 6) |
-					(((apdu->data[datoff +i+4]) & 0xFC) >> 2);
-			alt_raw = (((apdu->data[datoff +i+4]) & 0x03) << 8) | (apdu->data[datoff +i+5]);
+			lng_raw = ((apdu->data[datoff + i]) << 11) | ((apdu->data[datoff + i + 1]) << 3) |
+					((apdu->data[datoff + i + 2]) & 0xE0 >> 5);
+			lat_raw = (((apdu->data[datoff + i + 2]) & 0x1F) << 14) | ((apdu->data[datoff + i + 3]) << 6) |
+					(((apdu->data[datoff + i + 4]) & 0xFC) >> 2);
+			alt_raw = (((apdu->data[datoff + i + 4]) & 0x03) << 8) | (apdu->data[datoff + i + 5]);
 
 			datoff = datoff + 5;
 
@@ -1667,26 +1666,26 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 
 			float lat_bot,lng_bot,lat_top,lng_top,r_lng,r_lat;
 
-			lng_bot_raw = ((apdu->data[datoff +0]) << 10) | ((apdu->data[datoff +1]) << 2) |
-					((apdu->data[datoff +2]) & 0xC0 >> 6);
-			lat_bot_raw = (((apdu->data[datoff+ 2]) & 0x3F) << 12) | ((apdu->data[datoff +3]) << 4) |
-					(((apdu->data[datoff +4]) & 0xF0) >> 4);
+			lng_bot_raw = ((apdu->data[datoff + 0]) << 10) | ((apdu->data[datoff + 1]) << 2) |
+					((apdu->data[datoff + 2]) & 0xC0 >> 6);
+			lat_bot_raw = (((apdu->data[datoff + 2]) & 0x3F) << 12) | ((apdu->data[datoff + 3]) << 4) |
+					(((apdu->data[datoff + 4]) & 0xF0) >> 4);
 
-			lng_top_raw = (((apdu->data[datoff +4]) & 0x0F) << 14) | ((apdu->data[datoff +5]) << 6) |
-					(((apdu->data[datoff +6]) & 0xFC) >> 2);
-			lat_top_raw = (((apdu->data[datoff +6]) & 0x03) << 16) | ((apdu->data[datoff +7]) << 8) |
-					(apdu->data[datoff +8]);
+			lng_top_raw = (((apdu->data[datoff + 4]) & 0x0F) << 14) | ((apdu->data[datoff + 5]) << 6) |
+					(((apdu->data[datoff + 6]) & 0xFC) >> 2);
+			lat_top_raw = (((apdu->data[datoff + 6]) & 0x03) << 16) | ((apdu->data[datoff + 7]) << 8) |
+					(apdu->data[datoff + 8]);
 
-			alt_bot_raw = ((apdu->data[datoff +9]) & 0xFE) >> 1;
-			alt_top_raw = (((apdu->data[datoff +9]) & 0x01) << 6) | (((apdu->data[datoff +10]) & 0xFC) >> 2);
+			alt_bot_raw = ((apdu->data[datoff + 9]) & 0xFE) >> 1;
+			alt_top_raw = (((apdu->data[datoff + 9]) & 0x01) << 6) | (((apdu->data[datoff + 10]) & 0xFC) >> 2);
 
-			r_lng_raw = (((apdu->data[datoff +10]) & 0x03) << 7) | (((apdu->data[datoff +11]) & 0xFE) >> 1);
-			r_lat_raw = (((apdu->data[datoff +11]) & 0x01) << 8) | (apdu->data[datoff +12]);
+			r_lng_raw = (((apdu->data[datoff + 10]) & 0x03) << 7) | (((apdu->data[datoff + 11]) & 0xFE) >> 1);
+			r_lat_raw = (((apdu->data[datoff + 11]) & 0x01) << 8) | (apdu->data[datoff + 12]);
 
-			alpha = (apdu->data[datoff +13]);
+			alpha = (apdu->data[datoff + 13]);
 
-			lng_bot_raw = (~lng_bot_raw & 0x1FFFF) +1;		// 2's compliment +1
-			lat_bot_raw = (~lat_bot_raw & 0x1FFFF) +1;		// 2's compliment +1
+			lng_bot_raw = (~lng_bot_raw & 0x1FFFF) + 1;		// 2's compliment +1
+			lat_bot_raw = (~lat_bot_raw & 0x1FFFF) + 1;		// 2's compliment +1
 			lat_bot = lat_bot_raw * 0.001373;
 			lng_bot = (lng_bot_raw * 0.001373) * -1;
 
@@ -1695,8 +1694,8 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 			if (lng_bot > 180.0)
 				lng_bot = lng_bot - 360.0;
 
-			lng_top_raw = (~lng_top_raw & 0x1FFFF) +1;		// 2's compliment +1
-			lat_top_raw = (~lat_top_raw & 0x1FFFF) +1;		// 2's compliment +1
+			lng_top_raw = (~lng_top_raw & 0x1FFFF) + 1;		// 2's compliment +1
+			lat_top_raw = (~lat_top_raw & 0x1FFFF) + 1;		// 2's compliment +1
 			lat_top = lat_top_raw * 0.001373;
 			lng_top = (lng_top_raw * 0.001373) * -1;
 
@@ -1714,27 +1713,27 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 //			fprintf(fnm,"lat_top, lng_top = %f, %f\n", lat_top, lng_top);
 
 //			if (geo_overlay_opt == 8)
-//				fprintf(fnm,"alt_bot, alt_top = %d AGL, %d AGL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
+//				fprintf(fnm,"alt_bot,alt_top = %d AGL, %d AGL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
 //			else
-//				fprintf(fnm,"alt_bot, alt_top = %d MSL, %d MSL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
+//				fprintf(fnm,"alt_bot,alt_top = %d MSL, %d MSL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
 
 //			fprintf(fnm,"r_lng, r_lat = %f, %f\n", r_lng,r_lat);
-//			fprintf(fnm,"alpha=%d\n",alpha);
+//			fprintf(fnm,"alpha =%d\n",alpha);
 		}
 */
 		break;
 	case 9:														// Extended Range 3D Point (AGL)
-		lng_raw = ((apdu->data[datoff +0]) << 11) | ((apdu->data[datoff +1]) << 3) |
-		((apdu->data[datoff +2]) & 0xE0 >> 5);
-		lat_raw = (((apdu->data[datoff +2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) |
+		lng_raw = ((apdu->data[datoff + 0]) << 11) | ((apdu->data[datoff + 1]) << 3) |
+		((apdu->data[datoff + 2]) & 0xE0 >> 5);
+		lat_raw = (((apdu->data[datoff + 2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) |
 				(((apdu->data[datoff + 4]) & 0xFC) >> 2);
 		alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
 
-		lng_raw = (~lng_raw & 0x7FFFF) +1;												// 2's compliment +1
-		lat_raw = (~lat_raw & 0x7FFFF) +1;												// 2's compliment +1
+		lng_raw = (~lng_raw & 0x7FFFF) + 1;												// 2's compliment +1
+		lat_raw = (~lat_raw & 0x7FFFF) + 1;												// 2's compliment +1
 
 		lat = lat_raw * 0.0006866455078125;
-		lng = (lng_raw * 0.0006866455078125) * -1;
+		lng = (lng_raw * 0.0006866455078125) * - 1;
 
 		if (lat > 90.0)
 			lat = 360.0 - lat;
@@ -1748,7 +1747,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 
 			strcpy(notam_list[notam_count].notam_stn,gstn);
 
-			notam_list[notam_count].notam_repid =rep_num;
+			notam_list[notam_count].notam_repid = rep_num;
 			if (notam_count == 0) {
 				fprintf(filenotamjson,"{\"type\": \"FeatureCollection\",\n");
 				fprintf(filenotamjson,"\"features\": [ \n");
@@ -1789,20 +1788,20 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 	case 11: case 12:													// Extended Range 3D Polyline
 																		// Don't write geojson for items with qualifier flag set.
 		if (qualifier_flag == 0) {
-			alt_raw = (((apdu->data[datoff +4]) & 0x03) << 8) | (apdu->data[datoff +5]);
+			alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
 			alt = alt_raw * 100;
 
 			for (int i = 0; i < overlay_vert_cnt; i++) {
-				lng_raw = ((apdu->data[datoff +i]) << 11) | ((apdu->data[datoff +i+1]) << 3) |
-						((apdu->data[datoff +i+2]) >> 5);
-				lat_raw = (((apdu->data[datoff +i+2]) & 0x1F) << 14) | ((apdu->data[datoff +i+ 3]) << 6) |
-						(((apdu->data[datoff +i+ 4]) & 0xFC) >> 2);
-				alt_raw = (((apdu->data[datoff +i+ 4]) & 0x03) << 8) | (apdu->data[datoff +i+ 5]);
+				lng_raw = ((apdu->data[datoff + i]) << 11) | ((apdu->data[datoff + i + 1]) << 3) |
+						((apdu->data[datoff + i + 2]) >> 5);
+				lat_raw = (((apdu->data[datoff + i + 2]) & 0x1F) << 14) | ((apdu->data[datoff + i + 3]) << 6) |
+						(((apdu->data[datoff + i+ 4]) & 0xFC) >> 2);
+				alt_raw = (((apdu->data[datoff + i + 4]) & 0x03) << 8) | (apdu->data[datoff + i + 5]);
 
 				datoff = datoff + 5;
 
-				lng_raw = (~lng_raw & 0x7FFFF) +1;											// 2's compliment +1
-				lat_raw = (~lat_raw & 0x7FFFF) +1;											// 2's compliment +1
+				lng_raw = (~lng_raw & 0x7FFFF) + 1;											// 2's compliment +1
+				lat_raw = (~lat_raw & 0x7FFFF) + 1;											// 2's compliment +1
 
 				lat = lat_raw * 0.0006866455078125;
 				lng = lng_raw * -0.0006866455078125;
@@ -1814,7 +1813,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 
 				alt = alt_raw * 100;
 
-				if (i == (overlay_vert_cnt-1)){
+				if (i == (overlay_vert_cnt - 1)){
 					asprintf(&coords," [%f,%f]",coords,lng,lat);
 					strcat(gr,coords);
 				}
@@ -1857,6 +1856,8 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 	char *notam_name;
 	char *p,*r;
 
+	char *postsql;
+
 	const char *text = decode_dlac(apdu->data,apdu->length,rec_offset);
 	const char *report = text;
 	const char *next_report; uint16_t report_year;
@@ -1888,7 +1889,7 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 
 			notam_name = (char *)malloc(strlen(r) + 1);
 			strcpy(notam_name,r);
-			r = p+1;
+			r = p + 1;
 		}
 		if (apdu->product_id == 8)
 			p = strchr(r,'.');
@@ -1944,7 +1945,6 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 		if (apdu->product_id == 8 || apdu->product_id == 11 ||
 				apdu->product_id == 12 || apdu->product_id == 15) {	// 8 11 12 15
 
-			char *postsql;
 			int length = strlen(r);
 
 			switch (apdu->product_id) {
@@ -1953,8 +1953,8 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 			case 12: strcpy(prod_name,"SIGMET"); break;
 			case 15: strcpy(prod_name,"CWA"); break;
 			}
-			if (r[length-1] == '\n')
-				r[length-1] = '\0';
+			if (r[length - 1] == '\n')
+				r[length - 1] = '\0';
 
 			for (int i = 0; i <= strlen(r); i++) {	// Remove line feeds
 				if (r[i] == '\n')
@@ -2041,6 +2041,7 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm,FILE *to)
 	if (fg == prodfillen) {																	// All parts have been stored
 		uint8_t rep_all[2000];
 		int char_cnt = 0;
+
 		for (int i = 0; i <= seg_count; ++i) {												// 1st part
 			if ((seg_list[i].seg_prodid == prodid) &&
 					(seg_list[i].seg_prolen == prodfillen) && (seg_list[i].seg_segnum == 1)) {
@@ -2059,7 +2060,7 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm,FILE *to)
 			if ((seg_list[i].seg_prodid == prodid) &&
 					(seg_list[i].seg_prolen == prodfillen) && (seg_list[i].seg_segnum == 2)) {
 				for (int d = char_cnt; d <= char_cnt + seg_list[i].seg_text_len; ++d) {
-					rep_all[d] = seg_list[i].seg_data[(d-char_cnt)];
+					rep_all[d] = seg_list[i].seg_data[(d - char_cnt)];
 				}
 				char_cnt = char_cnt + seg_list[i].seg_text_len;
 			}
@@ -2068,7 +2069,7 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm,FILE *to)
 			if ((seg_list[i].seg_prodid == prodid) &&
 					(seg_list[i].seg_prolen == prodfillen) && (seg_list[i].seg_segnum == 3)) {
 				for (int d = char_cnt; d <= char_cnt + seg_list[i].seg_text_len; ++d) {
-					rep_all[d] = seg_list[i].seg_data[(d-char_cnt)];
+					rep_all[d] = seg_list[i].seg_data[(d - char_cnt)];
 				}
 				char_cnt = char_cnt + seg_list[i].seg_text_len;
 			}

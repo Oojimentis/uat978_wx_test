@@ -128,8 +128,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 				intensity = apdu->data[i] & 7;
 				runlength = (apdu->data[i] >> 3) + 1;
 
-				while (runlength-- > 0){
-					charValue=intensity+'0';
+				while (runlength-- > 0) {
+					charValue = intensity +'0';
 					sprintf(block,"%s%c",block,charValue);
 				}
 			}
@@ -150,7 +150,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 				ice_prob = (apdu->data[i]) & 7;
     			
 				while (num_bins-- > 0){
-					charValue=ice_prob+'0';
+					charValue = ice_prob+'0';
 					sprintf(block,"%s%c",block,charValue);
 				}
 			}
@@ -174,8 +174,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 					num_bins = (apdu->data[i])+1;
 				}
 		       	
-				while (num_bins-- > 0){
-					charValue=lgt_cnt+'0';
+				while (num_bins-- > 0) {
+					charValue = lgt_cnt+'0';
 					sprintf(block,"%s%c",block,charValue);
 				}
 			}
@@ -200,7 +200,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 					num_bins = (apdu->data[i])+1;
 				}
         		
-				switch (edr_enc){
+				switch (edr_enc) {
 				case 10:   	enc='a';  	break;
 				case 11:  	enc='b';    break;
 				case 12:  	enc='c'; 	break;
@@ -212,7 +212,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 					break;
 				}
 
-				while (num_bins-- > 0){
+				while (num_bins-- > 0) {
 					sprintf(block,"%s%c",block,enc);
 				}
 			}
@@ -342,6 +342,7 @@ void metar_data( Decoded_METAR *Mptr,FILE *to)
 		Mptr->temp = 999;
 	else
 		Mptr->temp = Mptr->temp * 9/5  +32;
+
 	if (Mptr->dew_pt_temp > 1000)
 			Mptr->dew_pt_temp = 999;
 	else
