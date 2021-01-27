@@ -1195,6 +1195,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 				fprintf(filetaf,"%s %s %s\n",mtype,gstn,gs_ret);
 				fprintf(filetaf,"%s\n\n",r);		// *** Text ***
 
+				fprintf(to,"station: %s\n",gstn);
 				strncpy(n,time_copy + 4,1);
 
 				if (strcmp(n,"/") != 0) {

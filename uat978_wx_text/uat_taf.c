@@ -290,6 +290,10 @@ void tafWeather(char *taf_list,char *taf_wx)
 			sprintf(taf_wx,"%s Light snow\\ice pellets",taf_wx);
 		else if (strcmp(temp,"-SHRASN") == 0)
 			sprintf(taf_wx,"%s Light showers rain\\snow",taf_wx);
+		else if (strcmp(temp,"-SHRAPL") == 0)
+			sprintf(taf_wx,"%s Light showers rain\\ice pellets",taf_wx);
+		else if (strcmp(temp,"-SHRAPLSN") == 0)
+			sprintf(taf_wx,"%s Light showers rain\\ice pellets\\snow",taf_wx);
 		else if (strcmp(temp,"TSRA") == 0)
 			sprintf(taf_wx,"%s Thunderstorm and rain",taf_wx);
 		else if (strncmp(temp,"6",1) == 0) {
@@ -501,6 +505,10 @@ void taf_decode(char *taf_lines,char *issued, char *reptime, char *gstn)
 
 	// winds
 		temp = strsep(&taf_lines," ");
+		if (strlen(temp)< 7){
+			fprintf(stderr,"error: %s   %s",temp,taf_lines);
+			return;
+		}
 		tafWind(d,s,gs,temp,taf_temp);
 		fprintf(filetaf,"  %s\n",taf_temp);
 		sprintf(wind,"%s",taf_temp);
