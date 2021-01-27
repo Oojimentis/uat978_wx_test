@@ -37,7 +37,6 @@ void handle_frame(frame_type_t type, uint8_t *frame, int len, void *extra)
 int main(int argc, char **argv)
 {
 	seg_count = 0;
-	notam_count = 0;
 
 	char line[75];
 	char pg_user[20];
@@ -45,7 +44,6 @@ int main(int argc, char **argv)
 	char pg_db[20];
 	char file_path[75];
 	char pg_connect[100];
-	char file_name[100];
 
 	fileconfig = fopen("config.txt","r");
 	if (fileconfig == 0)	{
@@ -90,13 +88,6 @@ int main(int argc, char **argv)
 	else {
 		fprintf(stderr, "Connected to database\n");
 	}
-
-	sprintf(file_name,"%snotam.geojson",file_path);
-	filenotamjson = fopen(file_name,"w");
-	if (filenotamjson == 0)	{
-		fprintf(stderr,"notam.geojson Error--file could not be opened. \n");
-		exit (1); }
-	fflush(filenotamjson);
 
 	filemetar = fopen("metar.out","w");
 	if (filemetar == 0) {
