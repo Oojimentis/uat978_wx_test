@@ -1426,7 +1426,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 	char gr[2000] = "";
 
 //	int rep_exist = 0;
-	FILE * file3dpoly;
+//	FILE * file3dpoly;
 
 	char buff[30];
 
@@ -1566,7 +1566,6 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 	if (element_flag == 1 && obj_type == 14 && apdu->product_id == 14)
 		strcpy(ob_ele_text,gairspace_element_names[obj_element]);
 
-
 	asprintf(&postsql,"INSERT INTO graphic_reports (prod_id,stn_call,prod_ver,rec_count,rec_ref,"
 			"rep_number,rec_length,rep_year,ovrly_recid,obj_lbl_flag,obj_lbl_number,obj_lbl_alpha,"
 			"element_flag,obj_element,obj_status,obj_type,qual_flag,param_flag,rec_app_option,"
@@ -1578,29 +1577,9 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 			overlay_vert_cnt,qual_text,buff);
 
 	switch (geo_overlay_opt) {
-	case 3: case 4:													// Extended Range 3D Polygon
+	case 3: case 4:									// Extended Range 3D Polygon
 		alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
 		alt = alt_raw * 100;
-
-		switch(apdu->product_id) {
-		case 8:
-			file3dpoly = filenotamjson;
-			if (notam_count == 0) {
-				fprintf(file3dpoly,"{\"type\": \"FeatureCollection\",\n");
-				fprintf(file3dpoly,"\"features\": [ \n");
-				fprintf(file3dpoly,"{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\":"
-						" \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
-				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\",\"coordinates\": [[\n");
-			}
-			else {
-				fseek(file3dpoly,-3,SEEK_CUR);
-				fprintf(file3dpoly,",{\"type\": \"Feature\",\"properties\": { \"RepNum\": \"%d\",\"Alt\":"
-						" \"%d\",\"Ob\": \"%s\"},\n",rep_num,alt,ob_ele_text);
-				fprintf(file3dpoly,"\"geometry\": { \"type\": \"Polygon\",\"coordinates\": [[\n");
-			}
-			notam_count++;
-			break;
-		}
 
 		for (int i = 0; i < overlay_vert_cnt; i++) {
 			lng_raw = ((apdu->data[datoff + i]) << 11) | ((apdu->data[datoff + i + 1]) << 3) |
@@ -1723,7 +1702,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 		}
 */
 		break;
-	case 9:														// Extended Range 3D Point (AGL)
+	case 9:											// Extended Range 3D Point (AGL)
 		lng_raw = ((apdu->data[datoff + 0]) << 11) | ((apdu->data[datoff + 1]) << 3) |
 		((apdu->data[datoff + 2]) & 0xE0 >> 5);
 		lat_raw = (((apdu->data[datoff + 2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) |
@@ -1742,32 +1721,6 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 			lng = lng - 360.0;
 		alt = alt_raw * 100;
 
-		if (apdu->product_id == 8) {
-			notam_list[notam_count].notam_lat = lat;
-			notam_list[notam_count].notam_lng = lng;
-
-			strcpy(notam_list[notam_count].notam_stn,gstn);
-
-			notam_list[notam_count].notam_repid = rep_num;
-			if (notam_count == 0) {
-				fprintf(filenotamjson,"{\"type\": \"FeatureCollection\",\n");
-				fprintf(filenotamjson,"\"features\": [ \n");
-				fprintf(filenotamjson,"{\"type\": \"Feature\",\"properties\": { \"Location\": \"%s\",\"Stuff\":"
-						" \"%d\"},\n",gstn,rep_num);
-				fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %f,%f ] }}\n",lng,lat);
-				fprintf(filenotamjson,"]}");
-			}
-			else {
-				fseek(filenotamjson,-3,SEEK_CUR);
-				fprintf(filenotamjson,",{\"type\": \"Feature\",\"properties\": { \"Location\": \"%s\",\"Stuff\":"
-						" \"%d\"},\n",gstn,rep_num);
-				fprintf(filenotamjson,"\"geometry\": { \"type\": \"Point\",\"coordinates\": [ %f,%f ] }}\n",lng,lat);
-				fprintf(filenotamjson,"]}");
-			}
-			fflush(filenotamjson);
-			notam_count ++;
-		}
-
 		asprintf(&coords," [%f,%f]",coords,lng,lat);
 		strcat(gr,coords);
 		asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
@@ -1780,14 +1733,10 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 				fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
 
 		PQclear(res);
-//		asprintf(&sql,"INSERT INTO graphic_coords (prod_id, rep_number, geo_ovrly_opt,"
-//				"coord_num,ovrly_vertices, ovrly_lat,ovrly_lng,ovrly_alt) "
-//				"VALUES (%d,%d,%d,0,%d,%f,%f,%d)",
-//				apdu->product_id,rep_num,geo_overlay_opt,overlay_vert_cnt,lat,lng,alt);
 
 		break;
-	case 11: case 12:													// Extended Range 3D Polyline
-																		// Don't write geojson for items with qualifier flag set.
+	case 11: case 12:								// Extended Range 3D Polyline
+													// Don't write geojson for items with qualifier flag set.
 		if (qualifier_flag == 0) {
 			alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
 			alt = alt_raw * 100;
@@ -1836,6 +1785,8 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 			PQclear(res);
 		}
 		break;
+	default:
+		fprintf(to,"Unknown Geo type: %d",geo_overlay_opt);
 	}
 }
 //	display_generic_data(apdu->data,apdu->length,to);

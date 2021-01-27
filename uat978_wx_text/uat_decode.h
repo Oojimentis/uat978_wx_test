@@ -33,21 +33,10 @@ struct MySegStruct{
 
 int seg_count;
 
-struct NotamJsonStruct{
-	float notam_lat;
-	float notam_lng;
-	char  notam_stn[6];
-	int  notam_repid;
-} notam_list[5000];
-
-int notam_count;
-
 FILE * filemetar;   	// 413
 FILE * filenotam;   	// 8
 FILE * filesua;      	// 13
 FILE * filecwa;			// Center Weather Advisory
-
-FILE * filenotamjson; 	// NOTAM geojson
 
 FILE * filetaf;			// test file for TAF
 FILE * fileconfig;		// Credentials.
