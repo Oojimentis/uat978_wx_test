@@ -277,6 +277,18 @@ void tafWeather(char *taf_list,char *taf_wx)
 			sprintf(taf_wx,"%s Light snow\rain",taf_wx);
 		else if (strcmp(temp,"-SHSN") == 0)
 			sprintf(taf_wx,"%s Light snow shower",taf_wx);
+		else if (strcmp(temp,"-SNDZ") == 0)
+			sprintf(taf_wx,"%s Light snow\\drizzle",taf_wx);
+		else if (strcmp(temp,"-FZDZSN") == 0)
+			sprintf(taf_wx,"%s Light freezing snow\\drizzle",taf_wx);
+		else if (strcmp(temp,"-FZRADZ") == 0)
+			sprintf(taf_wx,"%s Light freezing rain\\drizzle",taf_wx);
+		else if (strcmp(temp,"-FZDZ") == 0)
+			sprintf(taf_wx,"%s Light freezing drizzle",taf_wx);
+		else if (strcmp(temp,"-SNPL") == 0)
+			sprintf(taf_wx,"%s Light snow\\ice pellets",taf_wx);
+		else if (strcmp(temp,"-SHRASN") == 0)
+			sprintf(taf_wx,"%s Light showers rain\\snow",taf_wx);
 		else if (strcmp(temp,"TSRA") == 0)
 			sprintf(taf_wx,"%s Thunderstorm and rain",taf_wx);
 		else if (strncmp(temp,"6",1) == 0){
