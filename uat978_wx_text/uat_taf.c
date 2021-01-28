@@ -503,28 +503,37 @@ void taf_decode(char *taf_lines,char *issued, char *reptime, char *gstn)
 		fprintf(filetaf,"- %s at %s:00z\n",ed,ez);
 		sprintf(current,"%s at %s:00z - %s at %s:00z",sd,sz,ed,ez);
 
-	// winds
+	// winds / NIL=
+		int nil = 0;
 		temp = strsep(&taf_lines," ");
-		if (strlen(temp)< 7){
-			fprintf(stderr,"error: %s   %s",temp,taf_lines);
-			return;
+		if (strncmp(temp,"NIL",3) == 0) {
+			fprintf(filetaf,"Station not active\n");
+			sprintf(wind,"Station not active");
+			nil = 1;
 		}
-		tafWind(d,s,gs,temp,taf_temp);
-		fprintf(filetaf,"  %s\n",taf_temp);
-		sprintf(wind,"%s",taf_temp);
-
+		if (nil == 0) {
+			tafWind(d,s,gs,temp,taf_temp);
+			fprintf(filetaf,"  %s\n",taf_temp);
+			sprintf(wind,"%s",taf_temp);
 
 	// visibility
-		temp = strsep(&taf_lines," ");
-		tafVisibilty(temp,taf_temp);
-		fprintf(filetaf,"  %s\n",taf_temp);
-		sprintf(visby,"%s",taf_temp);
+			temp = strsep(&taf_lines," ");
+			tafVisibilty(temp,taf_temp);
+			fprintf(filetaf,"  %s\n",taf_temp);
+			sprintf(visby,"%s",taf_temp);
 
 	// WX sky
-		taf_temp[0] = '\0';
-		tafWeather(taf_lines,taf_temp);
-		fprintf(filetaf,"  Conditions:%s\n\n",taf_temp);
-		sprintf(condx,"%s",taf_temp);
+			taf_temp[0] = '\0';
+			tafWeather(taf_lines,taf_temp);
+			fprintf(filetaf,"  Conditions:%s\n\n",taf_temp);
+			sprintf(condx,"%s",taf_temp);
+		}
+		else {
+			sprintf(current,"%s %s",current,wind);
+			wind[0]='\0';
+			visby[0]='\0';
+			condx[0]='\0';
+		}
 
 		asprintf(&postsql,"INSERT INTO taf(issued,current,wind,visby,condx,rep_time,stn_call) "
 				"VALUES ('%s','%s','%s','%s','%s','%s','%s')",

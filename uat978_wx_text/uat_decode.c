@@ -1134,6 +1134,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 
 			r = report_buf;
 			strncpy(taftype,report_buf,7);
+			taftype[7]='\0';
 			if (strcmp(taftype,"TAF COR") == 0) {
 				report_buf[3] = '.';
 			}
@@ -1277,6 +1278,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 			}
 			memset(&MetarStruct,0,sizeof(MetarStruct));
 			fflush(filemetar);
+			fflush(filetaf);
 		}
 	}
 	break;
@@ -1699,8 +1701,19 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 
 			fprintf(to,"r_lng, r_lat = %f, %f\n", r_lng,r_lat);
 			fprintf(to,"alpha =%d\n",alpha);
-		}
 
+			asprintf(&postsql,"INSERT INTO circles(bot,top,alt_bot,alt_top,alpha,prod_id,rec_count,rep_num,"
+					"rep_year,start_date,stop_date,geo_opt) VALUES (ST_GeomFromText('POINT ( %f %f)',4326),"
+					"ST_GeomFromText('POINT (%f %f)',4326),%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d)",
+					lng_bot,lat_bot,lng_top,lat_top,alt_bot,alt_top,alpha,apdu->product_id,rec_count,rep_num,report_year,start_date,stop_date,geo_overlay_opt);
+
+			PGresult *res = PQexec(conn, postsql);
+			if (PQresultStatus(res) != PGRES_COMMAND_OK){
+				if (PQresultStatus(res) != 7)
+					fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+			}
+			PQclear(res);
+		}
 		break;
 	case 9:											// Extended Range 3D Point (AGL)
 		lng_raw = ((apdu->data[datoff + 0]) << 11) | ((apdu->data[datoff + 1]) << 3) |
