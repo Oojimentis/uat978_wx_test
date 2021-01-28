@@ -1627,7 +1627,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 
 		break;
 	case 7: case 8:									// Extended Range Circular Prism (7 = MSL,8 = AGL)
-/*
+
 		if (rec_len < 14) {
 //			fprintf(fnm,"Data too short. Should be 14 bytes; %d seen.\n",rec_len);
 		}
@@ -1689,18 +1689,18 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 			r_lng = r_lng_raw * 0.2;
 			r_lat = r_lat_raw * 0.2;
 
-//			fprintf(fnm,"lat_bot, lng_bot = %f, %f\n", lat_bot, lng_bot);
-//			fprintf(fnm,"lat_top, lng_top = %f, %f\n", lat_top, lng_top);
+			fprintf(to,"lat_bot, lng_bot = %f, %f\n", lat_bot, lng_bot);
+			fprintf(to,"lat_top, lng_top = %f, %f\n", lat_top, lng_top);
 
-//			if (geo_overlay_opt == 8)
-//				fprintf(fnm,"alt_bot,alt_top = %d AGL, %d AGL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
-//			else
-//				fprintf(fnm,"alt_bot,alt_top = %d MSL, %d MSL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
+			if (geo_overlay_opt == 8)
+				fprintf(to,"alt_bot,alt_top = %d AGL, %d AGL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
+			else
+				fprintf(to,"alt_bot,alt_top = %d MSL, %d MSL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
 
-//			fprintf(fnm,"r_lng, r_lat = %f, %f\n", r_lng,r_lat);
-//			fprintf(fnm,"alpha =%d\n",alpha);
+			fprintf(to,"r_lng, r_lat = %f, %f\n", r_lng,r_lat);
+			fprintf(to,"alpha =%d\n",alpha);
 		}
-*/
+
 		break;
 	case 9:											// Extended Range 3D Point (AGL)
 		lng_raw = ((apdu->data[datoff + 0]) << 11) | ((apdu->data[datoff + 1]) << 3) |
