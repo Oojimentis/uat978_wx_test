@@ -1703,13 +1703,13 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 			fprintf(to,"alpha =%d\n",alpha);
 
 			asprintf(&postsql,"INSERT INTO circles(bot,top,alt_bot,alt_top,alpha,prod_id,rec_count,rep_num,"
-					"rep_year,start_date,stop_date,geo_opt) VALUES (ST_GeomFromText('POINT ( %f %f)',4326),"
-					"ST_GeomFromText('POINT (%f %f)',4326),%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d)",
-					lng_bot,lat_bot,lng_top,lat_top,alt_bot,alt_top,alpha,apdu->product_id,rec_count,rep_num,report_year,start_date,stop_date,geo_overlay_opt);
+					"rep_year,start_date,stop_date,geo_opt,r_lat,r_lng) VALUES (ST_GeomFromText('POINT ( %f %f)',4326),"
+					"ST_GeomFromText('POINT (%f %f)',4326),%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d,%f,%f)",
+					lng_bot,lat_bot,lng_top,lat_top,alt_bot,alt_top,alpha,apdu->product_id,rec_count,rep_num,report_year,start_date,stop_date,geo_overlay_opt,r_lat,r_lng);
 
 			PGresult *res = PQexec(conn, postsql);
 			if (PQresultStatus(res) != PGRES_COMMAND_OK){
-				if (PQresultStatus(res) != 7)
+	//			if (PQresultStatus(res) != 7)
 					fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
 			}
 			PQclear(res);
