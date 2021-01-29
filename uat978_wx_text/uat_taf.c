@@ -208,6 +208,8 @@ void tafWeather(char *taf_list,char *taf_wx)
 			sprintf(taf_wx,"%s Patches",taf_wx);
 		else if (strcmp(temp,"BL") == 0)
 			sprintf(taf_wx,"%s Blowing",taf_wx);
+		else if (strcmp(temp,"BLSN") == 0)
+			sprintf(taf_wx,"%s Blowing snow",taf_wx);
 		else if (strcmp(temp,"DR") == 0)
 			sprintf(taf_wx,"%s Low drifting",taf_wx);
 		else if (strcmp(temp,"DS") == 0)
