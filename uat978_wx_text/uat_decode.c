@@ -1578,6 +1578,10 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 			qualifier_flag,param_flag,rec_app_opt,date_time_format,start_date,stop_date,geo_overlay_opt,overlay_op,
 			overlay_vert_cnt,qual_text,buff);
 
+	if (geo_overlay_opt ==1)
+		fprintf(to,"moo");
+
+
 	switch (geo_overlay_opt) {
 	case 3: case 4:									// Extended Range 3D Polygon
 		alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
