@@ -45,9 +45,9 @@ int main(int argc, char **argv)
 	char file_path[75];
 	char pg_connect[100];
 
-	fileconfig = fopen("config.txt","r");
+	fileconfig = fopen("config.txt", "r");
 	if (fileconfig == 0)	{
-		fprintf(stderr,"config.txt Error--file could not be opened. \n");
+		fprintf(stderr, "config.txt Error--file could not be opened. \n");
 		exit (1); }
 	else {
 		fgets(line, 75, fileconfig);
@@ -61,8 +61,8 @@ int main(int argc, char **argv)
 			 strcpy(pg_db,line);
 		fgets(line, 75, fileconfig);
 		if (!feof(fileconfig)){
-			 line[strlen(line)-1] = '\0';
-			 strcpy(file_path,line);
+			 line[strlen(line) - 1] = '\0';
+			 strcpy(file_path, line);
 		}
 	}
 	fclose(fileconfig);
@@ -78,10 +78,10 @@ int main(int argc, char **argv)
 //	}
 
 //   Open Postgresql database
-	sprintf(pg_connect,"user=%s password=%s dbname=%s",pg_user,pg_pwd,pg_db);
+	sprintf(pg_connect, "user=%s password=%s dbname=%s", pg_user, pg_pwd, pg_db);
 	conn = PQconnectdb(pg_connect);
 	if (PQstatus(conn) == CONNECTION_BAD) {
-		fprintf(stderr, "Connection to database failed: %s\n",PQerrorMessage(conn));
+		fprintf(stderr, "Connection to database failed: %s\n", PQerrorMessage(conn));
 		PQfinish(conn);
 		exit(1);
 	}
@@ -89,34 +89,34 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Connected to database\n");
 	}
 
-	filemetar = fopen("metar.out","w");
+	filemetar = fopen("metar.out", "w");
 	if (filemetar == 0) {
-		fprintf(stderr,"metar.out Error--file could not be opened. \n");
+		fprintf(stderr, "metar.out Error--file could not be opened. \n");
 		exit (1); }
 
-	filenotam = fopen("notam.out","w");
+	filenotam = fopen("notam.out", "w");
 	if (filenotam == 0)	{
-		fprintf(stderr,"notam.out Error--file could not be opened. \n");
-		exit (1);}
-
-	filesua = fopen("sua.out","w");
-	if (filesua == 0) {
-		fprintf(stderr,"sua.out Error--file could not be opened. \n");
+		fprintf(stderr, "notam.out Error--file could not be opened. \n");
 		exit (1); }
 
-	filecwa = fopen("cwa.out","w");
-	if (filecwa == 0) {
-		fprintf(stderr,"cwa.out Error--file could not be opened. \n");
-		exit (1);}
+	filesua = fopen("sua.out", "w");
+	if (filesua == 0) {
+		fprintf(stderr, "sua.out Error--file could not be opened. \n");
+		exit (1); }
 
-	filetaf = fopen("taf.out","w");    // test file for TAF
+	filecwa = fopen("cwa.out", "w");
+	if (filecwa == 0) {
+		fprintf(stderr, "cwa.out Error--file could not be opened. \n");
+		exit (1); }
+
+	filetaf = fopen("taf.out", "w");    // test file for TAF
 	if (filetaf == 0) {
-		fprintf(stderr,"taf.out Error--file could not be opened. \n");
+		fprintf(stderr, "taf.out Error--file could not be opened. \n");
 		exit (1); }
 
 	struct dump978_reader *reader;
 	int framecount;
-	reader = dump978_reader_new(0,0);
+	reader = dump978_reader_new(0, 0);
 	if (!reader) {
 		perror("dump978_reader_new");
 		return 1;
