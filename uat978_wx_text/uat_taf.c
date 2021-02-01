@@ -481,7 +481,6 @@ void taf_decode(char *taf_lines,char *issued, char *reptime, char *gstn)
 	if(isdigit(taf_t[0])) {      		 // 1st line?
 		temp = strsep(&taf_lines, " ");
 		mil[0] = temp[4];
-		fprintf(stderr, "%s",mil);
 
 		if (mil[0] == '/') {
 			validDates(sd, sz, ed, ez, temp);
@@ -496,8 +495,8 @@ void taf_decode(char *taf_lines,char *issued, char *reptime, char *gstn)
 			}
 	// winds / NIL=
 		}
-		else
-			fprintf(stderr, "moo");
+//		else
+//			fprintf(stderr, "moo");
 
 		if (nil == 0) {
 			tafWind(d, s, gs, temp, taf_temp);
