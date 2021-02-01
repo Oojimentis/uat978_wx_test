@@ -3,7 +3,7 @@
  *
  *  Created on: Dec 20, 2020
  *      Author: TJH
- *      Keep graphics and geojson together
+ *      Keep graphics together
  */
 
 #include "/usr/include/postgresql/libpq-fe.h"
