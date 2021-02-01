@@ -66,6 +66,10 @@
 #define VCSH   	40274
 #define VCTS  	40295
 
+#define LFZRASNPL   18446744073675159964u
+#define LPLSN   5180
+#define RASN 	36080
+
 void taf_decode(char *taf_lines, char *issued, char *fsz, char *gstn);
 
 void daySuffix(int d, char *dt);

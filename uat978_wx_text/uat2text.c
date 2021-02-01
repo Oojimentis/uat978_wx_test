@@ -104,11 +104,6 @@ int main(int argc, char **argv)
 		fprintf(stderr, "sua.out Error--file could not be opened. \n");
 		exit (1); }
 
-	filecwa = fopen("cwa.out", "w");
-	if (filecwa == 0) {
-		fprintf(stderr, "cwa.out Error--file could not be opened. \n");
-		exit (1); }
-
 	filetaf = fopen("taf.out", "w");    // test file for TAF
 	if (filetaf == 0) {
 		fprintf(stderr, "taf.out Error--file could not be opened. \n");

@@ -1078,11 +1078,11 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 	break;
 	case 15:							// ** CWA **************
 		recf = apdu->data[0] >> 4;
-		fprintf(filecwa, " Record Format   : %d \n", recf);
+		fprintf(to, " Record Format   : %d \n", recf);
 
 		switch (recf) {
 		case 8:							// Graphic
-			fprintf(filecwa, " Report Type     : CWA\n");
+			fprintf(to, " Report Type     : CWA\n");
 			get_graphic(apdu, to);
 			break;
 		case 2:							// Text

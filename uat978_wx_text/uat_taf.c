@@ -163,65 +163,66 @@ void tafWeather(char *taf_list, char *taf_wx)
 		l=strlen(temp);
 
 		switch(getHash(temp)) {
-		case BC:		sprintf(taf_wx, "%s Patches", taf_wx); break;
-		case BL: 		sprintf(taf_wx, "%s Blowing", taf_wx); break;
-		case BLSN: 		sprintf(taf_wx, "%s Blowing snow", taf_wx); break;
-		case DR: 		sprintf(taf_wx, "%s Low drifting", taf_wx); break;
-		case DS: 		sprintf(taf_wx, "%s Duststorm", taf_wx); break;
-		case DU: 		sprintf(taf_wx, "%s Widespread dust", taf_wx); break;
-		case FC: 		sprintf(taf_wx, "%s Funnel clouds", taf_wx); break;
-		case FU: 		sprintf(taf_wx, "%s Smoke", taf_wx); break;
-		case GRHAIL: 	sprintf(taf_wx, "%s Hail", taf_wx); break;
-		case GS: 		sprintf(taf_wx, "%s Small hail and/or snow pellets", taf_wx); break;
-		case IC: 		sprintf(taf_wx, "%s Ice crystals", taf_wx); break;
-		case MI: 		sprintf(taf_wx, "%s Shallow", taf_wx); break;
-		case PL: 		sprintf(taf_wx, "%s Ice pellets", taf_wx); break;
-		case PO: 		sprintf(taf_wx, "%s Dust/sand whirls", taf_wx); break;
-		case PR: 		sprintf(taf_wx, "%s Partial", taf_wx); break;
-		case SA: 		sprintf(taf_wx, "%s Sand", taf_wx); break;
-		case SG: 		sprintf(taf_wx, "%s Snow grains", taf_wx); break;
-		case SQ: 		sprintf(taf_wx, "%s Squall(s)", taf_wx); break;
-		case SS: 		sprintf(taf_wx, "%s Sandstorm", taf_wx); break;
-		case VA: 		sprintf(taf_wx, "%s Volcanic ash", taf_wx); break;
-		case UP: 		sprintf(taf_wx, "%s Unknown precipitation", taf_wx); break;
-		case LDZ: 		sprintf(taf_wx, "%s Light drizzle", taf_wx); break;
-		case DZ: 		sprintf(taf_wx, "%s Drizzle", taf_wx); break;
-		case FG: 		sprintf(taf_wx, "%s Fog", taf_wx); break;
-		case FZFG: 		sprintf(taf_wx, "%s Freezing fog", taf_wx); break;
-		case LFZRA: 	sprintf(taf_wx, "%s Light freezing rain", taf_wx); break;
-		case HZ: 		sprintf(taf_wx, "%s Haze", taf_wx); break;
-		case NSW: 		sprintf(taf_wx, "%s No significant weather", taf_wx); break;
-		case LRA: 		sprintf(taf_wx, "%s Light rain", taf_wx); break;
-		case RA: 		sprintf(taf_wx, "%s Rain", taf_wx); break;
-		case LRADZ: 	sprintf(taf_wx, "%s Light rain\\drizzle", taf_wx); break;
-		case LRASN:		sprintf(taf_wx, "%s Light rain\\snow", taf_wx); 		 break;
-		case LSHRA: 	sprintf(taf_wx, "%s Light rain showers", taf_wx); break;
-		case SHRA: 		sprintf(taf_wx, "%s Rain showers", taf_wx); break;
-		case LSN: 		sprintf(taf_wx, "%s Light snow", taf_wx); break;
-		case SN: 		sprintf(taf_wx, "%s Snow", taf_wx); break;
-		case LSNRA: 	sprintf(taf_wx, "%s Light snow\\rain", taf_wx); break;
-		case LSHSN: 	sprintf(taf_wx, "%s Light snow shower", taf_wx); break;
-		case LSNDZ: 	sprintf(taf_wx, "%s Light snow\\drizzle", taf_wx); break;
-		case LFZDZSN: 	sprintf(taf_wx, "%s Light freezing snow\\drizzle", taf_wx); break;
-		case LFZRADZ: 	sprintf(taf_wx, "%s Light freezing rain\\drizzle", taf_wx); break;
-		case LFZDZ: 	sprintf(taf_wx, "%s Light freezing drizzle", taf_wx); break;
-		case LSNPL: 	sprintf(taf_wx, "%s Light snow\\ice pellets", taf_wx); break;
-		case LSHRASN: 	sprintf(taf_wx, "%s Light showers rain\\snow", taf_wx); break;
-		case LSHRAPL: 	sprintf(taf_wx, "%s Light showers rain\\ice pellets", taf_wx); break;
-		case LSHRAPLSN: sprintf(taf_wx, "%s Light showers rain\\ice pellets\\snow", taf_wx); break;
-		case TSRA: 		sprintf(taf_wx, "%s Thunderstorm and rain", taf_wx); break;
-
-		case FZRAPL: 	sprintf(taf_wx, "%s Light freezing rain/ice pellets", taf_wx); break;
-		case LFZRASN: 	sprintf(taf_wx, "%s Light Freezing rain/snow", taf_wx); break;
-		case HSN: 		sprintf(taf_wx, "%s Heavy snow", taf_wx); break;
-		case HRA: 		sprintf(taf_wx, "%s Heavy rain", taf_wx); break;
-		case LPL: 		sprintf(taf_wx, "%s Light ice pellets", taf_wx); break;
-		case LFZRAPLSN: sprintf(taf_wx, "%s Light freezing rain/ice pellets/snow", taf_wx); break;
-
-		case BR: 		sprintf(taf_wx, "%s Mist", taf_wx); break;
+		case BC:		sprintf(taf_wx, "%s Patches,", taf_wx); break;
+		case BL: 		sprintf(taf_wx, "%s Blowing,", taf_wx); break;
+		case BLSN: 		sprintf(taf_wx, "%s Blowing snow,", taf_wx); break;
+		case DR: 		sprintf(taf_wx, "%s Low drifting,", taf_wx); break;
+		case DS: 		sprintf(taf_wx, "%s Duststorm,", taf_wx); break;
+		case DU: 		sprintf(taf_wx, "%s Widespread dust,", taf_wx); break;
+		case FC: 		sprintf(taf_wx, "%s Funnel clouds,", taf_wx); break;
+		case FU: 		sprintf(taf_wx, "%s Smoke,", taf_wx); break;
+		case GRHAIL: 	sprintf(taf_wx, "%s Hail,", taf_wx); break;
+		case GS: 		sprintf(taf_wx, "%s Small hail and/or snow pellets,", taf_wx); break;
+		case IC: 		sprintf(taf_wx, "%s Ice crystals,", taf_wx); break;
+		case MI: 		sprintf(taf_wx, "%s Shallow,", taf_wx); break;
+		case PL: 		sprintf(taf_wx, "%s Ice pellets,", taf_wx); break;
+		case PO: 		sprintf(taf_wx, "%s Dust/sand whirls,", taf_wx); break;
+		case PR: 		sprintf(taf_wx, "%s Partial,", taf_wx); break;
+		case SA: 		sprintf(taf_wx, "%s Sand,", taf_wx); break;
+		case SG: 		sprintf(taf_wx, "%s Snow grains,", taf_wx); break;
+		case SQ: 		sprintf(taf_wx, "%s Squall(s),", taf_wx); break;
+		case SS: 		sprintf(taf_wx, "%s Sandstorm,", taf_wx); break;
+		case VA: 		sprintf(taf_wx, "%s Volcanic ash,", taf_wx); break;
+		case UP: 		sprintf(taf_wx, "%s Unknown precipitation,", taf_wx); break;
+		case LDZ: 		sprintf(taf_wx, "%s Light drizzle,", taf_wx); break;
+		case DZ: 		sprintf(taf_wx, "%s Drizzle,", taf_wx); break;
+		case FG: 		sprintf(taf_wx, "%s Fog,", taf_wx); break;
+		case FZFG: 		sprintf(taf_wx, "%s Freezing fog,", taf_wx); break;
+		case LFZRA: 	sprintf(taf_wx, "%s Light freezing rain,", taf_wx); break;
+		case HZ: 		sprintf(taf_wx, "%s Haze,", taf_wx); break;
+		case NSW: 		sprintf(taf_wx, "%s No significant weather,", taf_wx); break;
+		case LRA: 		sprintf(taf_wx, "%s Light rain,", taf_wx); break;
+		case RA: 		sprintf(taf_wx, "%s Rain,", taf_wx); break;
+		case LRADZ: 	sprintf(taf_wx, "%s Light rain/drizzle,", taf_wx); break;
+		case RASN:		sprintf(taf_wx, "%s Rain/snow,", taf_wx); break;
+		case LRASN:		sprintf(taf_wx, "%s Light rain/snow,", taf_wx); 		 break;
+		case LSHRA: 	sprintf(taf_wx, "%s Light rain showers,", taf_wx); break;
+		case SHRA: 		sprintf(taf_wx, "%s Rain showers,", taf_wx); break;
+		case LSN: 		sprintf(taf_wx, "%s Light snow,", taf_wx); break;
+		case SN: 		sprintf(taf_wx, "%s Snow,", taf_wx); break;
+		case LSNRA: 	sprintf(taf_wx, "%s Light snow/rain,", taf_wx); break;
+		case LSHSN: 	sprintf(taf_wx, "%s Light snow shower,", taf_wx); break;
+		case LSNDZ: 	sprintf(taf_wx, "%s Light snow/drizzle,", taf_wx); break;
+		case LFZDZSN: 	sprintf(taf_wx, "%s Light freezing snow/drizzle,", taf_wx); break;
+		case LFZRADZ: 	sprintf(taf_wx, "%s Light freezing rain/drizzle,", taf_wx); break;
+		case LFZDZ: 	sprintf(taf_wx, "%s Light freezing drizzle,", taf_wx); break;
+		case LSNPL: 	sprintf(taf_wx, "%s Light snow/ice pellets,", taf_wx); break;
+		case LSHRASN: 	sprintf(taf_wx, "%s Light showers rain/snow,", taf_wx); break;
+		case LSHRAPL: 	sprintf(taf_wx, "%s Light showers rain/ice pellets,", taf_wx); break;
+		case LSHRAPLSN: sprintf(taf_wx, "%s Light showers rain/ice pellets/snow,", taf_wx); break;
+		case TSRA: 		sprintf(taf_wx, "%s Thunderstorm and rain,", taf_wx); break;
+		case LFZRAPLSN: sprintf(taf_wx, "%s Light freezing rain/ice pellets/snow,", taf_wx); break;
+		case LFZRASNPL: sprintf(taf_wx, "%s Light freezing rain/snow/ice pellets,", taf_wx); break;
+		case LFZRASN: 	sprintf(taf_wx, "%s Light freezing rain/snow,", taf_wx); break;
+		case FZRAPL: 	sprintf(taf_wx, "%s Freezing rain/ice pellets,", taf_wx); break;
+		case HSN: 		sprintf(taf_wx, "%s Heavy snow,", taf_wx); break;
+		case HRA: 		sprintf(taf_wx, "%s Heavy rain,", taf_wx); break;
+		case LPL: 		sprintf(taf_wx, "%s Light ice pellets,", taf_wx); break;
+		case BR: 		sprintf(taf_wx, "%s Mist,", taf_wx); break;
 		case AUTOMATED:	sprintf(taf_wx, "%s AUTOMATED", taf_wx);break;
-		case VCSH: 		sprintf(taf_wx, "%s Showers in the vicinity", taf_wx); break;
-		case VCTS: 		sprintf(taf_wx, "%s Thunderstorm in vicinity", taf_wx); break;
+		case VCSH: 		sprintf(taf_wx, "%s Showers in the vicinity,", taf_wx); break;
+		case VCTS: 		sprintf(taf_wx, "%s Thunderstorm in vicinity,", taf_wx); break;
+		case LPLSN:		sprintf(taf_wx, "%s Light ice pellets/snow", taf_wx); break;
 
 		default:	found = 0; break;
 
@@ -484,12 +485,12 @@ void taf_decode(char *taf_lines,char *issued, char *reptime, char *gstn)
 
 		if (mil[0] == '/') {
 			validDates(sd, sz, ed, ez, temp);
-			fprintf(filetaf, "Current  : %s at %s:00z ", sd, sz);
-			fprintf(filetaf, "- %s at %s:00z\n",ed,ez);
+			fprintf(filetaf, "Current: %s at %s:00z", sd, sz);
+			fprintf(filetaf, "-%s at %s:00z",ed,ez);
 			sprintf(current, "%s at %s:00z - %s at %s:00z", sd, sz, ed, ez);
 			temp = strsep(&taf_lines, " ");
 			if (strncmp(temp, "NIL", 3) == 0) {
-				fprintf(filetaf, "Station not active\n");
+				fprintf(filetaf, "Station not active ");
 				sprintf(wind, "Station not active");
 				nil = 1;
 			}
@@ -500,19 +501,19 @@ void taf_decode(char *taf_lines,char *issued, char *reptime, char *gstn)
 
 		if (nil == 0) {
 			tafWind(d, s, gs, temp, taf_temp);
-			fprintf(filetaf, "  %s\n", taf_temp);
+			fprintf(filetaf, " Wind: %s", taf_temp);
 			sprintf(wind, "%s", taf_temp);
 
 	// visibility
 			temp = strsep(&taf_lines, " ");
 			tafVisibilty(temp, taf_temp);
-			fprintf(filetaf, "  %s\n", taf_temp);
+			fprintf(filetaf, " Vis: %s", taf_temp);
 			sprintf(visby, "%s", taf_temp);
 
 	// WX sky
 			taf_temp[0] = '\0';
 			tafWeather(taf_lines, taf_temp);
-			fprintf(filetaf ,"  Conditions:%s\n\n", taf_temp);
+			fprintf(filetaf ," Condx:%s\n\n", taf_temp);
 			sprintf(condx, "%s", taf_temp);
 		}
 		else {
@@ -537,23 +538,23 @@ void taf_decode(char *taf_lines,char *issued, char *reptime, char *gstn)
 		temp = strsep(&taf_lines, " ");
 		temp = strsep(&taf_lines, " ");
 		validDates(sd, sz, ed, ez, temp);
-		fprintf(filetaf, "Becoming : %s at %s:00z ", sd, sz);
-		fprintf(filetaf, "- %s at %s:00z\n", ed, ez);
+		fprintf(filetaf, "Becoming: %s at %s:00z", sd, sz);
+		fprintf(filetaf, "-%s at %s:00z", ed, ez);
 
 	// winds
 		temp = strsep(&taf_lines, " ");
 		tafWind(d, s, gs,temp, taf_temp);
-		fprintf(filetaf, "  %s\n", taf_temp);
+		fprintf(filetaf, " Wind: %s", taf_temp);
 
 	//visibility
 		temp = strsep(&taf_lines, " ");
 		tafVisibilty(temp, taf_temp);
-		fprintf(filetaf, "  %s\n", taf_temp);
+		fprintf(filetaf, " Vis: %s", taf_temp);
 
 	// WX sky
 		taf_temp[0] = '\0';
 		tafWeather(taf_lines, taf_temp);
-		fprintf(filetaf, "  Conditions:%s\n\n", taf_temp);
+		fprintf(filetaf, " Condx:%s\n\n", taf_temp);
 		temp = strsep(&taf_lines, " ");
 	}
 	else if (strcmp(taf_t, "FM") == 0){						// FROM
@@ -565,28 +566,28 @@ void taf_decode(char *taf_lines,char *issued, char *reptime, char *gstn)
 		sprintf(sd, "%d%s", dx, dt);
 		strncpy(fsz, temp + 4, 4);
 		fsz[4] = '\0';
-		fprintf(filetaf, "From: %s at %sz\n", sd, fsz);
+		fprintf(filetaf, "From: %s at %sz", sd, fsz);
 
 	// winds
 		temp = strsep(&taf_lines, " ");
 		tafWind(d, s, gs, temp, taf_temp);
-		fprintf(filetaf, "  %s\n", taf_temp);
+		fprintf(filetaf, " Wind: %s", taf_temp);
 
 	// visibility
 		temp = strsep(&taf_lines, " ");
 		tafVisibilty(temp, taf_temp);
-		fprintf(filetaf ,"  %s\n", taf_temp);
+		fprintf(filetaf ," Vis: %s", taf_temp);
 
 	// WX sky
 		taf_temp[0] = '\0';
 		tafWeather(taf_lines, taf_temp);
-		fprintf(filetaf, "  Conditions:%s\n\n", taf_temp);
+		fprintf(filetaf, " Condx:%s\n\n", taf_temp);
 	}
 	else if (strcmp(taf_t, "TE") == 0) {						// TEMPO
 		temp = strsep(&taf_lines, " ");
 		validDates(sd, sz, ed, ez, taf_lines);
-		fprintf(filetaf, "Temporary: %s at %s:00z ", sd, sz);
-		fprintf(filetaf, "- %s at %s:00z\n", ed, ez);
+		fprintf(filetaf, "Temporary: %s at %s:00z", sd, sz);
+		fprintf(filetaf, "-%s at %s:00z", ed, ez);
 
 		temp = strsep(&taf_lines, " ");
 		temp = strsep(&taf_lines, " ");
@@ -595,7 +596,7 @@ void taf_decode(char *taf_lines,char *issued, char *reptime, char *gstn)
 
 		if (strncmp(temp + (temp_len - 2), "KT", 2) == 0) {
 			tafWind(d, s, gs, temp, taf_temp);
-			fprintf(filetaf, "  %s\n", taf_temp);
+			fprintf(filetaf, " Wind:%s", taf_temp);
 			temp = strsep(&taf_lines, " ");
 			if (temp != NULL){
 				temp_len = strlen(temp);
@@ -605,7 +606,7 @@ void taf_decode(char *taf_lines,char *issued, char *reptime, char *gstn)
 		if (temp != NULL){
 			if (strncmp(temp + (temp_len -2 ), "SM", 2) == 0) {
 				tafVisibilty(temp, taf_temp);
-				fprintf(filetaf, "  %s\n", taf_temp);
+				fprintf(filetaf, " Vis: %s", taf_temp);
 				sw = 1;
 			}
 			else if (temp_len == 4) {
@@ -616,7 +617,7 @@ void taf_decode(char *taf_lines,char *issued, char *reptime, char *gstn)
 				}
 				if (vis_met == 4) {
 					tafVisibilty(temp, taf_temp);
-					fprintf(filetaf,"  %s\n", taf_temp);
+					fprintf(filetaf," Vis:%s", taf_temp);
 					sw = 1;
 				}
 			}
@@ -635,31 +636,31 @@ void taf_decode(char *taf_lines,char *issued, char *reptime, char *gstn)
 			else {
 				tafWeather(temp, taf_temp);
 			}
-			fprintf(filetaf, "  Conditions:%s\n\n", taf_temp);
+			fprintf(filetaf, " Condx:%s\n\n", taf_temp);
 		}
 	}
 	else if (strcmp(taf_t, "QN") == 0) {			// Military
 		taf_temp[0] = '\0';
-		fprintf(filetaf, "Other    : %s\n", taf_lines);
+		fprintf(filetaf, " Other: %s", taf_lines);
 		tafWeather(taf_lines, taf_temp);
-				fprintf(filetaf, "  Conditions:%s\n\n", taf_temp);
+				fprintf(filetaf, " Condx:%s\n\n", taf_temp);
 	}
 	else if (strcmp(taf_t, "VR") == 0) {			// Military?
-		fprintf(filetaf, "Other    : %s\n", taf_lines);
+		fprintf(filetaf, " Other: %s\n", taf_lines);
 		temp = strsep(&taf_lines, " ");
 
 		tafWind(d, s, gs, temp, taf_temp);
-		fprintf(filetaf, "  %s\n", taf_temp);
+		fprintf(filetaf, " Wind:%s", taf_temp);
 
 		temp = strsep(&taf_lines, " ");
 
 		tafVisibilty(temp, taf_temp);
-		fprintf(filetaf, "  %s\n", taf_temp);
+		fprintf(filetaf, " Vis: %s", taf_temp);
 		taf_temp[0] = '\0';
 
 		tafWeather(taf_lines, taf_temp);
-		fprintf(filetaf, "  Conditions:%s\n\n", taf_temp);
+		fprintf(filetaf, " Condx:%s\n\n", taf_temp);
 	}
 	else
-		fprintf(filetaf,"Not found %s\n", taf_lines);
+		fprintf(filetaf," Not found %s\n", taf_lines);
 }
