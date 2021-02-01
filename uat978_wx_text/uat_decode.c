@@ -24,17 +24,17 @@ static char gs_ret[80];
 static char gs_ret_lat[25];
 static char gs_ret_lng[25];
 
-static void get_graphic(const struct fisb_apdu *apdu,FILE *to);
-static void get_text(const struct fisb_apdu *apdu,FILE *to);
-static void get_seg_text(const struct fisb_apdu *apdu,FILE *fnm,FILE *to);
+static void get_graphic(const struct fisb_apdu *apdu, FILE *to);
+static void get_text(const struct fisb_apdu *apdu, FILE *to);
+static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm, FILE *to);
 static void get_gs_name(char *Word);
-static void get_sua_text(char *Word,FILE *to);
-static void get_pirep(char *Word,FILE *to);
+static void get_sua_text(char *Word, FILE *to);
+static void get_pirep(char *Word, FILE *to);
 
 // The odd two-string-literals here is to avoid \0x3ABCDEF being interpreted as a single (very large valued) character
 static const char *dlac_alphabet = "\x03" "ABCDEFGHIJKLMNOPQRSTUVWXYZ\x1A\t\x1E\n| !\"#$%&'()*+,-./0123456789:;<=>?";
 
-static const char *decode_dlac(uint8_t *data,unsigned bytelen,int rec_offset)
+static const char *decode_dlac(uint8_t *data, unsigned bytelen, int rec_offset)
 {
 	static char buf[2048];
 
@@ -67,7 +67,7 @@ static const char *decode_dlac(uint8_t *data,unsigned bytelen,int rec_offset)
 		}
 		if (tab) {
 			while (ch > 0)
-				*p++ = ' ',ch--;
+				*p++ = ' ', ch--;
 			tab = 0;
 		}
 		else if (ch == 28) { // tab
@@ -87,15 +87,15 @@ static char base40_alphabet[40] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ  ..";
 
 void trimSpaces(char *s)
 {
-	int i,j;
+	int i, j;
 
-	for (i = 0;s[i] == ' '||s[i] == '\t';i++);
+	for (i = 0; s[i] == ' '||s[i] == '\t' ;i++);
 
-	for (j = 0;s[i];i++) {
+	for (j = 0; s[i]; i++) {
 		s[j++] = s[i];
 	}
 	s[j] = '\0';
-	for (i = 0;s[i] != '\0';i++)	{
+	for (i = 0; s[i] != '\0'; i++)	{
 		if (s[i] == '=')
 			s[i] = ' ';
 
@@ -220,12 +220,12 @@ static void get_gs_name(char *Word)
 	char temp_stn[5] = " ";
 	char *postsql;
 
-	strncpy(temp_stn,Word,4);
-	strcpy(gs_ret,"not found      ");
+	strncpy(temp_stn, Word, 4);
+	strcpy(gs_ret, "not found      ");
 	strcpy(gs_ret_lat,"0.0");
-	strcpy(gs_ret_lng,"0.0");
+	strcpy(gs_ret_lng, "0.0");
 
-	asprintf(&postsql,"SELECT * FROM stations WHERE stn_call = '%s'",temp_stn);
+	asprintf(&postsql, "SELECT * FROM stations WHERE stn_call = '%s'", temp_stn);
 	PGresult *res = PQexec(conn, postsql);
 	if (PQresultStatus(res) != PGRES_TUPLES_OK) {
 		 printf("No data retrieved\n");
@@ -234,17 +234,17 @@ static void get_gs_name(char *Word)
 		int rows = PQntuples(res);
 
 		if (rows == 1) {
-			strcpy(gs_ret,PQgetvalue(res,0,2));
-			sprintf(gs_ret_lat,"%s",PQgetvalue(res,0,3));
-			sprintf(gs_ret_lng,"%s",PQgetvalue(res,0,4));
+			strcpy(gs_ret, PQgetvalue(res, 0, 2));
+			sprintf(gs_ret_lat, "%s", PQgetvalue(res, 0, 3));
+			sprintf(gs_ret_lng, "%s", PQgetvalue(res, 0, 4));
 		 }
 		else if (rows > 1){
-			fprintf(stderr,"Multple entries for %s\n",temp_stn);
+			fprintf(stderr, "Multple entries for %s\n", temp_stn);
 
 			for(int i=0; i<rows; i++) {
-				fprintf(stderr,"%s %s %s %s %s\n",PQgetvalue(res,i,0),
-						PQgetvalue(res,i,1),PQgetvalue(res,i,2),
-						PQgetvalue(res,i,3),PQgetvalue(res,i,4));
+				fprintf(stderr, "%s %s %s %s %s\n", PQgetvalue(res, i, 0),
+						PQgetvalue(res, i, 1),PQgetvalue(res, i, 2),
+						PQgetvalue(res, i, 3),PQgetvalue(res, i, 4));
 			}
 		}
 	}
@@ -253,7 +253,7 @@ static void get_gs_name(char *Word)
 	return;
 }
 
-static void get_sua_text(char *Word,FILE *to)
+static void get_sua_text(char *Word, FILE *to)
 {																			// SUA Decode
 	char *token;
 	char sua_sch_id[10];
@@ -273,126 +273,126 @@ static void get_sua_text(char *Word,FILE *to)
 	char sua_nfdc_id[10];	char sua_nfcd_nm[50];
 	char sua_dafif_id[10];	char sua_dafif_nm[50];
 
-	token = strsep(&Word,"|");
-	strcpy(sua_sch_id,token);
-	fprintf(filesua," Schedule ID     : %s ",sua_sch_id);
-	token = strsep(&Word,"|");
-	strcpy(sua_aspc_id,token);
-	fprintf(filesua,"     Airspace ID       : %s\n",sua_aspc_id);
-	token = strsep(&Word,"|");
-	strcpy(sua_sch_stat,token);
+	token = strsep(&Word, "|");
+	strcpy(sua_sch_id, token);
+	fprintf(filesua, " Schedule ID     : %s ", sua_sch_id);
+	token = strsep(&Word, "|");
+	strcpy(sua_aspc_id, token);
+	fprintf(filesua, "     Airspace ID       : %s\n", sua_aspc_id);
+	token = strsep(&Word, "|");
+	strcpy(sua_sch_stat, token);
 
-	if (strcmp(sua_sch_stat,"W") == 0) {
-		fprintf(filesua," Schedule Status : %s Waiting to Start\n",sua_sch_stat);}
-	else if (strcmp(sua_sch_stat,"P") == 0) {
-		fprintf(filesua," Schedule Status : %s Pending Approval\n",sua_sch_stat);}
-	else if (strcmp(sua_sch_stat,"H") == 0) {
-		fprintf(filesua," Schedule Status : %s Activated for Use\n",sua_sch_stat);}
+	if (strcmp(sua_sch_stat, "W") == 0) {
+		fprintf(filesua, " Schedule Status : %s Waiting to Start\n", sua_sch_stat);}
+	else if (strcmp(sua_sch_stat, "P") == 0) {
+		fprintf(filesua, " Schedule Status : %s Pending Approval\n", sua_sch_stat);}
+	else if (strcmp(sua_sch_stat, "H") == 0) {
+		fprintf(filesua, " Schedule Status : %s Activated for Use\n", sua_sch_stat);}
 
-	token = strsep(&Word,"|");
-	strcpy(sua_aspc_ty,token);
+	token = strsep(&Word, "|");
+	strcpy(sua_aspc_ty, token);
 
-	if (strcmp(sua_aspc_ty,"W") == 0) {
-		fprintf(filesua," Airspace Type   : %s Warning Area\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"R") == 0) {
-		fprintf(filesua," Airspace Type   : %s Restricted Area\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"M") == 0) {
-		fprintf(filesua," Airspace Type   : %s Military Operations Area\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"P") == 0) {
-		fprintf(filesua," Airspace Type   : %s Prohibited Area\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"L") == 0) {
-		fprintf(filesua," Airspace Type   : %s Alert Area\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"A") == 0) {
-		fprintf(filesua," Airspace Type   : %s ATCAA\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"I") == 0) {
-		fprintf(filesua," Airspace Type   : %s Instrument Route\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"V") == 0) {
-		fprintf(filesua," Airspace Type   : %s Visual Route\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"S") == 0) {
-		fprintf(filesua," Airspace Type   : %s Slow Route\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"B") == 0) {
-		fprintf(filesua," Airspace Type   : %s Military Route (Refueling)\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"O") == 0) {
-		fprintf(filesua," Airspace Type   : %s Other\n",sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty,"T") == 0) {
-		fprintf(filesua," Airspace Type   : %s Refueling Track\n",sua_aspc_ty);}
+	if (strcmp(sua_aspc_ty, "W") == 0) {
+		fprintf(filesua, " Airspace Type   : %s Warning Area\n", sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty, "R") == 0) {
+		fprintf(filesua, " Airspace Type   : %s Restricted Area\n", sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty, "M") == 0) {
+		fprintf(filesua, " Airspace Type   : %s Military Operations Area\n", sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty, "P") == 0) {
+		fprintf(filesua, " Airspace Type   : %s Prohibited Area\n", sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty, "L") == 0) {
+		fprintf(filesua, " Airspace Type   : %s Alert Area\n", sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty, "A") == 0) {
+		fprintf(filesua, " Airspace Type   : %s ATCAA\n", sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty, "I") == 0) {
+		fprintf(filesua, " Airspace Type   : %s Instrument Route\n", sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty, "V") == 0) {
+		fprintf(filesua, " Airspace Type   : %s Visual Route\n", sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty, "S") == 0) {
+		fprintf(filesua, " Airspace Type   : %s Slow Route\n", sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty, "B") == 0) {
+		fprintf(filesua, " Airspace Type   : %s Military Route (Refueling)\n", sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty, "O") == 0) {
+		fprintf(filesua, " Airspace Type   : %s Other\n", sua_aspc_ty);}
+	else if (strcmp(sua_aspc_ty, "T") == 0) {
+		fprintf(filesua, " Airspace Type   : %s Refueling Track\n", sua_aspc_ty);}
 
-	token = strsep(&Word,"|");
-	strcpy(sua_aspc_nm,token);
-	fprintf(filesua," Airspace Name   : %s\n",sua_aspc_nm);
-	token = strsep(&Word,"|");
-	strcpy(sua_st_tm,token);
-	snprintf(sua_st_yy,3,"%s",sua_st_tm);
-	snprintf(sua_st_mm,3,"%s",sua_st_tm + 2);
-	snprintf(sua_st_dd,3,"%s",sua_st_tm + 4);
-	snprintf(sua_st_hh,3,"%s",sua_st_tm + 6);
-	snprintf(sua_st_mn,3,"%s",sua_st_tm + 8);
+	token = strsep(&Word, "|");
+	strcpy(sua_aspc_nm, token);
+	fprintf(filesua, " Airspace Name   : %s\n", sua_aspc_nm);
+	token = strsep(&Word, "|");
+	strcpy(sua_st_tm, token);
+	snprintf(sua_st_yy, 3,"%s", sua_st_tm);
+	snprintf(sua_st_mm, 3,"%s", sua_st_tm + 2);
+	snprintf(sua_st_dd, 3,"%s", sua_st_tm + 4);
+	snprintf(sua_st_hh, 3,"%s", sua_st_tm + 6);
+	snprintf(sua_st_mn, 3,"%s", sua_st_tm + 8);
 
-	fprintf(filesua," Start Time      : %s/%s/20%s %s:%s",sua_st_mm,sua_st_dd,sua_st_yy,sua_st_hh,sua_st_mn);
+	fprintf(filesua, " Start Time      : %s/%s/20%s %s:%s", sua_st_mm, sua_st_dd, sua_st_yy, sua_st_hh, sua_st_mn);
 
-	token = strsep(&Word,"|");
-	strcpy(sua_en_tm,token);
-	snprintf(sua_en_yy,3,"%s",sua_en_tm);
-	snprintf(sua_en_mm,3,"%s",sua_en_tm + 2);
-	snprintf(sua_en_dd,3,"%s",sua_en_tm + 4);
-	snprintf(sua_en_hh,3,"%s",sua_en_tm + 6);
-	snprintf(sua_en_mn,3,"%s",sua_en_tm + 8);
+	token = strsep(&Word, "|");
+	strcpy(sua_en_tm, token);
+	snprintf(sua_en_yy, 3, "%s", sua_en_tm);
+	snprintf(sua_en_mm, 3, "%s", sua_en_tm + 2);
+	snprintf(sua_en_dd, 3, "%s", sua_en_tm + 4);
+	snprintf(sua_en_hh, 3, "%s", sua_en_tm + 6);
+	snprintf(sua_en_mn, 3, "%s", sua_en_tm + 8);
 
-	fprintf(filesua," End Time: %s/%s/20%s %s:%s\n",sua_en_mm,sua_en_dd,sua_en_yy,sua_en_hh,sua_en_mn);
+	fprintf(filesua, " End Time: %s/%s/20%s %s:%s\n", sua_en_mm, sua_en_dd, sua_en_yy, sua_en_hh, sua_en_mn);
 
-	token = strsep(&Word,"|");
-	strcpy(sua_low_alt,token);
-	fprintf(filesua," Low Altitude    : %s ",sua_low_alt);
-	token = strsep(&Word,"|");
-	strcpy(sua_hg_alt,token);
-	fprintf(filesua," High Altitude: %s\n",sua_hg_alt);
-	token = strsep(&Word,"|");
-	strcpy(sua_sep_rl,token);
-	if (strcmp(sua_sep_rl,"A") == 0) {
-		fprintf(filesua," Separation Rule : %s Aircraft Rule ",sua_sep_rl);}
-	else if (strcmp(sua_sep_rl,"O") == 0) {
-		fprintf(filesua," Separation Rule : %s Other Rule ",sua_sep_rl);}
+	token = strsep(&Word, "|");
+	strcpy(sua_low_alt, token);
+	fprintf(filesua, " Low Altitude    : %s ", sua_low_alt);
+	token = strsep(&Word, "|");
+	strcpy(sua_hg_alt, token);
+	fprintf(filesua, " High Altitude: %s\n", sua_hg_alt);
+	token = strsep(&Word, "|");
+	strcpy(sua_sep_rl, token);
+	if (strcmp(sua_sep_rl, "A") == 0) {
+		fprintf(filesua, " Separation Rule : %s Aircraft Rule ", sua_sep_rl);}
+	else if (strcmp(sua_sep_rl, "O") == 0) {
+		fprintf(filesua, " Separation Rule : %s Other Rule ", sua_sep_rl);}
 	else {
-		fprintf(filesua," Separation Rule :    Unspecified ");
+		fprintf(filesua, " Separation Rule :    Unspecified ");
 	}
-	token = strsep(&Word,"|");
+	token = strsep(&Word, "|");
 	if (token) {
-		strcpy(sua_shp_ind,token);			//13
-		if (strcmp(sua_shp_ind,"N") == 0) {
-			fprintf(filesua," Shape Indicator: %s No Shape Defined\n",sua_shp_ind);}
-		else if	(strcmp(sua_shp_ind,"Y") == 0) {
-			fprintf(filesua," Shape Indicator: %s Has Shape Defined\n",sua_shp_ind);}
+		strcpy(sua_shp_ind, token);			//13
+		if (strcmp(sua_shp_ind, "N") == 0) {
+			fprintf(filesua, " Shape Indicator: %s No Shape Defined\n", sua_shp_ind);}
+		else if	(strcmp(sua_shp_ind, "Y") == 0) {
+			fprintf(filesua, " Shape Indicator: %s Has Shape Defined\n", sua_shp_ind);}
 	}
-	token = strsep(&Word,"|");
+	token = strsep(&Word, "|");
 	if (token) {
-		strcpy(sua_nfdc_id,token);			//14
-		fprintf(filesua," NFDC ID         : %10s",sua_nfdc_id);
+		strcpy(sua_nfdc_id, token);			//14
+		fprintf(filesua, " NFDC ID         : %10s", sua_nfdc_id);
 	}
-	token = strsep(&Word,"|");
+	token = strsep(&Word, "|");
 	if (token) {
-		strcpy(sua_nfcd_nm,token);			//15
-		fprintf(filesua,"      NFCD Name : %s\n",sua_nfcd_nm);
+		strcpy(sua_nfcd_nm, token);			//15
+		fprintf(filesua, "      NFCD Name : %s\n", sua_nfcd_nm);
 	}
-	token = strsep(&Word,"|");
+	token = strsep(&Word, "|");
 	if (token) {
-		strcpy(sua_dafif_id,token);			//16
-		fprintf(filesua," DAFIF ID        : %10s",sua_dafif_id);
+		strcpy(sua_dafif_id, token);			//16
+		fprintf(filesua, " DAFIF ID        : %10s", sua_dafif_id);
 	}
-	token = strsep(&Word,"|");
+	token = strsep(&Word, "|");
 	if (token) {
-		strcpy(sua_dafif_nm,token);			//17
-		fprintf(filesua,"      DAFIF Name: %s\n",sua_dafif_nm);
+		strcpy(sua_dafif_nm, token);			//17
+		fprintf(filesua, "      DAFIF Name: %s\n", sua_dafif_nm);
 	}
 	fflush(filesua);
 }
 
-static void get_pirep(char *Word,FILE *to)
+static void get_pirep(char *Word, FILE *to)
 {
 	char *token;
 	char pirep_stn[5] = "";
 	char pirep_OV[30] = "";		// Location
-	char pirep_TM[10] = ""; 		// DateTime
-	char pirep_hr[5]  = ""; 		// DateTime
+	char pirep_TM[10] = ""; 	// DateTime
+	char pirep_hr[5]  = ""; 	// DateTime
 	char pirep_mn[3]  = "";		// DateTime
 	char pirep_FL[10] = "";		// Flight Level
 	char pirep_TP[10] = "";		// a/c type
@@ -409,9 +409,9 @@ static void get_pirep(char *Word,FILE *to)
 	char buff[30];
 	char *postsql;
 
-	token = strtok(Word," ");
-	strcpy(pirep_stn,"K");
-	strcat(pirep_stn,token);
+	token = strtok(Word, " ");
+	strcpy(pirep_stn, "K");
+	strcat(pirep_stn, token);
 
 	get_gs_name(pirep_stn);
 
@@ -419,61 +419,61 @@ static void get_pirep(char *Word,FILE *to)
 	struct tm *tm = localtime(&current_time);
 	strftime(buff, sizeof buff, "%D %T", tm);
 
-	token = strtok(0," ");
-	if (strcmp(token,"UUA") == 0) {
-		strcpy(pirep_TY,"Urgent Report");
+	token = strtok(0, " ");
+	if (strcmp(token, "UUA") == 0) {
+		strcpy(pirep_TY, "Urgent Report");
 	}
-	else if (strcmp(token,"UA") == 0) {
-		strcpy(pirep_TY,"Routine Report");
+	else if (strcmp(token, "UA") == 0) {
+		strcpy(pirep_TY, "Routine Report");
 	}
 	else {
-		strcpy(pirep_TY,"Unknown Report");
+		strcpy(pirep_TY, "Unknown Report");
 	}
-	while ((token = strtok(0,"/"))) {
-		if (strncmp(token,"OV",2) == 0) {
-			strcpy(pirep_OV,token + 3);
+	while ((token = strtok(0, "/"))) {
+		if (strncmp(token, "OV", 2) == 0) {
+			strcpy(pirep_OV, token + 3);
 		}
-		else if (strncmp(token,"TM",2) == 0) {
+		else if (strncmp(token, "TM", 2) == 0) {
 			strcpy(pirep_TM,token);
-			snprintf(pirep_hr,3,"%s",pirep_TM + 3);
-			snprintf(pirep_mn,3,"%s",pirep_TM + 5);
-			sprintf(pirep_TI,"%s%s",pirep_hr,pirep_mn);
+			snprintf(pirep_hr, 3, "%s", pirep_TM + 3);
+			snprintf(pirep_mn, 3, "%s", pirep_TM + 5);
+			sprintf(pirep_TI, "%s%s", pirep_hr, pirep_mn);
 		}
-		else if (strncmp(token,"FL",2) == 0) {
-			strcpy(pirep_FL,token+2);
+		else if (strncmp(token, "FL", 2) == 0) {
+			strcpy(pirep_FL, token + 2);
 		}
-		else if (strncmp(token,"TP",2) == 0) {
-			strcpy(pirep_TP,token + 3);
+		else if (strncmp(token, "TP", 2) == 0) {
+			strcpy(pirep_TP, token + 3);
 		}
-		else if (strncmp(token,"SK",2) == 0) {
-			strcpy(pirep_SK,token + 3);
+		else if (strncmp(token, "SK", 2) == 0) {
+			strcpy(pirep_SK, token + 3);
 		}
-		else if (strncmp(token,"WX",2) == 0) {
-				strcpy(pirep_WX,token + 3);
+		else if (strncmp(token, "WX", 2) == 0) {
+				strcpy(pirep_WX, token + 3);
 		}
-		else if (strncmp(token,"TA",2) == 0) {
-			strcpy(pirep_TA,token + 3);
+		else if (strncmp(token, "TA", 2) == 0) {
+			strcpy(pirep_TA, token + 3);
 		}
-		else if (strncmp(token,"WV",2) == 0) {
-			strcpy(pirep_WV,token + 3);
+		else if (strncmp(token, "WV", 2) == 0) {
+			strcpy(pirep_WV, token + 3);
 		}
-		else if (strncmp(token,"TB",2) == 0) {
-			strcpy(pirep_TB,token + 3);
+		else if (strncmp(token, "TB", 2) == 0) {
+			strcpy(pirep_TB, token + 3);
 		}
-		else if (strncmp(token,"IC",2) == 0) {
-			strcpy(pirep_IC,token + 3);
+		else if (strncmp(token, "IC", 2) == 0) {
+			strcpy(pirep_IC, token + 3);
 		}
-		else if (strncmp(token,"RM",2) == 0) {
-			strcpy(pirep_RM,token + 3);
-			token = strtok(0,"/");
+		else if (strncmp(token, "RM", 2) == 0) {
+			strcpy(pirep_RM, token + 3);
+			token = strtok(0, "/");
 			if (token) {
 // *** TODO check
-				fprintf(to," Remarks        : %s",pirep_RM);
-				fprintf(to,"/%s\n",token);
-				strcat(pirep_RM,token);
+				fprintf(to, " Remarks        : %s", pirep_RM);
+				fprintf(to, "/%s\n", token);
+				strcat(pirep_RM, token);
 			}
 			else {
-				fprintf(to," Remarks        : %s\n",pirep_RM);
+				fprintf(to, " Remarks        : %s\n", pirep_RM);
 			}
 		}
 	}
@@ -481,37 +481,37 @@ static void get_pirep(char *Word,FILE *to)
 	asprintf(&postsql,"INSERT INTO pirep (rep_type,rep_time,fl_lev,ac_type,cloud,weather,temperature,wind_spd_dir,"
 			"turbulence,icing,remarks,stn_call,location)  "
 			"VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
-			pirep_TY,pirep_TI,pirep_FL,pirep_TP,pirep_SK,pirep_WX,pirep_TA,pirep_WV,pirep_TB,pirep_IC,pirep_RM,
-			pirep_stn,pirep_OV);
+			pirep_TY, pirep_TI, pirep_FL, pirep_TP, pirep_SK, pirep_WX, pirep_TA, pirep_WV, pirep_TB, pirep_IC,
+			pirep_RM, pirep_stn, pirep_OV);
 
 	PGresult *res = PQexec(conn, postsql);
     if (PQresultStatus(res) != PGRES_COMMAND_OK)
     	if (PQresultStatus(res) != 7)
-    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+    		fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
     PQclear(res);
 }
 
-static void uat_decode_hdr(uint8_t *frame,struct uat_adsb_mdb *mdb)
+static void uat_decode_hdr(uint8_t *frame, struct uat_adsb_mdb *mdb)
 {
 	mdb->mdb_type = (frame[0] >> 3) & 0x1f;
 	mdb->address_qualifier = (address_qualifier_t) (frame[0] & 0x07);
 	mdb->address = (frame[1] << 16) | (frame[2] << 8) | frame[3];
 }
 
-static void uat_display_hdr(const struct uat_adsb_mdb *mdb,FILE *to)
+static void uat_display_hdr(const struct uat_adsb_mdb *mdb, FILE *to)
 {
 	char buff[30];
 
-	fprintf(to,"HDR:");
+	fprintf(to, "HDR:");
 	time_t current_time = time(NULL);
 	struct tm *tm = localtime(&current_time);
 	strftime(buff, sizeof buff, "%D %T", tm);
-	fprintf(to,"   Time: %s\n",buff);
-	fprintf(to," ICAO:    %06X    (%s)\n",mdb->address,address_qualifier_names[mdb->address_qualifier]);
+	fprintf(to, "   Time: %s\n", buff);
+	fprintf(to, " ICAO:    %06X    (%s)\n", mdb->address, address_qualifier_names[mdb->address_qualifier]);
 }
 
-static void uat_decode_sv(uint8_t *frame,struct uat_adsb_mdb *mdb)
+static void uat_decode_sv(uint8_t *frame, struct uat_adsb_mdb *mdb)
 {
 	uint32_t raw_lat;
 	uint32_t raw_lon;
@@ -543,7 +543,7 @@ static void uat_decode_sv(uint8_t *frame,struct uat_adsb_mdb *mdb)
 	case AG_SUBSONIC:
 	case AG_SUPERSONIC:
 	{
-		int raw_ns,raw_ew,raw_vvel;
+		int raw_ns, raw_ew, raw_vvel;
 
 		raw_ns = ((frame[12] & 0x1f) << 6) | ((frame[13] & 0xfc) >> 2);
 
@@ -585,7 +585,7 @@ static void uat_decode_sv(uint8_t *frame,struct uat_adsb_mdb *mdb)
 
 	case AG_GROUND:
 	{
-		int raw_gs,raw_track;
+		int raw_gs, raw_track;
 
 		raw_gs = ((frame[12] & 0x1f) << 6) | ((frame[13] & 0xfc) >> 2);
 		if (raw_gs != 0) {
@@ -624,7 +624,7 @@ static void uat_decode_sv(uint8_t *frame,struct uat_adsb_mdb *mdb)
 	}
 }
 
-static void uat_display_sv(const struct uat_adsb_mdb *mdb,FILE *to)
+static void uat_display_sv(const struct uat_adsb_mdb *mdb, FILE *to)
 {
 	if (!mdb->has_sv)
 		return;
@@ -648,7 +648,7 @@ static void uat_display_sv(const struct uat_adsb_mdb *mdb,FILE *to)
 				mdb->position_offset ? " (position offset applied)" : "");
 }
 
-static void uat_decode_ms(uint8_t *frame,struct uat_adsb_mdb *mdb)
+static void uat_decode_ms(uint8_t *frame, struct uat_adsb_mdb *mdb)
 {
 	uint16_t v;
 	int i;
@@ -694,19 +694,19 @@ static void uat_decode_ms(uint8_t *frame,struct uat_adsb_mdb *mdb)
 		mdb->callsign_type = (frame[26] & 0x02 ? CS_CALLSIGN : CS_SQUAWK);
 }
 
-static void uat_display_ms(const struct uat_adsb_mdb *mdb,FILE *to)
+static void uat_display_ms(const struct uat_adsb_mdb *mdb, FILE *to)
 {
 	if (!mdb->has_ms)
 		return;
 
-	fprintf(to," Reg:%2s%9s    Category: %s\n Emergency status:  %s\n",
+	fprintf(to, " Reg:%2s%9s    Category: %s\n Emergency status:  %s\n",
 			mdb->callsign_type == CS_SQUAWK ? "sq" : "",
 			mdb->callsign_type == CS_INVALID ? "      n/a" : mdb->callsign,
 			emitter_category_names[mdb->emitter_category],
 			emergency_status_names[mdb->emergency_status]);
 }
 
-static void uat_decode_auxsv(uint8_t *frame,struct uat_adsb_mdb *mdb)
+static void uat_decode_auxsv(uint8_t *frame, struct uat_adsb_mdb *mdb)
 {
 	int raw_alt = (frame[29] << 4) | ((frame[30] & 0xf0) >> 4);
 
@@ -720,13 +720,13 @@ static void uat_decode_auxsv(uint8_t *frame,struct uat_adsb_mdb *mdb)
 	mdb->has_auxsv = 1;
 }
 
-static void uat_display_auxsv(const struct uat_adsb_mdb *mdb,FILE *to)
+static void uat_display_auxsv(const struct uat_adsb_mdb *mdb, FILE *to)
 {
 	if (!mdb->has_auxsv)
 		return;
 }
 
-void uat_decode_adsb_mdb(uint8_t *frame,struct uat_adsb_mdb *mdb)
+void uat_decode_adsb_mdb(uint8_t *frame, struct uat_adsb_mdb *mdb)
 {
 	static struct uat_adsb_mdb mdb_zero;
 
@@ -763,12 +763,12 @@ void uat_decode_adsb_mdb(uint8_t *frame,struct uat_adsb_mdb *mdb)
 	}
 }
 
-void uat_display_adsb_mdb(const struct uat_adsb_mdb *mdb,FILE *to)
+void uat_display_adsb_mdb(const struct uat_adsb_mdb *mdb, FILE *to)
 {
-	uat_display_hdr(mdb,to);
-	uat_display_sv(mdb,to);
-	uat_display_ms(mdb,to);
-	uat_display_auxsv(mdb,to);
+	uat_display_hdr(mdb, to);
+	uat_display_sv(mdb, to);
+	uat_display_ms(mdb, to);
+	uat_display_auxsv(mdb, to);
 }
 
 static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
@@ -900,7 +900,7 @@ void uat_decode_uplink_mdb(uint8_t *frame,struct uat_uplink_mdb *mdb)
 	}
 }
 
-static void display_generic_data(uint8_t *data,uint16_t length,FILE *to)
+static void display_generic_data(uint8_t *data,uint16_t length, FILE *to)
 {
 	unsigned i;
 
@@ -945,7 +945,7 @@ static const char *get_fisb_product_name(uint16_t product_id)
 	case 101:	return 	"Lightning Strike Type 1 (Pixel Level) ****";
 	case 102:	return 	"Lightning Strike Type 2 (Grid Element Level) ****";
 	case 103:	return 	"Lightning";
-	case 413:	return "Generic Textual Data Product APDU Payload Format Type 2";
+	case 413:	return  "Generic Textual Data Product APDU Payload Format Type 2";
 	default: 	return 	"****Unknown";
 	}
 }
@@ -967,11 +967,11 @@ static const char *get_fisb_product_format(uint16_t product_id)
 	}
 }
 
-static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
+static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 {
 	int recf;
 
-	fprintf(to,"\nFIS-B: "
+	fprintf(to, "\nFIS-B: "
 		" Flags:             %s%s%s%s "
 		" Prod:  %u (%s) - %s\n",
 		apdu->a_flag ? "A" : "",
@@ -982,16 +982,16 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 		get_fisb_product_name(apdu->product_id),
 		get_fisb_product_format(apdu->product_id));
 
-	fprintf(to," PTime:");
+	fprintf(to, " PTime:");
 
 	if (apdu->monthday_valid)
-		fprintf(to,"%u/%u ",apdu->month,apdu->day);
+		fprintf(to, "%u/%u ", apdu->month, apdu->day);
 
-	fprintf(to,"%02u:%02u",apdu->hours,apdu->minutes);
+	fprintf(to, "%02u:%02u", apdu->hours, apdu->minutes);
 	if (apdu->seconds_valid)
-		fprintf(to,":%02u",apdu->seconds);
+		fprintf(to, ":%02u", apdu->seconds);
 
-	fprintf(to,"\n");
+	fprintf(to, "\n");
 
 	switch (apdu->product_id) {
 	case 8:								// ** NOTAM **************
@@ -1002,17 +1002,17 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 
 		switch (recf) {
 		case 8:							//	Graphic
-			get_graphic(apdu,to);
+			get_graphic(apdu, to);
 			break;
 		case 2:							// Text
 			if (apdu->s_flag)			// Segmented text
-				get_seg_text(apdu,filenotam,to);
+				get_seg_text(apdu, filenotam, to);
 			else						// Text
-				get_text(apdu,to);
+				get_text(apdu, to);
 			break;
 		default:
-			fprintf(to," Record Format   : %d\n",recf);
-			display_generic_data(apdu->data,apdu->length,to);
+			fprintf(to, " Record Format   : %d\n", recf);
+			display_generic_data(apdu->data, apdu->length, to);
 			break;
 		}
 	break;
@@ -1021,14 +1021,14 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 
 		switch (recf) {
 		case 8:							// Graphic
-			get_graphic(apdu,to);
+			get_graphic(apdu, to);
 			break;
 		case 2:							// Text
-			get_text(apdu,to);
+			get_text(apdu, to);
 			break;
 		default:
-			fprintf(to," Record Format   : %d \n",recf);
-			display_generic_data(apdu->data,apdu->length,to);
+			fprintf(to, " Record Format   : %d \n", recf);
+			display_generic_data(apdu->data, apdu->length, to);
 			break;
 		}
 	break;
@@ -1037,28 +1037,28 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 
 		switch (recf) {
 		case 8:							// Graphic
-			get_graphic(apdu,to);
+			get_graphic(apdu, to);
 			break;
 		case 2:							// Text
-			get_text(apdu,to);
+			get_text(apdu, to);
 			break;
 		default:
-			fprintf(to," Record Format   : %d \n",recf);
-			display_generic_data(apdu->data,apdu->length,to);
+			fprintf(to, " Record Format   : %d \n", recf);
+			display_generic_data(apdu->data, apdu->length, to);
 			break;
 		}
 	break;
 	case 13:							// ** SUA **************
 		recf = apdu->data[0] >> 4;
-		fprintf(filesua," Record Format   : %d \n",recf);
+		fprintf(filesua, " Record Format   : %d \n", recf);
 
 		switch (recf) {
 		case 2:							// Text
-			get_text(apdu,to);
+			get_text(apdu, to);
 			break;
 		default:
-			fprintf(to," Record Format   : %d \n",recf);
-			display_generic_data(apdu->data,apdu->length,to);
+			fprintf(to, " Record Format   : %d \n", recf);
+			display_generic_data(apdu->data, apdu->length, to);
 			break;
 		}
 	break;
@@ -1067,41 +1067,41 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 
 		switch (recf) {
 		case 8:							// Graphic
-			fprintf(to," Report Type     : G-AIRMET\n");
-			get_graphic(apdu,to);
+			fprintf(to, " Report Type     : G-AIRMET\n");
+			get_graphic(apdu, to);
 			break;
 		default:
-			fprintf(to," Record Format   : %d \n",recf);
-			display_generic_data(apdu->data,apdu->length,to);
+			fprintf(to, " Record Format   : %d \n", recf);
+			display_generic_data(apdu->data, apdu->length, to);
 			break;
 		}
 	break;
 	case 15:							// ** CWA **************
 		recf = apdu->data[0] >> 4;
-		fprintf(filecwa," Record Format   : %d \n",recf);
+		fprintf(filecwa, " Record Format   : %d \n", recf);
 
 		switch (recf) {
 		case 8:							// Graphic
-			fprintf(filecwa," Report Type     : CWA\n");
-			get_graphic(apdu,to);
+			fprintf(filecwa, " Report Type     : CWA\n");
+			get_graphic(apdu, to);
 			break;
 		case 2:							// Text
-			get_text(apdu,to);
+			get_text(apdu, to);
 			break;
 		default:
-			fprintf(to," Record Format   : %d \n",recf);
-				display_generic_data(apdu->data,apdu->length,to);
+			fprintf(to, " Record Format   : %d \n", recf);
+				display_generic_data(apdu->data, apdu->length, to);
 			break;
 			}
 	break;
 	// ** Graphics - NEXRAD(63,64), Icing(70,71), Cloud Tops(84), Turbulence(90,91), Lightning(103)
 	case 63:	case 64:	case 70:	case 71:	case 84:	case 90:	case 91:	case 103:
-			graphic_nexrad(apdu,to);
+			graphic_nexrad(apdu, to);
 			break;
 	case 413:							// ** Generic text,DLAC *****************
 	{
 		int rec_offset = 0;
-		const char *text = decode_dlac(apdu->data,apdu->length,rec_offset);
+		const char *text = decode_dlac(apdu->data, apdu->length, rec_offset);
 		const char *report = text;
 		const char *next_report;
 
@@ -1111,76 +1111,76 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 		char *pirep_copy, *taf_copy, *time_copy;
 		char report_buf[1024];
 		char mtype[9]; char taftype[9];
-		char *p,*r;
+		char *p, *r;
 
 		while (report) {
 
-			Decoded_METAR MetarStruct,*Mptr = &MetarStruct;
+			Decoded_METAR MetarStruct, *Mptr = &MetarStruct;
 
-			next_report = strchr(report,'\x1e');		// RS
+			next_report = strchr(report, '\x1e');		// RS
 			if (!next_report)
-				next_report = strchr(report,'\x03');	// ETX
+				next_report = strchr(report, '\x03');	// ETX
 			if (next_report) {
-				memcpy(report_buf,report,next_report - report);
+				memcpy(report_buf, report, next_report - report);
 				report_buf[next_report - report] = 0;
 				report = next_report + 1;
 			}
 			else {
-				strcpy(report_buf,report);
+				strcpy(report_buf, report);
 				report = NULL;
 			}
 			if (!report_buf[0])
 				continue;
 
 			r = report_buf;
-			strncpy(taftype,report_buf,7);
-			taftype[7]='\0';
-			if (strcmp(taftype,"TAF COR") == 0) {
+			strncpy(taftype, report_buf, 7);
+			taftype[7] = '\0';
+			if (strcmp(taftype, "TAF COR") == 0) {
 				report_buf[3] = '.';
 			}
-			p = strchr(r,' ');		// *** RType ***
+			p = strchr(r, ' ');		// *** RType ***
 			if (p) {
 				*p = 0;
-				strcpy(observation,r);
-				strncpy(mtype,r,8);
-				fprintf(to," RType: %s\n",mtype);
+				strcpy(observation, r);
+				strncpy(mtype, r, 8);
+				fprintf(to, " RType: %s\n", mtype);
 				r = p + 1;
 			}
-			p = strchr(r,' ');		// *** RLoc ***
+			p = strchr(r, ' ');		// *** RLoc ***
 			if (p) {
 				*p = 0;
-				strcat(observation," ");
-				strcat(observation,r);
-				if (strcmp(mtype,"PIREP") == 0) {
+				strcat(observation, " ");
+				strcat(observation, r);
+				if (strcmp(mtype, "PIREP") == 0) {
 				}
 				else {
-					if (strcmp(mtype,"WINDS") == 0) {
-						strcpy(gstn,"K");
-						strcat(gstn,r);
+					if (strcmp(mtype, "WINDS") == 0) {
+						strcpy(gstn, "K");
+						strcat(gstn, r);
 					}
 					else
-						strncpy(gstn,r,5);
+						strncpy(gstn, r, 5);
 
 					get_gs_name(gstn);
 
 					time_t current_time = time(NULL);
 					struct tm *tm = localtime(&current_time);
 					strftime(buff, sizeof buff, "%D %T", tm);
-					fprintf(filemetar,"Time                 : %s\n",buff);
-					fprintf(filemetar,"WX Station           : %s - %s\n",gstn,gs_ret);
+					fprintf(filemetar, "Time                 : %s\n", buff);
+					fprintf(filemetar, "WX Station           : %s - %s\n", gstn, gs_ret);
 					}
 				r = p + 1;
 			}
-			p = strchr(r,' ');		// *** RTime ***
+			p = strchr(r, ' ');		// *** RTime ***
 			if (p) {
 				*p = 0;
-				strcat(observation," ");
-				strcat(observation,r);
+				strcat(observation, " ");
+				strcat(observation, r);
 				time_copy = (char *)malloc(strlen(r) + 1);
-				strcpy(time_copy,r);
+				strcpy(time_copy, r);
 				r = p + 1;
 			}
-			if (strcmp(mtype,"TAF") == 0 || strcmp(mtype,"TAF.AMD") == 0 || strcmp(mtype,"TAF.COR") == 0) {
+			if (strcmp(mtype, "TAF") == 0 || strcmp(mtype, "TAF.AMD") == 0 || strcmp(mtype, "TAF.COR") == 0) {
 				// TAF Decode
 				char n[5] = "";
 				char *taf_lines[10];
@@ -1190,33 +1190,33 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 				char issued[50];
 				int dx;
 
-				fprintf(filemetar," Report Name         : %s\n",mtype);
-				fprintf(filemetar," Data:\n%s\n",r);		// *** Text ***
+				fprintf(filemetar, " Report Name         : %s\n", mtype);
+				fprintf(filemetar, " Data:\n%s\n", r);		// *** Text ***
 
-				fprintf(filetaf,"%s %s %s\n",mtype,gstn,gs_ret);
-				fprintf(filetaf,"%s\n\n",r);		// *** Text ***
+				fprintf(filetaf, "%s %s %s\n", mtype, gstn, gs_ret);
+				fprintf(filetaf, "%s\n\n", r);		// *** Text ***
 
-				fprintf(to,"station: %s\n",gstn);
-				strncpy(n,time_copy + 4,1);
+				fprintf(to, "station: %s\n", gstn);
+				strncpy(n, time_copy + 4, 1);
 
-				if (strcmp(n,"/") != 0) {
-					strncpy(sd,time_copy,2);
+				if (strcmp(n, "/") != 0) {
+					strncpy(sd, time_copy, 2);
 					sd[2] = '\0';
 					dx = atoi(sd);
-					daySuffix(dx ,dt);
-					sprintf(sd,"%d%s",dx,dt);
-					strncpy(fsz,time_copy + 2,4);
+					daySuffix(dx, dt);
+					sprintf(sd, "%d%s", dx, dt);
+					strncpy(fsz, time_copy + 2, 4);
 					fsz[4] = '\0';
-					fprintf(filetaf,"Issued: %s at %sz\n",sd,fsz);
-					sprintf(issued,"%s at %sz\n",sd,fsz);
+					fprintf(filetaf, "Issued: %s at %sz\n", sd, fsz);
+					sprintf(issued, "%s at %sz\n", sd, fsz);
 				}
 				taf_copy = (char *)malloc(strlen(r) + 1);
-				strcpy(taf_copy,r);
+				strcpy(taf_copy, r);
 				int i = 0;
 				int j = 0;
 				while (j == 0) {
-					taf_lines[i] = strsep(&taf_copy,"\n");
-					if (strcmp(taf_lines[i],"") == 0)
+					taf_lines[i] = strsep(&taf_copy, "\n");
+					if (strcmp(taf_lines[i], "") == 0)
 						j = 1;
 					else {
 					trimSpaces(taf_lines[i]);
@@ -1224,71 +1224,71 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu,FILE *to)
 					}
 				}
 				for (int j = 0; j < i; ++j) {
-					taf_decode(taf_lines[j],issued,fsz,gstn);
+					taf_decode(taf_lines[j], issued, fsz, gstn);
 				}
 			}	 // End TAF decode
-			if (strcmp(mtype,"WINDS") == 0) {
+			if (strcmp(mtype, "WINDS") == 0) {
 				char *tok1;  char *tok2; char *tok3; char *tok4;
 				char winds[91];
 				char *q; char *u;
 
-				strncpy(winds,r,90);
+				strncpy(winds, r, 90);
 				winds[90] = '\0';
 				q = winds;
-				tok1 = strsep(&q,"\0");
+				tok1 = strsep(&q, "\0");
 
-				fprintf(filemetar," Report Name         : %s\n",mtype);
-				fprintf(filemetar," Data:\n");
+				fprintf(filemetar, " Report Name         : %s\n", mtype);
+				fprintf(filemetar, " Data:\n");
 
-				while ( (tok2 = strsep(&tok1," ")) != NULL) {
-					if (strcmp(tok2,"") != 0) {
-						fprintf(filemetar,"%-10s",tok2);
+				while ( (tok2 = strsep(&tok1, " ")) != NULL) {
+					if (strcmp(tok2, "") != 0) {
+						fprintf(filemetar, "%-10s", tok2);
 					}
 				}
-				fprintf(filemetar,"\n          ");
+				fprintf(filemetar, "\n          ");
 
-				u = strchr(r,'\n');
+				u = strchr(r, '\n');
 				u = u + 2;
-				tok3 = strsep(&u,"\0");
+				tok3 = strsep(&u, "\0");
 
-				while ( (tok4 = strsep(&tok3," ")) != NULL) {
-					if (strcmp(tok4,"") != 0) {
-						fprintf(filemetar,"%-10s",tok4);
+				while ((tok4 = strsep(&tok3, " ")) != NULL) {
+					if (strcmp(tok4, "") != 0) {
+						fprintf(filemetar, "%-10s", tok4);
 					}
 				}
-				fprintf(filemetar,"\n");
+				fprintf(filemetar, "\n");
 			}
-			strcat(observation," ");
-			strcat(observation,r);
+			strcat(observation, " ");
+			strcat(observation, r);
 
-			if (strcmp(mtype,"PIREP") == 0) {
+			if (strcmp(mtype, "PIREP") == 0) {
 				pirep_copy = (char *)malloc(strlen(r) + 1);
-				strcpy(pirep_copy,r);
-				get_pirep(pirep_copy,to);
+				strcpy(pirep_copy, r);
+				get_pirep(pirep_copy, to);
 			}
-			if (strcmp(mtype,"METAR") == 0 || strcmp(mtype,"SPECI") == 0) {
-				fprintf(to,"Data: %s",observation);
+			if (strcmp(mtype, "METAR") == 0 || strcmp(mtype, "SPECI") == 0) {
+				fprintf(to, "Data: %s", observation);
 				if (decode_metar(observation,Mptr) != 0) {
-					fprintf(to,"Error METAR Decode\n"); }
+					fprintf(to, "Error METAR Decode\n"); }
 				else {
-					print_decoded_metar( Mptr);
+					print_decoded_metar(Mptr);
 
-					metar_data( Mptr,to);
+					metar_data(Mptr, to);
 				}
 			}
-			memset(&MetarStruct,0,sizeof(MetarStruct));
+			memset(&MetarStruct, 0, sizeof(MetarStruct));
 			fflush(filemetar);
 			fflush(filetaf);
 		}
 	}
 	break;
 	default:
-		display_generic_data(apdu->data,apdu->length,to);
+		display_generic_data(apdu->data, apdu->length, to);
 	break;
 	}
 }
 
-static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *frame,FILE *to)
+static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *frame, FILE *to)
 {
 	int tfr;
 	int lidflag;
@@ -1297,7 +1297,7 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 	uint16_t prodt;
 	uint16_t repid = 0;
 
-	fprintf(to,"\nINFORMATION FRAME:\n Type:  %u (%s)",
+	fprintf(to, "\nINFORMATION FRAME:\n Type:  %u (%s)",
 			frame->type,info_frame_type_names[frame->type]);
 
 	if (frame->length > 0) {
@@ -1306,18 +1306,18 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 		else {
 			int rec_offset = frame->length;
 			if (frame->type == 15) {
-				fprintf(to," ICAO List: \n");
+				fprintf(to, " ICAO List: \n");
 
 				int i = 1; int j = 0	;
 				while (i < rec_offset) {
 					if (j % 10 == 0)
-						fprintf(to,"\n");
+						fprintf(to, "\n");
 
 					j++;
-					fprintf(to,"%02x%02x%02x ",frame->data[i],frame->data[i+1],frame->data[i+2]);
+					fprintf(to, "%02x%02x%02x ", frame->data[i], frame->data[i+1], frame->data[i+2]);
 					i = i + 4;
 				}
-				fprintf(to,"\n");
+				fprintf(to, "\n");
 			}
 			else if (frame->type == 14) {      // report list
 				prodt = frame->data[0] <<3 | frame->data[1] >>5;
@@ -1326,54 +1326,54 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 				prod_range = frame->data[2] * 5;
 				num_crl = frame->data[3];
 
-				fprintf(to,"\n Current Report List\n");
-				fprintf(to," Product: %d -  %s\n",prodt,get_fisb_product_name(prodt));
-				fprintf(to," TFR: %d LID Flag: %d",tfr,lidflag);
-				fprintf(to," Number of reports: %d  Range(nm): %d\n",num_crl,prod_range);
+				fprintf(to, "\n Current Report List\n");
+				fprintf(to, " Product: %d -  %s\n", prodt, get_fisb_product_name(prodt));
+				fprintf(to, " TFR: %d LID Flag: %d", tfr, lidflag);
+				fprintf(to, " Number of reports: %d  Range(nm): %d\n", num_crl, prod_range);
 
 				int j = 4;
 				int q = 0;
 				for (int i = 0; i < num_crl; ++i) {
 					if (q % 4 == 0)
-						fprintf(to,"\n");
+						fprintf(to, "\n");
 
 					q++;
 					repid = (frame->data[j + 1] & ((1 << 6 )-1)) << 8 |  frame->data[j + 2];
 
-					fprintf(to,"Rpt ID: %d  ",repid);
+					fprintf(to, "Rpt ID: %d  ", repid);
 						j = j + 3;
 					}
-					fprintf(to,"\n");
+					fprintf(to, "\n");
 			}
 			else
-				display_generic_data(frame->data,frame->length,to);
+				display_generic_data(frame->data,frame->length, to);
 		}
 	}
 }
 
-void uat_display_uplink_mdb(const struct uat_uplink_mdb *mdb,FILE *to)
+void uat_display_uplink_mdb(const struct uat_uplink_mdb *mdb, FILE *to)
 {
 	char buff[30];
 
-	fprintf(to,"UPLINK: ");
-	fprintf(to," Site: %u  ",mdb->tisb_site_id);
-	fprintf(to," Lat: %+.4f%s Lon: %+.4f%s ",
+	fprintf(to, "UPLINK: ");
+	fprintf(to, " Site: %u  ", mdb->tisb_site_id);
+	fprintf(to, " Lat: %+.4f%s Lon: %+.4f%s ",
 			mdb->lat,mdb->position_valid ? "" : " ",
 			mdb->lon,mdb->position_valid ? "" : " ");
 
 	time_t current_time = time(NULL);
 	struct tm *tm = localtime(&current_time);
 	strftime(buff, sizeof buff, "%D %T", tm);
-	fprintf(to," Time: %s",buff);
+	fprintf(to, " Time: %s", buff);
 
 	if (mdb->app_data_valid) {
 		unsigned i;
 		for (i = 0; i < mdb->num_info_frames; ++i)
-			uat_display_uplink_info_frame(&mdb->info_frames[i],to);
+			uat_display_uplink_info_frame(&mdb->info_frames[i], to);
 	}
 }
 
-static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
+static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 {
 	int rec_offset = 11;
 	int datoff = 6;
@@ -1442,12 +1442,12 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 
 	if (rec_ref != 255) {
 		rec_offset = 2;
-		const char *text = decode_dlac(apdu->data,5,rec_offset);
-		strncpy(gstn,text,5);
+		const char *text = decode_dlac(apdu->data, 5, rec_offset);
+		strncpy(gstn, text, 5);
 		get_gs_name(gstn);
 	}
 	else {
-		strcpy(gstn,"    ");}
+		strcpy(gstn, "    ");}
 
 	rep_num = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]); 				// 7 8
 	rec_len = ((apdu->data[datoff + 0]) << 2) | (((apdu->data[datoff + 1]) & 0xC0) >> 6);		// 6 7
@@ -1460,7 +1460,7 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 		obj_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff + 6]);					// 11 12
 		datoff = datoff + 7;	}																	// datoff=13
 	else {
-		obj_labelt = decode_dlac(apdu->data,5,2);
+		obj_labelt = decode_dlac(apdu->data, 5, 2);
 		datoff = datoff + 14;
 	}
 	element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;										//13
@@ -1470,44 +1470,44 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 	qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;									//13
 	param_flag = ((apdu->data[datoff + 0]) & 0x20) >> 5;										//13
 
-	strcpy(qual_text," ");
+	strcpy(qual_text, " ");
 	if (qualifier_flag == 0) {
 		datoff = datoff + 2;																	// 13 > datoff=15
 	}
 	else {
 //		object_qualifier = ((apdu->data[datoff + 2]) << 16) | ((apdu->data[datoff + 3]) << 8) | (apdu->data[datoff + 4]);
 
-		strcpy(qual_text,"Qualifier: ");
+		strcpy(qual_text, "Qualifier: ");
 		if (apdu->product_id == 14) {
 			if (apdu->data[datoff + 2] & (1 << 7)) {											// 15
-				strcat(qual_text," Unspecified, ");
+				strcat(qual_text, " Unspecified, ");
 			}
 			if (apdu->data[datoff + 3] & (1 << 0)) {											// 16
-				strcat(qual_text," Ash, ");
+				strcat(qual_text, " Ash, ");
 			}
 			if (apdu->data[datoff + 4] & (1 << 0)) {											// 17
-				strcat(qual_text," Precipitation, ");
+				strcat(qual_text, " Precipitation, ");
 			}
 			if (apdu->data[datoff + 4] & (1 << 1)) {
-				strcat(qual_text," Mist, ");
+				strcat(qual_text, " Mist, ");
 			}
 			if (apdu->data[datoff + 4] & (1 << 2)) {
-				strcat(qual_text," Fog, ");
+				strcat(qual_text, " Fog, ");
 			}
 			if (apdu->data[datoff + 4] & (1 << 3)) {
-				strcat(qual_text," Haze, ");
+				strcat(qual_text, " Haze, ");
 			}
 			if (apdu->data[datoff + 4] & (1 << 4)) {
-				strcat(qual_text," Smoke, ");
+				strcat(qual_text, " Smoke, ");
 			}
 			if (apdu->data[datoff + 4] & (1 << 5)) {
-				strcat(qual_text," Blowing Snow, ");
+				strcat(qual_text, " Blowing Snow, ");
 			}
 			if (apdu->data[datoff + 4] & (1 << 6)) {
-				strcat(qual_text," Clouds, ");
+				strcat(qual_text, " Clouds, ");
 			}
 			if (apdu->data[datoff + 4] & (1 << 7)) {
-				strcat(qual_text," Dust, ");
+				strcat(qual_text, " Dust, ");
 			}
 		}
 //		obj_param_type = apdu->data[18] >> 3;							// 18
@@ -1523,8 +1523,8 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 
 	switch (rec_app_opt) {
 	case 0:									// No times given. UFN. (record_data[2:],date_time_format)
-		asprintf(&start_date,"0");
-		asprintf(&stop_date,"0");
+		asprintf(&start_date, "0");
+		asprintf(&stop_date, "0");
 		datoff = datoff + 2;
 		break;
 	case 1:									// Start time only. WEF.
@@ -1533,8 +1533,8 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 		d3 = apdu->data[datoff + 4];
 		d4 = apdu->data[datoff + 5];
 
-		asprintf(&start_date,"%02d/%02d %02d:%02d",d1,d2,d3,d4);
-		asprintf(&stop_date,"0");
+		asprintf(&start_date, "%02d/%02d %02d:%02d", d1, d2, d3, d4);
+		asprintf(&stop_date, "0");
 		datoff = datoff + 6;
 		break;
 	case 2:									// End time only. TIL.
@@ -1543,8 +1543,8 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 		d3 = apdu->data[datoff + 4];
 		d4 = apdu->data[datoff + 5];
 
-		asprintf(&start_date,"0");
-		asprintf(&stop_date,"%02d/%02d %02d:%02d",d1,d2,d3,d4);
+		asprintf(&start_date, "0");
+		asprintf(&stop_date, "%02d/%02d %02d:%02d", d1, d2, d3, d4);
 		datoff = datoff + 6;
 		break;
 	case 3:									// Both start and end times. WEF.
@@ -1553,48 +1553,97 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 		d3 = apdu->data[datoff + 4];
 		d4 = apdu->data[datoff + 5];
 
-		asprintf(&start_date,"%02d/%02d %02d:%02d",d1,d2,d3,d4);
+		asprintf(&start_date, "%02d/%02d %02d:%02d", d1, d2, d3, d4);
 		d1 = apdu->data[datoff + 6];
 		d2 = apdu->data[datoff + 7];
 		d3 = apdu->data[datoff + 8];
 		d4 = apdu->data[datoff + 9];
 
-		asprintf(&stop_date,"%02d/%02d %02d:%02d",d1,d2,d3,d4);
+		asprintf(&stop_date, "%02d/%02d %02d:%02d", d1, d2, d3, d4);
 		datoff = datoff + 10;
 		break;
 	}
-	strcpy(ob_ele_text," ");
+	strcpy(ob_ele_text, " ");
 
 	if (element_flag == 1 && obj_type == 14 && apdu->product_id == 14)
-		strcpy(ob_ele_text,gairspace_element_names[obj_element]);
+		strcpy(ob_ele_text, gairspace_element_names[obj_element]);
 
 	asprintf(&postsql,"INSERT INTO graphic_reports (prod_id,stn_call,prod_ver,rec_count,rec_ref,"
 			"rep_number,rec_length,rep_year,ovrly_recid,obj_lbl_flag,obj_lbl_number,obj_lbl_alpha,"
 			"element_flag,obj_element,obj_status,obj_type,qual_flag,param_flag,rec_app_option,"
 			"app_opt_fmt,start_date,stop_date,geo_ovrly_opt,ovrly_operator,ovrly_vertices,qual_text,rep_rec_time)"
 			"VALUES(%d,'%s',%d,%d,%d,%d,%d,%d,%d,%d,%d,'%s',%d,%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d,%d,%d,'%s','%s')",
-			apdu->product_id,gstn,product_ver,rec_count,rec_ref,rep_num,rec_len,report_year,
-			overlay_rec_id,obj_label_flag,obj_label,obj_labelt,element_flag,obj_element,obj_status,obj_type,
-			qualifier_flag,param_flag,rec_app_opt,date_time_format,start_date,stop_date,geo_overlay_opt,overlay_op,
-			overlay_vert_cnt,qual_text,buff);
+			apdu->product_id, gstn, product_ver, rec_count, rec_ref, rep_num, rec_len, report_year,
+			overlay_rec_id, obj_label_flag, obj_label, obj_labelt, element_flag, obj_element, obj_status, obj_type,
+			qualifier_flag, param_flag, rec_app_opt, date_time_format, start_date, stop_date, geo_overlay_opt,
+			overlay_op, overlay_vert_cnt, qual_text, buff);
 
-	if (geo_overlay_opt ==1)
-		fprintf(to,"moo");
+	if (geo_overlay_opt == 10)
+		fprintf(to, "moo");
 
-
+	PGresult *res;
 	switch (geo_overlay_opt) {
-	case 3: case 4:									// Extended Range 3D Polygon
+
+	case 1:							// Low res 2d Polygon
+		datoff = 21;
+		for (int i = 0; i < overlay_vert_cnt; i++) {
+			lng_raw = ((apdu->data[datoff]) << 4) | ((apdu->data[datoff + 1]) & 0xF0) ;
+			lat_raw = (((apdu->data[datoff + 1]) & 0xF) << 8) | ((apdu->data[datoff + 2])) ;
+
+			datoff = datoff + 3;
+
+			lng_raw = (~lng_raw & 0xFFF) + 1;												// 2's compliment +1
+			lat_raw = (~lat_raw & 0xFFF) + 1;												// 2's compliment +1
+
+			lat = 0.087890625 * lat_raw;
+			lng = (0.087890625 * lng_raw) * -1;
+
+			if (lat > 90.0)
+				lat = lat - 180.0;
+			if (lng > 180.0)
+				lng = lng - 360.0;
+
+			if (lat == lat_save) {														// Ignore 2nd altitude data to fix map
+				i = overlay_vert_cnt;
+				continue;
+			}
+			lat_save = lat;
+
+			if (i == (overlay_vert_cnt - 1)){
+				asprintf(&coords, " [%f,%f]", coords, lng, lat);
+				strcat(gr, coords);
+			}
+			else {
+				asprintf(&coords, " [%f,%f],", coords, lng, lat);
+				strcat(gr, coords);
+			}
+		}
+		alt = 0;
+		asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
+				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
+				gr, apdu->product_id, rep_num, alt, ob_ele_text, start_date, stop_date, geo_overlay_opt);
+
+		res = PQexec(conn, postsql);
+		if (PQresultStatus(res) != PGRES_COMMAND_OK)
+			if (PQresultStatus(res) != 7)
+				fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+
+		PQclear(res);
+
+		break;
+
+	case 3: case 4:							// Extended Range 3D Polygon
 		alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
 		alt = alt_raw * 100;
 
 		for (int i = 0; i < overlay_vert_cnt; i++) {
-			lng_raw = ((apdu->data[datoff + i]) << 11) | ((apdu->data[datoff + i + 1]) << 3) |
-					((apdu->data[datoff + i + 2]) & 0xE0 >> 5);
-			lat_raw = (((apdu->data[datoff + i + 2]) & 0x1F) << 14) | ((apdu->data[datoff + i + 3]) << 6) |
-					(((apdu->data[datoff + i + 4]) & 0xFC) >> 2);
-			alt_raw = (((apdu->data[datoff + i + 4]) & 0x03) << 8) | (apdu->data[datoff + i + 5]);
+			lng_raw = ((apdu->data[datoff]) << 11) | ((apdu->data[datoff + 1]) << 3) |
+					((apdu->data[datoff + 2]) & 0xE0 >> 5);
+			lat_raw = (((apdu->data[datoff + 2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) |
+					(((apdu->data[datoff + 4]) & 0xFC) >> 2);
+			alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
 
-			datoff = datoff + 5;
+			datoff = datoff + 6;
 
 			lat = fct_f * lat_raw;
 			lng = fct_f * lng_raw;
@@ -1612,22 +1661,22 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 			lat_save = lat;
 
 			if (i == (overlay_vert_cnt-1)){
-				asprintf(&coords," [%f,%f]",coords,lng,lat);
-				strcat(gr,coords);
+				asprintf(&coords, " [%f,%f]", coords, lng, lat);
+				strcat(gr, coords);
 			}
 			else {
-				asprintf(&coords," [%f,%f],",coords,lng,lat);
-				strcat(gr,coords);
+				asprintf(&coords, " [%f,%f],", coords, lng, lat);
+				strcat(gr, coords);
 			}
 		}
 		asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
 				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
-				gr,apdu->product_id,rep_num,alt,ob_ele_text,start_date,stop_date,geo_overlay_opt);
+				gr, apdu->product_id, rep_num, alt, ob_ele_text, start_date, stop_date, geo_overlay_opt);
 
-		PGresult *res = PQexec(conn, postsql);
+		res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK)
 			if (PQresultStatus(res) != 7)
-				fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+				fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
 		PQclear(res);
 
@@ -1646,11 +1695,11 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 			uint32_t alt_bot_raw;
 			uint32_t alt_top_raw;
 			uint32_t r_lng_raw;
-			uint32_t r_lat_raw,alpha;
+			uint32_t r_lat_raw, alpha;
 			uint32_t alt_bot;
 			uint32_t alt_top;
 
-			float lat_bot,lng_bot,lat_top,lng_top,r_lng,r_lat;
+			float lat_bot, lng_bot, lat_top, lng_top, r_lng, r_lat;
 
 			lng_bot_raw = ((apdu->data[datoff + 0]) << 10) | ((apdu->data[datoff + 1]) << 2) |
 					((apdu->data[datoff + 2]) & 0xC0 >> 6);
@@ -1695,31 +1744,36 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 			r_lng = r_lng_raw * 0.2;
 			r_lat = r_lat_raw * 0.2;
 
-			fprintf(to,"lat_bot, lng_bot = %f, %f\n", lat_bot, lng_bot);
-			fprintf(to,"lat_top, lng_top = %f, %f\n", lat_top, lng_top);
+			fprintf(to, "lat_bot, lng_bot = %f, %f\n", lat_bot, lng_bot);
+			fprintf(to, "lat_top, lng_top = %f, %f\n", lat_top, lng_top);
 
 			if (geo_overlay_opt == 8)
-				fprintf(to,"alt_bot,alt_top = %d AGL, %d AGL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
+				fprintf(to, "alt_bot,alt_top = %d AGL, %d AGL  geo_opt:%d\n", alt_bot, alt_top, geo_overlay_opt);
 			else
-				fprintf(to,"alt_bot,alt_top = %d MSL, %d MSL  geo_opt:%d\n", alt_bot, alt_top,geo_overlay_opt);
+				fprintf(to,"alt_bot,alt_top = %d MSL, %d MSL  geo_opt:%d\n", alt_bot, alt_top, geo_overlay_opt);
 
-			fprintf(to,"r_lng, r_lat = %f, %f\n", r_lng,r_lat);
-			fprintf(to,"alpha =%d\n",alpha);
+			fprintf(to, "r_lng, r_lat = %f, %f\n", r_lng, r_lat);
+			fprintf(to, "alpha =%d\n", alpha);
 
 			asprintf(&postsql,"INSERT INTO circles(bot,top,alt_bot,alt_top,alpha,prod_id,rec_count,rep_num,"
 					"rep_year,start_date,stop_date,geo_opt,r_lat,r_lng) VALUES (ST_GeomFromText('POINT ( %f %f)',4326),"
 					"ST_GeomFromText('POINT (%f %f)',4326),%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d,%f,%f)",
-					lng_bot,lat_bot,lng_top,lat_top,alt_bot,alt_top,alpha,apdu->product_id,rec_count,rep_num,report_year,start_date,stop_date,geo_overlay_opt,r_lat,r_lng);
+					lng_bot, lat_bot, lng_top, lat_top, alt_bot, alt_top, alpha, apdu->product_id, rec_count,
+					rep_num, report_year, start_date, stop_date, geo_overlay_opt, r_lat, r_lng);
 
-			PGresult *res = PQexec(conn, postsql);
+			res = PQexec(conn, postsql);
 			if (PQresultStatus(res) != PGRES_COMMAND_OK){
 	//			if (PQresultStatus(res) != 7)
-					fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+					fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 			}
 			PQclear(res);
 		}
 		break;
-	case 9:											// Extended Range 3D Point (AGL)
+	case 9:	case 10:								// Extended Range 3D Point (AGL)
+
+		fprintf(to, " %d  %d  %d\n", overlay_vert_cnt, geo_overlay_opt, apdu->product_id);
+		fflush(to);
+
 		lng_raw = ((apdu->data[datoff + 0]) << 11) | ((apdu->data[datoff + 1]) << 3) |
 		((apdu->data[datoff + 2]) & 0xE0 >> 5);
 		lat_raw = (((apdu->data[datoff + 2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) |
@@ -1738,16 +1792,16 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 			lng = lng - 360.0;
 		alt = alt_raw * 100;
 
-		asprintf(&coords," [%f,%f]",coords,lng,lat);
-		strcat(gr,coords);
+		asprintf(&coords, " [%f,%f]", coords, lng, lat);
+		strcat(gr, coords);
 		asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
 				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Point\",\"coordinates\": %s }'),4326),%d,%d,%d,'%s','%s','%s',%d)",
-				gr,apdu->product_id,rep_num,alt,ob_ele_text,start_date,stop_date,geo_overlay_opt);
+				gr,apdu->product_id, rep_num, alt, ob_ele_text, start_date, stop_date, geo_overlay_opt);
 
 		res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK)
 			if (PQresultStatus(res) != 7)
-				fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+				fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
 		PQclear(res);
 
@@ -1759,13 +1813,13 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 			alt = alt_raw * 100;
 
 			for (int i = 0; i < overlay_vert_cnt; i++) {
-				lng_raw = ((apdu->data[datoff + i]) << 11) | ((apdu->data[datoff + i + 1]) << 3) |
-						((apdu->data[datoff + i + 2]) >> 5);
-				lat_raw = (((apdu->data[datoff + i + 2]) & 0x1F) << 14) | ((apdu->data[datoff + i + 3]) << 6) |
-						(((apdu->data[datoff + i+ 4]) & 0xFC) >> 2);
-				alt_raw = (((apdu->data[datoff + i + 4]) & 0x03) << 8) | (apdu->data[datoff + i + 5]);
+				lng_raw = ((apdu->data[datoff]) << 11) | ((apdu->data[datoff + 1]) << 3) |
+						((apdu->data[datoff + 2]) >> 5);
+				lat_raw = (((apdu->data[datoff + 2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) |
+						(((apdu->data[datoff + 4]) & 0xFC) >> 2);
+				alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
 
-				datoff = datoff + 5;
+				datoff = datoff + 6;
 
 				lng_raw = (~lng_raw & 0x7FFFF) + 1;											// 2's compliment +1
 				lat_raw = (~lat_raw & 0x7FFFF) + 1;											// 2's compliment +1
@@ -1781,29 +1835,29 @@ static void get_graphic(const struct fisb_apdu *apdu,FILE *to)
 				alt = alt_raw * 100;
 
 				if (i == (overlay_vert_cnt - 1)){
-					asprintf(&coords," [%f,%f]",coords,lng,lat);
-					strcat(gr,coords);
+					asprintf(&coords, " [%f,%f]", coords, lng, lat);
+					strcat(gr, coords);
 				}
 				else {
-					asprintf(&coords," [%f,%f],",coords,lng,lat);
-					strcat(gr,coords);
+					asprintf(&coords, " [%f,%f],", coords, lng, lat);
+					strcat(gr, coords);
 				}
 			}
 
 			asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
 					"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ %s ]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
-					gr,apdu->product_id,rep_num,alt,ob_ele_text,start_date,stop_date,geo_overlay_opt);
+					gr, apdu->product_id, rep_num, alt, ob_ele_text, start_date, stop_date, geo_overlay_opt);
 
 			res = PQexec(conn, postsql);
 			if (PQresultStatus(res) != PGRES_COMMAND_OK)
 				if (PQresultStatus(res) != 7)
-					fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+					fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
 			PQclear(res);
 		}
 		break;
 	default:
-		fprintf(to,"Unknown Geo type: %d",geo_overlay_opt);
+		fprintf(to, "Unknown Geo type: %d", geo_overlay_opt);
 	}
 }
 //	display_generic_data(apdu->data,apdu->length,to);
@@ -1823,74 +1877,75 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 	char *rtime;
 	char *data_text;
 	char *notam_name;
-	char *p,*r;
+	char *p, *r;
 
 	char *postsql;
 
-	const char *text = decode_dlac(apdu->data,apdu->length,rec_offset);
+	const char *text = decode_dlac(apdu->data,apdu->length, rec_offset);
 	const char *report = text;
-	const char *next_report; uint16_t report_year;
+	const char *next_report;
+	uint16_t report_year;
 
-	strcpy(prod_name,"Unknown");
+	strcpy(prod_name, "Unknown");
 
 	while (report) {
-		next_report = strchr(report,'\x1e');		// RS
+		next_report = strchr(report, '\x1e');		// RS
 		if (!next_report)
-			next_report = strchr(report,'\x03');	// ETX
+			next_report = strchr(report, '\x03');	// ETX
 		if (next_report) {
-			memcpy(report_buf,report,next_report - report);
+			memcpy(report_buf, report, next_report - report);
 			report_buf[next_report - report] = 0;
 			report = next_report + 1;
 		}
 		else {
-			strcpy(report_buf,report);
+			strcpy(report_buf, report);
 			report = NULL;
 		}
 		if (!report_buf[0])
 			continue;
 
 		r = report_buf;
-		p = strchr(r,' ');
+		p = strchr(r, ' ');
 		if (p) {
 			*p = 0;
 			if (apdu->product_id == 13)
-				fprintf(filesua," Report Type     : %s\n",r);
+				fprintf(filesua, " Report Type     : %s\n", r);
 
 			notam_name = (char *)malloc(strlen(r) + 1);
-			strcpy(notam_name,r);
+			strcpy(notam_name, r);
 			r = p + 1;
 		}
 		if (apdu->product_id == 8)
-			p = strchr(r,'.');
+			p = strchr(r, '.');
 		else
-			p = strchr(r,' ');
+			p = strchr(r, ' ');
 
 		if (apdu->product_id != 13) {
 			if (p) {
 				*p = 0;
-				strncpy(gstn,r,5);
+				strncpy(gstn, r, 5);
 				get_gs_name(gstn);
 				if (apdu->product_id == 13)
-					fprintf(filesua," RLoc            : %s - %s\n",gstn,gs_ret);
+					fprintf(filesua, " RLoc            : %s - %s\n", gstn, gs_ret);
 
 				r = p + 1;
 			}
 		}
-		p = strchr(r,' ');			// *** RTime ***
+		p = strchr(r, ' ');			// *** RTime ***
 		if (p) {
 			*p = 0;
 			rtime = (char *)malloc(strlen(r) + 1);
-			strcpy(rtime,r);
+			strcpy(rtime, r);
 			if (apdu->product_id == 13)
-				fprintf(filesua," RTime           : %s\n",r);
+				fprintf(filesua, " RTime           : %s\n", r);
 
 			r = p + 1;
 		}
 		rep_num = ((apdu->data[8] << 6) | (apdu->data[9] & 0xFC) >> 2);
 		report_year = (((apdu->data[9]) & 0x03) << 5 | ((apdu->data[10]) & 0xF8) >> 3);
 		if (apdu->product_id == 13) {
-			fprintf(filesua," Report Year     : 20%02d\n ",report_year);
-			fprintf(filesua,"Report Number   : %6d  ",rep_num);
+			fprintf(filesua, " Report Year     : 20%02d\n ", report_year);
+			fprintf(filesua, "Report Number   : %6d  ", rep_num);
 		}
 //		if (apdu->data[10] & (1 << 2)) {
 //			rep_status = 1;
@@ -1906,10 +1961,10 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 		strftime(buff, sizeof buff, "%D %T", tm);
 
 		if (apdu->product_id == 13) {
-			fprintf(filesua," Time            : %s\n",buff);
+			fprintf(filesua, " Time            : %s\n", buff);
 			sua_text = (char *)malloc(strlen(r) + 1);
-			strcpy(sua_text,r);
-			get_sua_text(sua_text,to);
+			strcpy(sua_text, r);
+			get_sua_text(sua_text, to);
 		}
 		if (apdu->product_id == 8 || apdu->product_id == 11 ||
 				apdu->product_id == 12 || apdu->product_id == 15) {	// 8 11 12 15
@@ -1917,10 +1972,10 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 			int length = strlen(r);
 
 			switch (apdu->product_id) {
-			case 8: strcpy(prod_name,notam_name); break;
-			case 11: strcpy(prod_name,"AIRMET"); break;
-			case 12: strcpy(prod_name,"SIGMET"); break;
-			case 15: strcpy(prod_name,"CWA"); break;
+			case 8: strcpy(prod_name, notam_name); break;
+			case 11: strcpy(prod_name, "AIRMET"); break;
+			case 12: strcpy(prod_name, "SIGMET"); break;
+			case 15: strcpy(prod_name, "CWA"); break;
 			}
 			if (r[length - 1] == '\n')
 				r[length - 1] = '\0';
@@ -1932,28 +1987,28 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 					r[i] = '#';
 			}
 			data_text = (char *)malloc(strlen(r) + 1);
-			strcpy(data_text,r);
+			strcpy(data_text, r);
 
 			asprintf(&postsql,"INSERT INTO sigairmet (prod_id,stn_call,rep_time,rep_num,text_data) "
 					"VALUES (%d,'%s','%s',%d,'%s')",
-					apdu->product_id,gstn,rtime,rep_num,data_text);
+					apdu->product_id, gstn, rtime, rep_num, data_text);
 
 			PGresult *res = PQexec(conn, postsql);
 		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
 		    	if (PQresultStatus(res) != 7)
-		    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+		    		fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
 		    PQclear(res);
 		}
 		if (apdu->product_id == 13) {
-			fprintf(filesua," Data:\n%s\n",r);
+			fprintf(filesua, " Data:\n%s\n", r);
 			fflush(filesua);
 		}
 	}
 //	display_generic_data(apdu->data,apdu->length,to);
 }
 
-static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm,FILE *to)
+static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm, FILE *to)
 {
 	uint16_t prodid;
 	uint16_t prodfillen;
@@ -2019,10 +2074,10 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm,FILE *to)
 				}
 				char_cnt = char_cnt + seg_list[i].seg_text_len;								// 550
 
-				fprintf(fnm," Report Type     : NOTAM - Segmented\n");
-				fprintf(fnm," Num of Segments : %d\n",seg_list[i].seg_prolen);
-				fprintf(fnm," Report Number   : %6d  ",seg_list[i].seg_rpt_num);
-				fprintf(fnm,"     Report Year       : 20%02d\n ",seg_list[i].seg_rpt_year);
+				fprintf(fnm, " Report Type     : NOTAM - Segmented\n");
+				fprintf(fnm, " Num of Segments : %d\n", seg_list[i].seg_prolen);
+				fprintf(fnm, " Report Number   : %6d  ", seg_list[i].seg_rpt_num);
+				fprintf(fnm, "     Report Year       : 20%02d\n ", seg_list[i].seg_rpt_year);
 			}
 		}
 		for (int i = 0; i <= seg_count; ++i) {												// 2nd part
@@ -2048,8 +2103,8 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm,FILE *to)
 		time_t current_time = time(NULL);
 		struct tm *tm = localtime(&current_time);
 		strftime(buff, sizeof buff, "%D %T", tm);
-		fprintf(fnm,"Time            : %s",buff);
-		fprintf(fnm," Data:\n%s\n\n",seg_text_all);
+		fprintf(fnm, "Time            : %s", buff);
+		fprintf(fnm, " Data:\n%s\n\n", seg_text_all);
 	}
 //	display_generic_data(apdu->data,apdu->length,to);
 	fflush(fnm);

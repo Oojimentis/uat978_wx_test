@@ -15,7 +15,7 @@
 #include "uat_geo.h"
 #include "asprintf.h"
 
-void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
+void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 {
 	int scale_factor = 1;
 	int ns_flag = 0;
@@ -23,7 +23,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 	int rle_flag = (apdu->data[0] & 0x80) != 0;
 	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
 	int ice_alt = (apdu->data[0] & 0x70) >> 4;
-	int bin=0;
+	int bin = 0;
 	int alt_level = 0;
 
 	char *postsql;
@@ -91,7 +91,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 		break;
 	}
 
-	sprintf(nexrad_time,"%02d%02d",	apdu->hours,apdu->minutes);
+	sprintf(nexrad_time, "%02d%02d", apdu->hours, apdu->minutes);
 
 	if (rle_flag) {				// One bin, 128 values, RLE-encoded
 		double latN = 0;
@@ -108,19 +108,21 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 
 		block_location_graphic(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
-		sprintf(block," ");
+		sprintf(block, " ");
 
 		if (apdu->product_id == 63){
 			asprintf(&postsql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
 			"lat_size,lon_size,level,block_data) "
 				"VALUES(%d,'NEXRAD','Regional','%s',%d,%.0f,%.0f,%.0f,%.0f,%d,",
-				apdu->product_id,nexrad_time,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60,alt_level);
+				apdu->product_id, nexrad_time, scale_factor, latN * 60, lonW * 60, latSize * 60, lonSize * 60,
+				alt_level);
 		}
 		else {
 			asprintf(&postsql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
 				"lat_size,lon_size,level,block_data) "
 				"VALUES(%d,'NEXRAD','CONUS','%s',%d,%.0f,%.0f,%.0f,%.0f,%d,",
-				apdu->product_id,nexrad_time,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60,alt_level);
+				apdu->product_id, nexrad_time, scale_factor, latN * 60, lonW * 60, latSize * 60, lonSize * 60,
+				alt_level);
 		}
 
 		if (apdu->product_id == 63 || apdu->product_id == 64) {
@@ -130,14 +132,14 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 
 				while (runlength-- > 0) {
 					charValue = intensity +'0';
-					sprintf(block,"%s%c",block,charValue);
+					sprintf(block, "%s%c", block, charValue);
 				}
 			}
-			asprintf(&postsql,"%s '%s')",postsql,block);
+			asprintf(&postsql, "%s '%s')", postsql, block);
 
 			PGresult *res = PQexec(conn, postsql);
 		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
-		       fprintf(stderr,"bad sql %s\n%s \n",PQerrorMessage(conn),postsql);
+		       fprintf(stderr, "bad sql %s\n%s \n", PQerrorMessage(conn), postsql);
 
 		    PQclear(res);
 		}
@@ -151,15 +153,15 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
     			
 				while (num_bins-- > 0){
 					charValue = ice_prob+'0';
-					sprintf(block,"%s%c",block,charValue);
+					sprintf(block, "%s%c", block, charValue);
 				}
 			}
-			asprintf(&postsql,"%s '%s')",postsql,block);
+			asprintf(&postsql, "%s '%s')", postsql, block);
 
-			PGresult *res = PQexec(conn,postsql);
+			PGresult *res = PQexec(conn, postsql);
 		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
 		    	if (PQresultStatus(res) != 7)
-		    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+		    		fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
 		    PQclear(res);
 		}
@@ -171,21 +173,21 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 
 				if (num_bins == 15){
 					i = i + 1;
-					num_bins = (apdu->data[i])+1;
+					num_bins = (apdu->data[i]) + 1;
 				}
 		       	
 				while (num_bins-- > 0) {
-					charValue = lgt_cnt+'0';
-					sprintf(block,"%s%c",block,charValue);
+					charValue = lgt_cnt + '0';
+					sprintf(block, "%s%c", block, charValue);
 				}
 			}
 
-			asprintf(&postsql,"%s '%s')",postsql,block);
+			asprintf(&postsql, "%s '%s')", postsql, block);
 
 			PGresult *res = PQexec(conn, postsql);
 		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
 		    	if (PQresultStatus(res) != 7)
-		    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+		    		fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
 		    PQclear(res);
 		}
@@ -197,7 +199,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 
 				if (num_bins == 15){
 					i = i + 1;
-					num_bins = (apdu->data[i])+1;
+					num_bins = (apdu->data[i]) + 1;
 				}
         		
 				switch (edr_enc) {
@@ -208,23 +210,23 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 				case 14: 	enc='e';    break;
 				case 15: 	enc='f';  	break;
 				default:
-					enc = edr_enc +'0';
+					enc = edr_enc + '0';
 					break;
 				}
 
 				while (num_bins-- > 0) {
-					sprintf(block,"%s%c",block,enc);
+					sprintf(block, "%s%c", block, enc);
 				}
 			}
     
-			asprintf(&postsql,"%s '%s')",postsql,block);
+			asprintf(&postsql, "%s '%s')", postsql, block);
 
-			PGresult *res = PQexec(conn, postsql);
-		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
-		    	if (PQresultStatus(res) != 7)
-		    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+//			PGresult *res = PQexec(conn, postsql);
+//		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+//		    	if (PQresultStatus(res) != 7)
+//		    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
 
-		    PQclear(res);
+//		    PQclear(res);
 		}
 	}
 	else {    // Empty
@@ -248,11 +250,11 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 			if (i == 0)
 				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
 			else
-				bb = (apdu->data[i+3]);
+				bb = (apdu->data[i + 3]);
 
 			for (int j = 0; j < 8; ++j) {
 				if (bb & (1 << j)) {
-					int row_x = (row_offset + 8*i + j - 3) % row_size;
+					int row_x = (row_offset + 8 * i + j - 3) % row_size;
 					int bn = row_start + row_x;
 					double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
 
@@ -262,27 +264,29 @@ void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to)
 						asprintf(&postsql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
 							"lat_size,lon_size,level,block_data) "
 							"VALUES(%d,'NEXRAD','Regional','%s',%d,%.0f,%.0f,%.0f,%.0f,%d,",
-							apdu->product_id,nexrad_time,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60,alt_level);
+							apdu->product_id, nexrad_time, scale_factor, latN * 60,lonW * 60, latSize * 60,
+							lonSize * 60, alt_level);
 					}
 					else {
 						asprintf(&postsql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
 							"lat_size,lon_size,level,block_data) "
 							"VALUES(%d,'NEXRAD','CONUS','%s',%d,%.0f,%.0f,%.0f,%.0f,%d,",
-							apdu->product_id,nexrad_time,scale_factor,latN * 60,lonW * 60,latSize * 60,lonSize * 60,alt_level);
+							apdu->product_id, nexrad_time, scale_factor, latN * 60, lonW * 60, latSize * 60,
+							lonSize * 60, alt_level);
 					}
 
 					sprintf(block," ");
 					for (int k = 0; k < 128; ++k){
-						charValue=bin+'0';
-						sprintf(block,"%s%c",block,charValue);
+						charValue = bin + '0';
+						sprintf(block, "%s%c", block, charValue);
 					}
    			    	
-					asprintf(&postsql,"%s '%s')",postsql,block);
+					asprintf(&postsql, "%s '%s')", postsql, block);
 
 					PGresult *res = PQexec(conn, postsql);
 				    if (PQresultStatus(res) != PGRES_COMMAND_OK)
 				    	if (PQresultStatus(res) != 7)
-				    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+				    		fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
 				    PQclear(res);
 				}
@@ -333,46 +337,47 @@ double raw_lat; double raw_lon; double scale;
 	}
 }
 
-void metar_data( Decoded_METAR *Mptr,FILE *to)
+void metar_data( Decoded_METAR *Mptr, FILE *to)
 {
 	char *postsql;
-	char obs_date[10]=" ";
+	char obs_date[10] = " ";
 
 	if (Mptr->temp > 1000)
 		Mptr->temp = 999;
 	else
-		Mptr->temp = Mptr->temp * 9/5  +32;
+		Mptr->temp = Mptr->temp * 9/5  + 32;
 
 	if (Mptr->dew_pt_temp > 1000)
 			Mptr->dew_pt_temp = 999;
 	else
-		Mptr->dew_pt_temp = Mptr->dew_pt_temp * 9/5  +32;
+		Mptr->dew_pt_temp = Mptr->dew_pt_temp * 9/5  + 32;
 
-	if (Mptr->winData.windSpeed> 1000)
-		Mptr->winData.windSpeed=999;
+	if (Mptr->winData.windSpeed > 1000)
+		Mptr->winData.windSpeed = 999;
 
-	if (Mptr->winData.windDir> 1000)
-		Mptr->winData.windDir=999;
+	if (Mptr->winData.windDir > 1000)
+		Mptr->winData.windDir = 999;
 
-	if (Mptr->inches_altstng> 1000)
-		Mptr->inches_altstng=999;
+	if (Mptr->inches_altstng > 1000)
+		Mptr->inches_altstng = 999;
 
-	if (Mptr->prevail_vsbySM> 1000)
+	if (Mptr->prevail_vsbySM > 1000)
 		Mptr->prevail_vsbySM = 999;
 
-	if (Mptr->SLP> 1000)
+	if (Mptr->SLP > 1000)
 		Mptr->SLP = 999;
 
-	sprintf(obs_date,"%02d %02d:%02d",Mptr->ob_date,Mptr->ob_hour,Mptr->ob_minute);
+	sprintf(obs_date, "%02d %02d:%02d", Mptr->ob_date, Mptr->ob_hour, Mptr->ob_minute);
 
 	asprintf(&postsql,"INSERT INTO metar (stn_call,ob_date,temp,windsp,winddir,altimeter,visby,dewp) "
-			"VALUES ('%s','%s',%d,%d,%d,%.2f,%.2f,%d)",Mptr->stnid,obs_date,Mptr->temp,Mptr->winData.windSpeed,
-			Mptr->winData.windDir,Mptr->inches_altstng,Mptr->prevail_vsbySM,Mptr->dew_pt_temp);
+			"VALUES ('%s','%s',%d,%d,%d,%.2f,%.2f,%d)",
+			Mptr->stnid,obs_date, Mptr->temp, Mptr->winData.windSpeed,
+			Mptr->winData.windDir, Mptr->inches_altstng, Mptr->prevail_vsbySM, Mptr->dew_pt_temp);
 
 	PGresult *res = PQexec(conn, postsql);
     if (PQresultStatus(res) != PGRES_COMMAND_OK)
     	if (PQresultStatus(res) != 7)
-    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+    		fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
     PQclear(res);
 }
