@@ -79,6 +79,8 @@ void tafWind(char *d, char *s, char *gs, char *temp, char *taf_wind)
 
 	if (w_len == 7) {
 		strncpy(kt, temp + 5, 2);
+		kt[2]='\0';
+
 		if (strcmp(kt, "KT") != 0)
 			sprintf(taf_wind, "1unknown(%s)", temp);
 		else {
@@ -91,6 +93,7 @@ void tafWind(char *d, char *s, char *gs, char *temp, char *taf_wind)
 	}
 	else if (w_len == 10) {
 		strncpy(kt, temp + 8, 2);
+		kt[2]='\0';
 		if (strcmp(kt, "KT") != 0)
 			sprintf(taf_wind, "2unknown(%s)", temp);
 		else {
@@ -122,6 +125,8 @@ void tafVisibilty(char *temp, char *taf_vis)
 	int len_v, sm = 0;
 	char vis[10];
 
+	if (temp == NULL)
+		return;
 	len_v = strlen(temp);
 
 	if (strncmp(temp, "P", 1) == 0) {
@@ -139,10 +144,17 @@ void tafVisibilty(char *temp, char *taf_vis)
 
 		sprintf(taf_vis, "%s statue miles", vis);
 	}
-	else if (strncmp(temp, "9999", 4) == 0)
+	else if (strncmp(temp, "9999", 4) == 0) {
 		sprintf(taf_vis, "Clear");
-	else
+	}
+	else if(isdigit(temp[0])) {
 		sprintf(taf_vis, "%s meters", temp);
+	}
+	else
+		sprintf(taf_vis, " Unknown vis (%s)", temp);
+
+
+
 }
 
 void tafWeather(char *taf_list, char *taf_wx)

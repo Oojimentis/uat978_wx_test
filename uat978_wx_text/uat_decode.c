@@ -1203,12 +1203,19 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					strncpy(sd, time_copy, 2);
 					sd[2] = '\0';
 					dx = atoi(sd);
+
 					daySuffix(dx, dt);
+
 					sprintf(sd, "%d%s", dx, dt);
 					strncpy(fsz, time_copy + 2, 4);
 					fsz[4] = '\0';
+
 					fprintf(filetaf, "Issued: %s at %sz\n", sd, fsz);
-					sprintf(issued, "%s at %sz\n", sd, fsz);
+					sprintf(issued, "%s at %sz", sd, fsz);
+				}
+				else {
+					fprintf(filetaf, "No issue date ");
+					sprintf(issued, "No issue date ");
 				}
 				taf_copy = (char *)malloc(strlen(r) + 1);
 				strcpy(taf_copy, r);
@@ -1227,6 +1234,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					taf_decode(taf_lines[j], issued, fsz, gstn);
 				}
 			}	 // End TAF decode
+
 			if (strcmp(mtype, "WINDS") == 0) {
 				char *tok1;  char *tok2; char *tok3; char *tok4;
 				char winds[91];
