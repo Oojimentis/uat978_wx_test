@@ -70,6 +70,11 @@
 #define LPLSN   5180
 #define RASN 	36080
 
+#define LFZRAPL   18446744073709207664u
+#define LRAPL   6048
+#define SHSN   37780
+#define DRSN   23780
+
 void taf_decode(char *taf_lines, char *issued, char *fsz, char *gstn);
 
 void daySuffix(int d, char *dt);
@@ -78,7 +83,7 @@ void validDates(char *sd, char *sz, char *ed, char *ez, char *str);
 
 void tafWind(char *d, char *s, char *gs, char *temp, char *taf_wind);
 
-void tafVisibilty(char *temp, char *taf_vis);
+void tafVisibilty(char *temp, char *taf_vis, char *taf_lines);
 
 void tafWeather(char *taf_list, char *taf_wx);
 
