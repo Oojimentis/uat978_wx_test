@@ -1199,6 +1199,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				fprintf(to, "station: %s\n", gstn);
 				strncpy(n, time_copy + 4, 1);
 
+				if (strcmp(gstn,"KNYG") == 0)
+				fprintf(stderr,"moo!");
+
 				if (strcmp(n, "/") != 0) {
 					strncpy(sd, time_copy, 2);
 					sd[2] = '\0';

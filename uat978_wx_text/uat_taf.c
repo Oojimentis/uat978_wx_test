@@ -120,14 +120,22 @@ void tafWind(char *d, char *s, char *gs, char *temp, char *taf_wind)
 		sprintf(taf_wind, "%s -gusts %skt", taf_wind,gs);
 }
 
-void tafVisibilty(char *temp, char *taf_vis)
+void tafVisibilty(char *temp, char *taf_vis, char *temp2)
 {													// Decode visibility.
 	int len_v, sm = 0;
 	char vis[10];
 
+	taf_vis[0] = '\0';
+
 	if (temp == NULL)
 		return;
 	len_v = strlen(temp);
+
+	if (len_v == 1){
+		sprintf(taf_vis, "%s", temp);
+		len_v = strlen(temp2);
+		strcpy(temp,temp2);
+	}
 
 	if (strncmp(temp, "P", 1) == 0) {
 		strncpy(vis, temp + 1, len_v - 3);
@@ -142,7 +150,7 @@ void tafVisibilty(char *temp, char *taf_vis)
 	else if (strncmp(temp +( len_v - 2), "SM", 2) == 0) {
 		strncpy(vis,temp, len_v - 2);
 
-		sprintf(taf_vis, "%s statue miles", vis);
+		sprintf(taf_vis, "%s %s statue miles", taf_vis, vis);
 	}
 	else if (strncmp(temp, "9999", 4) == 0) {
 		sprintf(taf_vis, "Clear");
@@ -152,9 +160,6 @@ void tafVisibilty(char *temp, char *taf_vis)
 	}
 	else
 		sprintf(taf_vis, " Unknown vis (%s)", temp);
-
-
-
 }
 
 void tafWeather(char *taf_list, char *taf_wx)
@@ -234,10 +239,13 @@ void tafWeather(char *taf_list, char *taf_wx)
 		case AUTOMATED:	sprintf(taf_wx, "%s AUTOMATED", taf_wx);break;
 		case VCSH: 		sprintf(taf_wx, "%s Showers in the vicinity,", taf_wx); break;
 		case VCTS: 		sprintf(taf_wx, "%s Thunderstorm in vicinity,", taf_wx); break;
-		case LPLSN:		sprintf(taf_wx, "%s Light ice pellets/snow", taf_wx); break;
+		case LPLSN:		sprintf(taf_wx, "%s Light ice pellets/snow,", taf_wx); break;
+		case LFZRAPL:	sprintf(taf_wx, "%s Light Freezing rain.ice pellets,", taf_wx); break;
+		case LRAPL:		sprintf(taf_wx, "%s Light Rain/pellets/snow,", taf_wx); break;
+		case SHSN:		sprintf(taf_wx, "%s Showers/snow,", taf_wx); break;
+		case DRSN:		sprintf(taf_wx, "%s Drizzle/snow,", taf_wx); break;
 
 		default:	found = 0; break;
-
 		}
 		if (found == 0){
 			if (strncmp(temp, "BKN", 3) == 0) {
@@ -299,7 +307,7 @@ void tafWeather(char *taf_list, char *taf_wx)
 				units_f = atof(temp2);
 				sprintf(taf_wx, "%s Altimeter %2.2fHg", taf_wx, units_f/100);
 			}
-			else if (strncmp(temp, "6", 1) == 0) {
+			else if ((strncmp(temp, "6", 1) == 0) && (strlen(temp) == 6)) {
 				units = strlen(temp);
 				if (units == 6) {
 					int ice1, ice2, ice3;
@@ -414,10 +422,22 @@ void tafWeather(char *taf_list, char *taf_wx)
 				validDates(sd, sz, ed, ez, temp);
 
 				temp = strsep(&taf_list, " ");
-				tafVisibilty(temp, temp2);
+				tafVisibilty(temp, temp2,taf_list);
 				sprintf(taf_wx, "%s %s%% Probability %s %s:00z - %s %s:00z %s", taf_wx, perc, sd, sz, ed, ez, temp2);
 			}
-			else if (strncmp(temp, "5", 1) == 0) {
+			else if (strlen(temp) == 4) {
+				int vis_met = 0;
+				for (int k = 0; k < 4; ++k) {
+					if (isdigit(temp[k]))
+						vis_met++;
+				}
+				if (vis_met == 4) {
+					temp2[0] = '\0';
+					tafVisibilty(temp, temp2,"  ");
+					sprintf(taf_wx, "%s %s", taf_wx,temp2);
+				}
+			}
+			else if ((strncmp(temp, "5", 1) == 0) && (strlen(temp) == 6 )) {
 				units=strlen(temp);
 				if (units == 6){
 					int turb1, turb2, turb3;
@@ -458,7 +478,6 @@ void tafWeather(char *taf_list, char *taf_wx)
 			}
 			else
 				sprintf(taf_wx, "%s 5Unknown (%s)", taf_wx, temp);
-
 		}
 		temp = strsep(&taf_list, " ");
 	}
@@ -471,7 +490,7 @@ void taf_decode(char *taf_lines,char *issued, char *reptime, char *gstn)
 	char fsz[5];
 	char taf_t[5];
 	char d[4], s[4], gs[4];
-	char *temp;
+	char *temp, *temp2;
 	char taf_temp[200];
 	char taf_cld[50];
 	int dx;
@@ -491,8 +510,10 @@ void taf_decode(char *taf_lines,char *issued, char *reptime, char *gstn)
 	strncpy(taf_t, taf_lines, 2);
 	taf_t[2] = '\0';
 
-	if(isdigit(taf_t[0])) {      		 // 1st line?
-		temp = strsep(&taf_lines, " ");
+	temp = strsep(&taf_lines, " ");
+
+	if ((isdigit(taf_t[0])) && (strlen(temp) != 6)) {      		 					// (current) 1st line?
+
 		mil[0] = temp[4];
 
 		if (mil[0] == '/') {
@@ -506,23 +527,24 @@ void taf_decode(char *taf_lines,char *issued, char *reptime, char *gstn)
 				sprintf(wind, "Station not active");
 				nil = 1;
 			}
-	// winds / NIL=
 		}
-//		else
-//			fprintf(stderr, "moo");
-
+// winds / NIL=
 		if (nil == 0) {
 			tafWind(d, s, gs, temp, taf_temp);
 			fprintf(filetaf, " Wind: %s", taf_temp);
 			sprintf(wind, "%s", taf_temp);
-
-	// visibility
+// visibility
 			temp = strsep(&taf_lines, " ");
-			tafVisibilty(temp, taf_temp);
-			fprintf(filetaf, " Vis: %s", taf_temp);
-			sprintf(visby, "%s", taf_temp);
+			temp_len = strlen(temp);
+			if ((strncmp(temp + (temp_len -2 ), "SM", 2) == 0) || (temp_len == 1) || (temp_len == 4)) {
+				if (temp_len ==1)
+					temp2 = strsep(&taf_lines, " ");
 
-	// WX sky
+				tafVisibilty(temp, taf_temp,temp2);
+				fprintf(filetaf, " Vis:%s", taf_temp);
+				sprintf(visby, "%s", taf_temp);
+			}
+// WX sky
 			taf_temp[0] = '\0';
 			tafWeather(taf_lines, taf_temp);
 			fprintf(filetaf ," Condx:%s\n\n", taf_temp);
@@ -547,30 +569,30 @@ void taf_decode(char *taf_lines,char *issued, char *reptime, char *gstn)
 	    PQclear(res);
 	}
 	else if (strcmp(taf_t, "BE") == 0){						// BECMG
-		temp = strsep(&taf_lines, " ");
+//		temp = strsep(&taf_lines, " ");
 		temp = strsep(&taf_lines, " ");
 		validDates(sd, sz, ed, ez, temp);
 		fprintf(filetaf, "Becoming: %s at %s:00z", sd, sz);
 		fprintf(filetaf, "-%s at %s:00z", ed, ez);
 
-	// winds
+// winds
 		temp = strsep(&taf_lines, " ");
 		tafWind(d, s, gs,temp, taf_temp);
 		fprintf(filetaf, " Wind: %s", taf_temp);
 
-	//visibility
+//visibility
 		temp = strsep(&taf_lines, " ");
-		tafVisibilty(temp, taf_temp);
-		fprintf(filetaf, " Vis: %s", taf_temp);
+		tafVisibilty(temp, taf_temp,taf_lines);
+		fprintf(filetaf, " Vis:%s", taf_temp);
 
-	// WX sky
+// WX sky
 		taf_temp[0] = '\0';
 		tafWeather(taf_lines, taf_temp);
 		fprintf(filetaf, " Condx:%s\n\n", taf_temp);
 		temp = strsep(&taf_lines, " ");
 	}
 	else if (strcmp(taf_t, "FM") == 0){						// FROM
-		temp = strsep(&taf_lines, " ");
+//		temp = strsep(&taf_lines, " ");
 		strncpy(sd, temp + 2, 2);
 		sd[2] = '\0';
 		dx = atoi(sd);
@@ -580,29 +602,30 @@ void taf_decode(char *taf_lines,char *issued, char *reptime, char *gstn)
 		fsz[4] = '\0';
 		fprintf(filetaf, "From: %s at %sz", sd, fsz);
 
-	// winds
+// winds
 		temp = strsep(&taf_lines, " ");
 		tafWind(d, s, gs, temp, taf_temp);
 		fprintf(filetaf, " Wind: %s", taf_temp);
 
-	// visibility
+// visibility
 		temp = strsep(&taf_lines, " ");
-		tafVisibilty(temp, taf_temp);
-		fprintf(filetaf ," Vis: %s", taf_temp);
+		temp2 = strsep(&taf_lines, " ");
+		tafVisibilty(temp, taf_temp,temp2);
+		fprintf(filetaf ," Vis:%s", taf_temp);
 
-	// WX sky
+// WX sky
 		taf_temp[0] = '\0';
 		tafWeather(taf_lines, taf_temp);
 		fprintf(filetaf, " Condx:%s\n\n", taf_temp);
 	}
-	else if (strcmp(taf_t, "TE") == 0) {						// TEMPO
+	else if (strcmp(taf_t, "TE") == 0) {					// TEMPO
 		temp = strsep(&taf_lines, " ");
-		validDates(sd, sz, ed, ez, taf_lines);
+		validDates(sd, sz, ed, ez, temp);
 		fprintf(filetaf, "Temporary: %s at %s:00z", sd, sz);
 		fprintf(filetaf, "-%s at %s:00z", ed, ez);
 
 		temp = strsep(&taf_lines, " ");
-		temp = strsep(&taf_lines, " ");
+//		temp = strsep(&taf_lines, " ");
 
 		temp_len = strlen(temp);
 
@@ -616,25 +639,16 @@ void taf_decode(char *taf_lines,char *issued, char *reptime, char *gstn)
 			}
 		}
 		if (temp != NULL){
-			if (strncmp(temp + (temp_len -2 ), "SM", 2) == 0) {
-				tafVisibilty(temp, taf_temp);
-				fprintf(filetaf, " Vis: %s", taf_temp);
+			if ((strncmp(temp + (temp_len -2 ), "SM", 2) == 0) || (temp_len == 1) || (temp_len == 4)) {
+				if (temp_len ==1)
+					temp2 = strsep(&taf_lines, " ");
+
+				tafVisibilty(temp, taf_temp,temp2);
+				fprintf(filetaf, " Vis:%s", taf_temp);
 				sw = 1;
 			}
-			else if (temp_len == 4) {
-				int vis_met = 0;
-				for (int k = 0; k < 4; ++k) {
-					if (isdigit(temp[k]))
-						vis_met++;
-				}
-				if (vis_met == 4) {
-					tafVisibilty(temp, taf_temp);
-					fprintf(filetaf," Vis:%s", taf_temp);
-					sw = 1;
-				}
-			}
 
-	// WX Sky
+// WX Sky
 			taf_temp[0] = '\0';
 
 			if (taf_lines){
@@ -651,13 +665,13 @@ void taf_decode(char *taf_lines,char *issued, char *reptime, char *gstn)
 			fprintf(filetaf, " Condx:%s\n\n", taf_temp);
 		}
 	}
-	else if (strcmp(taf_t, "QN") == 0) {			// Military
+	else if (strcmp(taf_t, "QN") == 0) {					// Military
 		taf_temp[0] = '\0';
 		fprintf(filetaf, " Other: %s", taf_lines);
 		tafWeather(taf_lines, taf_temp);
 				fprintf(filetaf, " Condx:%s\n\n", taf_temp);
 	}
-	else if (strcmp(taf_t, "VR") == 0) {			// Military?
+	else if (strcmp(taf_t, "VR") == 0) {					// Military?
 		fprintf(filetaf, " Other: %s\n", taf_lines);
 		temp = strsep(&taf_lines, " ");
 
@@ -666,12 +680,16 @@ void taf_decode(char *taf_lines,char *issued, char *reptime, char *gstn)
 
 		temp = strsep(&taf_lines, " ");
 
-		tafVisibilty(temp, taf_temp);
-		fprintf(filetaf, " Vis: %s", taf_temp);
+		tafVisibilty(temp, taf_temp,taf_lines);
+		fprintf(filetaf, " Vis:%s", taf_temp);
 		taf_temp[0] = '\0';
 
 		tafWeather(taf_lines, taf_temp);
 		fprintf(filetaf, " Condx:%s\n\n", taf_temp);
+	}
+	else if (strlen(temp) == 6) {
+		tafWeather(taf_lines, taf_temp);
+		fprintf(filetaf, " grunties Condx:%s\n\n", taf_temp);
 	}
 	else
 		fprintf(filetaf," Not found %s\n", taf_lines);
