@@ -75,6 +75,8 @@
 #define SHSN   37780
 #define DRSN   23780
 
+#define SNPL   38348
+
 void taf_decode(char *taf_lines, char *issued, char *fsz, char *gstn);
 
 void daySuffix(int d, char *dt);
