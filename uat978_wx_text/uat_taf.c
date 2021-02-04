@@ -180,7 +180,7 @@ void tafWeather(char *taf_list, char *taf_wx)
 		l=strlen(temp);
 
 		switch(getHash(temp)) {
-		case BC:			sprintf(taf_wx, "%s Patches,", taf_wx); break;
+		case BC:		sprintf(taf_wx, "%s Patches,", taf_wx); break;
 		case BL: 		sprintf(taf_wx, "%s Blowing,", taf_wx); break;
 		case BLSN: 		sprintf(taf_wx, "%s Blowing snow,", taf_wx); break;
 		case DR: 		sprintf(taf_wx, "%s Low drifting,", taf_wx); break;
@@ -190,7 +190,7 @@ void tafWeather(char *taf_list, char *taf_wx)
 		case FU: 		sprintf(taf_wx, "%s Smoke,", taf_wx); break;
 		case GRHAIL: 	sprintf(taf_wx, "%s Hail,", taf_wx); break;
 		case GS: 		sprintf(taf_wx, "%s Small hail and/or snow pellets,", taf_wx); break;
-		case IC: 			sprintf(taf_wx, "%s Ice crystals,", taf_wx); break;
+		case IC: 		sprintf(taf_wx, "%s Ice crystals,", taf_wx); break;
 		case MI: 		sprintf(taf_wx, "%s Shallow,", taf_wx); break;
 		case PL: 		sprintf(taf_wx, "%s Ice pellets,", taf_wx); break;
 		case PO: 		sprintf(taf_wx, "%s Dust/sand whirls,", taf_wx); break;
@@ -220,11 +220,11 @@ void tafWeather(char *taf_list, char *taf_wx)
 		case LSNRA: 	sprintf(taf_wx, "%s Light snow/rain,", taf_wx); break;
 		case LSHSN: 	sprintf(taf_wx, "%s Light snow shower,", taf_wx); break;
 		case LSNDZ: 	sprintf(taf_wx, "%s Light snow/drizzle,", taf_wx); break;
-		case LFZDZSN: sprintf(taf_wx, "%s Light freezing snow/drizzle,", taf_wx); break;
+		case LFZDZSN: 	sprintf(taf_wx, "%s Light freezing snow/drizzle,", taf_wx); break;
 		case LFZRADZ: 	sprintf(taf_wx, "%s Light freezing rain/drizzle,", taf_wx); break;
 		case LFZDZ: 	sprintf(taf_wx, "%s Light freezing drizzle,", taf_wx); break;
 		case LSNPL: 	sprintf(taf_wx, "%s Light snow/ice pellets,", taf_wx); break;
-		case LSHRASN: sprintf(taf_wx, "%s Light showers rain/snow,", taf_wx); break;
+		case LSHRASN: 	sprintf(taf_wx, "%s Light showers rain/snow,", taf_wx); break;
 		case LSHRAPL: 	sprintf(taf_wx, "%s Light showers rain/ice pellets,", taf_wx); break;
 		case LSHRAPLSN: sprintf(taf_wx, "%s Light showers rain/ice pellets/snow,", taf_wx); break;
 		case TSRA: 		sprintf(taf_wx, "%s Thunderstorm and rain,", taf_wx); break;
@@ -236,7 +236,7 @@ void tafWeather(char *taf_list, char *taf_wx)
 		case HRA: 		sprintf(taf_wx, "%s Heavy rain,", taf_wx); break;
 		case LPL: 		sprintf(taf_wx, "%s Light ice pellets,", taf_wx); break;
 		case BR: 		sprintf(taf_wx, "%s Mist,", taf_wx); break;
-		case AUTOMATED:		sprintf(taf_wx, "%s AUTOMATED", taf_wx);break;
+		case AUTOMATED:	sprintf(taf_wx, "%s AUTOMATED", taf_wx);break;
 		case VCSH: 		sprintf(taf_wx, "%s Showers in the vicinity,", taf_wx); break;
 		case VCTS: 		sprintf(taf_wx, "%s Thunderstorm in vicinity,", taf_wx); break;
 		case LPLSN:		sprintf(taf_wx, "%s Light ice pellets/snow,", taf_wx); break;
@@ -398,7 +398,6 @@ void tafWeather(char *taf_list, char *taf_wx)
 			}
 			else if ((strncmp(temp, "T", 1) == 0) && ((strncmp(temp + 3, "/", 1) == 0)  ||
 					                                   (strncmp(temp + 4, "/",1) == 0))) {
-
 				int d;
 				if (temp[1] =='M') {
 					strncpy(temp2, temp + 2, 2);
@@ -539,8 +538,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 	taf_lines = (char *)malloc(strlen(taf_linzs) + 1);
 				strcpy(taf_lines,taf_linzs);
 
-
-	// Valid dates
+// Valid dates
 	strncpy(taf_t, taf_lines, 2);
 	taf_t[2] = '\0';
 
@@ -562,12 +560,12 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 				nil = 1;
 			}
 		}
-// winds / NIL=
+// Winds / NIL=
 		if (nil == 0) {
 			tafWind(d, s, gs, temp, taf_temp);
 			fprintf(filetaf, " Wind: %s", taf_temp);
 			sprintf(wind, "%s", taf_temp);
-// visibility
+// Visibility
 			temp = strsep(&taf_lines, " ");
 			temp_len = strlen(temp);
 			if ((strncmp(temp + (temp_len -2 ), "SM", 2) == 0) || (temp_len == 1) || (temp_len == 4)) {
@@ -587,7 +585,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 // WX sky
 			taf_temp[0] = '\0';
 			tafWeather(taf_lines, taf_temp);
-			fprintf(filetaf ," Condx:%s\n\n", taf_temp);
+			fprintf(filetaf ," Condx:%s\n", taf_temp);
 			sprintf(condx, "%s", taf_temp);
 		}
 		else {
@@ -609,18 +607,17 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 	    PQclear(res);
 	}
 	else if (strcmp(taf_t, "BE") == 0){						// BECMG
-//		temp = strsep(&taf_lines, " ");
 		temp = strsep(&taf_lines, " ");
 		validDates(sd, sz, ed, ez, temp);
 		fprintf(filetaf, "Becoming: %s at %s:00z", sd, sz);
 		fprintf(filetaf, "-%s at %s:00z", ed, ez);
 
-// winds
+// Winds
 		temp = strsep(&taf_lines, " ");
 		tafWind(d, s, gs,temp, taf_temp);
 		fprintf(filetaf, " Wind: %s", taf_temp);
 
-//visibility
+// Visibility
 		temp = strsep(&taf_lines, " ");
 		temp_len = strlen(temp);
 		if ((strncmp(temp + (temp_len -2 ), "SM", 2) == 0) || (temp_len == 1) || (temp_len == 4)) {
@@ -639,11 +636,10 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 // WX sky
 		taf_temp[0] = '\0';
 		tafWeather(taf_lines, taf_temp);
-		fprintf(filetaf, " Condx:%s\n\n", taf_temp);
+		fprintf(filetaf, " Condx:%s\n", taf_temp);
 		temp = strsep(&taf_lines, " ");
 	}
 	else if (strcmp(taf_t, "FM") == 0){						// FROM
-//		temp = strsep(&taf_lines, " ");
 		strncpy(sd, temp + 2, 2);
 		sd[2] = '\0';
 		dx = atoi(sd);
@@ -653,12 +649,12 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 		fsz[4] = '\0';
 		fprintf(filetaf, "From: %s at %sz", sd, fsz);
 
-// winds
+// Winds
 		temp = strsep(&taf_lines, " ");
 		tafWind(d, s, gs, temp, taf_temp);
 		fprintf(filetaf, " Wind: %s", taf_temp);
 
-// visibility
+// Visibility
 		temp = strsep(&taf_lines, " ");
 		if (temp) {
 			temp_len = strlen(temp);
@@ -673,7 +669,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 // WX sky
 		taf_temp[0] = '\0';
 		tafWeather(taf_lines, taf_temp);
-		fprintf(filetaf, " Condx:%s\n\n", taf_temp);
+		fprintf(filetaf, " Condx:%s\n", taf_temp);
 	}
 	else if (strcmp(taf_t, "TE") == 0) {					// TEMPO
 		temp = strsep(&taf_lines, " ");
@@ -682,8 +678,6 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 		fprintf(filetaf, "-%s at %s:00z", ed, ez);
 
 		temp = strsep(&taf_lines, " ");
-//		temp = strsep(&taf_lines, " ");
-
 		temp_len = strlen(temp);
 
 		if (strncmp(temp + (temp_len - 2), "KT", 2) == 0) {
@@ -719,22 +713,20 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 			else {
 				tafWeather(temp, taf_temp);
 			}
-			fprintf(filetaf, " Condx:%s\n\n", taf_temp);
+			fprintf(filetaf, " Condx:%s\n", taf_temp);
 		}
 	}
 	else if (strcmp(taf_t, "QN") == 0) {					// Military
 		taf_lines = (char *)malloc(strlen(taf_linzs) + 1);
 		strcpy(taf_lines,taf_linzs);
-//		temp[temp_len + 1] = '\0';
-//		sprintf(taf_lines,"%s",t_temp);
 		taf_temp[0] = '\0';
-		fprintf(filetaf, " Other:1 %s\n", taf_lines);
+//		fprintf(filetaf, " Other:1 %s\n", taf_lines);
 		tafWeather(taf_lines, taf_temp);
-				fprintf(filetaf, " Condx:%s\n\n", taf_temp);
+				fprintf(filetaf, " Condx:%s\n", taf_temp);
 	}
 	else if (strcmp(taf_t, "VR") == 0) {					// Military?
-		fprintf(filetaf, " Other2: %s\n", taf_lines);
-		temp = strsep(&taf_lines, " ");
+//		fprintf(filetaf, " Other2: %s\n", taf_lines);
+//		temp = strsep(&taf_lines, " ");
 
 		tafWind(d, s, gs, temp, taf_temp);
 		fprintf(filetaf, " Wind:%s", taf_temp);
@@ -746,7 +738,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 		taf_temp[0] = '\0';
 
 		tafWeather(taf_lines, taf_temp);
-		fprintf(filetaf, " Condx:%s\n\n", taf_temp);
+		fprintf(filetaf, " Condx:%s\n", taf_temp);
 	}
 	else if (strlen(temp) == 6) {
 		taf_lines = (char *)malloc(strlen(taf_linzs) + 1);
@@ -754,15 +746,16 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 
 		taf_temp[0] = '\0';
 		tafWeather(taf_lines, taf_temp);
-		fprintf(filetaf, " Condx:%s\n\n", taf_temp);
+		fprintf(filetaf, " Condx:%s\n", taf_temp);
+	}
+	else if ((strcmp(taf_t, "AM") == 0) || (strcmp(taf_t, "LA") == 0)) {
+		fprintf(filetaf, "Other/Remarks: %s\n", taf_linzs);
 	}
 	else {
-//		fprintf(filetaf," Not found %s\n", taf_lines);
 		taf_lines = (char *)malloc(strlen(taf_linzs) + 1);
 		strcpy(taf_lines,taf_linzs);
-
 		taf_temp[0] = '\0';
 		tafWeather(taf_lines, taf_temp);
-		fprintf(filetaf, " Condx:%s\n\n", taf_temp);
+		fprintf(filetaf, "Condx:%s\n", taf_temp);
 	}
 }
