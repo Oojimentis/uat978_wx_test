@@ -41,22 +41,22 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 	case 70:										// ** Icing Low **************
 		switch(ice_alt) {
 		case 0:		alt_level = 2000;	break;
-		case 1:		alt_level = 4000; 	break;
-		case 2:		alt_level = 6000; 	break;
-		case 3:		alt_level = 8000; 	break;
-		case 4:		alt_level = 10000; 	break;
-		case 5:		alt_level = 12000; 	break;
-		case 6:		alt_level = 14000; 	break;
-		case 7:		alt_level = 16000; 	break;
+		case 1:		alt_level = 4000;	break;
+		case 2:		alt_level = 6000;	break;
+		case 3:		alt_level = 8000;	break;
+		case 4:		alt_level = 10000;	break;
+		case 5:		alt_level = 12000;	break;
+		case 6:		alt_level = 14000;	break;
+		case 7:		alt_level = 16000;	break;
 	}
 		break;
 
 	case 71:										// ** Icing High **************
 		switch(ice_alt) {
-		case 0:    alt_level = 18000; break;
-		case 1:    alt_level = 20000; break;
-		case 2:    alt_level = 22000; break;
-		case 3:    alt_level = 24000; break;
+		case 0:		alt_level = 18000;	break;
+		case 1:		alt_level = 20000;	break;
+		case 2:		alt_level = 22000;	break;
+		case 3:		alt_level = 24000;	break;
 		}
 		break;
 
@@ -66,23 +66,23 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 
 	case 90:										// ** Turbulence Low **************
 		switch(ice_alt){
-		case 0:     alt_level = 2000; 	break;
-		case 1:     alt_level = 4000; 	break;
-		case 2:     alt_level = 6000; 	break;
-		case 3:     alt_level = 8000; 	break;
-		case 4:     alt_level = 10000; 	break;
-		case 5:     alt_level = 12000; 	break;
-		case 6:     alt_level = 14000; 	break;
-		case 7:     alt_level = 16000; 	break;
+		case 0:		alt_level = 2000;	break;
+		case 1:		alt_level = 4000;	break;
+		case 2:		alt_level = 6000;	break;
+		case 3:		alt_level = 8000;	break;
+		case 4:		alt_level = 10000;	break;
+		case 5:		alt_level = 12000;	break;
+		case 6:		alt_level = 14000;	break;
+		case 7:		alt_level = 16000;	break;
 	}
 		break;
 
 	case 91:										// ** Turbulence High **************
 		switch(ice_alt){
-		case 0:    alt_level = 18000; break;
-		case 1:    alt_level = 20000; break;
-		case 2:    alt_level = 22000; break;
-		case 3:    alt_level = 24000; break;
+		case 0:		alt_level = 18000;	break;
+		case 1:		alt_level = 20000;	break;
+		case 2:		alt_level = 22000;	break;
+		case 3:		alt_level = 24000;	break;
 	}
 		break;
 
@@ -138,10 +138,10 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 			asprintf(&postsql, "%s '%s')", postsql, block);
 
 			PGresult *res = PQexec(conn, postsql);
-		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
-		       fprintf(stderr, "bad sql %s\n%s \n", PQerrorMessage(conn), postsql);
+			if (PQresultStatus(res) != PGRES_COMMAND_OK)
+				fprintf(stderr, "bad sql %s\n%s \n", PQerrorMessage(conn), postsql);
 
-		    PQclear(res);
+			PQclear(res);
 		}
 		if (apdu->product_id == 70 || apdu->product_id == 71) {
 			for (int i = 3; i < apdu->length; ++i) {
@@ -150,7 +150,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 //**			int sld = apdu->data[i] >> 6;
 //**			int ice_sev = (apdu->data[i]) & 56;
 				ice_prob = (apdu->data[i]) & 7;
-    			
+
 				while (num_bins-- > 0){
 					charValue = ice_prob+'0';
 					sprintf(block, "%s%c", block, charValue);
@@ -159,11 +159,11 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 			asprintf(&postsql, "%s '%s')", postsql, block);
 
 			PGresult *res = PQexec(conn, postsql);
-		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
-		    	if (PQresultStatus(res) != 7)
-		    		fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+			if (PQresultStatus(res) != PGRES_COMMAND_OK)
+				if (PQresultStatus(res) != 7)
+					fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
-		    PQclear(res);
+			PQclear(res);
 		}
 		if (apdu->product_id == 103) {
 			for (int i = 3; i < apdu->length; ++i) {
@@ -175,7 +175,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					i = i + 1;
 					num_bins = (apdu->data[i]) + 1;
 				}
-		       	
+
 				while (num_bins-- > 0) {
 					charValue = lgt_cnt + '0';
 					sprintf(block, "%s%c", block, charValue);
@@ -185,11 +185,11 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 			asprintf(&postsql, "%s '%s')", postsql, block);
 
 			PGresult *res = PQexec(conn, postsql);
-		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
-		    	if (PQresultStatus(res) != 7)
-		    		fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+			if (PQresultStatus(res) != PGRES_COMMAND_OK)
+				if (PQresultStatus(res) != 7)
+					fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
-		    PQclear(res);
+			PQclear(res);
 		}
 		if (apdu->product_id == 90 || apdu->product_id == 91 || apdu->product_id == 84) {
 			for (int i = 3; i < apdu->length; ++i) {
@@ -201,14 +201,14 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					i = i + 1;
 					num_bins = (apdu->data[i]) + 1;
 				}
-        		
+
 				switch (edr_enc) {
-				case 10:   	enc='a';  	break;
-				case 11:  	enc='b';    break;
-				case 12:  	enc='c'; 	break;
-				case 13:  	enc='d';  	break;
-				case 14: 	enc='e';    break;
-				case 15: 	enc='f';  	break;
+				case 10:  	enc='a';	break;
+				case 11: 	enc='b';	break;
+				case 12: 	enc='c';	break;
+				case 13: 	enc='d';	break;
+				case 14:	enc='e';	break;
+				case 15:	enc='f';	break;
 				default:
 					enc = edr_enc + '0';
 					break;
@@ -218,7 +218,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					sprintf(block, "%s%c", block, enc);
 				}
 			}
-    
+
 			asprintf(&postsql, "%s '%s')", postsql, block);
 
 //			PGresult *res = PQexec(conn, postsql);
@@ -229,7 +229,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 //		    PQclear(res);
 		}
 	}
-	else {    // Empty
+	else {		// Empty
 		int row_start;
 		int row_offset;
 		int row_size;
@@ -280,15 +280,15 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						charValue = bin + '0';
 						sprintf(block, "%s%c", block, charValue);
 					}
-   			    	
+
 					asprintf(&postsql, "%s '%s')", postsql, block);
 
 					PGresult *res = PQexec(conn, postsql);
-				    if (PQresultStatus(res) != PGRES_COMMAND_OK)
-				    	if (PQresultStatus(res) != 7)
-				    		fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+					if (PQresultStatus(res) != PGRES_COMMAND_OK)
+						if (PQresultStatus(res) != 7)
+							fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
-				    PQclear(res);
+					PQclear(res);
 				}
 			}
 		}
@@ -375,9 +375,9 @@ void metar_data( Decoded_METAR *Mptr, FILE *to)
 			Mptr->winData.windDir, Mptr->inches_altstng, Mptr->prevail_vsbySM, Mptr->dew_pt_temp);
 
 	PGresult *res = PQexec(conn, postsql);
-    if (PQresultStatus(res) != PGRES_COMMAND_OK)
-    	if (PQresultStatus(res) != 7)
-    		fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+	if (PQresultStatus(res) != PGRES_COMMAND_OK)
+		if (PQresultStatus(res) != 7)
+			fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
-    PQclear(res);
+	PQclear(res);
 }
