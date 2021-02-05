@@ -107,7 +107,7 @@ void trimSpaces(char *s)
 }
 
 static double dimensions_widths[16] = {
-    11.5,23,28.5,34,33,38,39.5,45,45,52,59.5,67,72.5,80,80,90
+		11.5,23,28.5,34,33,38,39.5,45,45,52,59.5,67,72.5,80,80,90
 };
 
 static const char *gairspace_element_names[16] = {
@@ -485,11 +485,11 @@ static void get_pirep(char *Word, FILE *to)
 			pirep_RM, pirep_stn, pirep_OV);
 
 	PGresult *res = PQexec(conn, postsql);
-    if (PQresultStatus(res) != PGRES_COMMAND_OK)
-    	if (PQresultStatus(res) != 7)
-    		fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+	if (PQresultStatus(res) != PGRES_COMMAND_OK)
+		if (PQresultStatus(res) != 7)
+			fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
-    PQclear(res);
+	PQclear(res);
 }
 
 static void uat_decode_hdr(uint8_t *frame, struct uat_adsb_mdb *mdb)
@@ -735,26 +735,26 @@ void uat_decode_adsb_mdb(uint8_t *frame, struct uat_adsb_mdb *mdb)
 	uat_decode_hdr(frame,mdb);
 
 	switch (mdb->mdb_type) {
-	case 0: 	// HDR SV
-	case 4: 	// HDR SV (TC+0) (TS)
-	case 7: 	// HDR SV reserved
-	case 8: 	// HDR SV reserved
-	case 9: 	// HDR SV reserved
-	case 10: 	// HDR SV reserved
+	case 0:		// HDR SV
+	case 4:		// HDR SV (TC+0) (TS)
+	case 7:		// HDR SV reserved
+	case 8:		// HDR SV reserved
+	case 9:		// HDR SV reserved
+	case 10:	// HDR SV reserved
 		uat_decode_sv(frame,mdb);
 		break;
-	case 1: 	// HDR SV MS AUXSV
+	case 1:		// HDR SV MS AUXSV
 		uat_decode_sv(frame,mdb);
 		uat_decode_ms(frame,mdb);
 		uat_decode_auxsv(frame,mdb);
 		break;
-	case 2: 	// HDR SV AUXSV
-	case 5: 	// HDR SV (TC+1) AUXSV
-	case 6: 	// HDR SV (TS) AUXSV
+	case 2:		// HDR SV AUXSV
+	case 5:		// HDR SV (TC+1) AUXSV
+	case 6:		// HDR SV (TS) AUXSV
 		uat_decode_sv(frame,mdb);
 		uat_decode_auxsv(frame,mdb);
 		break;
-	case 3: 	// HDR SV MS (TS)
+	case 3:	// HDR SV MS (TS)
 		uat_decode_sv(frame,mdb);
 		uat_decode_ms(frame,mdb);
 		break;
@@ -926,27 +926,27 @@ static void display_generic_data(uint8_t *data,uint16_t length, FILE *to)
 static const char *get_fisb_product_name(uint16_t product_id)
 {
 	switch (product_id) {
-	case 8:		return 	"NOTAM";
-	case 9:		return 	"Aerodrome and Airspace - D-ATIS ****";
-	case 10:	return 	"Aerodrome and Airspace - TWIP ****";
-	case 11:	return 	"AIRMET";
-	case 12:	return 	"SIGMET";
-	case 13:	return 	"SUA Status";
-	case 14:	return 	"G-AIRMET";
-	case 15:	return 	"Center Weather Advisory (CWAG)";
-	case 62:	return 	"Individual NEXRAD,Type 3 - 16 Level ****";
-	case 63:	return 	"Regional NEXRAD,Type 4 - 8 Level";
-	case 64:	return 	"CONUS NEXRAD,Type 4 - 8 Level";
-	case 70:	return 	"Icing Forecast - Low";
-	case 71:	return 	"Icing Forecast - High";
-	case 84:	return 	"Cloud Tops";
-	case 90:	return 	"Turbulence Forecast - Low";
-	case 91:	return 	"Turbulence Forecast - High";
-	case 101:	return 	"Lightning Strike Type 1 (Pixel Level) ****";
-	case 102:	return 	"Lightning Strike Type 2 (Grid Element Level) ****";
-	case 103:	return 	"Lightning";
-	case 413:	return  "Generic Textual Data Product APDU Payload Format Type 2";
-	default: 	return 	"****Unknown";
+	case 8:		return	"NOTAM";
+	case 9:		return	"Aerodrome and Airspace - D-ATIS ****";
+	case 10:	return	"Aerodrome and Airspace - TWIP ****";
+	case 11:	return	"AIRMET";
+	case 12:	return	"SIGMET";
+	case 13:	return	"SUA Status";
+	case 14:	return	"G-AIRMET";
+	case 15:	return	"Center Weather Advisory (CWAG)";
+	case 62:	return	"Individual NEXRAD,Type 3 - 16 Level ****";
+	case 63:	return	"Regional NEXRAD,Type 4 - 8 Level";
+	case 64:	return	"CONUS NEXRAD,Type 4 - 8 Level";
+	case 70:	return	"Icing Forecast - Low";
+	case 71:	return	"Icing Forecast - High";
+	case 84:	return	"Cloud Tops";
+	case 90:	return	"Turbulence Forecast - Low";
+	case 91:	return	"Turbulence Forecast - High";
+	case 101:	return	"Lightning Strike Type 1 (Pixel Level) ****";
+	case 102:	return	"Lightning Strike Type 2 (Grid Element Level) ****";
+	case 103:	return	"Lightning";
+	case 413:	return	"Generic Textual Data Product APDU Payload Format Type 2";
+	default: 	return	"****Unknown";
 	}
 }
 
@@ -1199,7 +1199,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				fprintf(to, "station: %s\n", gstn);
 				strncpy(n, time_copy + 4, 1);
 
-				if (strcmp(gstn,"KNTU") == 0)
+				if (strcmp(gstn,"KBFD") == 0)
 				fprintf(stderr,"moo!");
 
 				if (strcmp(n, "/") != 0) {
@@ -2006,11 +2006,11 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 					apdu->product_id, gstn, rtime, rep_num, data_text);
 
 			PGresult *res = PQexec(conn, postsql);
-		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
-		    	if (PQresultStatus(res) != 7)
-		    		fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+			if (PQresultStatus(res) != PGRES_COMMAND_OK)
+				if (PQresultStatus(res) != 7)
+					fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
-		    PQclear(res);
+			PQclear(res);
 		}
 		if (apdu->product_id == 13) {
 			fprintf(filesua, " Data:\n%s\n", r);
