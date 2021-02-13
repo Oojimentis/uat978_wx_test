@@ -22,24 +22,20 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 
 	int rle_flag = (apdu->data[0] & 0x80) != 0;
 	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
-	int ice_alt = (apdu->data[0] & 0x70) >> 4;
-	int bin = 0;
+	int wx_alt = (apdu->data[0] & 0x70) >> 4;
 	int alt_level = 0;
 
 	char *postsql;
-	char block[200];
+	char block[5000];
 	char nexrad_time[6];
-	char charValue;
 
 	switch(apdu->product_id) {
-	case 63: case 64:								// ** NEXRAD **************
+	case 63: case 64: case 84: case 103:					// ** NEXRAD/Cloud Top/Lightning **************
 		scale_factor = (apdu->data[0] & 0x30) >> 4;
-		if (apdu->product_id == 64)
-			bin = 1;
 		break;
 
-	case 70:										// ** Icing Low **************
-		switch(ice_alt) {
+	case 70: case 90:										// ** Icing/Turbulence Low **************
+		switch(wx_alt) {
 		case 0:		alt_level = 2000;	break;
 		case 1:		alt_level = 4000;	break;
 		case 2:		alt_level = 6000;	break;
@@ -51,43 +47,13 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 	}
 		break;
 
-	case 71:										// ** Icing High **************
-		switch(ice_alt) {
+	case 71: case 91:										// ** Icing/Turbulence High **************
+		switch(wx_alt) {
 		case 0:		alt_level = 18000;	break;
 		case 1:		alt_level = 20000;	break;
 		case 2:		alt_level = 22000;	break;
 		case 3:		alt_level = 24000;	break;
 		}
-		break;
-
-	case 84:										// ** Cloud Tops **************
-		scale_factor = (apdu->data[0] & 0x30) >> 4;
-		break;
-
-	case 90:										// ** Turbulence Low **************
-		switch(ice_alt){
-		case 0:		alt_level = 2000;	break;
-		case 1:		alt_level = 4000;	break;
-		case 2:		alt_level = 6000;	break;
-		case 3:		alt_level = 8000;	break;
-		case 4:		alt_level = 10000;	break;
-		case 5:		alt_level = 12000;	break;
-		case 6:		alt_level = 14000;	break;
-		case 7:		alt_level = 16000;	break;
-	}
-		break;
-
-	case 91:										// ** Turbulence High **************
-		switch(ice_alt){
-		case 0:		alt_level = 18000;	break;
-		case 1:		alt_level = 20000;	break;
-		case 2:		alt_level = 22000;	break;
-		case 3:		alt_level = 24000;	break;
-	}
-		break;
-
-	case 103:										// ** Lightning  **************
-		scale_factor = (apdu->data[0] & 0x30) >> 4;
 		break;
 	}
 
@@ -98,74 +64,76 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 		double lonW = 0;
 		double latSize = 0;
 		double lonSize = 0;
+		float t_lat, t_lon;
 
 		int num_bins;
-		int ice_prob;
+//		int sld;
+//		int ice_prob;
+		int ice_sev;
 		int intensity;
 		int runlength;
 		int lgt_cnt;
 		int edr_enc;
+		int y = 0;
+		int x = 0;
 
 		block_location_graphic(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
-		sprintf(block, " ");
+		block[0]='\0';
 
-		if (apdu->product_id == 63){
-			asprintf(&postsql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
-			"lat_size,lon_size,level,block_data) "
-				"VALUES(%d,'NEXRAD','Regional','%s',%d,%.0f,%.0f,%.0f,%.0f,%d,",
-				apdu->product_id, nexrad_time, scale_factor, latN * 60, lonW * 60, latSize * 60, lonSize * 60,
-				alt_level);
-		}
-		else {
-			asprintf(&postsql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
-				"lat_size,lon_size,level,block_data) "
-				"VALUES(%d,'NEXRAD','CONUS','%s',%d,%.0f,%.0f,%.0f,%.0f,%d,",
-				apdu->product_id, nexrad_time, scale_factor, latN * 60, lonW * 60, latSize * 60, lonSize * 60,
-				alt_level);
-		}
 
-		if (apdu->product_id == 63 || apdu->product_id == 64) {
+		switch(apdu->product_id) {
+		case 63: case 64:
 			for (int i = 3; i < apdu->length; ++i) {
 				intensity = apdu->data[i] & 7;
 				runlength = (apdu->data[i] >> 3) + 1;
 
 				while (runlength-- > 0) {
-					charValue = intensity +'0';
-					sprintf(block, "%s%c", block, charValue);
+					t_lat = latN - (y * (latSize/4.0));
+					t_lon = lonW + (x * (lonSize/32.0));
+
+					if (intensity > 1) {
+						if ((runlength == 0) && (i == apdu->length))
+							sprintf(block,"%s[%f ,%f ,%d]",block,t_lat,t_lon,intensity);
+						else
+							sprintf(block,"%s[%f ,%f ,%d],",block,t_lat,t_lon,intensity);
+					}
+					x++;
+					if (x == 32){
+						x = 0;
+						y++;
+					}
 				}
 			}
-			asprintf(&postsql, "%s '%s')", postsql, block);
-
-			PGresult *res = PQexec(conn, postsql);
-			if (PQresultStatus(res) != PGRES_COMMAND_OK)
-				fprintf(stderr, "bad sql %s\n%s \n", PQerrorMessage(conn), postsql);
-
-			PQclear(res);
-		}
-		if (apdu->product_id == 70 || apdu->product_id == 71) {
+			break;
+		case 70: case 71:
 			for (int i = 3; i < apdu->length; ++i) {
 				num_bins = (apdu->data[i] ) + 1;
 				i = i + 1;
-//**			int sld = apdu->data[i] >> 6;
-//**			int ice_sev = (apdu->data[i]) & 56;
-				ice_prob = (apdu->data[i]) & 7;
+
+//				sld = apdu->data[i] >> 6;
+//				ice_prob = (apdu->data[i]) & 7;
+				ice_sev = (apdu->data[i]) >> 3 & 7;
 
 				while (num_bins-- > 0){
-					charValue = ice_prob+'0';
-					sprintf(block, "%s%c", block, charValue);
+					t_lat = latN - (y * (latSize/4.0));
+					t_lon = lonW + (x * (lonSize/32.0));
+
+					if (ice_sev >= 1 && ice_sev < 7) {
+						if ((num_bins == 0) && (i == apdu->length))
+							sprintf(block,"%s[%f ,%f ,%d]",block,t_lat,t_lon,ice_sev);
+						else
+							sprintf(block,"%s[%f ,%f ,%d],",block,t_lat,t_lon,ice_sev);
+					}
+					x++;
+					if (x == 32){
+						x = 0;
+						y++;
+					}
 				}
 			}
-			asprintf(&postsql, "%s '%s')", postsql, block);
-
-			PGresult *res = PQexec(conn, postsql);
-			if (PQresultStatus(res) != PGRES_COMMAND_OK)
-				if (PQresultStatus(res) != 7)
-					fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
-
-			PQclear(res);
-		}
-		if (apdu->product_id == 103) {
+			break;
+		case 103:
 			for (int i = 3; i < apdu->length; ++i) {
 //** 			int lgt_pol = apdu->data[i] & 8;
 				lgt_cnt = apdu->data[i] & 7;
@@ -177,23 +145,25 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 				}
 
 				while (num_bins-- > 0) {
-					charValue = lgt_cnt + '0';
-					sprintf(block, "%s%c", block, charValue);
+					t_lat = latN - (y * (latSize/4.0));
+					t_lon = lonW + (x * (lonSize/32.0));
+
+					if (lgt_cnt >= 1 && lgt_cnt < 7) {
+						if ((num_bins == 0) && (i == apdu->length))
+							sprintf(block,"%s[%f ,%f ,%d]",block,t_lat,t_lon,lgt_cnt);
+						else
+							sprintf(block,"%s[%f ,%f ,%d],",block,t_lat,t_lon,lgt_cnt);
+					}
+					x++;
+					if (x == 32){
+						x = 0;
+						y++;
+					}
 				}
 			}
-
-			asprintf(&postsql, "%s '%s')", postsql, block);
-
-			PGresult *res = PQexec(conn, postsql);
-			if (PQresultStatus(res) != PGRES_COMMAND_OK)
-				if (PQresultStatus(res) != 7)
-					fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
-
-			PQclear(res);
-		}
-		if (apdu->product_id == 90 || apdu->product_id == 91 || apdu->product_id == 84) {
+			break;
+		case 90: case 91: case 84:
 			for (int i = 3; i < apdu->length; ++i) {
-				char enc = ' ';
 				edr_enc  = apdu->data[i] & 15;
 				num_bins = (apdu->data[i] >> 4) + 1;
 
@@ -202,33 +172,50 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					num_bins = (apdu->data[i]) + 1;
 				}
 
-				switch (edr_enc) {
-				case 10:  	enc='a';	break;
-				case 11: 	enc='b';	break;
-				case 12: 	enc='c';	break;
-				case 13: 	enc='d';	break;
-				case 14:	enc='e';	break;
-				case 15:	enc='f';	break;
-				default:
-					enc = edr_enc + '0';
-					break;
-				}
-
 				while (num_bins-- > 0) {
-					sprintf(block, "%s%c", block, enc);
+					t_lat = latN - (y * (latSize/4.0));
+					t_lon = lonW + (x * (lonSize/32.0));
+
+					if (edr_enc >= 1 && edr_enc < 16) {
+						if ((num_bins == 0) && (i == apdu->length))
+							sprintf(block,"%s[%f ,%f ,%d]",block,t_lat,t_lon,edr_enc);
+						else
+							sprintf(block,"%s[%f ,%f ,%d],",block,t_lat,t_lon,edr_enc);
+					}
+					x++;
+					if (x == 32){
+						x = 0;
+						y++;
+					}
 				}
 			}
+		break;
+		}
+
+		if (strlen(block) != 0) {
+
+			asprintf(&postsql,"INSERT INTO nexrad_new (prod_id,block_num,maptime,alt,coords) "
+						"VALUES( %d,%d,'%s','%d',",
+						apdu->product_id, block_num,nexrad_time,alt_level);
+
+
+//			asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
+//					"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
+//					gr, apdu->product_id, rep_num, alt, ob_ele_text, start_date, stop_date, geo_overlay_opt);
+
+
 
 			asprintf(&postsql, "%s '%s')", postsql, block);
 
-//			PGresult *res = PQexec(conn, postsql);
-//		    if (PQresultStatus(res) != PGRES_COMMAND_OK)
-//		    	if (PQresultStatus(res) != 7)
-//		    		fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+			PGresult *res = PQexec(conn, postsql);
+			if (PQresultStatus(res) != PGRES_COMMAND_OK)
+				if (PQresultStatus(res) != 7)
+					fprintf(stderr,"bad sql %s \nStatus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
 
-//		    PQclear(res);
+			PQclear(res);
 		}
 	}
+/*
 	else {		// Empty
 		int row_start;
 		int row_offset;
@@ -283,16 +270,17 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 
 					asprintf(&postsql, "%s '%s')", postsql, block);
 
-					PGresult *res = PQexec(conn, postsql);
-					if (PQresultStatus(res) != PGRES_COMMAND_OK)
-						if (PQresultStatus(res) != 7)
-							fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+//					PGresult *res = PQexec(conn, postsql);
+//					if (PQresultStatus(res) != PGRES_COMMAND_OK)
+//						if (PQresultStatus(res) != 7)
+//							fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
-					PQclear(res);
+//					PQclear(res);
 				}
 			}
 		}
 	}
+*/
 	fflush(to);
 }
 
@@ -325,8 +313,8 @@ double raw_lat; double raw_lon; double scale;
 	*lonSize = (bn >= BLOCK_THRESHOLD ? WIDE_BLOCK_WIDTH : BLOCK_WIDTH) * scale;
 	*latSize = BLOCK_HEIGHT * scale;
 
-	// raw_lat/raw_lon points to the southwest corner in the northern hemisphere version
-	*lonW = raw_lon;
+// raw_lat/raw_lon points to the southwest corner in the northern hemisphere version
+//	*lonW = raw_lon;
 	if (ns) {
 		// southern hemisphere, mirror along the equator
 		*latN = 0 - raw_lat;
@@ -335,6 +323,11 @@ double raw_lat; double raw_lon; double scale;
 		// adjust to the northwest corner
 		*latN = raw_lat + BLOCK_HEIGHT;
 	}
+	if (raw_lon > 180.0) {
+		raw_lon = raw_lon - 360.0;
+	}
+
+	*lonW = raw_lon;
 }
 
 void metar_data( Decoded_METAR *Mptr, FILE *to)
@@ -377,7 +370,7 @@ void metar_data( Decoded_METAR *Mptr, FILE *to)
 	PGresult *res = PQexec(conn, postsql);
 	if (PQresultStatus(res) != PGRES_COMMAND_OK)
 		if (PQresultStatus(res) != 7)
-			fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+			fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
 	PQclear(res);
 }

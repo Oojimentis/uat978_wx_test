@@ -604,7 +604,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK)
 			if (PQresultStatus(res) != 7)
-				fprintf(stderr,"bad sql %s \nStaus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+				fprintf(stderr,"bad sql %s \nStatus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
 
 		PQclear(res);
 	}
