@@ -322,21 +322,37 @@ static void get_sua_text(char *Word, FILE *to)
 	fprintf(filesua, " Airspace Name   : %s\n", sua_aspc_nm);
 	token = strsep(&Word, "|");
 	strcpy(sua_st_tm, token);
-	snprintf(sua_st_yy, 3,"%s", sua_st_tm);
-	snprintf(sua_st_mm, 3,"%s", sua_st_tm + 2);
-	snprintf(sua_st_dd, 3,"%s", sua_st_tm + 4);
-	snprintf(sua_st_hh, 3,"%s", sua_st_tm + 6);
-	snprintf(sua_st_mn, 3,"%s", sua_st_tm + 8);
+	strncpy(sua_st_yy,sua_en_tm,2);
+	strncpy(sua_st_mm,sua_en_tm + 2,2);
+	strncpy(sua_st_dd,sua_en_tm + 4,2);
+	strncpy(sua_st_hh,sua_en_tm + 6,2);
+	strncpy(sua_st_mn,sua_en_tm + 8,2);
+	sua_st_yy[2] = '\0';
+	sua_st_mm[2] = '\0';
+	sua_st_dd[2] = '\0';
+	sua_st_hh[2] = '\0';
+	sua_st_mn[2] = '\0';
+
+//	snprintf(sua_st_yy, 3,"%s", sua_st_tm);
+//	snprintf(sua_st_mm, 3,"%s", sua_st_tm + 2);
+//	snprintf(sua_st_dd, 3,"%s", sua_st_tm + 4);
+//	snprintf(sua_st_hh, 3,"%s", sua_st_tm + 6);
+//	snprintf(sua_st_mn, 3,"%s", sua_st_tm + 8);
 
 	fprintf(filesua, " Start Time      : %s/%s/20%s %s:%s", sua_st_mm, sua_st_dd, sua_st_yy, sua_st_hh, sua_st_mn);
 
 	token = strsep(&Word, "|");
 	strcpy(sua_en_tm, token);
-	snprintf(sua_en_yy, 3, "%s", sua_en_tm);
-	snprintf(sua_en_mm, 3, "%s", sua_en_tm + 2);
-	snprintf(sua_en_dd, 3, "%s", sua_en_tm + 4);
-	snprintf(sua_en_hh, 3, "%s", sua_en_tm + 6);
-	snprintf(sua_en_mn, 3, "%s", sua_en_tm + 8);
+	strncpy(sua_en_yy,sua_en_tm,2);
+	strncpy(sua_en_mm,sua_en_tm + 2,2);
+	strncpy(sua_en_dd,sua_en_tm + 4,2);
+	strncpy(sua_en_hh,sua_en_tm + 6,2);
+	strncpy(sua_en_mn,sua_en_tm + 8,2);
+	sua_en_yy[2] = '\0';
+	sua_en_mm[2] = '\0';
+	sua_en_dd[2] = '\0';
+	sua_en_hh[2] = '\0';
+	sua_en_mn[2] = '\0';
 
 	fprintf(filesua, " End Time: %s/%s/20%s %s:%s\n", sua_en_mm, sua_en_dd, sua_en_yy, sua_en_hh, sua_en_mn);
 
