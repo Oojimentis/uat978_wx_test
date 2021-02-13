@@ -487,7 +487,7 @@ static void get_pirep(char *Word, FILE *to)
 	PGresult *res = PQexec(conn, postsql);
 	if (PQresultStatus(res) != PGRES_COMMAND_OK)
 		if (PQresultStatus(res) != 7)
-			fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+			fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
 	PQclear(res);
 }
@@ -1199,8 +1199,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				fprintf(to, "station: %s\n", gstn);
 				strncpy(n, time_copy + 4, 1);
 
-				if (strcmp(gstn,"KBFD") == 0)
-				fprintf(stderr,"moo!");
+//				if (strcmp(gstn,"KBFD") == 0)
+//				fprintf(stderr,"moo!");
 
 				if (strcmp(n, "/") != 0) {
 					strncpy(sd, time_copy, 2);
@@ -1590,8 +1590,8 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 			qualifier_flag, param_flag, rec_app_opt, date_time_format, start_date, stop_date, geo_overlay_opt,
 			overlay_op, overlay_vert_cnt, qual_text, buff);
 
-	if (geo_overlay_opt == 10)
-		fprintf(to, "moo");
+//	if (geo_overlay_opt == 10)
+//		fprintf(to, "moo");
 
 	PGresult *res;
 	switch (geo_overlay_opt) {
@@ -1638,7 +1638,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK)
 			if (PQresultStatus(res) != 7)
-				fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+				fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
 		PQclear(res);
 
@@ -1688,7 +1688,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK)
 			if (PQresultStatus(res) != 7)
-				fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+				fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
 		PQclear(res);
 
@@ -1776,7 +1776,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 			res = PQexec(conn, postsql);
 			if (PQresultStatus(res) != PGRES_COMMAND_OK){
 	//			if (PQresultStatus(res) != 7)
-					fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+					fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 			}
 			PQclear(res);
 		}
@@ -1813,7 +1813,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK)
 			if (PQresultStatus(res) != 7)
-				fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+				fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
 		PQclear(res);
 
@@ -1863,7 +1863,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 			res = PQexec(conn, postsql);
 			if (PQresultStatus(res) != PGRES_COMMAND_OK)
 				if (PQresultStatus(res) != 7)
-					fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+					fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
 			PQclear(res);
 		}
@@ -2008,7 +2008,7 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 			PGresult *res = PQexec(conn, postsql);
 			if (PQresultStatus(res) != PGRES_COMMAND_OK)
 				if (PQresultStatus(res) != 7)
-					fprintf(stderr, "bad sql %s \nStaus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+					fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
 			PQclear(res);
 		}
