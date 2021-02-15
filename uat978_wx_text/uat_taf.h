@@ -85,7 +85,7 @@ void tafWind(char *d, char *s, char *gs, char *temp, char *taf_wind);
 
 void tafVisibilty(char *temp, char *taf_vis, char *taf_lines);
 
-void tafWeather(char *taf_list, char *taf_wx);
+char* tafWeather(char *taf_list);
 
 
 #endif /* UAT_TAF_H_ */
