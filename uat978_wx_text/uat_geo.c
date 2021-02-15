@@ -6,8 +6,8 @@
  *      Keep graphics together
  */
 
-#include "/usr/include/postgresql/libpq-fe.h"
-#include <stdio.h>
+//#include "/usr/include/postgresql/libpq-fe.h"
+//#include <stdio.h>
 #include <math.h>
 #include <string.h>
 
