@@ -7,10 +7,10 @@
  */
 
 //#include "/usr/include/postgresql/libpq-fe.h"
-//#include <stdio.h>
+#include <stdio.h>
 #include <math.h>
 #include <string.h>
-
+#include <stdlib.h>
 #include "uat_decode.h"
 #include "uat_geo.h"
 #include "asprintf.h"
@@ -350,38 +350,57 @@ void metar_data( Decoded_METAR *Mptr, FILE *to)
 {
 	char *postsql;
 	char obs_date[10] = " ";
+	char temp[10];
+	char windSpeed[10];
+	char windDir[10];
+	char altstng[10];
+	char vsbySM[10];
+	char SLP[10];
+	char dew_pt_temp[10];
 
 	if (Mptr->temp > 1000)
-		Mptr->temp = 999;
-	else
+		sprintf(temp,"- ");
+	else {
 		Mptr->temp = Mptr->temp * 9/5  + 32;
-
+        sprintf(temp,"%d",Mptr->temp);
+	}
 	if (Mptr->dew_pt_temp > 1000)
-			Mptr->dew_pt_temp = 999;
-	else
+		sprintf(dew_pt_temp, "-");
+	else {
 		Mptr->dew_pt_temp = Mptr->dew_pt_temp * 9/5  + 32;
-
+		 sprintf(dew_pt_temp,"%d",Mptr->dew_pt_temp);
+	}
 	if (Mptr->winData.windSpeed > 1000)
-		Mptr->winData.windSpeed = 999;
+		sprintf(windSpeed,"-");
+	else
+		sprintf(windSpeed,"%d",Mptr->winData.windSpeed);
 
 	if (Mptr->winData.windDir > 1000)
-		Mptr->winData.windDir = 999;
+		sprintf(windDir,"-");
+	else
+		sprintf(windDir, "%d", Mptr->winData.windDir);
 
 	if (Mptr->inches_altstng > 1000)
-		Mptr->inches_altstng = 999;
+		sprintf(altstng,"-");
+	else
+		sprintf(altstng,"%.2f",	Mptr->inches_altstng);
 
 	if (Mptr->prevail_vsbySM > 1000)
-		Mptr->prevail_vsbySM = 999;
+		sprintf(vsbySM,"-");
+	else
+		sprintf(vsbySM,"%.2f",Mptr->prevail_vsbySM);
 
 	if (Mptr->SLP > 1000)
-		Mptr->SLP = 999;
+		sprintf(SLP,"-");
+	else
+		sprintf(SLP,"%.2f",Mptr->SLP);
 
 	sprintf(obs_date, "%02d %02d:%02d", Mptr->ob_date, Mptr->ob_hour, Mptr->ob_minute);
 
 	asprintf(&postsql,"INSERT INTO metar (stn_call,ob_date,temp,windsp,winddir,altimeter,visby,dewp) "
-			"VALUES ('%s','%s',%d,%d,%d,%.2f,%.2f,%d)",
-			Mptr->stnid,obs_date, Mptr->temp, Mptr->winData.windSpeed,
-			Mptr->winData.windDir, Mptr->inches_altstng, Mptr->prevail_vsbySM, Mptr->dew_pt_temp);
+			"VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
+			Mptr->stnid, obs_date, temp, windSpeed,
+			windDir, altstng, vsbySM, dew_pt_temp);
 
 	PGresult *res = PQexec(conn, postsql);
 	if (PQresultStatus(res) != PGRES_COMMAND_OK)
