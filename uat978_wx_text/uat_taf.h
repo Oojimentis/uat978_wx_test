@@ -77,11 +77,11 @@
 
 void taf_decode(char *taf_lines, char *issued, char *fsz, char *gstn);
 
-void daySuffix(int d, char *dt);
+char* daySuffix(int d);
 
 void validDates(char *sd, char *sz, char *ed, char *ez, char *str);
 
-void tafWind(char *d, char *s, char *gs, char *temp, char *taf_wind);
+char* tafWind(char *temp);
 
 void tafVisibilty(char *temp, char *taf_vis, char *taf_lines);
 

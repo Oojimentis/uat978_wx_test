@@ -7,7 +7,7 @@
 #define UAT_DECODE_H
 
 #include <stdint.h>
-#include <stdio.h>
+//#include <stdio.h>
 #include "uat.h"
 
 PGconn *conn;

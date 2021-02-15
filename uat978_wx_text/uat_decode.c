@@ -15,7 +15,7 @@
 #include <stdlib.h>
 
 #include "uat_taf.h"
-#include "uat.h"
+//#include "uat.h"
 #include "uat_decode.h"
 #include "uat_geo.h"
 #include "metar.h"
@@ -1195,7 +1195,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				char n[5] = "";
 				char *taf_lines[10];
 				char sd[10];
-				char dt[3];
+				char *dt;
+//				char dt[3];
 				char fsz[5];
 				char issued[50];
 				int dx;
@@ -1217,7 +1218,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					sd[2] = '\0';
 					dx = atoi(sd);
 
-					daySuffix(dx, dt);
+					dt = daySuffix(dx);
 
 					sprintf(sd, "%d%s", dx, dt);
 					strncpy(fsz, time_copy + 2, 4);
