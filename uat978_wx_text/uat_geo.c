@@ -26,7 +26,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 	int alt_level = 0;
 
 	char *postsql;
-	char block[5000];
+	char block[6000];
+	char block_part[200];
 	char nexrad_time[6];
 
 	switch(apdu->product_id) {
@@ -93,10 +94,15 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					t_lon = lonW + (x * (lonSize/32.0));
 
 					if (intensity > 1) {
-						if ((runlength == 0) && (i == apdu->length))
-							sprintf(block,"%s[%f ,%f ,%d]",block,t_lat,t_lon,intensity);
-						else
-							sprintf(block,"%s[%f ,%f ,%d],",block,t_lat,t_lon,intensity);
+						if ((runlength == 0) && (i == apdu->length)) {
+//					sprintf(block,"%s[%f ,%f ,%d]",block,t_lat,t_lon,intensity);
+							sprintf(block_part,"[%f ,%f ,%d]",t_lat,t_lon,intensity);
+							strcat(block,block_part);
+						}
+						else {
+							sprintf(block_part,"[%f ,%f ,%d],",t_lat,t_lon,intensity);
+							strcat(block,block_part);
+						}
 					}
 					x++;
 					if (x == 32){
@@ -120,10 +126,14 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					t_lon = lonW + (x * (lonSize/32.0));
 
 					if (ice_sev >= 1 && ice_sev < 7) {
-						if ((num_bins == 0) && (i == apdu->length))
-							sprintf(block,"%s[%f ,%f ,%d]",block,t_lat,t_lon,ice_sev);
-						else
-							sprintf(block,"%s[%f ,%f ,%d],",block,t_lat,t_lon,ice_sev);
+						if ((num_bins == 0) && (i == apdu->length)) {
+							sprintf(block_part,"[%f ,%f ,%d]",t_lat,t_lon,ice_sev);
+							strcat(block,block_part);
+						}
+						else {
+							sprintf(block_part,"[%f ,%f ,%d],",t_lat,t_lon,ice_sev);
+							strcat(block,block_part);
+						}
 					}
 					x++;
 					if (x == 32){
@@ -149,10 +159,14 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					t_lon = lonW + (x * (lonSize/32.0));
 
 					if (lgt_cnt >= 1 && lgt_cnt < 7) {
-						if ((num_bins == 0) && (i == apdu->length))
-							sprintf(block,"%s[%f ,%f ,%d]",block,t_lat,t_lon,lgt_cnt);
-						else
-							sprintf(block,"%s[%f ,%f ,%d],",block,t_lat,t_lon,lgt_cnt);
+						if ((num_bins == 0) && (i == apdu->length)) {
+							sprintf(block_part,"[%f ,%f ,%d]",t_lat,t_lon,lgt_cnt);
+							strcat(block,block_part);
+						}
+						else {
+							sprintf(block_part,"[%f ,%f ,%d],",t_lat,t_lon,lgt_cnt);
+							strcat(block,block_part);
+						}
 					}
 					x++;
 					if (x == 32){
@@ -177,10 +191,14 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					t_lon = lonW + (x * (lonSize/32.0));
 
 					if (edr_enc >= 1 && edr_enc < 16) {
-						if ((num_bins == 0) && (i == apdu->length))
-							sprintf(block,"%s[%f ,%f ,%d]",block,t_lat,t_lon,edr_enc);
-						else
-							sprintf(block,"%s[%f ,%f ,%d],",block,t_lat,t_lon,edr_enc);
+						if ((num_bins == 0) && (i == apdu->length)) {
+							sprintf(block_part,"[%f ,%f ,%d]",t_lat,t_lon,edr_enc);
+							strcat(block,block_part);
+						}
+						else {
+							sprintf(block_part,"[%f ,%f ,%d],",t_lat,t_lon,edr_enc);
+							strcat(block,block_part);
+						}
 					}
 					x++;
 					if (x == 32){
@@ -202,8 +220,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 //			asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
 //					"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
 //					gr, apdu->product_id, rep_num, alt, ob_ele_text, start_date, stop_date, geo_overlay_opt);
-
-
 
 			asprintf(&postsql, "%s '%s')", postsql, block);
 
