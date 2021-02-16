@@ -1193,7 +1193,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 			if (strcmp(mtype, "TAF") == 0 || strcmp(mtype, "TAF.AMD") == 0 || strcmp(mtype, "TAF.COR") == 0) {
 				// TAF Decode
 				char n[5] = "";
-				char *taf_lines[10];
+				char *taf_lines[20];
 				char sd[10];
 				char *dt;
 //				char dt[3];
@@ -1210,8 +1210,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				fprintf(to, "station: %s\n", gstn);
 				strncpy(n, time_copy + 4, 1);
 
-//				if (strcmp(gstn,"KBFD") == 0)
-//				fprintf(stderr,"moo!");
+				if (strcmp(gstn,"KCEF") == 0)
+				fprintf(stderr,"moo!");
 
 				if (strcmp(n, "/") != 0) {
 					strncpy(sd, time_copy, 2);
@@ -1237,7 +1237,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				int j = 0;
 				while (j == 0) {
 					taf_lines[i] = strsep(&taf_copy, "\n");
-					if (strcmp(taf_lines[i], "") == 0)
+					if (taf_lines[i] == NULL)
+						j = 1;
+					else if (strcmp(taf_lines[i], "") == 0)
 						j = 1;
 					else {
 					trimSpaces(taf_lines[i]);
