@@ -478,13 +478,13 @@ static void get_pirep(char *Word, FILE *to)
 			token = strtok(0, "/");
 			if (token) {
 // *** TODO check
-				fprintf(to, " Remarks        : %s", pirep_RM);
-				fprintf(to, "/%s\n", token);
+//				fprintf(to, " Remarks        : %s", pirep_RM);
+//				fprintf(to, "/%s\n", token);
 				strcat(pirep_RM, token);
 			}
-			else {
-				fprintf(to, " Remarks        : %s\n", pirep_RM);
-			}
+//			else {
+//				fprintf(to, " Remarks        : %s\n", pirep_RM);
+//			}
 		}
 	}
 
@@ -1210,8 +1210,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				fprintf(to, "station: %s\n", gstn);
 				strncpy(n, time_copy + 4, 1);
 
-				if (strcmp(gstn,"KCEF") == 0)
-				fprintf(stderr,"moo!");
+//				if (strcmp(gstn,"KCEF") == 0)
+//				fprintf(stderr,"moo!");
 
 				if (strcmp(n, "/") != 0) {
 					strncpy(sd, time_copy, 2);
@@ -1769,16 +1769,16 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 			r_lng = r_lng_raw * 0.2;
 			r_lat = r_lat_raw * 0.2;
 
-			fprintf(to, "lat_bot, lng_bot = %f, %f\n", lat_bot, lng_bot);
-			fprintf(to, "lat_top, lng_top = %f, %f\n", lat_top, lng_top);
+//			fprintf(to, "lat_bot, lng_bot = %f, %f\n", lat_bot, lng_bot);
+//			fprintf(to, "lat_top, lng_top = %f, %f\n", lat_top, lng_top);
 
-			if (geo_overlay_opt == 8)
-				fprintf(to, "alt_bot,alt_top = %d AGL, %d AGL  geo_opt:%d\n", alt_bot, alt_top, geo_overlay_opt);
-			else
-				fprintf(to,"alt_bot,alt_top = %d MSL, %d MSL  geo_opt:%d\n", alt_bot, alt_top, geo_overlay_opt);
+//			if (geo_overlay_opt == 8)
+//				fprintf(to, "alt_bot,alt_top = %d AGL, %d AGL  geo_opt:%d\n", alt_bot, alt_top, geo_overlay_opt);
+//			else
+//				fprintf(to,"alt_bot,alt_top = %d MSL, %d MSL  geo_opt:%d\n", alt_bot, alt_top, geo_overlay_opt);
 
-			fprintf(to, "r_lng, r_lat = %f, %f\n", r_lng, r_lat);
-			fprintf(to, "alpha =%d\n", alpha);
+//			fprintf(to, "r_lng, r_lat = %f, %f\n", r_lng, r_lat);
+//			fprintf(to, "alpha =%d\n", alpha);
 
 			asprintf(&postsql,"INSERT INTO circles(bot,top,alt_bot,alt_top,alpha,prod_id,rec_count,rep_num,"
 					"rep_year,start_date,stop_date,geo_opt,r_lat,r_lng) VALUES (ST_GeomFromText('POINT ( %f %f)',4326),"
@@ -1796,8 +1796,8 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		break;
 	case 9:	case 10:								// Extended Range 3D Point (AGL)
 
-		fprintf(to, " %d  %d  %d\n", overlay_vert_cnt, geo_overlay_opt, apdu->product_id);
-		fflush(to);
+//		fprintf(to, " %d  %d  %d\n", overlay_vert_cnt, geo_overlay_opt, apdu->product_id);
+//		fflush(to);
 
 		lng_raw = ((apdu->data[datoff + 0]) << 11) | ((apdu->data[datoff + 1]) << 3) |
 		((apdu->data[datoff + 2]) & 0xE0 >> 5);
