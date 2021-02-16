@@ -1788,7 +1788,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 
 			res = PQexec(conn, postsql);
 			if (PQresultStatus(res) != PGRES_COMMAND_OK){
-	//			if (PQresultStatus(res) != 7)
+				if (PQresultStatus(res) != 7)
 					fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 			}
 			PQclear(res);
