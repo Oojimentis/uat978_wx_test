@@ -74,6 +74,9 @@
 #define DRSN	23780
 #define SNPL	38348
 #define BCFG	20143
+#define FZRA   	26557
+#define RASNPL	3608348
+
 
 void taf_decode(char *taf_lines, char *issued, char *fsz, char *gstn);
 

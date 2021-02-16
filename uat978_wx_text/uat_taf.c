@@ -270,6 +270,9 @@ char* tafWeather(char *taf_list)
 		case SNPL:		strcat(taf_wx_all, " Snow/ice pellets,"); break;
 		case BCFG:		strcat(taf_wx_all, " Fog patches,"); break;
 
+		case FZRA:		strcat(taf_wx_all, " Freezing rain,"); break;
+		case RASNPL:		strcat(taf_wx_all, " Rain/snow/ice pellets,"); break;
+
 		default:	found = 0; break;
 		}
 		if (found == 0){
