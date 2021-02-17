@@ -513,13 +513,18 @@ char* tafWeather(char *taf_list)
 				if (vis_met == 4) {
 					temp2[0] = '\0';
 					tafVisibilty(temp, temp2,"  ");
-					sprintf(taf_wx, " %s", temp2);
+					sprintf(taf_wx, " Vis: %s", temp2);
 					strcat(taf_wx_all, taf_wx);
 				}
 				else {
 					sprintf(taf_wx, " 6 Unknown (%s)", temp);
 					strcat(taf_wx_all, taf_wx);
 				}
+			}
+			else if (strncmp(temp,"VRB", 3) == 0){
+				taf_wind = tafWind(temp);
+				sprintf(taf_wx, " Wind: %s", taf_wind);
+				strcat(taf_wx_all, taf_wx);
 			}
 			else if ((strncmp(temp, "5", 1) == 0) && (strlen(temp) == 6 )) {
 				units=strlen(temp);
@@ -600,7 +605,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 
 	temp = strsep(&taf_lines, " ");
 
-	if ((isdigit(taf_t[0])) && (strlen(temp) != 6)) {				// (current) 1st line?
+	if ((isdigit(taf_t[0])) && (strlen(temp) != 6) && (temp[4] != 'Z')) {				// (current) 1st line?
 		mil[0] = temp[4];
 
 		if (mil[0] == '/') {
@@ -615,6 +620,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 				nil = 1;
 			}
 		}
+
 // Winds / NIL=
 		if (nil == 0) {
 			taf_temp = tafWind(temp);
