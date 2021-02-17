@@ -1657,7 +1657,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 
 		break;
 
-	case 3: case 4:							// Extended Range 3D Polygon
+	case 3: case 4:									// Extended Range 3D Polygon
 		alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
 		alt = alt_raw * 100;
 
