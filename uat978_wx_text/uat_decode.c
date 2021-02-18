@@ -101,7 +101,6 @@ void trimSpaces(char *s)
 
 		if (s[i] != ' ' && s[i] != '\t')
 				j = i;
-
 	}
 	s[j+1] = '\0';
 }
@@ -477,14 +476,8 @@ static void get_pirep(char *Word, FILE *to)
 			strcpy(pirep_RM, token + 3);
 			token = strtok(0, "/");
 			if (token) {
-// *** TODO check
-//				fprintf(to, " Remarks        : %s", pirep_RM);
-//				fprintf(to, "/%s\n", token);
 				strcat(pirep_RM, token);
 			}
-//			else {
-//				fprintf(to, " Remarks        : %s\n", pirep_RM);
-//			}
 		}
 	}
 
@@ -937,14 +930,14 @@ static const char *get_fisb_product_name(uint16_t product_id)
 {
 	switch (product_id) {
 	case 8:		return	"NOTAM";
-	case 9:		return	"Aerodrome and Airspace - D-ATIS ****";
-	case 10:	return	"Aerodrome and Airspace - TWIP ****";
+	case 9:		return	"Aerodrome and Airspace - D-ATIS";
+	case 10:	return	"Aerodrome and Airspace - TWIP";
 	case 11:	return	"AIRMET";
 	case 12:	return	"SIGMET";
 	case 13:	return	"SUA Status";
 	case 14:	return	"G-AIRMET";
 	case 15:	return	"Center Weather Advisory (CWAG)";
-	case 62:	return	"Individual NEXRAD,Type 3 - 16 Level ****";
+	case 62:	return	"Individual NEXRAD,Type 3 - 16 Level";
 	case 63:	return	"Regional NEXRAD,Type 4 - 8 Level";
 	case 64:	return	"CONUS NEXRAD,Type 4 - 8 Level";
 	case 70:	return	"Icing Forecast - Low";
@@ -952,11 +945,11 @@ static const char *get_fisb_product_name(uint16_t product_id)
 	case 84:	return	"Cloud Tops";
 	case 90:	return	"Turbulence Forecast - Low";
 	case 91:	return	"Turbulence Forecast - High";
-	case 101:	return	"Lightning Strike Type 1 (Pixel Level) ****";
-	case 102:	return	"Lightning Strike Type 2 (Grid Element Level) ****";
+	case 101:	return	"Lightning Strike Type 1 (Pixel Level)";
+	case 102:	return	"Lightning Strike Type 2 (Grid Element Level)";
 	case 103:	return	"Lightning";
 	case 413:	return	"Generic Textual Data Product APDU Payload Format Type 2";
-	default: 	return	"****Unknown";
+	default: 	return	"****Unknown product";
 	}
 }
 
@@ -1308,6 +1301,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 	}
 	break;
 	default:
+		fprintf(to,"Unknown product!!");
 		display_generic_data(apdu->data, apdu->length, to);
 	break;
 	}
@@ -1410,7 +1404,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	int obj_label_flag = 0;
 
 	char gstn[5];
-	char ob_ele_text[35];
+	char obj_ele_text[35];
 
 	const char * obj_labelt;
 
@@ -1440,9 +1434,9 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	float lng;
 	float fct_f = 0.000687;
 
-//	uint32_t object_qualifier;
-//	int obj_param_type = 0;
-//	uint16_t ob_par_val;
+	uint32_t object_qualifier;
+	int obj_param_type = 0;
+	uint16_t obj_par_val;
 
 	char qual_text[200];
 	char *start_date;
@@ -1452,10 +1446,8 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	char *coords;
 	char gr[2000] = "";
 
-//	int rep_exist = 0;
-//	FILE * file3dpoly;
-
 	char buff[30];
+	PGresult *res;
 
 	product_ver = ((apdu->data[0]) & 0x0F);
 	rec_count = ((apdu->data[1]) & 0xF0) >> 4;
@@ -1500,7 +1492,8 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		datoff = datoff + 2;																	// 13 > datoff=15
 	}
 	else {
-//		object_qualifier = ((apdu->data[datoff + 2]) << 16) | ((apdu->data[datoff + 3]) << 8) | (apdu->data[datoff + 4]);
+		object_qualifier = ((apdu->data[datoff + 2]) << 16) | ((apdu->data[datoff + 3]) << 8) | (apdu->data[datoff + 4]);
+		fprintf(to,"ob qualifier: %d\n",object_qualifier);
 
 		strcpy(qual_text, "Qualifier: ");
 		if (apdu->product_id == 14) {
@@ -1535,12 +1528,16 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 				strcat(qual_text, " Dust, ");
 			}
 		}
-//		obj_param_type = apdu->data[18] >> 3;							// 18
-//		ob_par_val = (apdu->data[18] & 0x7)<< 8 | apdu->data[19];		// 19
+		obj_param_type = apdu->data[18] >> 3;							// 18
+		obj_par_val = (apdu->data[18] & 0x7)<< 8 | apdu->data[19];		// 19
+		fprintf(to,"ob par value: %d  ob_par_type: %d",obj_par_val,obj_param_type);
 
 		datoff = datoff + 7;																		// 13 datoff =20
 	}
 	geo_overlay_opt = (apdu->data[datoff + 0]) & 0x0F;											// 13
+	if (geo_overlay_opt == 2)
+		fprintf(to,"moo!");
+
 	overlay_op = ((apdu->data[datoff + 1]) & 0xC0) >> 6;
 	overlay_vert_cnt = ((apdu->data[datoff + 1]) & 0x3F) + 1;									// Docs say to add 1)
 	rec_app_opt = ((apdu->data[datoff + 0]) & 0xC0) >> 6;
@@ -1588,10 +1585,10 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		datoff = datoff + 10;
 		break;
 	}
-	strcpy(ob_ele_text, " ");
+	strcpy(obj_ele_text, " ");
 
 	if (element_flag == 1 && obj_type == 14 && apdu->product_id == 14)
-		strcpy(ob_ele_text, gairspace_element_names[obj_element]);
+		strcpy(obj_ele_text, gairspace_element_names[obj_element]);
 
 	asprintf(&postsql,"INSERT INTO graphic_reports (prod_id,stn_call,prod_ver,rec_count,rec_ref,"
 			"rep_number,rec_length,rep_year,ovrly_recid,obj_lbl_flag,obj_lbl_number,obj_lbl_alpha,"
@@ -1603,10 +1600,6 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 			qualifier_flag, param_flag, rec_app_opt, date_time_format, start_date, stop_date, geo_overlay_opt,
 			overlay_op, overlay_vert_cnt, qual_text, buff);
 
-//	if (geo_overlay_opt == 10)
-//		fprintf(to, "moo");
-
-	PGresult *res;
 	switch (geo_overlay_opt) {
 
 	case 1:							// Low res 2d Polygon
@@ -1646,7 +1639,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		alt = 0;
 		asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
 				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
-				gr, apdu->product_id, rep_num, alt, ob_ele_text, start_date, stop_date, geo_overlay_opt);
+				gr, apdu->product_id, rep_num, alt, obj_ele_text, start_date, stop_date, geo_overlay_opt);
 
 		res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK)
@@ -1696,7 +1689,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		}
 		asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
 				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
-				gr, apdu->product_id, rep_num, alt, ob_ele_text, start_date, stop_date, geo_overlay_opt);
+				gr, apdu->product_id, rep_num, alt, obj_ele_text, start_date, stop_date, geo_overlay_opt);
 
 		res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK)
@@ -1821,7 +1814,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		strcat(gr, coords);
 		asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
 				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Point\",\"coordinates\": %s }'),4326),%d,%d,%d,'%s','%s','%s',%d)",
-				gr,apdu->product_id, rep_num, alt, ob_ele_text, start_date, stop_date, geo_overlay_opt);
+				gr,apdu->product_id, rep_num, alt, obj_ele_text, start_date, stop_date, geo_overlay_opt);
 
 		res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK)
@@ -1871,7 +1864,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 
 			asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
 					"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ %s ]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
-					gr, apdu->product_id, rep_num, alt, ob_ele_text, start_date, stop_date, geo_overlay_opt);
+					gr, apdu->product_id, rep_num, alt, obj_ele_text, start_date, stop_date, geo_overlay_opt);
 
 			res = PQexec(conn, postsql);
 			if (PQresultStatus(res) != PGRES_COMMAND_OK)
