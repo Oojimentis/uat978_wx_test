@@ -247,6 +247,7 @@ char* tafWeather(char *taf_list)
 		case TSRA:		strcat(taf_wx_all, " Thunderstorm/rain,"); break;
 
 		case FZRAPL:	strcat(taf_wx_all, " Freezing rain/ice pellets,"); break;
+		case FZRASN:	strcat(taf_wx_all, " Freezing rain/snow,"); break;
 		case RASNPL:	strcat(taf_wx_all, " Rain/snow/ice pellets,"); break;
 
 		case FZRASNPL:	strcat(taf_wx_all, " Freezing rain/snow/ice pellets,"); break;
@@ -265,12 +266,16 @@ char* tafWeather(char *taf_list)
 		case LSHSN:		strcat(taf_wx_all, " Light snow shower,"); break;
 		case LSNDZ:		strcat(taf_wx_all, " Light snow/drizzle,"); break;
 
+		case LFZDZPL:	strcat(taf_wx_all, " Light freezing drizzle/ice pellets,"); break;
 		case LFZDZSN:	strcat(taf_wx_all, " Light freezing snow/drizzle,"); break;
 		case LFZRADZ:	strcat(taf_wx_all, " Light freezing rain/drizzle,"); break;
 		case LFZRAPL:	strcat(taf_wx_all, " Light freezing rain/ice pellets,"); break;
 		case LFZRASN:	strcat(taf_wx_all, " Light freezing rain/snow,"); break;
+		case LRASNPL:	strcat(taf_wx_all, " Light rain/snow/ice pellets,"); break;
 		case LSHRAPL:	strcat(taf_wx_all, " Light showers rain/ice pellets,"); break;
 		case LSHRASN:	strcat(taf_wx_all, " Light showers rain/snow,"); break;
+
+		case LFZDZSNPL:	strcat(taf_wx_all, " Light freezing drizzle/snow/ice pellets,"); break;
 
 		case LSHRAPLSN:	strcat(taf_wx_all, " Light showers rain/ice pellets/snow,"); break;
 
@@ -281,6 +286,7 @@ char* tafWeather(char *taf_list)
 		case HSN:		strcat(taf_wx_all, " Heavy snow,"); break;
 		case HRA:		strcat(taf_wx_all, " Heavy rain,"); break;
 
+		case HSHRA:		strcat(taf_wx_all, " Heavy rain showers,"); break;
 
 		default:	found = 0; break;
 		}
