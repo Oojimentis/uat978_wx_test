@@ -78,10 +78,15 @@
 #define RASNPL	3608348
 #define FZRASNPL   265608348
 #define LPLRA	5157
-
 #define PLSN	35180
 #define LFRZA	18446744073709547453u
 #define RAPL	36048
+
+#define LFZDZPL   18446744073709196164u
+#define LFZDZSNPL   18446744073674009964u
+#define HSHRA   18446744073709539373u
+#define LRASNPL   608348
+#define FZRASN   2656080
 
 void taf_decode(char *taf_lines, char *issued, char *fsz, char *gstn);
 
