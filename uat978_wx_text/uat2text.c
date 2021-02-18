@@ -12,7 +12,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-//#include "asprintf.h"
+#include "asprintf.h"
 
 #ifndef NULL
 #define NULL   ((void *) 0)
@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 	char pg_pwd[20];
 	char pg_db[20];
 	char file_path[75];
-	char pg_connect[100];
+	char *postsql;
 
 	fileconfig = fopen("config.txt", "r");
 	if (fileconfig == 0)	{
@@ -68,19 +68,9 @@ int main(int argc, char **argv)
 	}
 	fclose(fileconfig);
 
-// Delete table data...
-//		asprintf(&sql,"DELETE from metar; delete from graphic_reports; delete from graphic_coords; delete from text_reports; delete from nexrad;");
-//		rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
-//		if( rc != SQLITE_OK ){
-//			if (rc != 19)
-//				fprintf(stderr, "1 SQL error: %s\n", zErrMsg);
-//			sqlite3_free(zErrMsg);
-//		}
-//	}
-
 //   Open Postgresql database
-	sprintf(pg_connect, "user=%s password=%s dbname=%s", pg_user, pg_pwd, pg_db);
-	conn = PQconnectdb(pg_connect);
+	asprintf(&postsql, "user=%s password=%s dbname=%s", pg_user, pg_pwd, pg_db);
+	conn = PQconnectdb(postsql);
 	if (PQstatus(conn) == CONNECTION_BAD) {
 		fprintf(stderr, "Connection to database failed: %s\n", PQerrorMessage(conn));
 		PQfinish(conn);
@@ -89,6 +79,16 @@ int main(int argc, char **argv)
 	else {
 		fprintf(stderr, "Connected to database\n");
 	}
+
+// Delete table data...
+	asprintf(&postsql,"delete from graphics;delete from metar;delete from nexrad;delete from nexrad_new;delete from pirep;delete from sigairmet;delete from taf;delete from circles;");
+
+	PGresult *res = PQexec(conn, postsql);
+	if (PQresultStatus(res) != PGRES_COMMAND_OK)
+		if (PQresultStatus(res) != 7)
+			fprintf(stderr,"bad sql %s \nStatus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+
+	PQclear(res);
 
 	filemetar = fopen("metar.out", "w");
 	if (filemetar == 0) {
