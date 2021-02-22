@@ -87,7 +87,7 @@ char* tafWind(char *temp)
 		kt[2]='\0';
 
 		if (strcmp(kt, "KT") != 0)
-			asprintf(&taf_wind, "1 unknown(%s)", temp);
+			asprintf(&taf_wind, "1-unknown(%s)", temp);
 		else {
 			strncpy(d, temp, 3);
 			d[3] ='\0';
@@ -100,7 +100,7 @@ char* tafWind(char *temp)
 		strncpy(kt, temp + 8, 2);
 		kt[2]='\0';
 		if (strcmp(kt, "KT") != 0)
-			asprintf(&taf_wind, "2 unknown(%s)", temp);
+			asprintf(&taf_wind, "2-unknown(%s)", temp);
 		else {
 			strncpy(d, temp, 3);
 			d[3] = '\0';
@@ -316,7 +316,7 @@ char* tafWeather(char *taf_list)
 				if (l > 6){
 					strncpy(temp2, temp + 6, l - 6);
 					temp2[2] = '\0';
-					if (strcmp(temp2, "CB" ) == 0) {
+					if (strcmp(temp2, "CB") == 0) {
 						sprintf(taf_wx, " Few cumulonimbus clouds (%d00ft)", units);
 						strcat(taf_wx_all, taf_wx);
 					}
@@ -352,7 +352,7 @@ char* tafWeather(char *taf_list)
 			else if (strncmp(temp, "SCT", 3) == 0) {
 				units = atoi(temp + 3);
 				if (l > 6) {
-					strncpy(temp2, temp +6 , l - 6);
+					strncpy(temp2, temp + 6 , l - 6);
 					temp2[2] = '\0';
 					if (strcmp(temp2, "CB") == 0) {
 						sprintf(taf_wx, " Scattered cumulonimbus clouds (%d00ft)", units);
@@ -409,7 +409,7 @@ char* tafWeather(char *taf_list)
 					strcat(taf_wx_all, taf_wx);
 				}
 				else {
-					sprintf(taf_wx, " (3 unknown %s) ", temp);
+					sprintf(taf_wx, " (3-unknown %s) ", temp);
 					strcat(taf_wx_all, taf_wx);
 				}
 			}
@@ -423,7 +423,7 @@ char* tafWeather(char *taf_list)
 				strncpy(temp2, temp + 3, 2);
 				temp2[2] = '\0';
 				units = (atoi(temp2) * -1);
-				fahr = (units * 9/5 ) + 32;
+				fahr = (units * 9/5) + 32;
 				strncpy(temp2, temp + 6, 2);
 				d = atoi(temp2);
 				dt = daySuffix(d);
@@ -436,20 +436,20 @@ char* tafWeather(char *taf_list)
 			}
 			else if ((strncmp(temp, "TX", 2) == 0) || (strncmp(temp, "TN", 2) == 0)) {
 
-				if (temp[2] =='M') {
+				if (temp[2] == 'M') {
 					strncpy(temp2, temp + 3, 2);
 					temp2[2] = '\0';
 					units = (atoi(temp2) * -1);;
-					fahr = (units * 9/5 ) + 32;
+					fahr = (units * 9/5) + 32;
 				}
 				else {
 					strncpy(temp2, temp + 2, 2);
 					temp2[2] = '\0';
 					units = atoi(temp2);
-					fahr = (units * 9/5 ) + 32;
+					fahr = (units * 9/5) + 32;
 				}
 
-				if (temp[2] =='M')
+				if (temp[2] == 'M')
 					strncpy(temp2, temp + 6, 2);
 				else
 					strncpy(temp2, temp + 5, 2);
@@ -470,13 +470,13 @@ char* tafWeather(char *taf_list)
 				}
 			}
 			else if ((strncmp(temp, "T", 1) == 0) && ((strncmp(temp + 3, "/", 1) == 0)  ||
-					(strncmp(temp + 4, "/",1) == 0))) {
+					(strncmp(temp + 4, "/", 1) == 0))) {
 
-				if (temp[1] =='M') {
+				if (temp[1] == 'M') {
 					strncpy(temp2, temp + 2, 2);
 					temp2[2] = '\0';
 					units = (atoi(temp2) * -1);
-					fahr = (units * 9/5 ) + 32;
+					fahr = (units * 9/5) + 32;
 					strncpy(temp2, temp + 5, 2);
 					d = atoi(temp2);
 				}
@@ -484,13 +484,13 @@ char* tafWeather(char *taf_list)
 					strncpy(temp2, temp + 1, 2);
 					temp2[2] = '\0';
 					units = atoi(temp2);
-					fahr = (units * 9/5 ) + 32;
+					fahr = (units * 9/5) + 32;
 					strncpy(temp2, temp + 4, 2);
 					d = atoi(temp2);
 				}
 				dt = daySuffix(d);
 
-				if (temp[1] =='M')
+				if (temp[1] == 'M')
 					strncpy(temp2, temp + 7, 2);
 				else
 					strncpy(temp2, temp + 6, 2);
@@ -511,7 +511,7 @@ char* tafWeather(char *taf_list)
 				strcat(taf_wx_all, taf_wx);
 			}
 			else if (strncmp(temp, "PROB", 4) == 0) {
-				strncpy(perc, temp + 4 , 2);
+				strncpy(perc, temp + 4, 2);
 				perc[2] = '\0';
 				temp = strsep(&taf_list, " ");
 				validDates(sd, sz, ed, ez, temp);
@@ -528,12 +528,12 @@ char* tafWeather(char *taf_list)
 				}
 				if (vis_met == 4) {
 					temp2[0] = '\0';
-					tafVisibilty(temp, temp2,"  ");
+					tafVisibilty(temp, temp2, "  ");
 					sprintf(taf_wx, " Vis: %s", temp2);
 					strcat(taf_wx_all, taf_wx);
 				}
 				else {
-					sprintf(taf_wx, " 6 Unknown (%s)", temp);
+					sprintf(taf_wx, " 6-Unknown (%s)", temp);
 					strcat(taf_wx_all, taf_wx);
 				}
 			}
@@ -542,9 +542,9 @@ char* tafWeather(char *taf_list)
 				sprintf(taf_wx, " Wind: %s", taf_wind);
 				strcat(taf_wx_all, taf_wx);
 			}
-			else if ((strncmp(temp, "5", 1) == 0) && (strlen(temp) == 6 )) {
+			else if ((strncmp(temp, "5", 1) == 0) && (strlen(temp) == 6)) {
 				units=strlen(temp);
-				if (units == 6){
+				if (units == 6) {
 					wx_int[0] = '\0';
 					strncpy(temp2, temp + 1, 1);
 					temp2[1] = '\0';
@@ -577,12 +577,12 @@ char* tafWeather(char *taf_list)
 					strcat(taf_wx_all, taf_wx);
 				}
 				else {
-					sprintf(taf_wx, " (4 unknown %s)", temp);
+					sprintf(taf_wx, " (4-unknown %s)", temp);
 					strcat(taf_wx_all, taf_wx);
 				}
 			}
 			else {
-				sprintf(taf_wx, " 5 Unknown (%s)", temp);
+				sprintf(taf_wx, " 5-Unknown (%s)", temp);
 				strcat(taf_wx_all, taf_wx);
 			}
 		}
@@ -645,8 +645,8 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 // Visibility
 			temp = strsep(&taf_lines, " ");
 			temp_len = strlen(temp);
-			if ((strncmp(temp + (temp_len -2 ), "SM", 2) == 0) || (temp_len == 1) || (temp_len == 4)) {
-				if (temp_len ==1)
+			if ((strncmp(temp + (temp_len -2), "SM", 2) == 0) || (temp_len == 1) || (temp_len == 4)) {
+				if (temp_len == 1)
 					temp2 = strsep(&taf_lines, " ");
 
 				tafVisibilty(temp, taf_temp, temp2);
@@ -691,8 +691,8 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 // Visibility
 		temp = strsep(&taf_lines, " ");
 		temp_len = strlen(temp);
-		if ((strncmp(temp + (temp_len -2 ), "SM", 2) == 0) || (temp_len == 1) || (temp_len == 4)) {
-			if (temp_len ==1)
+		if ((strncmp(temp + (temp_len -2), "SM", 2) == 0) || (temp_len == 1) || (temp_len == 4)) {
+			if (temp_len == 1)
 				temp2 = strsep(&taf_lines, " ");
 
 			tafVisibilty(temp, taf_temp, taf_lines);
@@ -727,7 +727,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 		temp = strsep(&taf_lines, " ");
 		if (temp) {
 			temp_len = strlen(temp);
-			if ((strncmp(temp + (temp_len -2 ), "SM", 2) == 0) || (temp_len == 1) || (temp_len == 4)) {
+			if ((strncmp(temp + (temp_len -2), "SM", 2) == 0) || (temp_len == 1) || (temp_len == 4)) {
 				if (temp_len == 1)
 					temp2 = strsep(&taf_lines, " ");
 
@@ -759,7 +759,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 			}
 		}
 		if (temp != NULL){
-			if ((strncmp(temp + (temp_len -2 ), "SM", 2) == 0) || (temp_len == 1) || (temp_len == 4)) {
+			if ((strncmp(temp + (temp_len -2), "SM", 2) == 0) || (temp_len == 1) || (temp_len == 4)) {
 				if (temp_len == 1)
 					temp2 = strsep(&taf_lines, " ");
 
