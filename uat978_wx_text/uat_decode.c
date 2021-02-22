@@ -15,10 +15,8 @@
 #include <stdlib.h>
 
 #include "uat_taf.h"
-//#include "uat.h"
 #include "uat_decode.h"
 #include "uat_geo.h"
-#include "metar.h"
 
 static char gs_ret[80];
 static char gs_ret_lat[25];
@@ -1475,7 +1473,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	obj_labelt = "  ";
 	if (obj_label_flag == 0) { // Numeric index.
 		obj_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff + 6]);					// 11 12
-		datoff = datoff + 7;	}																	// datoff=13
+		datoff = datoff + 7;	}																// datoff=13
 	else {
 		obj_labelt = decode_dlac(apdu->data, 5, 2);
 		datoff = datoff + 14;
@@ -1532,7 +1530,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		obj_par_val = (apdu->data[18] & 0x7)<< 8 | apdu->data[19];		// 19
 		fprintf(to,"ob par value: %d  ob_par_type: %d",obj_par_val,obj_param_type);
 
-		datoff = datoff + 7;																		// 13 datoff =20
+		datoff = datoff + 7;																	// 13 datoff =20
 	}
 	geo_overlay_opt = (apdu->data[datoff + 0]) & 0x0F;											// 13
 	if (geo_overlay_opt == 2)
@@ -1610,8 +1608,8 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 
 			datoff = datoff + 3;
 
-			lng_raw = (~lng_raw & 0xFFF) + 1;												// 2's compliment +1
-			lat_raw = (~lat_raw & 0xFFF) + 1;												// 2's compliment +1
+			lng_raw = (~lng_raw & 0xFFF) + 1;											// 2's compliment +1
+			lat_raw = (~lat_raw & 0xFFF) + 1;											// 2's compliment +1
 
 			lat = 0.087890625 * lat_raw;
 			lng = (0.087890625 * lng_raw) * -1;
@@ -1839,8 +1837,8 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 
 				datoff = datoff + 6;
 
-				lng_raw = (~lng_raw & 0x7FFFF) + 1;											// 2's compliment +1
-				lat_raw = (~lat_raw & 0x7FFFF) + 1;											// 2's compliment +1
+				lng_raw = (~lng_raw & 0x7FFFF) + 1;										// 2's compliment +1
+				lat_raw = (~lat_raw & 0x7FFFF) + 1;										// 2's compliment +1
 
 				lat = lat_raw * 0.0006866455078125;
 				lng = lng_raw * -0.0006866455078125;

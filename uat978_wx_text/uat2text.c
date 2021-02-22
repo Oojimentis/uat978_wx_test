@@ -3,10 +3,7 @@
 // UAT2TEXT.C -
 //
 
-//#include "/usr/include/postgresql/libpq-fe.h"
-//#include <stdio.h>
 
-//#include "uat.h"
 #include "uat_decode.h"
 #include "reader.h"
 

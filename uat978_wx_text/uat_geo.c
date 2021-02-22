@@ -6,11 +6,8 @@
  *      Keep graphics together
  */
 
-//#include "/usr/include/postgresql/libpq-fe.h"
-#include <stdio.h>
 #include <math.h>
 #include <string.h>
-#include <stdlib.h>
 #include "uat_decode.h"
 #include "uat_geo.h"
 #include "asprintf.h"
@@ -95,7 +92,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 
 					if (intensity > 1) {
 						if ((runlength == 0) && (i == apdu->length)) {
-//					sprintf(block,"%s[%f ,%f ,%d]",block,t_lat,t_lon,intensity);
 							sprintf(block_part,"[%f ,%f ,%d]",t_lat,t_lon,intensity);
 							strcat(block,block_part);
 						}
@@ -215,11 +211,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 			asprintf(&postsql,"INSERT INTO nexrad_new (prod_id,block_num,maptime,alt,coords) "
 						"VALUES( %d,%d,'%s','%d',",
 						apdu->product_id, block_num,nexrad_time,alt_level);
-
-
-//			asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
-//					"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
-//					gr, apdu->product_id, rep_num, alt, ob_ele_text, start_date, stop_date, geo_overlay_opt);
 
 			asprintf(&postsql, "%s '%s')", postsql, block);
 
