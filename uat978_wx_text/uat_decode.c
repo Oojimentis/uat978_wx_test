@@ -1187,7 +1187,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				char *taf_lines[20];
 				char sd[10];
 				char *dt;
-//				char dt[3];
 				char fsz[5];
 				char issued[50];
 				int dx;
@@ -1201,7 +1200,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				fprintf(to, "station: %s\n", gstn);
 				strncpy(n, time_copy + 4, 1);
 
-//				if (strcmp(gstn,"KCEF") == 0)
+//				if (strcmp(gstn,"KNHK") == 0)
 //				fprintf(stderr,"moo!");
 
 				if (strcmp(n, "/") != 0) {
@@ -1217,13 +1216,18 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
 					fprintf(filetaf, "Issued: %s at %sz\n", sd, fsz);
 					sprintf(issued, "%s at %sz", sd, fsz);
+					taf_copy = (char *)malloc(strlen(r) + 1);
+					strcpy(taf_copy, r);
 				}
 				else {
 					fprintf(filetaf, "No issue date ");
 					sprintf(issued, "No issue date ");
+					taf_copy = (char *)malloc(strlen(r) + strlen(r) + 1);
+
+					sprintf(fsz,"%02d%02d",apdu->hours,apdu->minutes);
+					sprintf(taf_copy, "%s %s", time_copy,r);
 				}
-				taf_copy = (char *)malloc(strlen(r) + 1);
-				strcpy(taf_copy, r);
+
 				int i = 0;
 				int j = 0;
 				while (j == 0) {
