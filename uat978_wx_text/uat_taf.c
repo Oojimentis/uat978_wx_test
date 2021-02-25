@@ -613,6 +613,8 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 	int sw = 0;
 	int nil = 0;
 
+	current_all[0] = '\0';
+
 	taf_lines = (char *)malloc(strlen(taf_linzs) + 1);
 	strcpy(taf_lines, taf_linzs);
 // Valid dates
