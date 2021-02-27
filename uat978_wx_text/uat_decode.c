@@ -52,11 +52,11 @@ static const char *decode_dlac(uint8_t *data, unsigned bytelen, int rec_offset)
 			++data;
 			break;
 		case 1:
-			ch = ((data[rec_offset-1] & 0x03) << 4) | (data[rec_offset] >> 4);
+			ch = ((data[rec_offset - 1] & 0x03) << 4) | (data[rec_offset] >> 4);
 			++data;
 			break;
 		case 2:
-			ch = ((data[rec_offset-1] & 0x0f) << 2) | (data[rec_offset] >> 6);
+			ch = ((data[rec_offset - 1] & 0x0f) << 2) | (data[rec_offset] >> 6);
 			break;
 		case 3:
 			ch = data[rec_offset] & 0x3f;
@@ -87,7 +87,7 @@ void trimSpaces(char *s)
 {
 	int i, j;
 
-	for (i = 0; s[i] == ' '||s[i] == '\t' ;i++);
+	for (i = 0; s[i] == ' '||s[i] == '\t'; i++);
 
 	for (j = 0; s[i]; i++) {
 		s[j++] = s[i];
@@ -219,7 +219,7 @@ static void get_gs_name(char *Word)
 
 	strncpy(temp_stn, Word, 4);
 	strcpy(gs_ret, "not found      ");
-	strcpy(gs_ret_lat,"0.0");
+	strcpy(gs_ret_lat, "0.0");
 	strcpy(gs_ret_lng, "0.0");
 
 	asprintf(&postsql, "SELECT * FROM stations WHERE stn_call = '%s'", temp_stn);
@@ -319,11 +319,11 @@ static void get_sua_text(char *Word, FILE *to)
 	fprintf(filesua, " Airspace Name   : %s\n", sua_aspc_nm);
 	token = strsep(&Word, "|");
 	strcpy(sua_st_tm, token);
-	strncpy(sua_st_yy,sua_st_tm,2);
-	strncpy(sua_st_mm,sua_st_tm + 2,2);
-	strncpy(sua_st_dd,sua_st_tm + 4,2);
-	strncpy(sua_st_hh,sua_st_tm + 6,2);
-	strncpy(sua_st_mn,sua_st_tm + 8,2);
+	strncpy(sua_st_yy, sua_st_tm, 2);
+	strncpy(sua_st_mm, sua_st_tm + 2, 2);
+	strncpy(sua_st_dd, sua_st_tm + 4, 2);
+	strncpy(sua_st_hh, sua_st_tm + 6, 2);
+	strncpy(sua_st_mn, sua_st_tm + 8, 2);
 	sua_st_yy[2] = '\0';
 	sua_st_mm[2] = '\0';
 	sua_st_dd[2] = '\0';
@@ -334,11 +334,11 @@ static void get_sua_text(char *Word, FILE *to)
 
 	token = strsep(&Word, "|");
 	strcpy(sua_en_tm, token);
-	strncpy(sua_en_yy,sua_en_tm,2);
-	strncpy(sua_en_mm,sua_en_tm + 2,2);
-	strncpy(sua_en_dd,sua_en_tm + 4,2);
-	strncpy(sua_en_hh,sua_en_tm + 6,2);
-	strncpy(sua_en_mn,sua_en_tm + 8,2);
+	strncpy(sua_en_yy, sua_en_tm, 2);
+	strncpy(sua_en_mm, sua_en_tm + 2, 2);
+	strncpy(sua_en_dd, sua_en_tm + 4, 2);
+	strncpy(sua_en_hh, sua_en_tm + 6, 2);
+	strncpy(sua_en_mn, sua_en_tm + 8, 2);
 	sua_en_yy[2] = '\0';
 	sua_en_mm[2] = '\0';
 	sua_en_dd[2] = '\0';
@@ -441,7 +441,7 @@ static void get_pirep(char *Word, FILE *to)
 			strcpy(pirep_OV, token + 3);
 		}
 		else if (strncmp(token, "TM", 2) == 0) {
-			strcpy(pirep_TM,token);
+			strcpy(pirep_TM, token);
 			snprintf(pirep_hr, 3, "%s", pirep_TM + 3);
 			snprintf(pirep_mn, 3, "%s", pirep_TM + 5);
 			sprintf(pirep_TI, "%s%s", pirep_hr, pirep_mn);
@@ -569,7 +569,7 @@ static void uat_decode_sv(uint8_t *frame, struct uat_adsb_mdb *mdb)
 		if (mdb->ns_vel_valid && mdb->ew_vel_valid) {
 			if (mdb->ns_vel != 0 || mdb->ew_vel != 0) {
 				mdb->track_type = TT_TRACK;
-				mdb->track = (uint16_t)(360 + 90 - atan2(mdb->ns_vel,mdb->ew_vel) * 180 / M_PI) % 360;
+				mdb->track = (uint16_t)(360 + 90 - atan2(mdb->ns_vel, mdb->ew_vel) * 180 / M_PI) % 360;
 			}
 			mdb->speed_valid = 1;
 			mdb->speed = (int) sqrt(mdb->ns_vel * mdb->ns_vel + mdb->ew_vel * mdb->ew_vel);
@@ -595,7 +595,7 @@ static void uat_decode_sv(uint8_t *frame, struct uat_adsb_mdb *mdb)
 		}
 		raw_track = ((frame[13] & 0x03) << 9) | (frame[14] << 1) | ((frame[15] & 0x80) >> 7);
 
-		switch ((raw_track & 0x0600)>>9) {
+		switch ((raw_track & 0x0600) >> 9) {
 		case 1: mdb->track_type = TT_TRACK; break;
 		case 2: mdb->track_type = TT_MAG_HEADING; break;
 		case 3: mdb->track_type = TT_TRUE_HEADING; break;
@@ -630,22 +630,22 @@ static void uat_display_sv(const struct uat_adsb_mdb *mdb, FILE *to)
 	if (!mdb->has_sv)
 		return;
 	if (mdb->position_valid)
-		fprintf(to," Lat:   %+.4f    Lon:  %+.4f",mdb->lat,mdb->lon);
+		fprintf(to, " Lat:   %+.4f    Lon:  %+.4f", mdb->lat, mdb->lon);
 
 	switch (mdb->altitude_type) {
 	case ALT_BARO:
-		fprintf(to,"  Alt:  %d ft (barometric)",mdb->altitude);
+		fprintf(to, "  Alt:  %d ft (barometric)", mdb->altitude);
 		break;
 	case ALT_GEO:
-		fprintf(to,"  Alt:  %d ft (geometric)",mdb->altitude);
+		fprintf(to, "  Alt:  %d ft (geometric)", mdb->altitude);
 		break;
 	default:
 		break;
 	}
 	if (mdb->speed_valid)
-		fprintf(to,"  Speed:  %u kt\n",mdb->speed);
+		fprintf(to, "  Speed:  %u kt\n", mdb->speed);
 	if (mdb->dimensions_valid)
-		fprintf(to," Size: %.1fm L x %.1fm W%s\n",mdb->length,mdb->width,
+		fprintf(to, " Size: %.1fm L x %.1fm W%s\n", mdb->length, mdb->width,
 				mdb->position_offset ? " (position offset applied)" : "");
 }
 
@@ -911,13 +911,13 @@ static void display_generic_data(uint8_t *data,uint16_t length, FILE *to)
 
 		if (i > 0)
 			fprintf(to,"                    ");
-		for (j = i; j < i+16; ++j) {
+		for (j = i; j < i + 16; ++j) {
 			if (j < length)
 				fprintf(to,"%02X ",data[j]);
 			else
 				fprintf(to,"   ");
 		}
-		for (j = i; j < i+16 && j < length; ++j) {
+		for (j = i; j < i + 16 && j < length; ++j) {
 			fprintf(to,"%c",(data[j] >= 32 && data[j] < 127) ? data[j] : '.');
 		}
 		fprintf(to,"\n");
@@ -1224,8 +1224,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					sprintf(issued, "No issue date ");
 					taf_copy = (char *)malloc(strlen(r) + strlen(r) + 1);
 
-					sprintf(fsz,"%02d%02d",apdu->hours,apdu->minutes);
-					sprintf(taf_copy, "%s %s", time_copy,r);
+					sprintf(fsz, "%02d%02d", apdu->hours, apdu->minutes);
+					sprintf(taf_copy, "%s %s", time_copy, r);
 				}
 
 				int i = 0;
@@ -1303,7 +1303,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 	}
 	break;
 	default:
-		fprintf(to,"Unknown product!!");
+		fprintf(to, "Unknown product!!");
 		display_generic_data(apdu->data, apdu->length, to);
 	break;
 	}
@@ -1319,7 +1319,7 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 	uint16_t repid = 0;
 
 	fprintf(to, "\nINFORMATION FRAME:\n Type:  %u (%s)",
-			frame->type,info_frame_type_names[frame->type]);
+			frame->type, info_frame_type_names[frame->type]);
 
 	if (frame->length > 0) {
 		if (frame->is_fisb)
@@ -1359,7 +1359,7 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 						fprintf(to, "\n");
 
 					q++;
-					repid = (frame->data[j + 1] & ((1 << 6 )-1)) << 8 |  frame->data[j + 2];
+					repid = (frame->data[j + 1] & ((1 << 6 ) - 1)) << 8 |  frame->data[j + 2];
 
 					fprintf(to, "Rpt ID: %d  ", repid);
 						j = j + 3;
@@ -1367,7 +1367,7 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 					fprintf(to, "\n");
 			}
 			else
-				display_generic_data(frame->data,frame->length, to);
+				display_generic_data(frame->data, frame->length, to);
 		}
 	}
 }
@@ -1495,7 +1495,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	}
 	else {
 		object_qualifier = ((apdu->data[datoff + 2]) << 16) | ((apdu->data[datoff + 3]) << 8) | (apdu->data[datoff + 4]);
-		fprintf(to,"ob qualifier: %d\n",object_qualifier);
+		fprintf(to, "ob qualifier: %d\n", object_qualifier);
 
 		strcpy(qual_text, "Qualifier: ");
 		if (apdu->product_id == 14) {
@@ -1531,14 +1531,14 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 			}
 		}
 		obj_param_type = apdu->data[18] >> 3;							// 18
-		obj_par_val = (apdu->data[18] & 0x7)<< 8 | apdu->data[19];		// 19
-		fprintf(to,"ob par value: %d  ob_par_type: %d",obj_par_val,obj_param_type);
+		obj_par_val = (apdu->data[18] & 0x7) << 8 | apdu->data[19];		// 19
+		fprintf(to, "ob par value: %d  ob_par_type: %d", obj_par_val, obj_param_type);
 
 		datoff = datoff + 7;																	// 13 datoff =20
 	}
 	geo_overlay_opt = (apdu->data[datoff + 0]) & 0x0F;											// 13
 	if (geo_overlay_opt == 2)
-		fprintf(to,"moo!");
+		fprintf(to, "moo!");
 
 	overlay_op = ((apdu->data[datoff + 1]) & 0xC0) >> 6;
 	overlay_vert_cnt = ((apdu->data[datoff + 1]) & 0x3F) + 1;									// Docs say to add 1)
@@ -1680,7 +1680,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 			}
 			lat_save = lat;
 
-			if (i == (overlay_vert_cnt-1)){
+			if (i == (overlay_vert_cnt - 1)){
 				asprintf(&coords, " [%f,%f]", coords, lng, lat);
 				strcat(gr, coords);
 			}
@@ -2056,19 +2056,19 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm, FILE *to)
 
 		if (apdunum == 1) {						// Contains report number and year
 			offx = 20;
-			seg_list[seg_count].seg_text_len = apdu->length-20;
+			seg_list[seg_count].seg_text_len = apdu->length - 20;
 			seg_list[seg_count].seg_rpt_num = ((apdu->data[17] << 6) | (apdu->data[18] >> 2));			//7 8
 			seg_list[seg_count].seg_rpt_year = (((apdu->data[18]) & 0x03) << 5 | ((apdu->data[19]) & 0xF8) >> 3);
 		}
 		else {
 			offx = 15;
-			seg_list[seg_count].seg_text_len = apdu->length-15;
+			seg_list[seg_count].seg_text_len = apdu->length - 15;
 			seg_list[seg_count].seg_rpt_num = 0;
 			seg_list[seg_count].seg_rpt_year = 0;
 		}
 		for ( int x = offx; x <= apdu->length; ++x) {
 			int c = apdu->data[x];
-			seg_list[seg_count].seg_data[x-offx] = c;
+			seg_list[seg_count].seg_data[x - offx] = c;
 		}
 		++seg_count;
 	}
@@ -2118,7 +2118,7 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm, FILE *to)
 				char_cnt = char_cnt + seg_list[i].seg_text_len;
 			}
 		}
-		const char *seg_text_all = decode_dlac(rep_all,char_cnt,0);
+		const char *seg_text_all = decode_dlac(rep_all, char_cnt, 0);
 
 		time_t current_time = time(NULL);
 		struct tm *tm = localtime(&current_time);

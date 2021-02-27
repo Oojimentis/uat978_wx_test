@@ -87,17 +87,17 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 				runlength = (apdu->data[i] >> 3) + 1;
 
 				while (runlength-- > 0) {
-					t_lat = latN - (y * (latSize/4.0));
-					t_lon = lonW + (x * (lonSize/32.0));
+					t_lat = latN - (y * (latSize / 4.0));
+					t_lon = lonW + (x * (lonSize / 32.0));
 
 					if (intensity > 1) {
 						if ((runlength == 0) && (i == apdu->length)) {
-							sprintf(block_part,"[%f ,%f ,%d]",t_lat,t_lon,intensity);
-							strcat(block,block_part);
+							sprintf(block_part, "[%f ,%f ,%d]", t_lat, t_lon, intensity);
+							strcat(block, block_part);
 						}
 						else {
-							sprintf(block_part,"[%f ,%f ,%d],",t_lat,t_lon,intensity);
-							strcat(block,block_part);
+							sprintf(block_part, "[%f ,%f ,%d],", t_lat, t_lon, intensity);
+							strcat(block, block_part);
 						}
 					}
 					x++;
@@ -118,17 +118,17 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 				ice_sev = (apdu->data[i]) >> 3 & 7;
 
 				while (num_bins-- > 0){
-					t_lat = latN - (y * (latSize/4.0));
-					t_lon = lonW + (x * (lonSize/32.0));
+					t_lat = latN - (y * (latSize / 4.0));
+					t_lon = lonW + (x * (lonSize / 32.0));
 
 					if (ice_sev >= 1 && ice_sev < 7) {
 						if ((num_bins == 0) && (i == apdu->length)) {
-							sprintf(block_part,"[%f ,%f ,%d]",t_lat,t_lon,ice_sev);
-							strcat(block,block_part);
+							sprintf(block_part, "[%f ,%f ,%d]", t_lat, t_lon, ice_sev);
+							strcat(block, block_part);
 						}
 						else {
-							sprintf(block_part,"[%f ,%f ,%d],",t_lat,t_lon,ice_sev);
-							strcat(block,block_part);
+							sprintf(block_part, "[%f ,%f ,%d],", t_lat, t_lon, ice_sev);
+							strcat(block, block_part);
 						}
 					}
 					x++;
@@ -151,21 +151,21 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 				}
 
 				while (num_bins-- > 0) {
-					t_lat = latN - (y * (latSize/4.0));
-					t_lon = lonW + (x * (lonSize/32.0));
+					t_lat = latN - (y * (latSize / 4.0));
+					t_lon = lonW + (x * (lonSize / 32.0));
 
 					if (lgt_cnt >= 1 && lgt_cnt < 7) {
 						if ((num_bins == 0) && (i == apdu->length)) {
-							sprintf(block_part,"[%f ,%f ,%d]",t_lat,t_lon,lgt_cnt);
-							strcat(block,block_part);
+							sprintf(block_part, "[%f ,%f ,%d]", t_lat, t_lon, lgt_cnt);
+							strcat(block, block_part);
 						}
 						else {
-							sprintf(block_part,"[%f ,%f ,%d],",t_lat,t_lon,lgt_cnt);
-							strcat(block,block_part);
+							sprintf(block_part, "[%f ,%f ,%d],", t_lat, t_lon, lgt_cnt);
+							strcat(block, block_part);
 						}
 					}
 					x++;
-					if (x == 32){
+					if (x == 32) {
 						x = 0;
 						y++;
 					}
@@ -177,23 +177,23 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 				edr_enc  = apdu->data[i] & 15;
 				num_bins = (apdu->data[i] >> 4) + 1;
 
-				if (num_bins == 15){
+				if (num_bins == 15) {
 					i = i + 1;
 					num_bins = (apdu->data[i]) + 1;
 				}
 
 				while (num_bins-- > 0) {
-					t_lat = latN - (y * (latSize/4.0));
-					t_lon = lonW + (x * (lonSize/32.0));
+					t_lat = latN - (y * (latSize / 4.0));
+					t_lon = lonW + (x * (lonSize / 32.0));
 
 					if (edr_enc >= 1 && edr_enc < 16) {
 						if ((num_bins == 0) && (i == apdu->length)) {
-							sprintf(block_part,"[%f ,%f ,%d]",t_lat,t_lon,edr_enc);
-							strcat(block,block_part);
+							sprintf(block_part, "[%f ,%f ,%d]", t_lat, t_lon, edr_enc);
+							strcat(block, block_part);
 						}
 						else {
-							sprintf(block_part,"[%f ,%f ,%d],",t_lat,t_lon,edr_enc);
-							strcat(block,block_part);
+							sprintf(block_part, "[%f ,%f ,%d],", t_lat, t_lon, edr_enc);
+							strcat(block, block_part);
 						}
 					}
 					x++;
@@ -210,14 +210,14 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 
 			asprintf(&postsql,"INSERT INTO nexrad_new (prod_id,block_num,maptime,alt,coords) "
 						"VALUES( %d,%d,'%s','%d',",
-						apdu->product_id, block_num,nexrad_time,alt_level);
+						apdu->product_id, block_num, nexrad_time, alt_level);
 
 			asprintf(&postsql, "%s '%s')", postsql, block);
 
 			PGresult *res = PQexec(conn, postsql);
 			if (PQresultStatus(res) != PGRES_COMMAND_OK)
 				if (PQresultStatus(res) != 7)
-					fprintf(stderr,"bad sql %s \nStatus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+					fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
 			PQclear(res);
 		}
@@ -350,41 +350,41 @@ void metar_data( Decoded_METAR *Mptr, FILE *to)
 	char dew_pt_temp[10];
 
 	if (Mptr->temp > 1000)
-		sprintf(temp,"- ");
+		sprintf(temp, "- ");
 	else {
 		Mptr->temp = Mptr->temp * 9/5  + 32;
-        sprintf(temp,"%d",Mptr->temp);
+        sprintf(temp, "%d", Mptr->temp);
 	}
 	if (Mptr->dew_pt_temp > 1000)
 		sprintf(dew_pt_temp, "-");
 	else {
 		Mptr->dew_pt_temp = Mptr->dew_pt_temp * 9/5  + 32;
-		 sprintf(dew_pt_temp,"%d",Mptr->dew_pt_temp);
+		 sprintf(dew_pt_temp, "%d", Mptr->dew_pt_temp);
 	}
 	if (Mptr->winData.windSpeed > 1000)
-		sprintf(windSpeed,"-");
+		sprintf(windSpeed, "-");
 	else
-		sprintf(windSpeed,"%d",Mptr->winData.windSpeed);
+		sprintf(windSpeed, "%d", Mptr->winData.windSpeed);
 
 	if (Mptr->winData.windDir > 1000)
-		sprintf(windDir,"-");
+		sprintf(windDir, "-");
 	else
 		sprintf(windDir, "%d", Mptr->winData.windDir);
 
 	if (Mptr->inches_altstng > 1000)
-		sprintf(altstng,"-");
+		sprintf(altstng, "-");
 	else
-		sprintf(altstng,"%.2f",	Mptr->inches_altstng);
+		sprintf(altstng, "%.2f", Mptr->inches_altstng);
 
 	if (Mptr->prevail_vsbySM > 1000)
-		sprintf(vsbySM,"-");
+		sprintf(vsbySM, "-");
 	else
-		sprintf(vsbySM,"%.2f",Mptr->prevail_vsbySM);
+		sprintf(vsbySM, "%.2f", Mptr->prevail_vsbySM);
 
 	if (Mptr->SLP > 1000)
-		sprintf(SLP,"-");
+		sprintf(SLP, "-");
 	else
-		sprintf(SLP,"%.2f",Mptr->SLP);
+		sprintf(SLP, "%.2f", Mptr->SLP);
 
 	sprintf(obs_date, "%02d %02d:%02d", Mptr->ob_date, Mptr->ob_hour, Mptr->ob_minute);
 
