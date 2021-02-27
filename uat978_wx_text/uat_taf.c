@@ -98,7 +98,7 @@ char* tafWind(char *temp)
 	}
 	else if (w_len == 10) {
 		strncpy(kt, temp + 8, 2);
-		kt[2]='\0';
+		kt[2] = '\0';
 		if (strcmp(kt, "KT") != 0)
 			asprintf(&taf_wind, "2-unknown(%s)", temp);
 		else {
@@ -439,7 +439,7 @@ char* tafWeather(char *taf_list)
 				if (temp[2] == 'M') {
 					strncpy(temp2, temp + 3, 2);
 					temp2[2] = '\0';
-					units = (atoi(temp2) * -1);;
+					units = (atoi(temp2) * -1);
 					fahr = (units * 9/5) + 32;
 				}
 				else {
@@ -677,7 +677,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK)
 			if (PQresultStatus(res) != 7)
-				fprintf(stderr,"bad sql %s \nStatus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
+				fprintf(stderr,"bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
 		PQclear(res);
 	}
@@ -761,7 +761,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 			}
 		}
 		if (temp != NULL){
-			if ((strncmp(temp + (temp_len -2), "SM", 2) == 0) || (temp_len == 1) || (temp_len == 4)) {
+			if ((strncmp(temp + (temp_len - 2), "SM", 2) == 0) || (temp_len == 1) || (temp_len == 4)) {
 				if (temp_len == 1)
 					temp2 = strsep(&taf_lines, " ");
 
