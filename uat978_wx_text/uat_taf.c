@@ -241,7 +241,7 @@ char* tafWeather(char *taf_list)
 		case FZRA:		strcat(taf_wx_all, " Freezing rain,"); break;
 		case RAPL:		strcat(taf_wx_all, " Rain/ice pellets,"); break;
 		case RASN:		strcat(taf_wx_all, " Rain/snow,"); break;
-		case SHRA:		strcat(taf_wx_all, " Rain showers,"); break;
+		case SHRA:	case SHRN: 	strcat(taf_wx_all, " Rain showers,"); break;
 		case SHSN:		strcat(taf_wx_all, " Showers/snow,"); break;
 		case SNPL:		case PLSN:	strcat(taf_wx_all, " Snow/ice pellets,"); break;
 		case TSRA:		strcat(taf_wx_all, " Thunderstorm/rain,"); break;
