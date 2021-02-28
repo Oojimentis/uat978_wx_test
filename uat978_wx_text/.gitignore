@@ -91,3 +91,5 @@
 /uat_geo.o
 /uat_decode-jan14.c
 /uat_taf.o
+/config.txt
+/taf.out
