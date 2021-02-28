@@ -1604,7 +1604,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 
 	switch (geo_overlay_opt) {
 
-	case 1:							// Low res 2d Polygon
+	case 99:							// Low res 2d Polygon
 		datoff = 21;
 		for (int i = 0; i < overlay_vert_cnt; i++) {
 			lng_raw = ((apdu->data[datoff]) << 4) | ((apdu->data[datoff + 1]) & 0xF0) ;
