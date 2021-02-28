@@ -10,7 +10,7 @@ My programming skills are somewhat limited, and this is my first Github project,
 * Trying to decode overlay option #2 - High-res 3D polygon. 
 
 ## Added
-* Removed most of the output text files, as data is now being put into database. (01/01/21)
+* Removed most of the old output text files, as data is now being put into database. (01/01/21)
 * NEXRAD and other radar data captured in database. (12/27/20)
 * Converted sqlite database to PostgreSQL. (01/01/21)
 * WX station and airport lookup via database.
