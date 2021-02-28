@@ -82,7 +82,7 @@ METAR (Metrological Aviation Report)
 ![METAR](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/metar_screen.png)
 
 NOTAM (Notices to Airmen)
-
+<br>(Only segmented reports in notam.out - other NOTAM reports sent to database)
 ![NOTAM graphic](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/notam_graphic_screen.png)
 ![NOTAM text](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/notam_text_screen.png)
 
