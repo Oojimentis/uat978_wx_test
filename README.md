@@ -62,12 +62,12 @@ Aircraft
 ![Aircraft](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/aircraft_screen.png)
 
 AIRMET (Airmen's meteorological information)
-(No longer produced - data added to database)
+<br>(No longer produced - data added to database)
 ![AIRMET graphic](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/airmet_graphic_screen.png)
 ![AIRMET text](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/airmet_text_screen.png)
 
 G-AIRMET (Graphical AIRMET)
-(No longer produced - data added to database)
+<br>(No longer produced - data added to database)
 ![G-AIRMET text](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/g-airmet_screen.png)
 ![G-AIRMET](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/g-airmet2_screen.png)
 
@@ -75,6 +75,7 @@ Current report list and
 service status
 
 ![Frame info](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/info_frame_screen.png)
+
 ![Service status](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/service_status_screen.png)
 
 METAR (Metrological Aviation Report)
@@ -87,11 +88,11 @@ NOTAM (Notices to Airmen)
 ![NOTAM text](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/notam_text_screen.png)
 
 PIREP (Pilot reports)
-(No longer produced - data added to database)
+<br>(No longer produced - data added to database)
 ![PIREP](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/pirep_screen.png)
 
 SIGMET (Significant Metrological Information)
-(No longer produced - data added to database)
+<br>(No longer produced - data added to database)
 ![SIGMET](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/sigmet_screen.png)
 
 SUA (Special use airspace)
@@ -99,7 +100,7 @@ SUA (Special use airspace)
 ![SUA](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/sua_screen.png)
 
 TAF (Terminal Aerodrome Forecast)
-(Decoded data in TAF.OUT for debugging purposes, but also sent to database)
+<br>(Decoded data in TAF.OUT for debugging purposes, but also sent to database)
 ![TAF](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/taf_screen.png)
 
 Winds aloft
