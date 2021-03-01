@@ -111,6 +111,10 @@ char* tafWind(char *temp)
 			gs[2] = '\0';
 		}
 	}
+	else {
+		asprintf(&taf_wind, "8-Unknown: %s",temp);
+		return taf_wind;
+	}
 	if (strcmp(d, "VRB") == 0)
 		asprintf(&taf_wind, "Variable, speed %dkt", kt_int);
 	else
@@ -288,6 +292,7 @@ char* tafWeather(char *taf_list)
 		case HRA:		strcat(taf_wx_all, " Heavy rain,"); break;
 
 		case HSHRA:		strcat(taf_wx_all, " Heavy rain showers,"); break;
+		case HSHSN:		strcat(taf_wx_all, " Heavy snow showers,"); break;
 
 		default:	found = 0; break;
 		}
@@ -630,7 +635,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 			validDates(sd, sz, ed, ez, temp);
 			fprintf(filetaf, "Current: %s @%s:00z", sd, sz);
 			fprintf(filetaf, "-%s @%s:00z", ed, ez);
-			sprintf(current_all, "%s @%s:00z - %s @%s:00z", sd, sz, ed, ez);
+			sprintf(current_all, "%s @%s:00z-%s @%s:00z", sd, sz, ed, ez);
 			temp = strsep(&taf_lines, " ");
 			if (strncmp(temp, "NIL", 3) == 0) {
 				fprintf(filetaf, "Station not active ");
@@ -642,7 +647,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 // Winds / NIL=
 		if (nil == 0) {
 			taf_temp = tafWind(temp);
-			fprintf(filetaf, " Wind: %s", taf_temp);
+			fprintf(filetaf, " Wind:%s", taf_temp);
 			sprintf(wind, "%s", taf_temp);
 // Visibility
 			temp = strsep(&taf_lines, " ");
@@ -692,6 +697,9 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 		fprintf(filetaf, " Wind: %s", taf_temp);
 // Visibility
 		temp = strsep(&taf_lines, " ");
+		if (temp == 0) {
+			return;
+		}
 		temp_len = strlen(temp);
 		if ((strncmp(temp + (temp_len -2), "SM", 2) == 0) || (temp_len == 1) || (temp_len == 4)) {
 			if (temp_len == 1)
@@ -700,6 +708,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 			tafVisibilty(temp, taf_temp, taf_lines);
 			fprintf(filetaf, " Vis: %s", taf_temp);
 		}
+
 		else {
 			t_temp = (char *)malloc(strlen(taf_lines) + 1);
 			strcpy(t_temp, taf_lines);
