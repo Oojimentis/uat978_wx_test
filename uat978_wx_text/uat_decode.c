@@ -2097,7 +2097,7 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm, FILE *to)
 				fprintf(fnm, " Report Type     : NOTAM - Segmented\n");
 				fprintf(fnm, " Num of Segments : %d\n", seg_list[i].seg_prolen);
 				fprintf(fnm, " Report Number   : %6d  ", seg_list[i].seg_rpt_num);
-				fprintf(fnm, "     Report Year       : 20%02d\n ", seg_list[i].seg_rpt_year);
+				fprintf(fnm, "     Report Year       : 202%d\n ", seg_list[i].seg_rpt_year);
 			}
 		}
 		for (int i = 0; i <= seg_count; ++i) {												// 2nd part
