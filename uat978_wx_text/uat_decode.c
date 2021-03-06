@@ -656,15 +656,15 @@ static void uat_decode_ms(uint8_t *frame, struct uat_adsb_mdb *mdb)
 
 	mdb->has_ms = 1;
 
-	v = (frame[17]<<8) | (frame[18]);
+	v = (frame[17] << 8) | (frame[18]);
 	mdb->emitter_category = (v/1600) % 40;
 	mdb->callsign[0] = base40_alphabet[(v/40) % 40];
 	mdb->callsign[1] = base40_alphabet[v % 40];
-	v = (frame[19]<<8) | (frame[20]);
+	v = (frame[19] << 8) | (frame[20]);
 	mdb->callsign[2] = base40_alphabet[(v/1600) % 40];
 	mdb->callsign[3] = base40_alphabet[(v/40) % 40];
 	mdb->callsign[4] = base40_alphabet[v % 40];
-	v = (frame[21]<<8) | (frame[22]);
+	v = (frame[21] << 8) | (frame[22]);
 	mdb->callsign[5] = base40_alphabet[(v/1600) % 40];
 	mdb->callsign[6] = base40_alphabet[(v/40) % 40];
 	mdb->callsign[7] = base40_alphabet[v % 40];
@@ -1201,7 +1201,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				strncpy(n, time_copy + 4, 1);
 
 //				if (strcmp(gstn,"KCEF") == 0)
-//				fprintf(stderr,"moo!");
+//				fprintf(stderr,"test");
 
 				if (strcmp(n, "/") != 0) {
 					strncpy(sd, time_copy, 2);
@@ -1341,7 +1341,7 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 				fprintf(to, "\n");
 			}
 			else if (frame->type == 14) {      // report list
-				prodt = frame->data[0] <<3 | frame->data[1] >>5;
+				prodt = frame->data[0] << 3 | frame->data[1] >> 5;
 				tfr = (frame->data[1] >> 4) & 1;
 				lidflag = (frame->data[1] >> 8) & 1;
 				prod_range = frame->data[2] * 5;
@@ -1406,8 +1406,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	int obj_label_flag = 0;
 
 	char gstn[5];
-	char obj_ele_text[35];
-
+	char * obj_ele_text;
 	const char * obj_labelt;
 
 	uint16_t rec_len = 0;
@@ -1465,10 +1464,14 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		strncpy(gstn, text, 5);
 		get_gs_name(gstn);
 	}
-	else {
-		strcpy(gstn, "    ");}
+	else
+		strcpy(gstn, "    ");
 
 	rep_num = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]); 				// 7 8
+
+//	if (rep_num == 629)
+//		fprintf(stderr,"test");
+
 	rec_len = ((apdu->data[datoff + 0]) << 2) | (((apdu->data[datoff + 1]) & 0xC0) >> 6);		// 6 7
 	report_year = ((apdu->data[datoff + 3]) & 0xFE) >> 1;										// 9
 	overlay_rec_id = (((apdu->data[datoff + 4]) & 0x1E) >> 1) + 1;								// Docs say to add 1.
@@ -1482,6 +1485,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		obj_labelt = decode_dlac(apdu->data, 5, 2);
 		datoff = datoff + 14;
 	}
+
 	element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;										//13
 	obj_element = (apdu->data[datoff + 0]) & 0x1F;												//13
 	obj_status = (apdu->data[datoff +1]) & 0x0F;												//14
@@ -1494,10 +1498,11 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		datoff = datoff + 2;																	// 13 > datoff=15
 	}
 	else {
-		object_qualifier = ((apdu->data[datoff + 2]) << 16) | ((apdu->data[datoff + 3]) << 8) | (apdu->data[datoff + 4]);
+		object_qualifier = ((apdu->data[datoff + 2]) << 16) | ((apdu->data[datoff + 3]) << 8)
+				| (apdu->data[datoff + 4]);
 		fprintf(to, "ob qualifier: %d\n", object_qualifier);
 
-		strcpy(qual_text, "Qualifier: ");
+		strcpy(qual_text, " ");
 		if (apdu->product_id == 14) {
 			if (apdu->data[datoff + 2] & (1 << 7)) {											// 15
 				strcat(qual_text, " Unspecified, ");
@@ -1529,16 +1534,18 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 			if (apdu->data[datoff + 4] & (1 << 7)) {
 				strcat(qual_text, " Dust, ");
 			}
+			datoff = datoff + 2;     //new
 		}
 		obj_param_type = apdu->data[18] >> 3;							// 18
 		obj_par_val = (apdu->data[18] & 0x7) << 8 | apdu->data[19];		// 19
 		fprintf(to, "ob par value: %d  ob_par_type: %d", obj_par_val, obj_param_type);
 
-		datoff = datoff + 7;																	// 13 datoff =20
+		datoff = datoff + 3;	//was 7																// 13 datoff =20
 	}
 	geo_overlay_opt = (apdu->data[datoff + 0]) & 0x0F;											// 13
-	if (geo_overlay_opt == 2)
-		fprintf(to, "moo!");
+
+//	if (geo_overlay_opt == 10)
+//		fprintf(to, "test");
 
 	overlay_op = ((apdu->data[datoff + 1]) & 0xC0) >> 6;
 	overlay_vert_cnt = ((apdu->data[datoff + 1]) & 0x3F) + 1;									// Docs say to add 1)
@@ -1549,7 +1556,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	case 0:									// No times given. UFN. (record_data[2:],date_time_format)
 		asprintf(&start_date, "0");
 		asprintf(&stop_date, "0");
-		datoff = datoff + 2;
+		datoff = datoff + 8;   // was 2
 		break;
 	case 1:									// Start time only. WEF.
 		d1 = apdu->data[datoff + 2];
@@ -1587,11 +1594,15 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		datoff = datoff + 10;
 		break;
 	}
-	strcpy(obj_ele_text, " ");
 
-	if (element_flag == 1 && obj_type == 14 && apdu->product_id == 14)
+	asprintf(&obj_ele_text, " ");
+
+	if (element_flag == 1 && obj_type == 14 && apdu->product_id == 14) {
 		strcpy(obj_ele_text, gairspace_element_names[obj_element]);
-
+		if (qualifier_flag == 1) {
+			asprintf(&obj_ele_text, "%s (%s)", obj_ele_text, qual_text);
+		}
+	}
 	asprintf(&postsql,"INSERT INTO graphic_reports (prod_id,stn_call,prod_ver,rec_count,rec_ref,"
 			"rep_number,rec_length,rep_year,ovrly_recid,obj_lbl_flag,obj_lbl_number,obj_lbl_alpha,"
 			"element_flag,obj_element,obj_status,obj_type,qual_flag,param_flag,rec_app_option,"
@@ -1701,98 +1712,80 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		PQclear(res);
 
 		break;
-	case 7: case 8:									// Extended Range Circular Prism (7 = MSL,8 = AGL)
+	case 7: case 8: {									// Extended Range Circular Prism (7 = MSL,8 = AGL)
 
-		if (rec_len < 14) {
-//			fprintf(fnm,"Data too short. Should be 14 bytes; %d seen.\n",rec_len);
+		uint32_t lng_bot_raw;
+		uint32_t lat_bot_raw;
+		uint32_t lng_top_raw;
+		uint32_t lat_top_raw;
+
+		uint32_t alt_bot_raw;
+		uint32_t alt_top_raw;
+		uint32_t r_lng_raw;
+		uint32_t r_lat_raw, alpha;
+		uint32_t alt_bot;
+		uint32_t alt_top;
+
+		float lat_bot, lng_bot, lat_top, lng_top, r_lng, r_lat;
+
+		lng_bot_raw = ((apdu->data[datoff + 0]) << 10) | ((apdu->data[datoff + 1]) << 2) |
+				((apdu->data[datoff + 2]) & 0xC0 >> 6);
+		lat_bot_raw = (((apdu->data[datoff + 2]) & 0x3F) << 12) | ((apdu->data[datoff + 3]) << 4) |
+				(((apdu->data[datoff + 4]) & 0xF0) >> 4);
+
+		lng_top_raw = (((apdu->data[datoff + 4]) & 0x0F) << 14) | ((apdu->data[datoff + 5]) << 6) |
+				(((apdu->data[datoff + 6]) & 0xFC) >> 2);
+		lat_top_raw = (((apdu->data[datoff + 6]) & 0x03) << 16) | ((apdu->data[datoff + 7]) << 8) |
+				(apdu->data[datoff + 8]);
+
+		alt_bot_raw = ((apdu->data[datoff + 9]) & 0xFE) >> 1;
+		alt_top_raw = (((apdu->data[datoff + 9]) & 0x01) << 6) | (((apdu->data[datoff + 10]) & 0xFC) >> 2);
+
+		r_lng_raw = (((apdu->data[datoff + 10]) & 0x03) << 7) | (((apdu->data[datoff + 11]) & 0xFE) >> 1);
+		r_lat_raw = (((apdu->data[datoff + 11]) & 0x01) << 8) | (apdu->data[datoff + 12]);
+
+		alpha = (apdu->data[datoff + 13]);
+
+		lng_bot_raw = (~lng_bot_raw & 0x1FFFF) + 1;		// 2's compliment +1
+		lat_bot_raw = (~lat_bot_raw & 0x1FFFF) + 1;		// 2's compliment +1
+		lat_bot = lat_bot_raw * 0.001373;
+		lng_bot = (lng_bot_raw * 0.001373) * -1;
+
+		if (lat_bot > 90.0)
+			lat_bot = (lat_bot - 180.0) * -1;
+		if (lng_bot > 180.0)
+			lng_bot = lng_bot - 360.0;
+
+		lng_top_raw = (~lng_top_raw & 0x1FFFF) + 1;		// 2's compliment +1
+		lat_top_raw = (~lat_top_raw & 0x1FFFF) + 1;		// 2's compliment +1
+		lat_top = lat_top_raw * 0.001373;
+		lng_top = (lng_top_raw * 0.001373) * -1;
+
+		if (lat_top > 90.0)
+			lat_top = (lat_top - 180.0) * -1;
+		if (lng_top > 180.0)
+			lng_top = lng_top - 360.0;
+
+		alt_bot = alt_bot_raw * 5;
+		alt_top = alt_top_raw * 500;
+		r_lng = r_lng_raw * 0.2;
+		r_lat = r_lat_raw * 0.2;
+
+		asprintf(&postsql,"INSERT INTO circles(bot,top,alt_bot,alt_top,alpha,prod_id,rec_count,rep_num,"
+				"rep_year,start_date,stop_date,geo_opt,r_lat,r_lng) VALUES (ST_GeomFromText('POINT ( %f %f)',4326),"
+				"ST_GeomFromText('POINT (%f %f)',4326),%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d,%f,%f)",
+				lng_bot, lat_bot, lng_top, lat_top, alt_bot, alt_top, alpha, apdu->product_id, rec_count,
+				rep_num, report_year, start_date, stop_date, geo_overlay_opt, r_lat, r_lng);
+
+		res = PQexec(conn, postsql);
+		if (PQresultStatus(res) != PGRES_COMMAND_OK){
+			if (PQresultStatus(res) != 7)
+				fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 		}
-		else {
-			uint32_t lng_bot_raw;
-			uint32_t lat_bot_raw;
-			uint32_t lng_top_raw;
-			uint32_t lat_top_raw;
-
-			uint32_t alt_bot_raw;
-			uint32_t alt_top_raw;
-			uint32_t r_lng_raw;
-			uint32_t r_lat_raw, alpha;
-			uint32_t alt_bot;
-			uint32_t alt_top;
-
-			float lat_bot, lng_bot, lat_top, lng_top, r_lng, r_lat;
-
-			lng_bot_raw = ((apdu->data[datoff + 0]) << 10) | ((apdu->data[datoff + 1]) << 2) |
-					((apdu->data[datoff + 2]) & 0xC0 >> 6);
-			lat_bot_raw = (((apdu->data[datoff + 2]) & 0x3F) << 12) | ((apdu->data[datoff + 3]) << 4) |
-					(((apdu->data[datoff + 4]) & 0xF0) >> 4);
-
-			lng_top_raw = (((apdu->data[datoff + 4]) & 0x0F) << 14) | ((apdu->data[datoff + 5]) << 6) |
-					(((apdu->data[datoff + 6]) & 0xFC) >> 2);
-			lat_top_raw = (((apdu->data[datoff + 6]) & 0x03) << 16) | ((apdu->data[datoff + 7]) << 8) |
-					(apdu->data[datoff + 8]);
-
-			alt_bot_raw = ((apdu->data[datoff + 9]) & 0xFE) >> 1;
-			alt_top_raw = (((apdu->data[datoff + 9]) & 0x01) << 6) | (((apdu->data[datoff + 10]) & 0xFC) >> 2);
-
-			r_lng_raw = (((apdu->data[datoff + 10]) & 0x03) << 7) | (((apdu->data[datoff + 11]) & 0xFE) >> 1);
-			r_lat_raw = (((apdu->data[datoff + 11]) & 0x01) << 8) | (apdu->data[datoff + 12]);
-
-			alpha = (apdu->data[datoff + 13]);
-
-			lng_bot_raw = (~lng_bot_raw & 0x1FFFF) + 1;		// 2's compliment +1
-			lat_bot_raw = (~lat_bot_raw & 0x1FFFF) + 1;		// 2's compliment +1
-			lat_bot = lat_bot_raw * 0.001373;
-			lng_bot = (lng_bot_raw * 0.001373) * -1;
-
-			if (lat_bot > 90.0)
-				lat_bot = (lat_bot - 180.0) * -1;
-			if (lng_bot > 180.0)
-				lng_bot = lng_bot - 360.0;
-
-			lng_top_raw = (~lng_top_raw & 0x1FFFF) + 1;		// 2's compliment +1
-			lat_top_raw = (~lat_top_raw & 0x1FFFF) + 1;		// 2's compliment +1
-			lat_top = lat_top_raw * 0.001373;
-			lng_top = (lng_top_raw * 0.001373) * -1;
-
-			if (lat_top > 90.0)
-				lat_top = (lat_top - 180.0) * -1;
-			if (lng_top > 180.0)
-				lng_top = lng_top - 360.0;
-
-			alt_bot = alt_bot_raw * 5;
-			alt_top = alt_top_raw * 500;
-			r_lng = r_lng_raw * 0.2;
-			r_lat = r_lat_raw * 0.2;
-
-//			fprintf(to, "lat_bot, lng_bot = %f, %f\n", lat_bot, lng_bot);
-//			fprintf(to, "lat_top, lng_top = %f, %f\n", lat_top, lng_top);
-
-//			if (geo_overlay_opt == 8)
-//				fprintf(to, "alt_bot,alt_top = %d AGL, %d AGL  geo_opt:%d\n", alt_bot, alt_top, geo_overlay_opt);
-//			else
-//				fprintf(to,"alt_bot,alt_top = %d MSL, %d MSL  geo_opt:%d\n", alt_bot, alt_top, geo_overlay_opt);
-
-//			fprintf(to, "r_lng, r_lat = %f, %f\n", r_lng, r_lat);
-//			fprintf(to, "alpha =%d\n", alpha);
-
-			asprintf(&postsql,"INSERT INTO circles(bot,top,alt_bot,alt_top,alpha,prod_id,rec_count,rep_num,"
-					"rep_year,start_date,stop_date,geo_opt,r_lat,r_lng) VALUES (ST_GeomFromText('POINT ( %f %f)',4326),"
-					"ST_GeomFromText('POINT (%f %f)',4326),%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d,%f,%f)",
-					lng_bot, lat_bot, lng_top, lat_top, alt_bot, alt_top, alpha, apdu->product_id, rec_count,
-					rep_num, report_year, start_date, stop_date, geo_overlay_opt, r_lat, r_lng);
-
-			res = PQexec(conn, postsql);
-			if (PQresultStatus(res) != PGRES_COMMAND_OK){
-				if (PQresultStatus(res) != 7)
-					fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
-			}
-			PQclear(res);
-		}
-		break;
+		PQclear(res);
+	}
+	break;
 	case 9:	case 10:								// Extended Range 3D Point (AGL)
-
-//		fprintf(to, " %d  %d  %d\n", overlay_vert_cnt, geo_overlay_opt, apdu->product_id);
-//		fflush(to);
 
 		lng_raw = ((apdu->data[datoff + 0]) << 11) | ((apdu->data[datoff + 1]) << 3) |
 		((apdu->data[datoff + 2]) & 0xE0 >> 5);
@@ -1827,54 +1820,53 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 
 		break;
 	case 11: case 12:								// Extended Range 3D Polyline
-													// Don't write geojson for items with qualifier flag set.
-		if (qualifier_flag == 0) {
+
+		alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
+		alt = alt_raw * 100;
+
+		for (int i = 0; i < overlay_vert_cnt; i++) {
+			lng_raw = ((apdu->data[datoff]) << 11) | ((apdu->data[datoff + 1]) << 3) |
+					((apdu->data[datoff + 2]) >> 5);
+			lat_raw = (((apdu->data[datoff + 2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) |
+					(((apdu->data[datoff + 4]) & 0xFC) >> 2);
 			alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
+
+			datoff = datoff + 6;
+
+			lng_raw = (~lng_raw & 0x7FFFF) + 1;										// 2's compliment +1
+			lat_raw = (~lat_raw & 0x7FFFF) + 1;										// 2's compliment +1
+
+			lat = lat_raw * 0.0006866455078125;
+			lng = lng_raw * -0.0006866455078125;
+
+			if (lat > 90.0)
+				lat = 360.0 - lat;
+			if (lng > 180.0)
+				lng = lng - 360.0;
+
 			alt = alt_raw * 100;
 
-			for (int i = 0; i < overlay_vert_cnt; i++) {
-				lng_raw = ((apdu->data[datoff]) << 11) | ((apdu->data[datoff + 1]) << 3) |
-						((apdu->data[datoff + 2]) >> 5);
-				lat_raw = (((apdu->data[datoff + 2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) |
-						(((apdu->data[datoff + 4]) & 0xFC) >> 2);
-				alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
-
-				datoff = datoff + 6;
-
-				lng_raw = (~lng_raw & 0x7FFFF) + 1;										// 2's compliment +1
-				lat_raw = (~lat_raw & 0x7FFFF) + 1;										// 2's compliment +1
-
-				lat = lat_raw * 0.0006866455078125;
-				lng = lng_raw * -0.0006866455078125;
-
-				if (lat > 90.0)
-					lat = 360.0 - lat;
-				if (lng > 180.0)
-					lng = lng - 360.0;
-
-				alt = alt_raw * 100;
-
-				if (i == (overlay_vert_cnt - 1)){
-					asprintf(&coords, " [%f,%f]", coords, lng, lat);
-					strcat(gr, coords);
-				}
-				else {
-					asprintf(&coords, " [%f,%f],", coords, lng, lat);
-					strcat(gr, coords);
-				}
+			if (i == (overlay_vert_cnt - 1)){
+				asprintf(&coords, " [%f,%f]", coords, lng, lat);
+				strcat(gr, coords);
 			}
-
-			asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
-					"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ %s ]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
-					gr, apdu->product_id, rep_num, alt, obj_ele_text, start_date, stop_date, geo_overlay_opt);
-
-			res = PQexec(conn, postsql);
-			if (PQresultStatus(res) != PGRES_COMMAND_OK)
-				if (PQresultStatus(res) != 7)
-					fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
-
-			PQclear(res);
+			else {
+				asprintf(&coords, " [%f,%f],", coords, lng, lat);
+				strcat(gr, coords);
+			}
 		}
+
+		asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
+				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ %s ]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
+				gr, apdu->product_id, rep_num, alt, obj_ele_text, start_date, stop_date, geo_overlay_opt);
+
+		res = PQexec(conn, postsql);
+		if (PQresultStatus(res) != PGRES_COMMAND_OK)
+			if (PQresultStatus(res) != 7)
+				fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+
+		PQclear(res);
+
 		break;
 	default:
 		fprintf(to, "Unknown Geo type: %d", geo_overlay_opt);
