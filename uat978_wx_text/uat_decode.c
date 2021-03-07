@@ -1017,7 +1017,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 			break;
 		}
 	break;
-	case 11:							// ** AIRMET **************
+
+// ** AIRMET 11  -  SIGMET 12  -  SUA 13  -  G-AIRMET 14  -  CWA 15 **************
+	case 11: case 12: case 13: case 14: case 15:
 		recf = apdu->data[0] >> 4;
 
 		switch (recf) {
@@ -1028,74 +1030,13 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 			get_text(apdu, to);
 			break;
 		default:
-			fprintf(to, " Record Format   : %d \n", recf);
+			fprintf(to, "Prod: %d -  Record Format: %d \n", apdu->product_id, recf);
 			display_generic_data(apdu->data, apdu->length, to);
 			break;
 		}
 	break;
-	case 12:							// ** SIGMET **************
-		recf = apdu->data[0] >> 4;
 
-		switch (recf) {
-		case 8:							// Graphic
-			get_graphic(apdu, to);
-			break;
-		case 2:							// Text
-			get_text(apdu, to);
-			break;
-		default:
-			fprintf(to, " Record Format   : %d \n", recf);
-			display_generic_data(apdu->data, apdu->length, to);
-			break;
-		}
-	break;
-	case 13:							// ** SUA **************
-		recf = apdu->data[0] >> 4;
-		fprintf(filesua, " Record Format   : %d \n", recf);
-
-		switch (recf) {
-		case 2:							// Text
-			get_text(apdu, to);
-			break;
-		default:
-			fprintf(to, " Record Format   : %d \n", recf);
-			display_generic_data(apdu->data, apdu->length, to);
-			break;
-		}
-	break;
-	case 14:							// ** G-AIRMET **************
-		recf = apdu->data[0] >> 4;
-
-		switch (recf) {
-		case 8:							// Graphic
-			fprintf(to, " Report Type     : G-AIRMET\n");
-			get_graphic(apdu, to);
-			break;
-		default:
-			fprintf(to, " Record Format   : %d \n", recf);
-			display_generic_data(apdu->data, apdu->length, to);
-			break;
-		}
-	break;
-	case 15:							// ** CWA **************
-		recf = apdu->data[0] >> 4;
-		fprintf(to, " Record Format   : %d \n", recf);
-
-		switch (recf) {
-		case 8:							// Graphic
-			fprintf(to, " Report Type     : CWA\n");
-			get_graphic(apdu, to);
-			break;
-		case 2:							// Text
-			get_text(apdu, to);
-			break;
-		default:
-			fprintf(to, " Record Format   : %d \n", recf);
-				display_generic_data(apdu->data, apdu->length, to);
-			break;
-			}
-	break;
-	// ** Graphics - NEXRAD(63,64), Icing(70,71), Cloud Tops(84), Turbulence(90,91), Lightning(103)
+// ** Graphics - NEXRAD(63,64), Icing(70,71), Cloud Tops(84), Turbulence(90,91), Lightning(103)
 	case 63:	case 64:	case 70:	case 71:	case 84:	case 90:	case 91:	case 103:
 			graphic_nexrad(apdu, to);
 			break;
@@ -1468,10 +1409,6 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		strcpy(gstn, "    ");
 
 	rep_num = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]); 				// 7 8
-
-//	if (rep_num == 629)
-//		fprintf(stderr,"test");
-
 	rec_len = ((apdu->data[datoff + 0]) << 2) | (((apdu->data[datoff + 1]) & 0xC0) >> 6);		// 6 7
 	report_year = ((apdu->data[datoff + 3]) & 0xFE) >> 1;										// 9
 	overlay_rec_id = (((apdu->data[datoff + 4]) & 0x1E) >> 1) + 1;								// Docs say to add 1.
@@ -1543,10 +1480,6 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		datoff = datoff + 3;	//was 7																// 13 datoff =20
 	}
 	geo_overlay_opt = (apdu->data[datoff + 0]) & 0x0F;											// 13
-
-//	if (geo_overlay_opt == 10)
-//		fprintf(to, "test");
-
 	overlay_op = ((apdu->data[datoff + 1]) & 0xC0) >> 6;
 	overlay_vert_cnt = ((apdu->data[datoff + 1]) & 0x3F) + 1;									// Docs say to add 1)
 	rec_app_opt = ((apdu->data[datoff + 0]) & 0xC0) >> 6;
@@ -1663,9 +1596,11 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 
 		break;
 
-	case 3: case 4:									// Extended Range 3D Polygon
+	case 3: case 4:	{								// Extended Range 3D Polygon
+
+		int alt_save;
 		alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
-		alt = alt_raw * 100;
+		alt_save = alt_raw * 100;
 
 		for (int i = 0; i < overlay_vert_cnt; i++) {
 			lng_raw = ((apdu->data[datoff]) << 11) | ((apdu->data[datoff + 1]) << 3) |
@@ -1685,13 +1620,23 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 
 			alt = alt_raw * 100;
 
-			if (lat == lat_save) {														// Ignore 2nd altitude data to fix map
-				i = overlay_vert_cnt;
-				continue;
-			}
-			lat_save = lat;
+			if (alt != alt_save) {   // Multiple altitudes
+				asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
+						"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
+						gr, apdu->product_id, rep_num, alt_save, obj_ele_text, start_date, stop_date, geo_overlay_opt);
 
-			if (i == (overlay_vert_cnt - 1)){
+				res = PQexec(conn, postsql);
+				if (PQresultStatus(res) != PGRES_COMMAND_OK)
+					if (PQresultStatus(res) != 7)
+						fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+
+				PQclear(res);
+
+				alt_save = alt;
+				gr[0] = '\0';
+
+			}
+			else if (i == (overlay_vert_cnt - 1)){
 				asprintf(&coords, " [%f,%f]", coords, lng, lat);
 				strcat(gr, coords);
 			}
@@ -1710,7 +1655,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 				fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
 		PQclear(res);
-
+	}
 		break;
 	case 7: case 8: {									// Extended Range Circular Prism (7 = MSL,8 = AGL)
 
