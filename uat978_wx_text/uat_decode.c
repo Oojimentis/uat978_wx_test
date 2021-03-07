@@ -1372,7 +1372,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	uint32_t lng_raw;
 	uint32_t alt_raw;
 	int alt;
-	float lat; float lat_save = 0.0;
+	float lat;
 	float lng;
 	float fct_f = 0.000687;
 
@@ -1422,6 +1422,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		obj_labelt = decode_dlac(apdu->data, 5, 2);
 		datoff = datoff + 14;
 	}
+
 
 	element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;										//13
 	obj_element = (apdu->data[datoff + 0]) & 0x1F;												//13
@@ -1536,65 +1537,15 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 			asprintf(&obj_ele_text, "%s (%s)", obj_ele_text, qual_text);
 		}
 	}
-	asprintf(&postsql,"INSERT INTO graphic_reports (prod_id,stn_call,prod_ver,rec_count,rec_ref,"
-			"rep_number,rec_length,rep_year,ovrly_recid,obj_lbl_flag,obj_lbl_number,obj_lbl_alpha,"
-			"element_flag,obj_element,obj_status,obj_type,qual_flag,param_flag,rec_app_option,"
-			"app_opt_fmt,start_date,stop_date,geo_ovrly_opt,ovrly_operator,ovrly_vertices,qual_text,rep_rec_time)"
-			"VALUES(%d,'%s',%d,%d,%d,%d,%d,%d,%d,%d,%d,'%s',%d,%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d,%d,%d,'%s','%s')",
-			apdu->product_id, gstn, product_ver, rec_count, rec_ref, rep_num, rec_len, report_year,
-			overlay_rec_id, obj_label_flag, obj_label, obj_labelt, element_flag, obj_element, obj_status, obj_type,
-			qualifier_flag, param_flag, rec_app_opt, date_time_format, start_date, stop_date, geo_overlay_opt,
-			overlay_op, overlay_vert_cnt, qual_text, buff);
+
+	fprintf(stderr, "Obj label text: %s  Obj label  : %d  Rep number: %d\n", obj_labelt, obj_label, rep_num);
+	fprintf(stderr, "Prod ver      : %d  Ovrly recID   : %d  Rec len     : %d  Obj status: %d\n", product_ver, overlay_rec_id,
+			rec_len,obj_status);
+	fprintf(stderr, "Param flag    : %d  DteTimFmt     : %d  Element flag:  %d  Ovrly opts: %d\n", param_flag, date_time_format,
+			element_flag,overlay_op);
+	fprintf(stderr, "Obj param val : %d  Obj param type: %d  Vert count: %d\n", obj_par_val, obj_param_type, overlay_vert_cnt);
 
 	switch (geo_overlay_opt) {
-
-	case 99:							// Low res 2d Polygon
-		datoff = 21;
-		for (int i = 0; i < overlay_vert_cnt; i++) {
-			lng_raw = ((apdu->data[datoff]) << 4) | ((apdu->data[datoff + 1]) & 0xF0) ;
-			lat_raw = (((apdu->data[datoff + 1]) & 0xF) << 8) | ((apdu->data[datoff + 2])) ;
-
-			datoff = datoff + 3;
-
-			lng_raw = (~lng_raw & 0xFFF) + 1;											// 2's compliment +1
-			lat_raw = (~lat_raw & 0xFFF) + 1;											// 2's compliment +1
-
-			lat = 0.087890625 * lat_raw;
-			lng = (0.087890625 * lng_raw) * -1;
-
-			if (lat > 90.0)
-				lat = lat - 180.0;
-			if (lng > 180.0)
-				lng = lng - 360.0;
-
-			if (lat == lat_save) {														// Ignore 2nd altitude data to fix map
-				i = overlay_vert_cnt;
-				continue;
-			}
-			lat_save = lat;
-
-			if (i == (overlay_vert_cnt - 1)){
-				asprintf(&coords, " [%f,%f]", coords, lng, lat);
-				strcat(gr, coords);
-			}
-			else {
-				asprintf(&coords, " [%f,%f],", coords, lng, lat);
-				strcat(gr, coords);
-			}
-		}
-		alt = 0;
-		asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
-				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
-				gr, apdu->product_id, rep_num, alt, obj_ele_text, start_date, stop_date, geo_overlay_opt);
-
-		res = PQexec(conn, postsql);
-		if (PQresultStatus(res) != PGRES_COMMAND_OK)
-			if (PQresultStatus(res) != 7)
-				fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
-
-		PQclear(res);
-
-		break;
 
 	case 3: case 4:	{								// Extended Range 3D Polygon
 
@@ -1765,7 +1716,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 
 		break;
 	case 11: case 12:								// Extended Range 3D Polyline
-
+		fprintf(stderr, " q flag: %d\n", qualifier_flag);
 		alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
 		alt = alt_raw * 100;
 
@@ -1790,6 +1741,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 				lng = lng - 360.0;
 
 			alt = alt_raw * 100;
+
 
 			if (i == (overlay_vert_cnt - 1)){
 				asprintf(&coords, " [%f,%f]", coords, lng, lat);
