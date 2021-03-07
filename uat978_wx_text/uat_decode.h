@@ -35,7 +35,7 @@ int seg_count;
 
 FILE * filemetar;   	// 413
 FILE * filenotam;   	// 8
-FILE * filesua;      	// 13
+//FILE * filesua;      	// 13
 
 FILE * filetaf;			// test file for TAF
 FILE * fileconfig;		// Credentials.

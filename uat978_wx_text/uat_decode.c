@@ -26,8 +26,8 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to);
 static void get_text(const struct fisb_apdu *apdu, FILE *to);
 static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm, FILE *to);
 static void get_gs_name(char *Word);
-static void get_sua_text(char *Word, FILE *to);
-static void get_pirep(char *Word, FILE *to);
+static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_year);
+static void get_pirep(char *Word);
 
 // The odd two-string-literals here is to avoid \0x3ABCDEF being interpreted as a single (very large valued) character
 static const char *dlac_alphabet = "\x03" "ABCDEFGHIJKLMNOPQRSTUVWXYZ\x1A\t\x1E\n| !\"#$%&'()*+,-./0123456789:;<=>?";
@@ -250,11 +250,10 @@ static void get_gs_name(char *Word)
 	return;
 }
 
-static void get_sua_text(char *Word, FILE *to)
+static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_year)
 {																			// SUA Decode
 	char *token;
-	char sua_sch_id[10];
-	char sua_aspc_id[7];
+
 	char sua_sch_stat[2];
 	char sua_aspc_ty[2];
 	char sua_aspc_nm[50];
@@ -264,59 +263,48 @@ static void get_sua_text(char *Word, FILE *to)
 	char sua_en_tm[11];	char sua_en_yy[3]; 	char sua_en_mm[3]; char sua_en_dd[3];
 	char sua_en_hh[3];	char sua_en_mn[3];
 
-	char sua_low_alt[10];	char sua_hg_alt[10];
 	char sua_sep_rl[2];
 	char sua_shp_ind[2];
 	char sua_nfdc_id[10];	char sua_nfcd_nm[50];
 	char sua_dafif_id[10];	char sua_dafif_nm[50];
 
+	char *postsql;
+    char temp[10];
+
+    int sched_id;
+    int airsp_id;
+	int low_alt;
+	int high_alt;
+
+    char *sua_start;
+    char *sua_end;
+
+    token = strsep(&Word, "|");
+	sched_id = atoi(strcpy(temp, token));
 	token = strsep(&Word, "|");
-	strcpy(sua_sch_id, token);
-	fprintf(filesua, " Schedule ID     : %s ", sua_sch_id);
-	token = strsep(&Word, "|");
-	strcpy(sua_aspc_id, token);
-	fprintf(filesua, "     Airspace ID       : %s\n", sua_aspc_id);
+	airsp_id = atoi(strcpy(temp, token));
 	token = strsep(&Word, "|");
 	strcpy(sua_sch_stat, token);
-
-	if (strcmp(sua_sch_stat, "W") == 0) {
-		fprintf(filesua, " Schedule Status : %s Waiting to Start\n", sua_sch_stat);}
-	else if (strcmp(sua_sch_stat, "P") == 0) {
-		fprintf(filesua, " Schedule Status : %s Pending Approval\n", sua_sch_stat);}
-	else if (strcmp(sua_sch_stat, "H") == 0) {
-		fprintf(filesua, " Schedule Status : %s Activated for Use\n", sua_sch_stat);}
-
+// W =		fprintf(filesua, " Schedule Status : %s  Waiting to Start\n", sua_sch_stat);}
+// P =		fprintf(filesua, " Schedule Status : %s Pending Approval\n", sua_sch_stat);}
+// H = 		fprintf(filesua, " Schedule Status : %s Activated for Use\n", sua_sch_stat);}
 	token = strsep(&Word, "|");
 	strcpy(sua_aspc_ty, token);
-
-	if (strcmp(sua_aspc_ty, "W") == 0) {
-		fprintf(filesua, " Airspace Type   : %s Warning Area\n", sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty, "R") == 0) {
-		fprintf(filesua, " Airspace Type   : %s Restricted Area\n", sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty, "M") == 0) {
-		fprintf(filesua, " Airspace Type   : %s Military Operations Area\n", sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty, "P") == 0) {
-		fprintf(filesua, " Airspace Type   : %s Prohibited Area\n", sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty, "L") == 0) {
-		fprintf(filesua, " Airspace Type   : %s Alert Area\n", sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty, "A") == 0) {
-		fprintf(filesua, " Airspace Type   : %s ATCAA\n", sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty, "I") == 0) {
-		fprintf(filesua, " Airspace Type   : %s Instrument Route\n", sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty, "V") == 0) {
-		fprintf(filesua, " Airspace Type   : %s Visual Route\n", sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty, "S") == 0) {
-		fprintf(filesua, " Airspace Type   : %s Slow Route\n", sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty, "B") == 0) {
-		fprintf(filesua, " Airspace Type   : %s Military Route (Refueling)\n", sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty, "O") == 0) {
-		fprintf(filesua, " Airspace Type   : %s Other\n", sua_aspc_ty);}
-	else if (strcmp(sua_aspc_ty, "T") == 0) {
-		fprintf(filesua, " Airspace Type   : %s Refueling Track\n", sua_aspc_ty);}
+// W=		fprintf(filesua, " Airspace Type   : %s Warning Area\n", sua_aspc_ty);}
+// R=		fprintf(filesua, " Airspace Type   : %s Restricted Area\n", sua_aspc_ty);}
+// M=		fprintf(filesua, " Airspace Type   : %s Military Operations Area\n", sua_aspc_ty);}
+//	P=	fprintf(filesua, " Airspace Type   : %s Prohibited Area\n", sua_aspc_ty);}
+// L=		fprintf(filesua, " Airspace Type   : %s Alert Area\n", sua_aspc_ty);}
+// A=		fprintf(filesua, " Airspace Type   : %s ATCAA\n", sua_aspc_ty);}
+// I=		fprintf(filesua, " Airspace Type   : %s Instrument Route\n", sua_aspc_ty);}
+// V=		fprintf(filesua, " Airspace Type   : %s Visual Route\n", sua_aspc_ty);}
+// S=		fprintf(filesua, " Airspace Type   : %s Slow Route\n", sua_aspc_ty);}
+// B=		fprintf(filesua, " Airspace Type   : %s Military Route (Refueling)\n", sua_aspc_ty);}
+//	O=	fprintf(filesua, " Airspace Type   : %s Other\n", sua_aspc_ty);}
+//	T=	fprintf(filesua, " Airspace Type   : %s Refueling Track\n", sua_aspc_ty);}
 
 	token = strsep(&Word, "|");
 	strcpy(sua_aspc_nm, token);
-	fprintf(filesua, " Airspace Name   : %s\n", sua_aspc_nm);
 	token = strsep(&Word, "|");
 	strcpy(sua_st_tm, token);
 	strncpy(sua_st_yy, sua_st_tm, 2);
@@ -330,7 +318,7 @@ static void get_sua_text(char *Word, FILE *to)
 	sua_st_hh[2] = '\0';
 	sua_st_mn[2] = '\0';
 
-	fprintf(filesua, " Start Time      : %s/%s/20%s %s:%s", sua_st_mm, sua_st_dd, sua_st_yy, sua_st_hh, sua_st_mn);
+	asprintf(&sua_start, "%s/%s/20%s %s:%s", sua_st_mm, sua_st_dd, sua_st_yy, sua_st_hh, sua_st_mn);
 
 	token = strsep(&Word, "|");
 	strcpy(sua_en_tm, token);
@@ -345,55 +333,58 @@ static void get_sua_text(char *Word, FILE *to)
 	sua_en_hh[2] = '\0';
 	sua_en_mn[2] = '\0';
 
-	fprintf(filesua, " End Time: %s/%s/20%s %s:%s\n", sua_en_mm, sua_en_dd, sua_en_yy, sua_en_hh, sua_en_mn);
+	asprintf(&sua_end, "%s/%s/20%s %s:%s", sua_st_mm, sua_st_dd, sua_st_yy, sua_st_hh, sua_st_mn);
 
 	token = strsep(&Word, "|");
-	strcpy(sua_low_alt, token);
-	fprintf(filesua, " Low Altitude    : %s ", sua_low_alt);
+	low_alt = atoi(strcpy(temp, token));
 	token = strsep(&Word, "|");
-	strcpy(sua_hg_alt, token);
-	fprintf(filesua, " High Altitude: %s\n", sua_hg_alt);
+	high_alt = atoi(strcpy(temp, token));
 	token = strsep(&Word, "|");
 	strcpy(sua_sep_rl, token);
-	if (strcmp(sua_sep_rl, "A") == 0) {
-		fprintf(filesua, " Separation Rule : %s Aircraft Rule ", sua_sep_rl);}
-	else if (strcmp(sua_sep_rl, "O") == 0) {
-		fprintf(filesua, " Separation Rule : %s Other Rule ", sua_sep_rl);}
-	else {
-		fprintf(filesua, " Separation Rule :    Unspecified ");
-	}
+// A=		fprintf(filesua, " Separation Rule : %s Aircraft Rule ", sua_sep_rl);}
+// O=		fprintf(filesua, " Separation Rule : %s Other Rule ", sua_sep_rl);}
+// unspec	fprintf(filesua, " Separation Rule :    Unspecified ");
+
 	token = strsep(&Word, "|");
 	if (token) {
 		strcpy(sua_shp_ind, token);			//13
-		if (strcmp(sua_shp_ind, "N") == 0) {
-			fprintf(filesua, " Shape Indicator: %s No Shape Defined\n", sua_shp_ind);}
-		else if	(strcmp(sua_shp_ind, "Y") == 0) {
-			fprintf(filesua, " Shape Indicator: %s Has Shape Defined\n", sua_shp_ind);}
+// N			fprintf(filesua, " Shape Indicator: %s No Shape Defined\n", sua_shp_ind);}
+// Y			fprintf(filesua, " Shape Indicator: %s Has Shape Defined\n", sua_shp_ind);}
 	}
 	token = strsep(&Word, "|");
 	if (token) {
 		strcpy(sua_nfdc_id, token);			//14
-		fprintf(filesua, " NFDC ID         : %10s", sua_nfdc_id);
 	}
 	token = strsep(&Word, "|");
 	if (token) {
 		strcpy(sua_nfcd_nm, token);			//15
-		fprintf(filesua, "      NFCD Name : %s\n", sua_nfcd_nm);
 	}
 	token = strsep(&Word, "|");
 	if (token) {
 		strcpy(sua_dafif_id, token);			//16
-		fprintf(filesua, " DAFIF ID        : %10s", sua_dafif_id);
 	}
 	token = strsep(&Word, "|");
 	if (token) {
 		strcpy(sua_dafif_nm, token);			//17
-		fprintf(filesua, "      DAFIF Name: %s\n", sua_dafif_nm);
-	}
-	fflush(filesua);
+		}
+
+	asprintf(&postsql,"INSERT INTO sua (rep_time,rep_year,rep_num,sched_id,airsp_id,sched_status,"
+			"airsp_name,start_time,end_time,low_alt,high_alt,sep_rule,shape_ind,"
+			"nfdc_id,nfdc_name,dafif_id,dafif_name,airsp_type) "
+			"VALUES('%s',%d,%d,%d,%d,'%s','%s','%s','%s',%d,%d,'%s','%s','%s','%s','%s','%s','%s')",
+			rep_time, report_year, rep_num, sched_id, airsp_id, sua_sch_stat, sua_aspc_nm,
+			sua_start, sua_end, low_alt, high_alt, sua_sep_rl, sua_shp_ind,
+			sua_nfdc_id, sua_nfcd_nm, sua_dafif_id, sua_dafif_nm, sua_aspc_ty);
+
+	PGresult *res = PQexec(conn, postsql);
+	if (PQresultStatus(res) != PGRES_COMMAND_OK)
+		if (PQresultStatus(res) != 7)
+			fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+
+	PQclear(res);
 }
 
-static void get_pirep(char *Word, FILE *to)
+static void get_pirep(char *Word)
 {
 	char *token;
 	char pirep_stn[5] = "";
@@ -1225,7 +1216,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 			if (strcmp(mtype, "PIREP") == 0) {
 				pirep_copy = (char *)malloc(strlen(r) + 1);
 				strcpy(pirep_copy, r);
-				get_pirep(pirep_copy, to);
+				get_pirep(pirep_copy);
 			}
 			if (strcmp(mtype, "METAR") == 0 || strcmp(mtype, "SPECI") == 0) {
 				fprintf(to, "Data: %s", observation);
@@ -1817,9 +1808,6 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 		p = strchr(r, ' ');
 		if (p) {
 			*p = 0;
-			if (apdu->product_id == 13)
-				fprintf(filesua, " Report Type     : %s\n", r);
-
 			notam_name = (char *)malloc(strlen(r) + 1);
 			strcpy(notam_name, r);
 			r = p + 1;
@@ -1834,8 +1822,6 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 				*p = 0;
 				strncpy(gstn, r, 5);
 				get_gs_name(gstn);
-				if (apdu->product_id == 13)
-					fprintf(filesua, " RLoc            : %s - %s\n", gstn, gs_ret);
 
 				r = p + 1;
 			}
@@ -1845,17 +1831,12 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 			*p = 0;
 			rtime = (char *)malloc(strlen(r) + 1);
 			strcpy(rtime, r);
-			if (apdu->product_id == 13)
-				fprintf(filesua, " RTime           : %s\n", r);
 
 			r = p + 1;
 		}
 		rep_num = ((apdu->data[8] << 6) | (apdu->data[9] & 0xFC) >> 2);
 		report_year = (((apdu->data[9]) & 0x03) << 5 | ((apdu->data[10]) & 0xF8) >> 3);
-		if (apdu->product_id == 13) {
-			fprintf(filesua, " Report Year     : 20%02d\n ", report_year);
-			fprintf(filesua, "Report Number   : %6d  ", rep_num);
-		}
+
 //		if (apdu->data[10] & (1 << 2)) {
 //			rep_status = 1;
 //			fprintf(fnm,"Report Active   : %d\n",rep_status);
@@ -1870,10 +1851,9 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 		strftime(buff, sizeof buff, "%D %T", tm);
 
 		if (apdu->product_id == 13) {
-			fprintf(filesua, " Time            : %s\n", buff);
 			sua_text = (char *)malloc(strlen(r) + 1);
 			strcpy(sua_text, r);
-			get_sua_text(sua_text, to);
+			get_sua_text(sua_text, rtime, rep_num, report_year);
 		}
 		if (apdu->product_id == 8 || apdu->product_id == 11 ||
 				apdu->product_id == 12 || apdu->product_id == 15) {	// 8 11 12 15
@@ -1908,10 +1888,6 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 					fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
 
 			PQclear(res);
-		}
-		if (apdu->product_id == 13) {
-			fprintf(filesua, " Data:\n%s\n", r);
-			fflush(filesua);
 		}
 	}
 //	display_generic_data(apdu->data,apdu->length,to);
