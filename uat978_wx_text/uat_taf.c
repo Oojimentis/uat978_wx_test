@@ -710,10 +710,15 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 		}
 
 		else {
+			if (!taf_lines){
+				asprintf(&taf_lines, "%s", temp);
+			}
+			else {
 			t_temp = (char *)malloc(strlen(taf_lines) + 1);
 			strcpy(t_temp, taf_lines);
 			temp[temp_len + 1] = '\0';
 			sprintf(taf_lines, "%s %s", temp, t_temp);
+			}
 		}
 // WX sky
 		taf_temp[0] = '\0';
