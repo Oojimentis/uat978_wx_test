@@ -7,7 +7,6 @@ My programming skills are somewhat limited, and this is my first Github project,
 ## Working on..
 * Website to display AIRMET, G-AIRMET, SIGMET, METAR and NOTAM using Leflet. (https://github.com/Oojimentis/map-978)
 * How to display NEXRAD radar data.
-* Trying to decode overlay option #2 - High-res 3D polygon. 
 
 ## Added
 * Removed most of the old output text files, as data is now being put into database. (01/01/21)
@@ -96,7 +95,7 @@ SIGMET (Significant Metrological Information)
 ![SIGMET](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/sigmet_screen.png)
 
 SUA (Special use airspace)
-
+<br>(No longer produced - data added to database)
 ![SUA](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/sua_screen.png)
 
 TAF (Terminal Aerodrome Forecast)
