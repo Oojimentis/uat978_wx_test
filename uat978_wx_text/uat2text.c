@@ -78,7 +78,8 @@ int main(int argc, char **argv)
 	}
 
 // Delete table data...
-	asprintf(&postsql,"delete from graphics;delete from metar;delete from nexrad;delete from nexrad_new;delete from pirep;delete from sigairmet;delete from taf;delete from circles;");
+	asprintf(&postsql,"delete from graphics;delete from metar;delete from nexrad;delete from nexrad_new;"
+			"delete from pirep;delete from sigairmet;delete from taf;delete from circles;delete from sua");
 
 	PGresult *res = PQexec(conn, postsql);
 	if (PQresultStatus(res) != PGRES_COMMAND_OK)
@@ -97,10 +98,10 @@ int main(int argc, char **argv)
 		fprintf(stderr, "notam.out Error--file could not be opened. \n");
 		exit (1); }
 
-	filesua = fopen("sua.out", "w");
-	if (filesua == 0) {
-		fprintf(stderr, "sua.out Error--file could not be opened. \n");
-		exit (1); }
+//	filesua = fopen("sua.out", "w");
+//	if (filesua == 0) {
+//		fprintf(stderr, "sua.out Error--file could not be opened. \n");
+//		exit (1); }
 
 	filetaf = fopen("taf.out", "w");    // test file for TAF
 	if (filetaf == 0) {
