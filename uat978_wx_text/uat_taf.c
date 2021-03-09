@@ -235,6 +235,7 @@ char* tafWeather(char *taf_list)
 		case SS:		strcat(taf_wx_all, " Sandstorm,"); break;
 		case UP:		strcat(taf_wx_all, " Unknown precipitation,"); break;
 		case VA:		strcat(taf_wx_all, " Volcanic ash,"); break;
+		case VCFG:		strcat(taf_wx_all, " Fog in vicinity,"); break;
 		case VCSH:		strcat(taf_wx_all, " Showers in vicinity,"); break;
 		case VCTS:		strcat(taf_wx_all, " Thunderstorm in vicinity,"); break;
 
