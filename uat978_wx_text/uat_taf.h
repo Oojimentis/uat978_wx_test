@@ -90,6 +90,7 @@
 #define LSHSNRA		778357
 #define SHRN   		37770
 #define HSHSN   	18446744073709539396u
+#define VCFG		40143
 
 
 void taf_decode(char *taf_lines, char *issued, char *fsz, char *gstn);
