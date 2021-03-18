@@ -29,93 +29,93 @@ struct MySegStruct{
 	uint16_t seg_rpt_num;
 	int seg_rpt_year;
 	uint8_t  seg_data[1000];
-}  seg_list[50];
+} seg_list[50];
 
 int seg_count;
 
-FILE * filemetar;   	// 413
-FILE * filenotam;   	// 8
-//FILE * filesua;      	// 13
+FILE * filemetar;		// 413
+FILE * filenotam;		// 8
+//FILE * filesua;		// 13
 
 FILE * filetaf;			// test file for TAF
 FILE * fileconfig;		// Credentials.
 
 struct uat_adsb_mdb {
-    // presence bits
+	// presence bits
 	int has_sv : 1;
-    int has_ms : 1;
-    int has_auxsv : 1;
+	int has_ms : 1;
+	int has_auxsv : 1;
 
-    int position_valid : 1;
-    int ns_vel_valid : 1;
-    int ew_vel_valid : 1;
-    int speed_valid : 1;
-    int dimensions_valid : 1;
+	int position_valid : 1;
+	int ns_vel_valid : 1;
+	int ew_vel_valid : 1;
+	int speed_valid : 1;
+	int dimensions_valid : 1;
 
-    // HDR
-    uint8_t mdb_type;
-    address_qualifier_t address_qualifier;
-    uint32_t address;
+	// HDR
+	uint8_t mdb_type;
+	address_qualifier_t address_qualifier;
+	uint32_t address;
 
-    // SV
-    // if position_valid:
-    double lat;
-    double lon;
+	// SV
+	// if position_valid:
+	double lat;
+	double lon;
 
-    altitude_type_t altitude_type;
-    int32_t altitude; // in feet
+	altitude_type_t altitude_type;
+	int32_t altitude; // in feet
     
-    uint8_t nic;
+	uint8_t nic;
 
-    airground_state_t airground_state;
+	airground_state_t airground_state;
 
-    // if ns_vel_valid:
-    int16_t ns_vel; // in kts
-    // if ew_vel_valid:
-    int16_t ew_vel; // in kts
+	// if ns_vel_valid:
+	int16_t ns_vel; // in kts
+	// if ew_vel_valid:
+	int16_t ew_vel; // in kts
     
-    track_type_t track_type;
-    uint16_t track;
+	track_type_t track_type;
+	uint16_t track;
 
-    // if speed_valid:
-    uint16_t speed; // in kts
+	// if speed_valid:
+	uint16_t speed; // in kts
 
-    altitude_type_t vert_rate_source;
-    int16_t vert_rate; // in ft/min
+	altitude_type_t vert_rate_source;
+	int16_t vert_rate; // in ft/min
 
-    // if lengthwidth_valid:
-    double length; // in meters (just to be different)
-    double width;  // in meters (just to be different)
-    int position_offset : 1;  // true if Position Offset Applied
+	// if lengthwidth_valid:
+	double length; // in meters (just to be different)
+	double width;  // in meters (just to be different)
+	int position_offset : 1;  // true if Position Offset Applied
 
-    int utc_coupled : 1;      // true if UTC Coupled flag is set (ADS-B)
-    uint8_t tisb_site_id;     // TIS-B site ID, or zero in ADS-B messages
+	int utc_coupled : 1;      // true if UTC Coupled flag is set (ADS-B)
+	uint8_t tisb_site_id;     // TIS-B site ID, or zero in ADS-B messages
     
-    // MS
-    uint8_t emitter_category;
-    callsign_type_t callsign_type;
-    char callsign[9];
-    uint8_t emergency_status;
-    uint8_t uat_version;
-    uint8_t sil;
-    uint8_t transmit_mso;
-    uint8_t nac_p;
-    uint8_t nac_v;
-    uint8_t nic_baro;
+	// MS
+	uint8_t emitter_category;
+	callsign_type_t callsign_type;
+	char callsign[9];
+	uint8_t emergency_status;
+	uint8_t uat_version;
+	uint8_t sil;
+	uint8_t transmit_mso;
+	uint8_t nac_p;
+	uint8_t nac_v;
+	uint8_t nic_baro;
   
-    // capabilities:
-    int has_cdti : 1;
-    int has_acas : 1;    
-    // operational modes:
-    int acas_ra_active : 1;
-    int ident_active : 1;
-    int atc_services : 1;
+	// capabilities:
+	int has_cdti : 1;
+	int has_acas : 1;
+	// operational modes:
+	int acas_ra_active : 1;
+	int ident_active : 1;
+	int atc_services : 1;
 
-    heading_type_t heading_type;
+	heading_type_t heading_type;
 
-    // AUXSV
-    altitude_type_t sec_altitude_type;
-    int32_t sec_altitude; // in feet
+	// AUXSV
+	altitude_type_t sec_altitude_type;
+	int32_t sec_altitude; // in feet
 };
 
 // Decode/display prototypes
@@ -128,51 +128,51 @@ void uat_display_adsb_mdb(const struct uat_adsb_mdb *mdb, FILE *to);
 #define UPLINK_MAX_INFO_FRAMES (424/6)
 
 struct fisb_apdu {
-    int a_flag : 1;
-    int g_flag : 1;
-    int p_flag : 1;
-    int s_flag : 1;
-    int monthday_valid : 1;
-    int seconds_valid : 1;
+	int a_flag : 1;
+	int g_flag : 1;
+	int p_flag : 1;
+	int s_flag : 1;
+	int monthday_valid : 1;
+	int seconds_valid : 1;
 
-    uint16_t product_id;
-    uint8_t month;   // if monthday_valid
-    uint8_t day;     // if monthday_valid
-    uint8_t hours;
-    uint8_t minutes;
-    uint8_t seconds; // if seconds_valid
+	uint16_t product_id;
+	uint8_t month;   // if monthday_valid
+	uint8_t day;     // if monthday_valid
+	uint8_t hours;
+	uint8_t minutes;
+	uint8_t seconds; // if seconds_valid
 
-    uint16_t length;
-    uint8_t *data;
+	uint16_t length;
+	uint8_t *data;
 };
 
 struct uat_uplink_info_frame {
-    int is_fisb : 1;
+	int is_fisb : 1;
 
-    uint16_t length;
-    uint8_t type;
-    uint8_t *data; // points within the containing appdata
+	uint16_t length;
+	uint8_t type;
+	uint8_t *data; // points within the containing appdata
 
-    // if is_fisb:
-    struct fisb_apdu fisb;
+	// if is_fisb:
+	struct fisb_apdu fisb;
 };
 
 struct uat_uplink_mdb {
-    int position_valid : 1;
-    int utc_coupled : 1;
-    int app_data_valid : 1;
+	int position_valid : 1;
+	int utc_coupled : 1;
+	int app_data_valid : 1;
 
-    // if position_valid:
-    double lat;
-    double lon;
+	// if position_valid:
+	double lat;
+	double lon;
 
-    uint8_t slot_id;
-    uint8_t tisb_site_id;
+	uint8_t slot_id;
+	uint8_t tisb_site_id;
 
-    // if app_data_valid:
-    uint8_t app_data[424];
-    unsigned num_info_frames;
-    struct uat_uplink_info_frame info_frames[UPLINK_MAX_INFO_FRAMES];    
+	// if app_data_valid:
+	uint8_t app_data[424];
+	unsigned num_info_frames;
+	struct uat_uplink_info_frame info_frames[UPLINK_MAX_INFO_FRAMES];
 };
 
 void uat_decode_uplink_mdb(uint8_t *frame, struct uat_uplink_mdb *mdb);

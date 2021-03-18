@@ -26,10 +26,10 @@ typedef enum { UAT_UPLINK, UAT_DOWNLINK } frame_type_t;
 
 // Function pointer type for a handler called by dump978_read_frames().
 // It is called with arguments:
-//   t: frame type (UAT_UPLINK or UAT_DOWNLINK)
-//   f: pointer to frame data buffer
-//   l: length of frame data
-//   d: value of handler_data passed to dump978_read_frames
+//	t: frame type (UAT_UPLINK or UAT_DOWNLINK)
+//	f: pointer to frame data buffer
+//	l: length of frame data
+//	d: value of handler_data passed to dump978_read_frames
 // The frame data buffer is a shared buffer owned by the caller
 // and may be reused after return; if the handler needs to
 // preserve the data after returning, it should take a copy.
@@ -54,7 +54,7 @@ void dump978_reader_free(struct dump978_reader *reader);
 // If the underlying FD is nonblocking and no frames are
 // available, returns <0 with errno = EAGAIN/EINTR/EWOULDBLOCK.
 int dump978_read_frames(struct dump978_reader *reader,
-                        frame_handler_t handler,
-                        void *handler_data);
+		frame_handler_t handler,
+		void *handler_data);
 
 #endif
