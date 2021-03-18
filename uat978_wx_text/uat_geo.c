@@ -353,7 +353,7 @@ void metar_data( Decoded_METAR *Mptr, FILE *to)
 		sprintf(temp, "- ");
 	else {
 		Mptr->temp = Mptr->temp * 9/5  + 32;
-        sprintf(temp, "%d", Mptr->temp);
+		sprintf(temp, "%d", Mptr->temp);
 	}
 	if (Mptr->dew_pt_temp > 1000)
 		sprintf(dew_pt_temp, "-");

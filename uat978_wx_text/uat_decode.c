@@ -269,17 +269,17 @@ static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_yea
 	char sua_dafif_id[10];	char sua_dafif_nm[50];
 
 	char *postsql;
-    char temp[10];
+	char temp[10];
 
-    int sched_id;
-    int airsp_id;
+	int sched_id;
+	int airsp_id;
 	int low_alt;
 	int high_alt;
 
-    char *sua_start;
-    char *sua_end;
+	char *sua_start;
+	char *sua_end;
 
-    token = strsep(&Word, "|");
+	token = strsep(&Word, "|");
 	sched_id = atoi(strcpy(temp, token));
 	token = strsep(&Word, "|");
 	airsp_id = atoi(strcpy(temp, token));
@@ -471,7 +471,7 @@ static void get_pirep(char *Word)
 	}
 
 	asprintf(&postsql,"INSERT INTO pirep (rep_type,rep_time,fl_lev,ac_type,cloud,weather,temperature,wind_spd_dir,"
-			"turbulence,icing,remarks,stn_call,location)  "
+			"turbulence,icing,remarks,stn_call,location)"
 			"VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
 			pirep_TY, pirep_TI, pirep_FL, pirep_TP, pirep_SK, pirep_WX, pirep_TA, pirep_WV, pirep_TB, pirep_IC,
 			pirep_RM, pirep_stn, pirep_OV);
