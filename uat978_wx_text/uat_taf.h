@@ -86,12 +86,15 @@
 #define HSHRA   	18446744073709539373u
 #define LRASNPL   	608348
 #define FZRASN   	2656080
-#define SHRASN   	3776080
+#define SHRASN		3776080
 #define LSHSNRA		778357
-#define SHRN   		37770
-#define HSHSN   	18446744073709539396u
+#define SHRN		37770
+#define HSHSN		18446744073709539396u
 #define VCFG		40143
-
+#define LTSRA		9857
+#define TSRAGR		3985964
+#define SHRADZ		3775942
+#define LSHRADZ		775942
 
 void taf_decode(char *taf_lines, char *issued, char *fsz, char *gstn);
 
