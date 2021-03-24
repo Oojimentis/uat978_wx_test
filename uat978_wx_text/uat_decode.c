@@ -1267,7 +1267,7 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 						fprintf(to, "\n");
 
 					j++;
-					fprintf(to, "%02x%02x%02x ", frame->data[i], frame->data[i+1], frame->data[i+2]);
+					fprintf(to, "%02X%02X%02X ", frame->data[i], frame->data[i+1], frame->data[i+2]);
 					i = i + 4;
 				}
 				fprintf(to, "\n");
