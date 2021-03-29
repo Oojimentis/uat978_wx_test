@@ -95,6 +95,8 @@
 #define TSRAGR		3985964
 #define SHRADZ		3775942
 #define LSHRADZ		775942
+#define HTSRA		18446744073709541473u
+#define HTSRAGR		18446744073708537580u
 
 void taf_decode(char *taf_lines, char *issued, char *fsz, char *gstn);
 
