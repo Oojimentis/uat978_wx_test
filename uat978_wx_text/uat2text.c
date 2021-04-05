@@ -78,7 +78,7 @@ int main(int argc, char **argv)
 	}
 
 // Delete table data...
-	asprintf(&postsql,"truncate graphics;truncate metar;truncate nexrad;truncate nexrad_new;"
+	asprintf(&postsql,"truncate graphics;truncate metar;truncate nexrad;truncate nexrad_new;truncate nexrad84;"
 			"truncate pirep;truncate sigairmet;truncate taf;truncate circles;truncate sua");
 
 	PGresult *res = PQexec(conn, postsql);

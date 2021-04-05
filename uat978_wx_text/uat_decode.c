@@ -368,9 +368,9 @@ static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_yea
 		strcpy(sua_dafif_nm, token);			//17
 		}
 
-	asprintf(&postsql,"INSERT INTO sua (rep_time,rep_year,rep_num,sched_id,airsp_id,sched_status,"
-			"airsp_name,start_time,end_time,low_alt,high_alt,sep_rule,shape_ind,"
-			"nfdc_id,nfdc_name,dafif_id,dafif_name,airsp_type) "
+	asprintf(&postsql,"INSERT INTO sua (rep_time, rep_year, rep_num, sched_id, airsp_id, sched_status,"
+			"airsp_name, start_time, end_time, low_alt, high_alt, sep_rule, shape_ind,"
+			"nfdc_id, nfdc_name, dafif_id, dafif_name, airsp_type) "
 			"VALUES('%s',%d,%d,%d,%d,'%s','%s','%s','%s',%d,%d,'%s','%s','%s','%s','%s','%s','%s')",
 			rep_time, report_year, rep_num, sched_id, airsp_id, sua_sch_stat, sua_aspc_nm,
 			sua_start, sua_end, low_alt, high_alt, sua_sep_rl, sua_shp_ind,
@@ -470,8 +470,8 @@ static void get_pirep(char *Word)
 		}
 	}
 
-	asprintf(&postsql,"INSERT INTO pirep (rep_type,rep_time,fl_lev,ac_type,cloud,weather,temperature,wind_spd_dir,"
-			"turbulence,icing,remarks,stn_call,location)"
+	asprintf(&postsql,"INSERT INTO pirep (rep_type, rep_time, fl_lev, ac_type, cloud, weather, temperature, wind_spd_dir,"
+			"turbulence, icing, remarks, stn_call, location)"
 			"VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
 			pirep_TY, pirep_TI, pirep_FL, pirep_TP, pirep_SK, pirep_WX, pirep_TA, pirep_WV, pirep_TB, pirep_IC,
 			pirep_RM, pirep_stn, pirep_OV);
@@ -1563,7 +1563,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 			alt = alt_raw * 100;
 
 			if (alt != alt_save) {   // Multiple altitudes
-				asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
+				asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, ob_ele, start_date, stop_date, geo_overlay_opt) "
 						"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
 						gr, apdu->product_id, rep_num, alt_save, obj_ele_text, start_date, stop_date, geo_overlay_opt);
 
@@ -1587,7 +1587,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 				strcat(gr, coords);
 			}
 		}
-		asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
+		asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, ob_ele, start_date, stop_date, geo_overlay_opt) "
 				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
 				gr, apdu->product_id, rep_num, alt, obj_ele_text, start_date, stop_date, geo_overlay_opt);
 
@@ -1658,8 +1658,8 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		r_lng = r_lng_raw * 0.2;
 		r_lat = r_lat_raw * 0.2;
 
-		asprintf(&postsql,"INSERT INTO circles(bot,top,alt_bot,alt_top,alpha,prod_id,rec_count,rep_num,"
-				"rep_year,start_date,stop_date,geo_opt,r_lat,r_lng) VALUES (ST_GeomFromText('POINT ( %f %f)',4326),"
+		asprintf(&postsql,"INSERT INTO circles (bot, top, alt_bot, alt_top, alpha, prod_id, rec_count, rep_num,"
+				"rep_year, start_date, stop_date, geo_opt, r_lat, r_lng) VALUES (ST_GeomFromText('POINT ( %f %f)',4326),"
 				"ST_GeomFromText('POINT (%f %f)',4326),%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d,%f,%f)",
 				lng_bot, lat_bot, lng_top, lat_top, alt_bot, alt_top, alpha, apdu->product_id, rec_count,
 				rep_num, report_year, start_date, stop_date, geo_overlay_opt, r_lat, r_lng);
@@ -1694,7 +1694,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 
 		asprintf(&coords, " [%f,%f]", coords, lng, lat);
 		strcat(gr, coords);
-		asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
+		asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, ob_ele, start_date, stop_date, geo_overlay_opt) "
 				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Point\",\"coordinates\": %s }'),4326),%d,%d,%d,'%s','%s','%s',%d)",
 				gr,apdu->product_id, rep_num, alt, obj_ele_text, start_date, stop_date, geo_overlay_opt);
 
@@ -1744,7 +1744,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 			}
 		}
 
-		asprintf(&postsql,"INSERT INTO graphics( coords, prod_id, rep_num, alt, ob_ele,start_date,stop_date,geo_overlay_opt) "
+		asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, ob_ele, start_date, stop_date, geo_overlay_opt) "
 				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ %s ]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
 				gr, apdu->product_id, rep_num, alt, obj_ele_text, start_date, stop_date, geo_overlay_opt);
 
@@ -1878,7 +1878,7 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 			data_text = (char *)malloc(strlen(r) + 1);
 			strcpy(data_text, r);
 
-			asprintf(&postsql,"INSERT INTO sigairmet (prod_id,stn_call,rep_time,rep_num,text_data) "
+			asprintf(&postsql,"INSERT INTO sigairmet (prod_id, stn_call, rep_time, rep_num, text_data) "
 					"VALUES (%d,'%s','%s',%d,'%s')",
 					apdu->product_id, gstn, rtime, rep_num, data_text);
 
