@@ -14,25 +14,25 @@
 
 void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 {
-	int scale_factor = 1;
-	int ns_flag = 0;
-
-	int rle_flag = (apdu->data[0] & 0x80) != 0;
-	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
-	int wx_alt = (apdu->data[0] & 0x70) >> 4;
-	int alt_level = 0;
-
 	char *postsql;
 	char block[6000];
 	char block_part[200];
 	char nexrad_time[6];
 
+	int scale_factor = 1;
+	int ns_flag = 0;
+	int rle_flag = (apdu->data[0] & 0x80) != 0;
+	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
+	int wx_alt = (apdu->data[0] & 0x70) >> 4;
+	int alt_level = 0;
+
+
 	switch(apdu->product_id) {
-	case 63: case 64: case 84: case 103:					// ** NEXRAD/Cloud Top/Lightning **************
+	case 63: case 64: case 84: case 103:					// ** NEXRAD/Cloud Top/Lightning
 		scale_factor = (apdu->data[0] & 0x30) >> 4;
 		break;
 
-	case 70: case 90:										// ** Icing/Turbulence Low **************
+	case 70: case 90:										// ** Icing/Turbulence Low
 		switch(wx_alt) {
 		case 0:		alt_level = 2000;	break;
 		case 1:		alt_level = 4000;	break;
@@ -45,7 +45,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 	}
 		break;
 
-	case 71: case 91:										// ** Icing/Turbulence High **************
+	case 71: case 91:										// ** Icing/Turbulence High
 		switch(wx_alt) {
 		case 0:		alt_level = 18000;	break;
 		case 1:		alt_level = 20000;	break;
@@ -79,9 +79,10 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 
 		block[0]='\0';
 
-
 		switch(apdu->product_id) {
 		case 63: case 64:
+		{
+			int cc= 0;
 			for (int i = 3; i < apdu->length; ++i) {
 				intensity = apdu->data[i] & 7;
 				runlength = (apdu->data[i] >> 3) + 1;
@@ -99,7 +100,19 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 							sprintf(block_part, "[%f ,%f ,%d],", t_lat, t_lon, intensity);
 							strcat(block, block_part);
 						}
+						asprintf(&postsql,"INSERT INTO nexrad84 (prod_id, coords, intensity, cc, block_num, maptime, altitude) "
+								"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d)",
+								apdu->product_id, t_lon, t_lat, intensity, cc, block_num, nexrad_time, alt_level);
+
+						PGresult *res = PQexec(conn, postsql);
+						if (PQresultStatus(res) != PGRES_COMMAND_OK)
+							if (PQresultStatus(res) != 7)
+								fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+
+						PQclear(res);
+
 					}
+					cc++;
 					x++;
 					if (x == 32){
 						x = 0;
@@ -107,8 +120,12 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					}
 				}
 			}
-			break;
+		}
+		break;
+
 		case 70: case 71:
+		{
+			int cc =0;
 			for (int i = 3; i < apdu->length; ++i) {
 				num_bins = (apdu->data[i] ) + 1;
 				i = i + 1;
@@ -130,7 +147,18 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 							sprintf(block_part, "[%f ,%f ,%d],", t_lat, t_lon, ice_sev);
 							strcat(block, block_part);
 						}
+						asprintf(&postsql,"INSERT INTO nexrad84 (prod_id, coords, intensity, cc, block_num, maptime, altitude) "
+								"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d)",
+								apdu->product_id, t_lon, t_lat, ice_sev, cc, block_num, nexrad_time, alt_level);
+
+						PGresult *res = PQexec(conn, postsql);
+						if (PQresultStatus(res) != PGRES_COMMAND_OK)
+							if (PQresultStatus(res) != 7)
+								fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+
+						PQclear(res);
 					}
+					cc++;
 					x++;
 					if (x == 32){
 						x = 0;
@@ -138,8 +166,11 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					}
 				}
 			}
-			break;
+		}
+		break;
 		case 103:
+		{
+			int cc = 0;
 			for (int i = 3; i < apdu->length; ++i) {
 //** 			int lgt_pol = apdu->data[i] & 8;
 				lgt_cnt = apdu->data[i] & 7;
@@ -163,7 +194,19 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 							sprintf(block_part, "[%f ,%f ,%d],", t_lat, t_lon, lgt_cnt);
 							strcat(block, block_part);
 						}
+						asprintf(&postsql,"INSERT INTO nexrad84 (prod_id, coords, intensity, cc, block_num, maptime, altitude) "
+								"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d)",
+								apdu->product_id, t_lon, t_lat, lgt_cnt, cc, block_num, nexrad_time, alt_level);
+
+						PGresult *res = PQexec(conn, postsql);
+						if (PQresultStatus(res) != PGRES_COMMAND_OK)
+							if (PQresultStatus(res) != 7)
+								fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+
+						PQclear(res);
+
 					}
+					cc++;
 					x++;
 					if (x == 32) {
 						x = 0;
@@ -171,8 +214,12 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					}
 				}
 			}
-			break;
-		case 90: case 91: case 84:
+		}
+		break;
+
+		case 84: case 90: case 91:
+		{
+			int cc = 0;
 			for (int i = 3; i < apdu->length; ++i) {
 				edr_enc  = apdu->data[i] & 15;
 				num_bins = (apdu->data[i] >> 4) + 1;
@@ -195,7 +242,20 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 							sprintf(block_part, "[%f ,%f ,%d],", t_lat, t_lon, edr_enc);
 							strcat(block, block_part);
 						}
+
+						asprintf(&postsql,"INSERT INTO nexrad84 (prod_id, coords, intensity, cc, block_num, maptime, altitude) "
+								"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d)",
+								apdu->product_id, t_lon, t_lat, edr_enc, cc, block_num, nexrad_time, alt_level);
+
+						PGresult *res = PQexec(conn, postsql);
+						if (PQresultStatus(res) != PGRES_COMMAND_OK)
+							if (PQresultStatus(res) != 7)
+								fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+
+						PQclear(res);
+
 					}
+					cc++;
 					x++;
 					if (x == 32){
 						x = 0;
@@ -203,91 +263,11 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					}
 				}
 			}
+		}
 		break;
 		}
-
-		if (strlen(block) != 0) {
-
-			asprintf(&postsql,"INSERT INTO nexrad_new (prod_id,block_num,maptime,alt,coords) "
-						"VALUES( %d,%d,'%s','%d',",
-						apdu->product_id, block_num, nexrad_time, alt_level);
-
-			asprintf(&postsql, "%s '%s')", postsql, block);
-
-			PGresult *res = PQexec(conn, postsql);
-			if (PQresultStatus(res) != PGRES_COMMAND_OK)
-				if (PQresultStatus(res) != 7)
-					fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
-
-			PQclear(res);
-		}
 	}
-/*
-	else {		// Empty
-		int row_start;
-		int row_offset;
-		int row_size;
-		int L = apdu->data[3] & 15;
 
-		if (block_num >= 405000) {
-			row_start = block_num - ((block_num - 405000) % 225);
-			row_size = 225;
-		}
-		else {
-			row_start = block_num - (block_num % 450);
-			row_size = 450;
-		}
-		row_offset = block_num - row_start;
-
-		for (int i = 0; i < L; ++i) {
-			int bb;
-			if (i == 0)
-				bb = (apdu->data[3] & 0xF0) | 0x08; // synthesize a first byte in the same format as all the other bytes
-			else
-				bb = (apdu->data[i + 3]);
-
-			for (int j = 0; j < 8; ++j) {
-				if (bb & (1 << j)) {
-					int row_x = (row_offset + 8 * i + j - 3) % row_size;
-					int bn = row_start + row_x;
-					double latN = 0, lonW = 0, latSize = 0, lonSize = 0;
-
-					block_location_graphic(bn, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
-
-					if (apdu->product_id == 63){
-						asprintf(&postsql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
-							"lat_size,lon_size,level,block_data) "
-							"VALUES(%d,'NEXRAD','Regional','%s',%d,%.0f,%.0f,%.0f,%.0f,%d,",
-							apdu->product_id, nexrad_time, scale_factor, latN * 60,lonW * 60, latSize * 60,
-							lonSize * 60, alt_level);
-					}
-					else {
-						asprintf(&postsql,"INSERT INTO nexrad (prod_id,nexrad,maptype,maptime,scale_factor,lat_n,lon_w,"
-							"lat_size,lon_size,level,block_data) "
-							"VALUES(%d,'NEXRAD','CONUS','%s',%d,%.0f,%.0f,%.0f,%.0f,%d,",
-							apdu->product_id, nexrad_time, scale_factor, latN * 60, lonW * 60, latSize * 60,
-							lonSize * 60, alt_level);
-					}
-
-					sprintf(block," ");
-					for (int k = 0; k < 128; ++k){
-						charValue = bin + '0';
-						sprintf(block, "%s%c", block, charValue);
-					}
-
-					asprintf(&postsql, "%s '%s')", postsql, block);
-
-//					PGresult *res = PQexec(conn, postsql);
-//					if (PQresultStatus(res) != PGRES_COMMAND_OK)
-//						if (PQresultStatus(res) != 7)
-//							fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
-
-//					PQclear(res);
-				}
-			}
-		}
-	}
-*/
 	fflush(to);
 }
 
@@ -388,7 +368,7 @@ void metar_data( Decoded_METAR *Mptr, FILE *to)
 
 	sprintf(obs_date, "%02d %02d:%02d", Mptr->ob_date, Mptr->ob_hour, Mptr->ob_minute);
 
-	asprintf(&postsql,"INSERT INTO metar (stn_call,ob_date,temp,windsp,winddir,altimeter,visby,dewp) "
+	asprintf(&postsql,"INSERT INTO metar (stn_call, ob_date, temp, windsp, winddir, altimeter, visby, dewp) "
 			"VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
 			Mptr->stnid, obs_date, temp, windSpeed,
 			windDir, altstng, vsbySM, dew_pt_temp);
