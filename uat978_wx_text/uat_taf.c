@@ -684,7 +684,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 			visby = '\0';
 		}
 
-		asprintf(&postsql, "INSERT INTO taf(issued,current,wind,visby,condx,rep_time,stn_call) "
+		asprintf(&postsql, "INSERT INTO taf (issued, current, wind, visby, condx, rep_time, stn_call) "
 				"VALUES ('%s','%s','%s','%s','%s','%s','%s')",
 				issued, current_all, wind, visby, taf_condx, reptime, gstn);
 
