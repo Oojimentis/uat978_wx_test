@@ -1529,12 +1529,12 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		}
 	}
 
-	fprintf(stderr, "Obj label text: %s  Obj label  : %d  Rep number: %d\n", obj_labelt, obj_label, rep_num);
-	fprintf(stderr, "Prod ver      : %d  Ovrly recID   : %d  Rec len     : %d  Obj status: %d\n", product_ver, overlay_rec_id,
+	fprintf(to, "Obj label text: %s  Obj label  : %d  Rep number: %d\n", obj_labelt, obj_label, rep_num);
+	fprintf(to, "Prod ver      : %d  Ovrly recID   : %d  Rec len     : %d  Obj status: %d\n", product_ver, overlay_rec_id,
 			rec_len,obj_status);
-	fprintf(stderr, "Param flag    : %d  DteTimFmt     : %d  Element flag:  %d  Ovrly opts: %d\n", param_flag, date_time_format,
+	fprintf(to, "Param flag    : %d  DteTimFmt     : %d  Element flag:  %d  Ovrly opts: %d\n", param_flag, date_time_format,
 			element_flag,overlay_op);
-	fprintf(stderr, "Obj param val : %d  Obj param type: %d  Vert count: %d\n", obj_par_val, obj_param_type, overlay_vert_cnt);
+	fprintf(to, "Obj param val : %d  Obj param type: %d  Vert count: %d\n", obj_par_val, obj_param_type, overlay_vert_cnt);
 
 	switch (geo_overlay_opt) {
 
@@ -1706,8 +1706,8 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 			PQclear(res);
 	}
 		break;
+
 	case 11: case 12:								// Extended Range 3D Polyline
-		fprintf(stderr, " q flag: %d\n", qualifier_flag);
 		alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
 		alt = alt_raw * 100;
 
