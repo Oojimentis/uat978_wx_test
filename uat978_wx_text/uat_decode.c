@@ -361,11 +361,11 @@ static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_yea
 	}
 	token = strsep(&Word, "|");
 	if (token) {
-		strcpy(sua_dafif_id, token);			//16
+		strcpy(sua_dafif_id, token);		//16
 	}
 	token = strsep(&Word, "|");
 	if (token) {
-		strcpy(sua_dafif_nm, token);			//17
+		strcpy(sua_dafif_nm, token);		//17
 		}
 
 	asprintf(&postsql,"INSERT INTO sua (rep_time, rep_year, rep_num, sched_id, airsp_id, sched_status,"
@@ -377,11 +377,11 @@ static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_yea
 			sua_nfdc_id, sua_nfcd_nm, sua_dafif_id, sua_dafif_nm, sua_aspc_ty);
 
 	PGresult *res = PQexec(conn, postsql);
-	if (PQresultStatus(res) != PGRES_COMMAND_OK)
-		if (PQresultStatus(res) != 7)
-			fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
-
-	PQclear(res);
+		if (PQresultStatus(res) != PGRES_COMMAND_OK){
+			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+				fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+		}
+		PQclear(res);
 }
 
 static void get_pirep(char *Word)
@@ -477,11 +477,11 @@ static void get_pirep(char *Word)
 			pirep_RM, pirep_stn, pirep_OV);
 
 	PGresult *res = PQexec(conn, postsql);
-	if (PQresultStatus(res) != PGRES_COMMAND_OK)
-		if (PQresultStatus(res) != 7)
-			fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
-
-	PQclear(res);
+		if (PQresultStatus(res) != PGRES_COMMAND_OK){
+			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+				fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+		}
+		PQclear(res);
 }
 
 static void uat_decode_hdr(uint8_t *frame, struct uat_adsb_mdb *mdb)
@@ -1380,7 +1380,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	char gr[2000] = "";
 
 	char buff[30];
-	PGresult *res;
+//	PGresult *res;
 
 	product_ver = ((apdu->data[0]) & 0x0F);
 	rec_count = ((apdu->data[1]) & 0xF0) >> 4;
@@ -1567,12 +1567,12 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 						"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
 						gr, apdu->product_id, rep_num, alt_save, obj_ele_text, start_date, stop_date, geo_overlay_opt);
 
-				res = PQexec(conn, postsql);
-				if (PQresultStatus(res) != PGRES_COMMAND_OK)
-					if (PQresultStatus(res) != 7)
-						fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
-
-				PQclear(res);
+				PGresult *res = PQexec(conn, postsql);
+					if (PQresultStatus(res) != PGRES_COMMAND_OK){
+						if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+							fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+					}
+					PQclear(res);
 
 				alt_save = alt;
 				gr[0] = '\0';
@@ -1591,12 +1591,12 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
 				gr, apdu->product_id, rep_num, alt, obj_ele_text, start_date, stop_date, geo_overlay_opt);
 
-		res = PQexec(conn, postsql);
-		if (PQresultStatus(res) != PGRES_COMMAND_OK)
-			if (PQresultStatus(res) != 7)
-				fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
-
-		PQclear(res);
+		PGresult *res = PQexec(conn, postsql);
+			if (PQresultStatus(res) != PGRES_COMMAND_OK){
+				if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+					fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+			}
+			PQclear(res);
 	}
 		break;
 	case 7: case 8: {									// Extended Range Circular Prism (7 = MSL,8 = AGL)
@@ -1664,16 +1664,16 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 				lng_bot, lat_bot, lng_top, lat_top, alt_bot, alt_top, alpha, apdu->product_id, rec_count,
 				rep_num, report_year, start_date, stop_date, geo_overlay_opt, r_lat, r_lng);
 
-		res = PQexec(conn, postsql);
-		if (PQresultStatus(res) != PGRES_COMMAND_OK){
-			if (PQresultStatus(res) != 7)
-				fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
-		}
-		PQclear(res);
+		PGresult *res = PQexec(conn, postsql);
+			if (PQresultStatus(res) != PGRES_COMMAND_OK){
+				if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+					fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+			}
+			PQclear(res);
 	}
 	break;
 	case 9:	case 10:								// Extended Range 3D Point (AGL)
-
+	{
 		lng_raw = ((apdu->data[datoff + 0]) << 11) | ((apdu->data[datoff + 1]) << 3) |
 		((apdu->data[datoff + 2]) & 0xE0 >> 5);
 		lat_raw = (((apdu->data[datoff + 2]) & 0x1F) << 14) | ((apdu->data[datoff + 3]) << 6) |
@@ -1698,13 +1698,13 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Point\",\"coordinates\": %s }'),4326),%d,%d,%d,'%s','%s','%s',%d)",
 				gr,apdu->product_id, rep_num, alt, obj_ele_text, start_date, stop_date, geo_overlay_opt);
 
-		res = PQexec(conn, postsql);
-		if (PQresultStatus(res) != PGRES_COMMAND_OK)
-			if (PQresultStatus(res) != 7)
-				fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
-
-		PQclear(res);
-
+		PGresult *res = PQexec(conn, postsql);
+			if (PQresultStatus(res) != PGRES_COMMAND_OK){
+				if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+					fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+			}
+			PQclear(res);
+	}
 		break;
 	case 11: case 12:								// Extended Range 3D Polyline
 		fprintf(stderr, " q flag: %d\n", qualifier_flag);
@@ -1748,12 +1748,12 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ %s ]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
 				gr, apdu->product_id, rep_num, alt, obj_ele_text, start_date, stop_date, geo_overlay_opt);
 
-		res = PQexec(conn, postsql);
-		if (PQresultStatus(res) != PGRES_COMMAND_OK)
-			if (PQresultStatus(res) != 7)
-				fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
-
-		PQclear(res);
+		PGresult *res = PQexec(conn, postsql);
+			if (PQresultStatus(res) != PGRES_COMMAND_OK){
+				if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+					fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+			}
+			PQclear(res);
 
 		break;
 	default:
@@ -1883,11 +1883,11 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 					apdu->product_id, gstn, rtime, rep_num, data_text);
 
 			PGresult *res = PQexec(conn, postsql);
-			if (PQresultStatus(res) != PGRES_COMMAND_OK)
-				if (PQresultStatus(res) != 7)
-					fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
-
-			PQclear(res);
+				if (PQresultStatus(res) != PGRES_COMMAND_OK){
+					if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+						fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+				}
+				PQclear(res);
 		}
 	}
 //	display_generic_data(apdu->data,apdu->length,to);

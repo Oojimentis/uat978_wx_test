@@ -1,6 +1,6 @@
 // Copyright 2015, Oliver Jowett <oliver@mutability.co.uk>
 //
-// UAT2TEXT.C -
+// UAT2TEXT.C
 //
 
 
@@ -69,12 +69,15 @@ int main(int argc, char **argv)
 	asprintf(&postsql, "user=%s password=%s dbname=%s", pg_user, pg_pwd, pg_db);
 	conn = PQconnectdb(postsql);
 	if (PQstatus(conn) == CONNECTION_BAD) {
-		fprintf(stderr, "Connection to database failed: %s\n", PQerrorMessage(conn));
+		fprintf(stderr,"                                             \n");
+		fprintf(stderr, "*** Connection to database failed: %s\n", PQerrorMessage(conn));
+		fprintf(stderr,"                                             \n");
 		PQfinish(conn);
 		exit(1);
 	}
 	else {
-		fprintf(stderr, "Connected to database\n");
+		fprintf(stderr,"                                             \n");
+		fprintf(stderr, "Connected to database: %s\n",pg_db);
 	}
 
 // Delete table data...
@@ -82,11 +85,11 @@ int main(int argc, char **argv)
 			"truncate pirep;truncate sigairmet;truncate taf;truncate circles;truncate sua");
 
 	PGresult *res = PQexec(conn, postsql);
-	if (PQresultStatus(res) != PGRES_COMMAND_OK)
-		if (PQresultStatus(res) != 7)
-			fprintf(stderr,"bad sql %s \nStatus:%d\n",PQerrorMessage(conn),PQresultStatus(res));
-
-	PQclear(res);
+		if (PQresultStatus(res) != PGRES_COMMAND_OK){
+			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+				fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+		}
+		PQclear(res);
 
 	filemetar = fopen("metar.out", "w");
 	if (filemetar == 0) {
@@ -97,11 +100,6 @@ int main(int argc, char **argv)
 	if (filenotam == 0)	{
 		fprintf(stderr, "notam.out Error--file could not be opened. \n");
 		exit (1); }
-
-//	filesua = fopen("sua.out", "w");
-//	if (filesua == 0) {
-//		fprintf(stderr, "sua.out Error--file could not be opened. \n");
-//		exit (1); }
 
 	filetaf = fopen("taf.out", "w");    // test file for TAF
 	if (filetaf == 0) {
