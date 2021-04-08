@@ -689,10 +689,10 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 				issued, current_all, wind, visby, taf_condx, reptime, gstn);
 
 		PGresult *res = PQexec(conn, postsql);
-		if (PQresultStatus(res) != PGRES_COMMAND_OK)
-			if (PQresultStatus(res) != 7)
-				fprintf(stderr,"bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
-
+		if (PQresultStatus(res) != PGRES_COMMAND_OK){
+			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+				fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+		}
 		PQclear(res);
 	}
 	else if (strcmp(taf_t, "BE") == 0){						// BECMG
