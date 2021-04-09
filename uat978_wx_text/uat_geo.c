@@ -65,8 +65,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 		float t_lat, t_lon;
 
 		int num_bins;
-//		int sld;
-//		int ice_prob;
+		int sld;
+		int ice_prob;
 		int ice_sev;
 		int intensity;
 		int runlength;
@@ -129,9 +129,13 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 				num_bins = (apdu->data[i] ) + 1;
 				i = i + 1;
 
-//				sld = apdu->data[i] >> 6;
-//				ice_prob = (apdu->data[i]) & 7;
+				sld = apdu->data[i] >> 6;
+				ice_prob = (apdu->data[i]) & 7;
 				ice_sev = (apdu->data[i]) >> 3 & 7;
+
+//				fprintf(stderr,"SLD: %d  Prob: %d   Sev: %d",sld,ice_prob,ice_sev);
+//				fprintf(stderr,"\n");
+
 
 				while (num_bins-- > 0){
 					t_lat = latN - (y * (latSize / 4.0));
@@ -146,9 +150,9 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 							sprintf(block_part, "[%f ,%f ,%d],", t_lat, t_lon, ice_sev);
 							strcat(block, block_part);
 						}
-						asprintf(&postsql,"INSERT INTO nexrad84 (prod_id, coords, intensity, cc, block_num, maptime, altitude) "
-								"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d)",
-								apdu->product_id, t_lon, t_lat, ice_sev, cc, block_num, nexrad_time, alt_level);
+						asprintf(&postsql,"INSERT INTO nexrad84 (prod_id, coords, intensity, cc, block_num, maptime, altitude, ice_sld, ice_prob) "
+								"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d,%d,%d)",
+								apdu->product_id, t_lon, t_lat, ice_sev, cc, block_num, nexrad_time, alt_level,sld,ice_prob);
 
 						PGresult *res = PQexec(conn, postsql);
 							if (PQresultStatus(res) != PGRES_COMMAND_OK){
