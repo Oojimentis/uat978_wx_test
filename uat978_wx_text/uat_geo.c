@@ -100,7 +100,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 							sprintf(block_part, "[%f ,%f ,%d],", t_lat, t_lon, intensity);
 							strcat(block, block_part);
 						}
-						asprintf(&postsql,"INSERT INTO nexrad84 (prod_id, coords, intensity, cc, block_num, maptime, altitude) "
+						asprintf(&postsql,"INSERT INTO nexrad (prod_id, coords, intensity, cc, block_num, maptime, altitude) "
 								"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d)",
 								apdu->product_id, t_lon, t_lat, intensity, cc, block_num, nexrad_time, alt_level);
 
@@ -150,7 +150,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 							sprintf(block_part, "[%f ,%f ,%d],", t_lat, t_lon, ice_sev);
 							strcat(block, block_part);
 						}
-						asprintf(&postsql,"INSERT INTO nexrad84 (prod_id, coords, intensity, cc, block_num, maptime, altitude, ice_sld, ice_prob) "
+						asprintf(&postsql,"INSERT INTO nexrad (prod_id, coords, intensity, cc, block_num, maptime, altitude, ice_sld, ice_prob) "
 								"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d,%d,%d)",
 								apdu->product_id, t_lon, t_lat, ice_sev, cc, block_num, nexrad_time, alt_level,sld,ice_prob);
 
@@ -197,7 +197,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 							sprintf(block_part, "[%f ,%f ,%d],", t_lat, t_lon, lgt_cnt);
 							strcat(block, block_part);
 						}
-						asprintf(&postsql,"INSERT INTO nexrad84 (prod_id, coords, intensity, cc, block_num, maptime, altitude) "
+						asprintf(&postsql,"INSERT INTO nexrad (prod_id, coords, intensity, cc, block_num, maptime, altitude) "
 								"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d)",
 								apdu->product_id, t_lon, t_lat, lgt_cnt, cc, block_num, nexrad_time, alt_level);
 
@@ -245,7 +245,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 							strcat(block, block_part);
 						}
 
-						asprintf(&postsql,"INSERT INTO nexrad84 (prod_id, coords, intensity, cc, block_num, maptime, altitude) "
+						asprintf(&postsql,"INSERT INTO nexrad (prod_id, coords, intensity, cc, block_num, maptime, altitude) "
 								"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d)",
 								apdu->product_id, t_lon, t_lat, edr_enc, cc, block_num, nexrad_time, alt_level);
 
