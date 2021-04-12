@@ -26,7 +26,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 	int wx_alt = (apdu->data[0] & 0x70) >> 4;
 	int alt_level = 0;
 
-
 	switch(apdu->product_id) {
 	case 63: case 64: case 84: case 103:					// ** NEXRAD/Cloud Top/Lightning
 		scale_factor = (apdu->data[0] & 0x30) >> 4;
