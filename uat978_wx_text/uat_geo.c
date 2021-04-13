@@ -234,7 +234,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					t_lat = latN - (y * (latSize / 4.0));
 					t_lon = lonW + (x * (lonSize / 32.0));
 
-					if (edr_enc >= 1 && edr_enc < 15) {
+					if (edr_enc >= 1 && edr_enc < 14) {
 						if ((num_bins == 0) && (i == apdu->length)) {
 							sprintf(block_part, "[%f ,%f ,%d]", t_lat, t_lon, edr_enc);
 							strcat(block, block_part);
