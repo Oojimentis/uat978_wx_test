@@ -132,10 +132,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 				ice_prob = (apdu->data[i]) & 7;
 				ice_sev = (apdu->data[i]) >> 3 & 7;
 
-//				fprintf(stderr,"SLD: %d  Prob: %d   Sev: %d",sld,ice_prob,ice_sev);
-//				fprintf(stderr,"\n");
-
-
 				while (num_bins-- > 0){
 					t_lat = latN - (y * (latSize / 4.0));
 					t_lon = lonW + (x * (lonSize / 32.0));

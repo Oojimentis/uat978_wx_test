@@ -536,6 +536,7 @@ char* tafWeather(char *taf_list)
 				strcat(taf_wx_all, taf_wx);
 			}
 			else if (strlen(temp) == 4) {
+				vis_met = 0;
 				for (int k = 0; k < 4; ++k) {
 					if (isdigit(temp[k]))
 						vis_met++;
@@ -546,6 +547,11 @@ char* tafWeather(char *taf_list)
 					sprintf(taf_wx, " Vis: %s", temp2);
 					strcat(taf_wx_all, taf_wx);
 				}
+//				else {
+				else if ((strncmp(temp,"SKED", 4) == 0) && (strlen(temp) == 4)) {
+					sprintf(taf_wx, "scheduled ");
+					strcat(taf_wx_all, taf_wx);
+				}
 				else {
 					sprintf(taf_wx, " 6-Unknown (%s)", temp);
 					strcat(taf_wx_all, taf_wx);
@@ -554,6 +560,23 @@ char* tafWeather(char *taf_list)
 			else if (strncmp(temp,"VRB", 3) == 0){
 				taf_wind = tafWind(temp);
 				sprintf(taf_wx, " Wind: %s", taf_wind);
+				strcat(taf_wx_all, taf_wx);
+			}
+			else if ((strncmp(temp,"AMD", 3) == 0) && (strlen(temp) == 3)) {
+				sprintf(taf_wx, " Amendment ");
+				strcat(taf_wx_all, taf_wx);
+			}
+			else if ((strncmp(temp,"NOT", 3) == 0) && (strlen(temp) == 3)) {
+				sprintf(taf_wx, "not ");
+				strcat(taf_wx_all, taf_wx);
+			}
+			else if ((strncmp(temp,"SKED", 4) == 0) && (strlen(temp) == 4)) {
+				sprintf(taf_wx, " Scheduled ");
+				strcat(taf_wx_all, taf_wx);
+			}
+
+			else if ((strncmp(temp,"FN", 2) == 0) && (strlen(temp) == 7)) {
+				sprintf(taf_wx, " From Fleet Norfolk (%s) ", temp);
 				strcat(taf_wx_all, taf_wx);
 			}
 			else if ((strncmp(temp, "5", 1) == 0) && (strlen(temp) == 6)) {
