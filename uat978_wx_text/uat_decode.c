@@ -1132,9 +1132,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				fprintf(to, "station: %s\n", gstn);
 				strncpy(n, time_copy + 4, 1);
 
-//				if (strcmp(gstn,"KCEF") == 0)
-//				fprintf(stderr,"test");
-
 				if (strcmp(n, "/") != 0) {
 					strncpy(sd, time_copy, 2);
 					sd[2] = '\0';
@@ -1380,7 +1377,6 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	char gr[2000] = "";
 
 	char buff[30];
-//	PGresult *res;
 
 	product_ver = ((apdu->data[0]) & 0x0F);
 	rec_count = ((apdu->data[1]) & 0xF0) >> 4;
@@ -1413,7 +1409,6 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		obj_labelt = decode_dlac(apdu->data, 5, 2);
 		datoff = datoff + 14;
 	}
-
 
 	element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;										//13
 	obj_element = (apdu->data[datoff + 0]) & 0x1F;												//13
