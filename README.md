@@ -43,11 +43,10 @@ gain=${gain:-0}
 
 cd /your-directory
 
-gnome-terminal --tab --title="dump978 - rtl:$rtl" -- bash -ic "rtl_sdr -g $gain -d $rtl -f 978000000 -s 2083334 - | ./dump978 | tee  >(./uat2text > slog.txt) | ./uat2esnt | nc -q1 localhost 30001" 
+gnome-terminal --tab --title="dump978 - rtl:$rtl" -- bash -ic "rtl_sdr -g $gain -d $rtl -f 978000000 -s 2083334 - | ./dump978 | tee  >(./uat2text > log.txt) | ./uat2esnt | nc -q1 localhost 30001" 
 
 gnome-terminal --tab --title="log.txt" -- bash -ic "multitail -cS dump978 log.txt"
 gnome-terminal --tab --title="metar"   -- bash -ic "multitail -cS dump978 metar.out"
-gnome-terminal --tab --title="sua"     -- bash -ic "multitail -cS dump978 sua.out"
 gnome-terminal --tab --title="notam"   -- bash -ic "multitail -cS dump978 notam.out"
 gnome-terminal --tab --title="taf"     -- bash -ic "multitail -cS dump978 taf.out"
 
