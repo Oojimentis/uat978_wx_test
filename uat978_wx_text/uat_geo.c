@@ -106,7 +106,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						PGresult *res = PQexec(conn, postsql);
 							if (PQresultStatus(res) != PGRES_COMMAND_OK){
 								if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
-									fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+									fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn), PQresultStatus(res),postsql);
 							}
 							PQclear(res);
 					}
@@ -152,7 +152,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						PGresult *res = PQexec(conn, postsql);
 							if (PQresultStatus(res) != PGRES_COMMAND_OK){
 								if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
-									fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+									fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn), PQresultStatus(res),postsql);
 							}
 							PQclear(res);
 					}
@@ -199,7 +199,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						PGresult *res = PQexec(conn, postsql);
 							if (PQresultStatus(res) != PGRES_COMMAND_OK){
 								if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
-									fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+									fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn), PQresultStatus(res),postsql);
 							}
 							PQclear(res);
 					}
@@ -247,7 +247,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						PGresult *res = PQexec(conn, postsql);
 							if (PQresultStatus(res) != PGRES_COMMAND_OK){
 								if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
-									fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+									fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn), PQresultStatus(res),postsql);
 							}
 							PQclear(res);
 					}
@@ -372,7 +372,7 @@ void metar_data( Decoded_METAR *Mptr, FILE *to)
 	PGresult *res = PQexec(conn, postsql);
 	if (PQresultStatus(res) != PGRES_COMMAND_OK){
 		if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
-			fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+			fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn), PQresultStatus(res),postsql);
 	}
 	PQclear(res);
 }
