@@ -1157,6 +1157,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					sprintf(taf_copy, "%s %s", time_copy, r);
 				}
 
+//				if (strncmp(gstn,"KNHK",4) == 0)
+//					fprintf(stderr,"test");
 				int i = 0;
 				int j = 0;
 				while (j == 0) {
