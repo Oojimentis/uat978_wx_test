@@ -388,18 +388,18 @@ static void get_pirep(char *Word)
 {
 	char *token;
 	char pirep_stn[5] = "";
-	char pirep_OV[30] = "";		// Location
-	char pirep_TM[10] = ""; 	// DateTime
+	char pirep_OV[50] = "";		// Location
+	char pirep_TM[15] = ""; 	// DateTime
 	char pirep_hr[5]  = ""; 	// DateTime
 	char pirep_mn[3]  = "";		// DateTime
 	char pirep_FL[10] = "";		// Flight Level
 	char pirep_TP[10] = "";		// a/c type
 	char pirep_SK[50] = "";		// Cloud
-	char pirep_WX[30] = "";		// Weather
+	char pirep_WX[50] = "";		// Weather
 	char pirep_TA[10] = "";		// Temperature
 	char pirep_WV[15] = "";		// Wind Speed Direction
-	char pirep_TB[30] = "";		// Turbulence
-	char pirep_IC[30] = "";		// Icing
+	char pirep_TB[50] = "";		// Turbulence
+	char pirep_IC[50] = "";		// Icing
 	char pirep_RM[100] = ""; 	// Remarks
 	char pirep_TY[30] = "";		// Type urgent/regular
 	char pirep_TI[10] = "";		// Time
@@ -411,7 +411,7 @@ static void get_pirep(char *Word)
 	strcpy(pirep_stn, "K");
 	strcat(pirep_stn, token);
 
-	get_gs_name(pirep_stn);
+//	get_gs_name(pirep_stn);
 
 	time_t current_time = time(NULL);
 	struct tm *tm = localtime(&current_time);
@@ -1392,7 +1392,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		rec_offset = 2;
 		const char *text = decode_dlac(apdu->data, 5, rec_offset);
 		strncpy(gstn, text, 5);
-		get_gs_name(gstn);
+//		get_gs_name(gstn);
 	}
 	else
 		strcpy(gstn, "    ");
@@ -1818,7 +1818,7 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 			if (p) {
 				*p = 0;
 				strncpy(gstn, r, 5);
-				get_gs_name(gstn);
+//				get_gs_name(gstn);
 
 				r = p + 1;
 			}
