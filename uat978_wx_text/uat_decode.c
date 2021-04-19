@@ -1691,9 +1691,9 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 
 		asprintf(&coords, " [%f,%f]", coords, lng, lat);
 		strcat(gr, coords);
-		asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, ob_ele, start_date, stop_date, geo_overlay_opt) "
-				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Point\",\"coordinates\": %s }'),4326),%d,%d,%d,'%s','%s','%s',%d)",
-				gr,apdu->product_id, rep_num, alt, obj_ele_text, start_date, stop_date, geo_overlay_opt);
+		asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, ob_ele, start_date, stop_date, geo_overlay_opt,stn_call) "
+				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Point\",\"coordinates\": %s }'),4326),%d,%d,%d,'%s','%s','%s',%d,'%s')",
+				gr,apdu->product_id, rep_num, alt, obj_ele_text, start_date, stop_date, geo_overlay_opt,gstn);
 
 		PGresult *res = PQexec(conn, postsql);
 			if (PQresultStatus(res) != PGRES_COMMAND_OK){
