@@ -675,7 +675,8 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 				nil = 1;
 			}
 		}
-
+		if (strlen(taf_linzs) < 10)
+			nil = 1;
 // Winds / NIL=
 		if (nil == 0) {
 			taf_temp = tafWind(temp);
@@ -714,7 +715,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK){
 			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
-				fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+				fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn), PQresultStatus(res),postsql);
 		}
 		PQclear(res);
 	}
@@ -858,7 +859,8 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 		taf_condx = tafWeather(taf_lines);
 		fprintf(filetaf, " Condx:%s\n", taf_condx);
 	}
-	else if ((strcmp(taf_t, "AM") == 0) || (strcmp(taf_t, "LA") == 0) || (strcmp(taf_t, "SE") == 0)) {
+	else if ((strcmp(taf_t, "AM") == 0) || (strcmp(taf_t, "LA") == 0) || (strcmp(taf_t, "SE") == 0)
+			|| (strcmp(taf_t, "AU") == 0)) {
 		fprintf(filetaf, "Other/Remarks: %s\n", taf_linzs);
 	}
 	else {
