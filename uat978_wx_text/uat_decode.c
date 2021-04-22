@@ -132,7 +132,7 @@ static const char *address_qualifier_names[8] = {
 	"ICAO address via TIS-B",
 	"TIS-B track file address",
 	"Vehicle address",
-	"Fixed ADS-B Beacon Address",
+	"Fixed ADS-B beacon address",
 	"reserved (6)",
 	"reserved (7)"
 };
@@ -142,9 +142,9 @@ static const char *emitter_category_names[40] = {
 	"Light < 15 500 lbs",
 	"Small – 15,500 to 75,000 lbs",
 	"Large – 75,000 to 300,000 lbs",
-	"High Vortex Large",
+	"High vortex large",
 	"Heavy - > 300,000 lbs",
-	"Highly Maneuverable",
+	"Highly maneuverable",
 	"Rotocraft",
 	"Unassigned 8",
 	"Glider/sailplane",
@@ -158,8 +158,8 @@ static const char *emitter_category_names[40] = {
 	"Surface vehicle—emergency vehicle",
 	"Surface vehicle—service vehicle",
 	"Point Obstacle (includes tethered balloons)",
-	"Cluster Obstacle"
-	"Line Obstacle",
+	"Cluster obstacle"
+	"Line obstacle",
 	"reserved (22)",
 	"reserved (23)",				// C7
 	"reserved (24)",
@@ -183,7 +183,7 @@ static const char *emitter_category_names[40] = {
 static const char *emergency_status_names[8] = {
 	"No emergency",
 	"**** General emergency ****",
-	"**** Lifeguard / Medical emergency ****",
+	"**** Lifeguard / medical emergency ****",
 	"**** Minimum fuel ****",
 	"**** No communications ****",
 	"**** Unlawful interference ****",
@@ -236,7 +236,7 @@ static void get_gs_name(char *Word)
 			sprintf(gs_ret_lng, "%s", PQgetvalue(res, 0, 4));
 		 }
 		else if (rows > 1){
-			fprintf(stderr, "Multple entries for %s\n", temp_stn);
+			fprintf(stderr, "Multiple entries for %s\n", temp_stn);
 
 			for(int i=0; i<rows; i++) {
 				fprintf(stderr, "%s %s %s %s %s\n", PQgetvalue(res, i, 0),
@@ -397,7 +397,7 @@ static void get_pirep(char *Word)
 	char pirep_SK[50] = "";		// Cloud
 	char pirep_WX[50] = "";		// Weather
 	char pirep_TA[10] = "";		// Temperature
-	char pirep_WV[15] = "";		// Wind Speed Direction
+	char pirep_WV[30] = "";		// Wind Speed Direction
 	char pirep_TB[50] = "";		// Turbulence
 	char pirep_IC[50] = "";		// Icing
 	char pirep_RM[100] = ""; 	// Remarks
@@ -467,6 +467,11 @@ static void get_pirep(char *Word)
 			if (token) {
 				strcat(pirep_RM, token);
 			}
+			for(int i = 0; i < strlen(pirep_RM); i++) {
+				if( pirep_RM[i]=='\'')
+					pirep_RM[i] = ' ';
+			}
+
 		}
 	}
 
@@ -1157,8 +1162,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					sprintf(taf_copy, "%s %s", time_copy, r);
 				}
 
-//				if (strncmp(gstn,"KNHK",4) == 0)
-//					fprintf(stderr,"test");
+				if (strncmp(gstn,"KADW",4) == 0)
+					fprintf(stderr,"test");
 				int i = 0;
 				int j = 0;
 				while (j == 0) {
