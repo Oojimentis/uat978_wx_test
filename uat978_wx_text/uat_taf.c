@@ -30,7 +30,7 @@ static unsigned long long int getHash(const char* source)
 	return hash;
 }
 
-char* daySuffix(int d)								// adds st, nd, rd, th to day number.
+char* daySuffix(int d)		// adds st, nd, rd, th to day number.
 {
 	char *date_suff;
 
@@ -45,7 +45,7 @@ char* daySuffix(int d)								// adds st, nd, rd, th to day number.
 }
 
 void validDates(char *sd, char *sz, char *ed, char *ez, char *str)
-{  													//TAF valid dates
+{		//TAF valid dates
 	int d;
 	char *dt;
 
@@ -72,7 +72,7 @@ void validDates(char *sd, char *sz, char *ed, char *ez, char *str)
 }
 
 char* tafWind(char *temp)
-{													// Decode wind/gust.
+{		// Decode wind/gust.
 	char *taf_wind;
 	char kt[3];
 	char d[4], s[4], gs[4];
@@ -132,7 +132,7 @@ char* tafWind(char *temp)
 }
 
 void tafVisibilty(char *temp, char *taf_vis, char *temp2)
-{													// Decode visibility.
+{		// Decode visibility.
 	int len_v, sm = 0;
 	char vis[10];
 
@@ -175,7 +175,7 @@ void tafVisibilty(char *temp, char *taf_vis, char *temp2)
 }
 
 char* tafWeather(char *taf_list)
-{													// Decode weather/sky conditions.
+{		// Decode weather/sky conditions.
 	static char taf_wx_all[500];
 
 	char *temp;
@@ -532,7 +532,8 @@ char* tafWeather(char *taf_list)
 
 				temp = strsep(&taf_list, " ");
 				tafVisibilty(temp, temp2, taf_list);
-				sprintf(taf_wx, " %s%% Probability %s %s:00z-%s %s:00z %s", perc, sd, sz, ed, ez, temp2);
+				sprintf(taf_wx, " %s%% Probability %s %s:00z-%s %s:00z %s",
+						perc, sd, sz, ed, ez, temp2);
 				strcat(taf_wx_all, taf_wx);
 			}
 			else if (strlen(temp) == 4) {
@@ -629,7 +630,7 @@ return taf_wx_all;
 }
 
 void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
-{													// TAF Decode
+{		// TAF Decode
 	char sd[10], sz[3], ed[5], ez[3];
 	char *dt;
 	char fsz[5];
@@ -660,7 +661,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 
 	temp = strsep(&taf_lines, " ");
 
-	if ((isdigit(taf_t[0])) && (strlen(temp) != 6) && (temp[4] != 'Z')) {				// (current) 1st line?
+	if ((isdigit(taf_t[0])) && (strlen(temp) != 6) && (temp[4] != 'Z')) {	// (current) 1st line?
 		mil[0] = temp[4];
 
 		if (mil[0] == '/') {
@@ -686,7 +687,8 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 			temp = strsep(&taf_lines, " ");
 			if (temp != NULL){
 				temp_len = strlen(temp);
-				if ((strncmp(temp + (temp_len -2), "SM", 2) == 0) || (temp_len == 1) || (temp_len == 4)) {
+				if ((strncmp(temp + (temp_len -2), "SM", 2) == 0) || (temp_len == 1) ||
+						(temp_len == 4)) {
 					if (temp_len == 1)
 						temp2 = strsep(&taf_lines, " ");
 
@@ -717,11 +719,12 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK){
 			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
-				fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn), PQresultStatus(res),postsql);
+				fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+						PQresultStatus(res),postsql);
 		}
 		PQclear(res);
 	}
-	else if (strcmp(taf_t, "BE") == 0){						// BECMG
+	else if (strcmp(taf_t, "BE") == 0){		// BECMG
 		temp = strsep(&taf_lines, " ");
 		validDates(sd, sz, ed, ez, temp);
 		fprintf(filetaf, "Becoming: %s @%s:00z", sd, sz);
@@ -761,7 +764,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 		fprintf(filetaf, " Condx:%s\n", taf_condx);
 		temp = strsep(&taf_lines, " ");
 	}
-	else if (strcmp(taf_t, "FM") == 0){						// FROM
+	else if (strcmp(taf_t, "FM") == 0){		// FROM
 		strncpy(sd, temp + 2, 2);
 		sd[2] = '\0';
 		dx = atoi(sd);
@@ -791,7 +794,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 		taf_condx = tafWeather(taf_lines);
 		fprintf(filetaf, " Condx:%s\n", taf_condx);
 	}
-	else if (strcmp(taf_t, "TE") == 0) {					// TEMPO
+	else if (strcmp(taf_t, "TE") == 0) {	// TEMPO
 		temp = strsep(&taf_lines, " ");
 		validDates(sd, sz, ed, ez, temp);
 		fprintf(filetaf, "Temporary: %s @%s:00z", sd, sz);
@@ -810,7 +813,8 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 			}
 		}
 		if (temp != NULL){
-			if ((strncmp(temp + (temp_len - 2), "SM", 2) == 0) || (temp_len == 1) || (temp_len == 4)) {
+			if ((strncmp(temp + (temp_len - 2), "SM", 2) == 0) || (temp_len == 1) ||
+					(temp_len == 4)) {
 				if (temp_len == 1)
 					temp2 = strsep(&taf_lines, " ");
 
@@ -835,13 +839,13 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 			fprintf(filetaf, " Condx:%s\n", taf_condx);
 		}
 	}
-	else if (strcmp(taf_t, "QN") == 0) {					// Military
+	else if (strcmp(taf_t, "QN") == 0) {	// Military
 		taf_lines = (char *)malloc(strlen(taf_linzs) + 1);
 		strcpy(taf_lines, taf_linzs);
 		taf_condx = tafWeather(taf_lines);
 				fprintf(filetaf, " Condx:%s\n", taf_condx);
 	}
-	else if (strcmp(taf_t, "VR") == 0) {					// Military?
+	else if (strcmp(taf_t, "VR") == 0) {	// Military?
 		taf_temp = tafWind(temp);
 		fprintf(filetaf, " Wind:%s", taf_temp);
 

@@ -3,7 +3,6 @@
 // UAT2TEXT.C
 //
 
-
 #include "uat_decode.h"
 #include "reader.h"
 
@@ -87,7 +86,8 @@ int main(int argc, char **argv)
 	PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK){
 			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
-				fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn), PQresultStatus(res));
+				fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn),
+						PQresultStatus(res));
 		}
 		PQclear(res);
 
