@@ -142,7 +142,7 @@ void tafVisibilty(char *temp, char *taf_vis, char *temp2)
 		return;
 	len_v = strlen(temp);
 
-	if (len_v == 1){
+	if (len_v == 1) {
 		sprintf(taf_vis, "%s", temp);
 		len_v = strlen(temp2);
 		asprintf(&temp, "%s %s", temp, temp2);
@@ -305,10 +305,10 @@ char* tafWeather(char *taf_list)
 
 		default:	found = 0; break;
 		}
-		if (found == 0){
+		if (found == 0) {
 			if (strncmp(temp, "BKN", 3) == 0) {
 				units = atoi(temp + 3);
-				if (l > 6){
+				if (l > 6) {
 					strncpy(temp2, temp + 6, l - 6);
 					temp2[2] = '\0';
 					if (strcmp(temp2, "CB") == 0) {
@@ -327,7 +327,7 @@ char* tafWeather(char *taf_list)
 			}
 			else if (strncmp(temp, "FEW", 3) == 0) {
 				units = atoi(temp + 3);
-				if (l > 6){
+				if (l > 6) {
 					strncpy(temp2, temp + 6, l - 6);
 					temp2[2] = '\0';
 					if (strcmp(temp2, "CB") == 0) {
@@ -346,7 +346,7 @@ char* tafWeather(char *taf_list)
 			}
 			else if (strncmp(temp, "OVC", 3) == 0) {
 				units = atoi(temp + 3);
-				if (l > 6){
+				if (l > 6) {
 					strncpy(temp2, temp + 6, l - 6);
 					temp2[2] = '\0';
 					if (strcmp(temp2, "CB") == 0) {
@@ -558,7 +558,7 @@ char* tafWeather(char *taf_list)
 					strcat(taf_wx_all, taf_wx);
 				}
 			}
-			else if (strncmp(temp,"VRB", 3) == 0){
+			else if (strncmp(temp,"VRB", 3) == 0) {
 				taf_wind = tafWind(temp);
 				sprintf(taf_wx, " Wind: %s", taf_wind);
 				strcat(taf_wx_all, taf_wx);
@@ -685,7 +685,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 			sprintf(wind, "%s", taf_temp);
 // Visibility
 			temp = strsep(&taf_lines, " ");
-			if (temp != NULL){
+			if (temp != NULL) {
 				temp_len = strlen(temp);
 				if ((strncmp(temp + (temp_len -2), "SM", 2) == 0) || (temp_len == 1) ||
 						(temp_len == 4)) {
@@ -717,14 +717,14 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 				issued, current_all, wind, visby, taf_condx, reptime, gstn);
 
 		PGresult *res = PQexec(conn, postsql);
-		if (PQresultStatus(res) != PGRES_COMMAND_OK){
+		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
 				fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 						PQresultStatus(res),postsql);
 		}
 		PQclear(res);
 	}
-	else if (strcmp(taf_t, "BE") == 0){		// BECMG
+	else if (strcmp(taf_t, "BE") == 0) {		// BECMG
 		temp = strsep(&taf_lines, " ");
 		validDates(sd, sz, ed, ez, temp);
 		fprintf(filetaf, "Becoming: %s @%s:00z", sd, sz);
@@ -748,7 +748,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 		}
 
 		else {
-			if (!taf_lines){
+			if (!taf_lines) {
 				asprintf(&taf_lines, "%s", temp);
 			}
 			else {
@@ -764,7 +764,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 		fprintf(filetaf, " Condx:%s\n", taf_condx);
 		temp = strsep(&taf_lines, " ");
 	}
-	else if (strcmp(taf_t, "FM") == 0){		// FROM
+	else if (strcmp(taf_t, "FM") == 0) {		// FROM
 		strncpy(sd, temp + 2, 2);
 		sd[2] = '\0';
 		dx = atoi(sd);
@@ -807,12 +807,12 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 			taf_temp = tafWind(temp);
 			fprintf(filetaf, " Wind:%s", taf_temp);
 			temp = strsep(&taf_lines, " ");
-			if (temp != NULL){
+			if (temp != NULL) {
 				temp_len = strlen(temp);
 				sw = 1;
 			}
 		}
-		if (temp != NULL){
+		if (temp != NULL) {
 			if ((strncmp(temp + (temp_len - 2), "SM", 2) == 0) || (temp_len == 1) ||
 					(temp_len == 4)) {
 				if (temp_len == 1)
@@ -825,7 +825,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 // WX Sky
 			taf_temp[0] = '\0';
 
-			if (taf_lines){
+			if (taf_lines) {
 				if (sw == 0) {
 					sprintf (taf_cld, "%s %s", temp, taf_lines);
 					taf_condx = tafWeather(taf_cld);

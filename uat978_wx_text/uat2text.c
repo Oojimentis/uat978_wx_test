@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 		if (!feof(fileconfig))
 			 strcpy(pg_db,line);
 		fgets(line, 75, fileconfig);
-		if (!feof(fileconfig)){
+		if (!feof(fileconfig)) {
 			 line[strlen(line) - 1] = '\0';
 			 strcpy(file_path, line);
 		}
@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 			"truncate pirep;truncate sigairmet;truncate taf;truncate circles;truncate sua");
 
 	PGresult *res = PQexec(conn, postsql);
-		if (PQresultStatus(res) != PGRES_COMMAND_OK){
+		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
 				fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn),
 						PQresultStatus(res));

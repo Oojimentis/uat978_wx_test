@@ -15,8 +15,6 @@
 void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 {
 	char *postsql;
-	char block[6000];
-	char block_part[200];
 	char nexrad_time[6];
 
 	int scale_factor = 1;
@@ -76,136 +74,29 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 
 		block_location_graphic(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
-		block[0]='\0';
-
 		switch(apdu->product_id) {
-		case 63: case 64:
-		{
+		case 63: case 64: {
 			int cc= 0;
 			for (int i = 3; i < apdu->length; ++i) {
 				intensity = apdu->data[i] & 7;
 				runlength = (apdu->data[i] >> 3) + 1;
 
-				while (runlength-- > 0) {
+				while (runlength-- > 0 && intensity > 1) {
 					t_lat = latN - (y * (latSize / 4.0));
 					t_lon = lonW + (x * (lonSize / 32.0));
 
-					if (intensity > 1) {
-						if ((runlength == 0) && (i == apdu->length)) {
-							sprintf(block_part, "[%f ,%f ,%d]", t_lat, t_lon, intensity);
-							strcat(block, block_part);
-						}
-						else {
-							sprintf(block_part, "[%f ,%f ,%d],", t_lat, t_lon, intensity);
-							strcat(block, block_part);
-						}
-						asprintf(&postsql,"INSERT INTO nexrad (prod_id, coords, intensity, cc, block_num, maptime, altitude) "
-								"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d)",
-								apdu->product_id, t_lon, t_lat, intensity, cc, block_num, nexrad_time, alt_level);
+					asprintf(&postsql,"INSERT INTO nexrad (prod_id, coords, intensity, cc, block_num, maptime, altitude) "
+							"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d)",
+							apdu->product_id, t_lon, t_lat, intensity, cc, block_num, nexrad_time, alt_level);
 
-						PGresult *res = PQexec(conn, postsql);
-							if (PQresultStatus(res) != PGRES_COMMAND_OK){
-								if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
-									fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
-											PQresultStatus(res),postsql);
-							}
-							PQclear(res);
+					PGresult *res = PQexec(conn, postsql);
+					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+						if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+							fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+									PQresultStatus(res),postsql);
 					}
-					cc++;
-					x++;
-					if (x == 32){
-						x = 0;
-						y++;
-					}
-				}
-			}
-		}
-		break;
+					PQclear(res);
 
-		case 70: case 71:
-		{
-			int cc =0;
-			for (int i = 3; i < apdu->length; ++i) {
-				num_bins = (apdu->data[i] ) + 1;
-				i = i + 1;
-
-				sld = apdu->data[i] >> 6;
-				ice_prob = (apdu->data[i]) & 7;
-				ice_sev = (apdu->data[i]) >> 3 & 7;
-
-				while (num_bins-- > 0){
-					t_lat = latN - (y * (latSize / 4.0));
-					t_lon = lonW + (x * (lonSize / 32.0));
-
-					if (ice_sev >= 1 && ice_sev < 7) {
-						if ((num_bins == 0) && (i == apdu->length)) {
-							sprintf(block_part, "[%f ,%f ,%d]", t_lat, t_lon, ice_sev);
-							strcat(block, block_part);
-						}
-						else {
-							sprintf(block_part, "[%f ,%f ,%d],", t_lat, t_lon, ice_sev);
-							strcat(block, block_part);
-						}
-						asprintf(&postsql,"INSERT INTO nexrad (prod_id, coords, intensity, cc, block_num, maptime, altitude, ice_sld, ice_prob) "
-								"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d,%d,%d)",
-								apdu->product_id, t_lon, t_lat, ice_sev, cc, block_num, nexrad_time, alt_level,sld,ice_prob);
-
-						PGresult *res = PQexec(conn, postsql);
-							if (PQresultStatus(res) != PGRES_COMMAND_OK){
-								if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
-									fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
-											PQresultStatus(res),postsql);
-							}
-							PQclear(res);
-					}
-					cc++;
-					x++;
-					if (x == 32){
-						x = 0;
-						y++;
-					}
-				}
-			}
-		}
-		break;
-		case 103:
-		{
-			int cc = 0;
-			for (int i = 3; i < apdu->length; ++i) {
-//** 			int lgt_pol = apdu->data[i] & 8;
-				lgt_cnt = apdu->data[i] & 7;
-				num_bins = (apdu->data[i] >> 4) + 1;
-
-				if (num_bins == 15){
-					i = i + 1;
-					num_bins = (apdu->data[i]) + 1;
-				}
-
-				while (num_bins-- > 0) {
-					t_lat = latN - (y * (latSize / 4.0));
-					t_lon = lonW + (x * (lonSize / 32.0));
-
-					if (lgt_cnt >= 1 && lgt_cnt < 7) {
-						if ((num_bins == 0) && (i == apdu->length)) {
-							sprintf(block_part, "[%f ,%f ,%d]", t_lat, t_lon, lgt_cnt);
-							strcat(block, block_part);
-						}
-						else {
-							sprintf(block_part, "[%f ,%f ,%d],", t_lat, t_lon, lgt_cnt);
-							strcat(block, block_part);
-						}
-						asprintf(&postsql,"INSERT INTO nexrad (prod_id, coords, intensity, cc, block_num, maptime, altitude) "
-								"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d)",
-								apdu->product_id, t_lon, t_lat, lgt_cnt, cc, block_num, nexrad_time, alt_level);
-
-						PGresult *res = PQexec(conn, postsql);
-							if (PQresultStatus(res) != PGRES_COMMAND_OK){
-								if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
-									fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
-											PQresultStatus(res),postsql);
-							}
-							PQclear(res);
-					}
 					cc++;
 					x++;
 					if (x == 32) {
@@ -217,8 +108,83 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 		}
 		break;
 
-		case 84: case 90: case 91:
-		{
+		case 70: case 71: {
+			int cc =0;
+			for (int i = 3; i < apdu->length; ++i) {
+				num_bins = (apdu->data[i] ) + 1;
+				i = i + 1;
+
+				sld = apdu->data[i] >> 6;
+				ice_prob = (apdu->data[i]) & 7;
+				ice_sev = (apdu->data[i]) >> 3 & 7;
+
+				while (num_bins-- > 0 && ice_sev >= 1 && ice_sev < 7) {
+					t_lat = latN - (y * (latSize / 4.0));
+					t_lon = lonW + (x * (lonSize / 32.0));
+
+					asprintf(&postsql,"INSERT INTO nexrad (prod_id, coords, intensity, cc, block_num, maptime, altitude, ice_sld, ice_prob) "
+							"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d,%d,%d)",
+							apdu->product_id, t_lon, t_lat, ice_sev, cc, block_num, nexrad_time, alt_level,sld,ice_prob);
+
+					PGresult *res = PQexec(conn, postsql);
+					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+						if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+							fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+									PQresultStatus(res),postsql);
+					}
+					PQclear(res);
+
+					cc++;
+					x++;
+					if (x == 32) {
+						x = 0;
+						y++;
+					}
+				}
+			}
+		}
+		break;
+
+		case 103: {
+			int cc = 0;
+			for (int i = 3; i < apdu->length; ++i) {
+//** 			int lgt_pol = apdu->data[i] & 8;
+				lgt_cnt = apdu->data[i] & 7;
+				num_bins = (apdu->data[i] >> 4) + 1;
+
+				if (num_bins == 15) {
+					i = i + 1;
+					num_bins = (apdu->data[i]) + 1;
+				}
+
+				while (num_bins-- > 0 && lgt_cnt >= 1 && lgt_cnt < 7) {
+					t_lat = latN - (y * (latSize / 4.0));
+					t_lon = lonW + (x * (lonSize / 32.0));
+
+					asprintf(&postsql,"INSERT INTO nexrad (prod_id, coords, intensity, cc, block_num, maptime, altitude) "
+							"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d)",
+							apdu->product_id, t_lon, t_lat, lgt_cnt, cc, block_num, nexrad_time, alt_level);
+
+					PGresult *res = PQexec(conn, postsql);
+					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+						if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+							fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+									PQresultStatus(res),postsql);
+					}
+					PQclear(res);
+
+					cc++;
+					x++;
+					if (x == 32) {
+						x = 0;
+						y++;
+					}
+				}
+			}
+		}
+		break;
+
+		case 84: case 90: case 91: {
 			int cc = 0;
 			for (int i = 3; i < apdu->length; ++i) {
 				edr_enc  = apdu->data[i] & 15;
@@ -229,35 +195,25 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					num_bins = (apdu->data[i]) + 1;
 				}
 
-				while (num_bins-- > 0) {
+				while (num_bins-- > 0 && edr_enc >= 1 && edr_enc < 14 ) {
 					t_lat = latN - (y * (latSize / 4.0));
 					t_lon = lonW + (x * (lonSize / 32.0));
 
-					if (edr_enc >= 1 && edr_enc < 14) {
-						if ((num_bins == 0) && (i == apdu->length)) {
-							sprintf(block_part, "[%f ,%f ,%d]", t_lat, t_lon, edr_enc);
-							strcat(block, block_part);
-						}
-						else {
-							sprintf(block_part, "[%f ,%f ,%d],", t_lat, t_lon, edr_enc);
-							strcat(block, block_part);
-						}
+					asprintf(&postsql,"INSERT INTO nexrad (prod_id, coords, intensity, cc, block_num, maptime, altitude) "
+							"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d)",
+							apdu->product_id, t_lon, t_lat, edr_enc, cc, block_num, nexrad_time, alt_level);
 
-						asprintf(&postsql,"INSERT INTO nexrad (prod_id, coords, intensity, cc, block_num, maptime, altitude) "
-								"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d)",
-								apdu->product_id, t_lon, t_lat, edr_enc, cc, block_num, nexrad_time, alt_level);
-
-						PGresult *res = PQexec(conn, postsql);
-							if (PQresultStatus(res) != PGRES_COMMAND_OK){
-								if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
-									fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
-											PQresultStatus(res),postsql);
-							}
-							PQclear(res);
+					PGresult *res = PQexec(conn, postsql);
+					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+						if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+							fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+									PQresultStatus(res),postsql);
 					}
+					PQclear(res);
+
 					cc++;
 					x++;
-					if (x == 32){
+					if (x == 32) {
 						x = 0;
 						y++;
 					}
@@ -374,7 +330,7 @@ void metar_data( Decoded_METAR *Mptr, FILE *to)
 			windDir, altstng, vsbySM, dew_pt_temp);
 
 	PGresult *res = PQexec(conn, postsql);
-	if (PQresultStatus(res) != PGRES_COMMAND_OK){
+	if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 		if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
 			fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 					PQresultStatus(res),postsql);

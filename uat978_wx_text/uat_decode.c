@@ -235,7 +235,7 @@ static void get_gs_name(char *Word)
 			sprintf(gs_ret_lat, "%s", PQgetvalue(res, 0, 3));
 			sprintf(gs_ret_lng, "%s", PQgetvalue(res, 0, 4));
 		 }
-		else if (rows > 1){
+		else if (rows > 1) {
 			fprintf(stderr, "Multiple entries for %s\n", temp_stn);
 
 			for(int i=0; i<rows; i++) {
@@ -377,7 +377,7 @@ static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_yea
 			sua_nfdc_id, sua_nfcd_nm, sua_dafif_id, sua_dafif_nm, sua_aspc_ty);
 
 	PGresult *res = PQexec(conn, postsql);
-		if (PQresultStatus(res) != PGRES_COMMAND_OK){
+		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
 				fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 						PQresultStatus(res),postsql);
@@ -483,7 +483,7 @@ static void get_pirep(char *Word)
 			pirep_TB, pirep_IC,	pirep_RM, pirep_stn, pirep_OV);
 
 	PGresult *res = PQexec(conn, postsql);
-		if (PQresultStatus(res) != PGRES_COMMAND_OK){
+		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
 				fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 						PQresultStatus(res),postsql);
@@ -1574,7 +1574,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 						element_flag, overlay_op, overlay_vert_cnt);
 
 				PGresult *res = PQexec(conn, postsql);
-				if (PQresultStatus(res) != PGRES_COMMAND_OK){
+				if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 					if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
 						fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 								PQresultStatus(res),postsql);
@@ -1584,7 +1584,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 				alt_save = alt;
 				gr[0] = '\0';
 			}
-			else if (i == (overlay_vert_cnt - 1)){
+			else if (i == (overlay_vert_cnt - 1)) {
 				asprintf(&coords, " [%f,%f]", coords, lng, lat);
 				strcat(gr, coords);
 			}
@@ -1605,7 +1605,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 				overlay_op, overlay_vert_cnt);
 
 		PGresult *res = PQexec(conn, postsql);
-		if (PQresultStatus(res) != PGRES_COMMAND_OK){
+		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
 				fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 						PQresultStatus(res),postsql);
@@ -1681,7 +1681,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 				r_lat, r_lng);
 
 		PGresult *res = PQexec(conn, postsql);
-		if (PQresultStatus(res) != PGRES_COMMAND_OK){
+		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
 				fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 						PQresultStatus(res),postsql);
@@ -1723,7 +1723,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 				overlay_op, overlay_vert_cnt);
 
 		PGresult *res = PQexec(conn, postsql);
-			if (PQresultStatus(res) != PGRES_COMMAND_OK){
+			if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 				if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
 					fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 							PQresultStatus(res),postsql);
@@ -1758,7 +1758,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 
 			alt = alt_raw * 100;
 
-			if (i == (overlay_vert_cnt - 1)){
+			if (i == (overlay_vert_cnt - 1)) {
 				asprintf(&coords, " [%f,%f]", coords, lng, lat);
 				strcat(gr, coords);
 			}
@@ -1780,7 +1780,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 				overlay_op, overlay_vert_cnt);
 
 		PGresult *res = PQexec(conn, postsql);
-			if (PQresultStatus(res) != PGRES_COMMAND_OK){
+			if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 				if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
 					fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 							PQresultStatus(res),postsql);
@@ -1915,7 +1915,7 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 					apdu->product_id, gstn, rtime, rep_num, data_text);
 
 			PGresult *res = PQexec(conn, postsql);
-			if (PQresultStatus(res) != PGRES_COMMAND_OK){
+			if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 				if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
 					fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 							PQresultStatus(res),postsql);
