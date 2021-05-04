@@ -16,6 +16,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 {
 	char *postsql;
 	char nexrad_time[6];
+	char *geojson;
 
 	int scale_factor = 1;
 	int ns_flag = 0;
@@ -62,7 +63,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 		float t_lat, t_lon;
 
 		int num_bins;
-		int sld;
+		int ice_sld;
 		int ice_prob;
 		int ice_sev;
 		int intensity;
@@ -71,23 +72,40 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 		int edr_enc;
 		int y = 0;
 		int x = 0;
+		int klen;
+
 
 		block_location_graphic(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
 		switch(apdu->product_id) {
 		case 63: case 64: {
-			int cc= 0;
+			int kount = 0;
+
 			for (int i = 3; i < apdu->length; ++i) {
 				intensity = apdu->data[i] & 7;
 				runlength = (apdu->data[i] >> 3) + 1;
+				asprintf(&geojson,"INSERT INTO nexrad (coords,prod_id,intensity,block_num,maptime,altitude)"
+						"VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
 
 				while (runlength-- > 0 && intensity > 1) {
 					t_lat = latN - (y * (latSize / 4.0));
 					t_lon = lonW + (x * (lonSize / 32.0));
+					kount++;
 
-					asprintf(&postsql,"INSERT INTO nexrad (prod_id, coords, intensity, cc, block_num, maptime, altitude) "
-							"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d)",
-							apdu->product_id, t_lon, t_lat, intensity, cc, block_num, nexrad_time, alt_level);
+					x++;
+					if (x == 32) {
+						x = 0;
+						y++;
+					}
+					asprintf(&geojson,"%s POINT(%f %f),",geojson,t_lon, t_lat);
+
+				}
+				if (kount > 0) {
+					klen = strlen(geojson);
+					geojson[klen-1] = ' ';
+					kount =0;
+					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d)",geojson,apdu->product_id,
+							intensity, block_num, nexrad_time, alt_level);
 
 					PGresult *res = PQexec(conn, postsql);
 					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -97,34 +115,43 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					}
 					PQclear(res);
 
-					cc++;
-					x++;
-					if (x == 32) {
-						x = 0;
-						y++;
-					}
 				}
 			}
 		}
 		break;
 
 		case 70: case 71: {
-			int cc =0;
+			int kount = 0;
+
 			for (int i = 3; i < apdu->length; ++i) {
 				num_bins = (apdu->data[i] ) + 1;
 				i = i + 1;
 
-				sld = apdu->data[i] >> 6;
+				ice_sld = apdu->data[i] >> 6;
 				ice_prob = (apdu->data[i]) & 7;
 				ice_sev = (apdu->data[i]) >> 3 & 7;
+
+				asprintf(&geojson,"INSERT INTO nexrad (coords,prod_id,intensity,block_num,maptime,altitude,ice_sld,ice_prob)"
+						"VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
 
 				while (num_bins-- > 0 && ice_sev >= 1 && ice_sev < 7) {
 					t_lat = latN - (y * (latSize / 4.0));
 					t_lon = lonW + (x * (lonSize / 32.0));
+					kount++;
 
-					asprintf(&postsql,"INSERT INTO nexrad (prod_id, coords, intensity, cc, block_num, maptime, altitude, ice_sld, ice_prob) "
-							"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d,%d,%d)",
-							apdu->product_id, t_lon, t_lat, ice_sev, cc, block_num, nexrad_time, alt_level,sld,ice_prob);
+					x++;
+					if (x == 32) {
+						x = 0;
+						y++;
+					}
+					asprintf(&geojson,"%s POINT(%f %f),",geojson,t_lon, t_lat);
+				}
+				if (kount > 0) {
+					klen = strlen(geojson);
+					geojson[klen-1] = ' ';
+					kount =0;
+					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d,%d,%d)",geojson,apdu->product_id, ice_sev,
+							 block_num, nexrad_time, alt_level,ice_sld,ice_prob);
 
 					PGresult *res = PQexec(conn, postsql);
 					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -134,19 +161,14 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					}
 					PQclear(res);
 
-					cc++;
-					x++;
-					if (x == 32) {
-						x = 0;
-						y++;
-					}
 				}
 			}
 		}
 		break;
 
 		case 103: {
-			int cc = 0;
+			int kount = 0;
+
 			for (int i = 3; i < apdu->length; ++i) {
 //** 			int lgt_pol = apdu->data[i] & 8;
 				lgt_cnt = apdu->data[i] & 7;
@@ -157,13 +179,27 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					num_bins = (apdu->data[i]) + 1;
 				}
 
+				asprintf(&geojson,"INSERT INTO nexrad (coords,prod_id,intensity,block_num,maptime,altitude)"
+						"VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
+
 				while (num_bins-- > 0 && lgt_cnt >= 1 && lgt_cnt < 7) {
 					t_lat = latN - (y * (latSize / 4.0));
 					t_lon = lonW + (x * (lonSize / 32.0));
+					kount++;
 
-					asprintf(&postsql,"INSERT INTO nexrad (prod_id, coords, intensity, cc, block_num, maptime, altitude) "
-							"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d)",
-							apdu->product_id, t_lon, t_lat, lgt_cnt, cc, block_num, nexrad_time, alt_level);
+					x++;
+					if (x == 32) {
+						x = 0;
+						y++;
+					}
+					asprintf(&geojson,"%s POINT(%f %f),",geojson,t_lon, t_lat);
+				}
+				if (kount > 0) {
+					klen = strlen(geojson);
+					geojson[klen-1] = ' ';
+					kount =0;
+					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d)",geojson,apdu->product_id,
+							lgt_cnt, block_num, nexrad_time, alt_level);
 
 					PGresult *res = PQexec(conn, postsql);
 					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -173,19 +209,14 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					}
 					PQclear(res);
 
-					cc++;
-					x++;
-					if (x == 32) {
-						x = 0;
-						y++;
-					}
 				}
 			}
 		}
 		break;
 
 		case 84: case 90: case 91: {
-			int cc = 0;
+			int kount = 0;
+
 			for (int i = 3; i < apdu->length; ++i) {
 				edr_enc  = apdu->data[i] & 15;
 				num_bins = (apdu->data[i] >> 4) + 1;
@@ -195,13 +226,27 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					num_bins = (apdu->data[i]) + 1;
 				}
 
+				asprintf(&geojson,"INSERT INTO nexrad (coords,prod_id,intensity,block_num,maptime,altitude)"
+						"VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
+
 				while (num_bins-- > 0 && edr_enc >= 1 && edr_enc < 14 ) {
 					t_lat = latN - (y * (latSize / 4.0));
 					t_lon = lonW + (x * (lonSize / 32.0));
+					kount++;
 
-					asprintf(&postsql,"INSERT INTO nexrad (prod_id, coords, intensity, cc, block_num, maptime, altitude) "
-							"VALUES( %d, ST_GeomFromText('POINT ( %f %f)',4326),%d,%d,%d,'%s',%d)",
-							apdu->product_id, t_lon, t_lat, edr_enc, cc, block_num, nexrad_time, alt_level);
+					x++;
+					if (x == 32) {
+						x = 0;
+						y++;
+					}
+					asprintf(&geojson,"%s POINT(%f %f),",geojson,t_lon, t_lat);
+				}
+				if (kount > 0) {
+					klen = strlen(geojson);
+					geojson[klen-1] = ' ';
+					kount =0;
+					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d)",geojson,apdu->product_id,
+							edr_enc, block_num, nexrad_time, alt_level);
 
 					PGresult *res = PQexec(conn, postsql);
 					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -211,12 +256,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					}
 					PQclear(res);
 
-					cc++;
-					x++;
-					if (x == 32) {
-						x = 0;
-						y++;
-					}
 				}
 			}
 		}
