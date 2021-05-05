@@ -26,7 +26,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 	int alt_level = 0;
 
 	switch(apdu->product_id) {
-	case 63: case 64: case 84: case 103:		// ** NEXRAD/Cloud Top/Lightning
+	case 663: case 64: case 84: case 103:		// ** NEXRAD/Cloud Top/Lightning
 		scale_factor = (apdu->data[0] & 0x30) >> 4;
 		break;
 
@@ -235,7 +235,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					kount++;
 
 					x++;
-					if (x == 32) {
+					if (x >= 32) {
 						x = 0;
 						y++;
 					}
@@ -319,10 +319,18 @@ void metar_data( Decoded_METAR *Mptr, FILE *to)
 	char temp[10];
 	char windSpeed[10];
 	char windDir[10];
+	char windGust[10];
+	char windVar[10];
 	char altstng[10];
 	char vsbySM[10];
 	char SLP[10];
 	char dew_pt_temp[10];
+	char hrly_precip[10];
+
+	if (Mptr->hourlyPrecip > 1000)
+		sprintf(hrly_precip, "- ");
+	else
+		sprintf(hrly_precip, "%.2f", Mptr->hourlyPrecip);
 
 	if (Mptr->temp > 1000)
 		sprintf(temp, "- ");
@@ -346,6 +354,17 @@ void metar_data( Decoded_METAR *Mptr, FILE *to)
 	else
 		sprintf(windDir, "%d", Mptr->winData.windDir);
 
+	if (Mptr->winData.windGust > 1000)
+		sprintf(windGust, "-");
+	else
+		sprintf(windGust, "%d", Mptr->winData.windGust);
+
+	if (Mptr->winData.windVRB)
+		sprintf(windVar, "Variable");
+	else
+		sprintf(windVar, " ");
+
+
 	if (Mptr->inches_altstng > 1000)
 		sprintf(altstng, "-");
 	else
@@ -356,17 +375,18 @@ void metar_data( Decoded_METAR *Mptr, FILE *to)
 	else
 		sprintf(vsbySM, "%.2f", Mptr->prevail_vsbySM);
 
-	if (Mptr->SLP > 1000)
+	if (Mptr->SLP > 5000)
 		sprintf(SLP, "-");
 	else
 		sprintf(SLP, "%.2f", Mptr->SLP);
 
 	sprintf(obs_date, "%02d %02d:%02d", Mptr->ob_date, Mptr->ob_hour, Mptr->ob_minute);
 
-	asprintf(&postsql,"INSERT INTO metar (stn_call, ob_date, temp, windsp, winddir, altimeter, visby, dewp) "
-			"VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
+	asprintf(&postsql,"INSERT INTO metar (stn_call, ob_date, temp, windsp, winddir, altimeter, visby,"
+			"dewp,hrly_precip,slp,windvar,windgust) "
+			"VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
 			Mptr->stnid, obs_date, temp, windSpeed,
-			windDir, altstng, vsbySM, dew_pt_temp);
+			windDir, altstng, vsbySM, dew_pt_temp, hrly_precip,SLP,windVar,windGust);
 
 	PGresult *res = PQexec(conn, postsql);
 	if (PQresultStatus(res) != PGRES_COMMAND_OK) {
