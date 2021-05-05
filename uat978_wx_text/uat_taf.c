@@ -233,6 +233,7 @@ char* tafWeather(char *taf_list)
 		case SN:		strcat(taf_wx_all, " Snow,"); break;
 		case SQ:		strcat(taf_wx_all, " Squall(s),"); break;
 		case SS:		strcat(taf_wx_all, " Sandstorm,"); break;
+		case TS:   		strcat(taf_wx_all, " Thunderstorm,"); break;
 		case UP:		strcat(taf_wx_all, " Unknown precipitation,"); break;
 		case VA:		strcat(taf_wx_all, " Volcanic ash,"); break;
 		case VCFG:		strcat(taf_wx_all, " Fog in vicinity,"); break;
@@ -285,7 +286,7 @@ char* tafWeather(char *taf_list)
 		case LSHRADZ:	strcat(taf_wx_all, " Light showers rain/drizzle,"); break;
 		case LSHRAPL:	strcat(taf_wx_all, " Light showers rain/ice pellets,"); break;
 		case LSHRASN: case LSHSNRA: strcat(taf_wx_all, " Light showers rain/snow,"); break;
-
+		case LTSRAGR:	strcat(taf_wx_all, " Light thunder/rain/hail,"); break;
 		case LFZDZSNPL:	strcat(taf_wx_all, " Light freezing drizzle/snow/ice pellets,"); break;
 
 		case LSHRAPLSN:	strcat(taf_wx_all, " Light showers rain/ice pellets/snow,"); break;
