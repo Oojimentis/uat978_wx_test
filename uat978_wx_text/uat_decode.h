@@ -34,10 +34,9 @@ struct MySegStruct{
 int seg_count;
 
 FILE * filemetar;		// 413
-FILE * filenotam;		// 8
-//FILE * filesua;		// 13
+FILE * filenotam;		// Segemented NOTAM
 
-FILE * filetaf;			// test file for TAF
+FILE * filetaf;			// Debug file for TAF
 FILE * fileconfig;		// Credentials.
 
 struct uat_adsb_mdb {

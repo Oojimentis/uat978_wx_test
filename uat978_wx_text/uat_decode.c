@@ -132,7 +132,7 @@ static const char *address_qualifier_names[8] = {
 	"ICAO address via TIS-B",
 	"TIS-B track file address",
 	"Vehicle address",
-	"Fixed ADS-B Beacon Address",
+	"Fixed ADS-B beacon address",
 	"reserved (6)",
 	"reserved (7)"
 };
@@ -142,9 +142,9 @@ static const char *emitter_category_names[40] = {
 	"Light < 15 500 lbs",
 	"Small – 15,500 to 75,000 lbs",
 	"Large – 75,000 to 300,000 lbs",
-	"High Vortex Large",
-	"Heavy - > 300,000 lbs",
-	"Highly Maneuverable",
+	"High vortex large",
+	"Heavy -> 300,000 lbs",
+	"Highly maneuverable",
 	"Rotocraft",
 	"Unassigned 8",
 	"Glider/sailplane",
@@ -158,8 +158,8 @@ static const char *emitter_category_names[40] = {
 	"Surface vehicle—emergency vehicle",
 	"Surface vehicle—service vehicle",
 	"Point Obstacle (includes tethered balloons)",
-	"Cluster Obstacle"
-	"Line Obstacle",
+	"Cluster obstacle"
+	"Line obstacle",
 	"reserved (22)",
 	"reserved (23)",				// C7
 	"reserved (24)",
@@ -183,7 +183,7 @@ static const char *emitter_category_names[40] = {
 static const char *emergency_status_names[8] = {
 	"No emergency",
 	"**** General emergency ****",
-	"**** Lifeguard / Medical emergency ****",
+	"**** Lifeguard / medical emergency ****",
 	"**** Minimum fuel ****",
 	"**** No communications ****",
 	"**** Unlawful interference ****",
@@ -235,8 +235,8 @@ static void get_gs_name(char *Word)
 			sprintf(gs_ret_lat, "%s", PQgetvalue(res, 0, 3));
 			sprintf(gs_ret_lng, "%s", PQgetvalue(res, 0, 4));
 		 }
-		else if (rows > 1){
-			fprintf(stderr, "Multple entries for %s\n", temp_stn);
+		else if (rows > 1) {
+			fprintf(stderr, "Multiple entries for %s\n", temp_stn);
 
 			for(int i=0; i<rows; i++) {
 				fprintf(stderr, "%s %s %s %s %s\n", PQgetvalue(res, i, 0),
@@ -251,7 +251,7 @@ static void get_gs_name(char *Word)
 }
 
 static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_year)
-{																			// SUA Decode
+{		// SUA Decode
 	char *token;
 
 	char sua_sch_stat[2];
@@ -377,9 +377,10 @@ static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_yea
 			sua_nfdc_id, sua_nfcd_nm, sua_dafif_id, sua_dafif_nm, sua_aspc_ty);
 
 	PGresult *res = PQexec(conn, postsql);
-		if (PQresultStatus(res) != PGRES_COMMAND_OK){
+		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
-				fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn), PQresultStatus(res),postsql);
+				fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+						PQresultStatus(res),postsql);
 		}
 		PQclear(res);
 }
@@ -397,7 +398,7 @@ static void get_pirep(char *Word)
 	char pirep_SK[50] = "";		// Cloud
 	char pirep_WX[50] = "";		// Weather
 	char pirep_TA[10] = "";		// Temperature
-	char pirep_WV[15] = "";		// Wind Speed Direction
+	char pirep_WV[30] = "";		// Wind Speed Direction
 	char pirep_TB[50] = "";		// Turbulence
 	char pirep_IC[50] = "";		// Icing
 	char pirep_RM[100] = ""; 	// Remarks
@@ -467,19 +468,25 @@ static void get_pirep(char *Word)
 			if (token) {
 				strcat(pirep_RM, token);
 			}
+			for(int i = 0; i < strlen(pirep_RM); i++) {
+				if( pirep_RM[i]=='\'')
+					pirep_RM[i] = ' ';
+			}
+
 		}
 	}
 
-	asprintf(&postsql,"INSERT INTO pirep (rep_type, rep_time, fl_lev, ac_type, cloud, weather, temperature, wind_spd_dir,"
-			"turbulence, icing, remarks, stn_call, location)"
+	asprintf(&postsql,"INSERT INTO pirep (rep_type, rep_time, fl_lev, ac_type, cloud, weather, "
+			"temperature, wind_spd_dir, turbulence, icing, remarks, stn_call, location)"
 			"VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
-			pirep_TY, pirep_TI, pirep_FL, pirep_TP, pirep_SK, pirep_WX, pirep_TA, pirep_WV, pirep_TB, pirep_IC,
-			pirep_RM, pirep_stn, pirep_OV);
+			pirep_TY, pirep_TI, pirep_FL, pirep_TP, pirep_SK, pirep_WX, pirep_TA, pirep_WV,
+			pirep_TB, pirep_IC,	pirep_RM, pirep_stn, pirep_OV);
 
 	PGresult *res = PQexec(conn, postsql);
-		if (PQresultStatus(res) != PGRES_COMMAND_OK){
+		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
-				fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn), PQresultStatus(res),postsql);
+				fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+						PQresultStatus(res),postsql);
 		}
 		PQclear(res);
 }
@@ -500,7 +507,8 @@ static void uat_display_hdr(const struct uat_adsb_mdb *mdb, FILE *to)
 	struct tm *tm = localtime(&current_time);
 	strftime(buff, sizeof buff, "%D %T", tm);
 	fprintf(to, "   Time: %s\n", buff);
-	fprintf(to, " ICAO:    %06X    (%s)\n", mdb->address, address_qualifier_names[mdb->address_qualifier]);
+	fprintf(to, " ICAO:    %06X    (%s)\n", mdb->address,
+			address_qualifier_names[mdb->address_qualifier]);
 }
 
 static void uat_decode_sv(uint8_t *frame, struct uat_adsb_mdb *mdb)
@@ -778,7 +786,7 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
 	t_opt = ((frame->data[1] & 0x01) << 1) | (frame->data[2] >> 7);
 
 	switch (t_opt) {
-	case 0: // Hours,Minutes
+	case 0: 	// Hours,Minutes
 		frame->fisb.monthday_valid = 0;
 		frame->fisb.seconds_valid = 0;
 		frame->fisb.hours = (frame->data[2] & 0x7c) >> 2;
@@ -786,7 +794,7 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
 		frame->fisb.length = frame->length - 4;
 		frame->fisb.data = frame->data + 4;
 		break;
-	case 1: // Hours,Minutes,Seconds
+	case 1: 	// Hours,Minutes,Seconds
 		if (frame->length < 5)
 			return;
 		frame->fisb.monthday_valid = 0;
@@ -797,7 +805,7 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
 		frame->fisb.length = frame->length - 5;
 		frame->fisb.data = frame->data + 5;
 		break;
-	case 2: // Month,Day,Hours,Minutes
+	case 2: 	// Month,Day,Hours,Minutes
 		if (frame->length < 5)
 			return;
 		frame->fisb.monthday_valid = 1;
@@ -816,7 +824,7 @@ static void uat_decode_info_frame(struct uat_uplink_info_frame *frame)
 			frame->fisb.data = frame->data + 5;
 		}
 		break;
-	case 3: // Month,Day,Hours,Minutes,Seconds
+	case 3:		// Month,Day,Hours,Minutes,Seconds
 		if (frame->length < 6)
 			return;
 		frame->fisb.monthday_valid = 1;
@@ -986,20 +994,20 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 	fprintf(to, "\n");
 
 	switch (apdu->product_id) {
-	case 8:								// ** NOTAM **************
+	case 8:		// ** NOTAM **************
 		if (apdu->s_flag)
 			recf = apdu->data[9] >> 4;
 		else
 			recf = apdu->data[0] >> 4;
 
 		switch (recf) {
-		case 8:							//	Graphic
+		case 8:		//	Graphic
 			get_graphic(apdu, to);
 			break;
-		case 2:							// Text
-			if (apdu->s_flag)			// Segmented text
+		case 2:		// Text
+			if (apdu->s_flag)		// Segmented text
 				get_seg_text(apdu, filenotam, to);
-			else						// Text
+			else	// Text
 				get_text(apdu, to);
 			break;
 		default:
@@ -1014,10 +1022,10 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 		recf = apdu->data[0] >> 4;
 
 		switch (recf) {
-		case 8:							// Graphic
+		case 8:		// Graphic
 			get_graphic(apdu, to);
 			break;
-		case 2:							// Text
+		case 2:		// Text
 			get_text(apdu, to);
 			break;
 		default:
@@ -1031,7 +1039,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 	case 63:	case 64:	case 70:	case 71:	case 84:	case 90:	case 91:	case 103:
 			graphic_nexrad(apdu, to);
 			break;
-	case 413:							// ** Generic text,DLAC *****************
+	case 413:		// ** Generic text,DLAC *****************
 	{
 		int rec_offset = 0;
 		const char *text = decode_dlac(apdu->data, apdu->length, rec_offset);
@@ -1113,7 +1121,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				strcpy(time_copy, r);
 				r = p + 1;
 			}
-			if (strcmp(mtype, "TAF") == 0 || strcmp(mtype, "TAF.AMD") == 0 || strcmp(mtype, "TAF.COR") == 0) {
+			if (strcmp(mtype, "TAF") == 0 || strcmp(mtype, "TAF.AMD") == 0 ||
+					strcmp(mtype, "TAF.COR") == 0) {
 				// TAF Decode
 				char n[5] = "";
 				char *taf_lines[20];
@@ -1157,8 +1166,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					sprintf(taf_copy, "%s %s", time_copy, r);
 				}
 
-//				if (strncmp(gstn,"KNHK",4) == 0)
-//					fprintf(stderr,"test");
+				if (strncmp(gstn,"KADW",4) == 0)
+					fprintf(stderr,"test");
 				int i = 0;
 				int j = 0;
 				while (j == 0) {
@@ -1329,7 +1338,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 {
 	int rec_offset = 11;
 	int datoff = 6;
-	int product_ver;
+//	int product_ver;
 	int rec_count;
 	int rec_ref;
 	int overlay_rec_id = 0;
@@ -1350,7 +1359,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	uint8_t qualifier_flag;
 	uint8_t param_flag;
 	uint8_t rec_app_opt;
-	uint8_t date_time_format;
+//	uint8_t date_time_format;
 	uint8_t element_flag;
 
 	int geo_overlay_opt;
@@ -1380,7 +1389,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 
 	char buff[30];
 
-	product_ver = ((apdu->data[0]) & 0x0F);
+//	product_ver = ((apdu->data[0]) & 0x0F);
 	rec_count = ((apdu->data[1]) & 0xF0) >> 4;
 	rec_ref = ((apdu->data[5]));
 
@@ -1397,31 +1406,31 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	else
 		strcpy(gstn, "    ");
 
-	rep_num = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]); 				// 7 8
-	rec_len = ((apdu->data[datoff + 0]) << 2) | (((apdu->data[datoff + 1]) & 0xC0) >> 6);		// 6 7
-	report_year = ((apdu->data[datoff + 3]) & 0xFE) >> 1;										// 9
-	overlay_rec_id = (((apdu->data[datoff + 4]) & 0x1E) >> 1) + 1;								// Docs say to add 1.
-	obj_label_flag = (apdu->data[datoff + 4] & 0x01);											// 10
+	rep_num = (((apdu->data[datoff + 1]) & 0x3F) << 8) | (apdu->data[datoff + 2]); 			// 7 8
+	rec_len = ((apdu->data[datoff + 0]) << 2) | (((apdu->data[datoff + 1]) & 0xC0) >> 6);	// 6 7
+	report_year = ((apdu->data[datoff + 3]) & 0xFE) >> 1;									// 9
+	overlay_rec_id = (((apdu->data[datoff + 4]) & 0x1E) >> 1) + 1;			// Docs say to add 1.
+	obj_label_flag = (apdu->data[datoff + 4] & 0x01);						// 10
 
 	obj_labelt = "  ";
-	if (obj_label_flag == 0) { // Numeric index.
-		obj_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff + 6]);					// 11 12
-		datoff = datoff + 7;	}																// datoff=13
+	if (obj_label_flag == 0) {		// Numeric index.
+		obj_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff + 6]);		// 11 12
+		datoff = datoff + 7;	}													// datoff=13
 	else {
 		obj_labelt = decode_dlac(apdu->data, 5, 2);
 		datoff = datoff + 14;
 	}
 
-	element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;										//13
-	obj_element = (apdu->data[datoff + 0]) & 0x1F;												//13
-	obj_status = (apdu->data[datoff +1]) & 0x0F;												//14
-	obj_type = (apdu->data[datoff +1] & 0xF0) >> 4;												//14
-	qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;									//13
-	param_flag = ((apdu->data[datoff + 0]) & 0x20) >> 5;										//13
+	element_flag = ((apdu->data[datoff + 0]) & 0x80) >> 7;		//13
+	obj_element = (apdu->data[datoff + 0]) & 0x1F;				//13
+	obj_status = (apdu->data[datoff +1]) & 0x0F;				//14
+	obj_type = (apdu->data[datoff +1] & 0xF0) >> 4;				//14
+	qualifier_flag = ((apdu->data[datoff + 0]) & 0x40) >> 6;	//13
+	param_flag = ((apdu->data[datoff + 0]) & 0x20) >> 5;		//13
 
 	strcpy(qual_text, " ");
 	if (qualifier_flag == 0) {
-		datoff = datoff + 2;																	// 13 > datoff=15
+		datoff = datoff + 2;		// 13 > datoff=15
 	}
 	else {
 		object_qualifier = ((apdu->data[datoff + 2]) << 16) | ((apdu->data[datoff + 3]) << 8)
@@ -1430,13 +1439,13 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 
 		strcpy(qual_text, " ");
 		if (apdu->product_id == 14) {
-			if (apdu->data[datoff + 2] & (1 << 7)) {											// 15
+			if (apdu->data[datoff + 2] & (1 << 7)) {		// 15
 				strcat(qual_text, " Unspecified, ");
 			}
-			if (apdu->data[datoff + 3] & (1 << 0)) {											// 16
+			if (apdu->data[datoff + 3] & (1 << 0)) {		// 16
 				strcat(qual_text, " Ash, ");
 			}
-			if (apdu->data[datoff + 4] & (1 << 0)) {											// 17
+			if (apdu->data[datoff + 4] & (1 << 0)) {		// 17
 				strcat(qual_text, " Precipitation, ");
 			}
 			if (apdu->data[datoff + 4] & (1 << 1)) {
@@ -1466,21 +1475,21 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		obj_par_val = (apdu->data[18] & 0x7) << 8 | apdu->data[19];		// 19
 		fprintf(to, "ob par value: %d  ob_par_type: %d", obj_par_val, obj_param_type);
 
-		datoff = datoff + 3;	//was 7																// 13 datoff =20
+		datoff = datoff + 3;	//was 7								// 13 datoff =20
 	}
-	geo_overlay_opt = (apdu->data[datoff + 0]) & 0x0F;											// 13
+	geo_overlay_opt = (apdu->data[datoff + 0]) & 0x0F;				// 13
 	overlay_op = ((apdu->data[datoff + 1]) & 0xC0) >> 6;
-	overlay_vert_cnt = ((apdu->data[datoff + 1]) & 0x3F) + 1;									// Docs say to add 1)
+	overlay_vert_cnt = ((apdu->data[datoff + 1]) & 0x3F) + 1;		// Docs say to add 1)
 	rec_app_opt = ((apdu->data[datoff + 0]) & 0xC0) >> 6;
-	date_time_format = ((apdu->data[datoff + 0]) & 0x30) >> 4;
+//	date_time_format = ((apdu->data[datoff + 0]) & 0x30) >> 4;
 
 	switch (rec_app_opt) {
-	case 0:									// No times given. UFN. (record_data[2:],date_time_format)
+	case 0:		// No times given. UFN. (record_data[2:],date_time_format)
 		asprintf(&start_date, "0");
 		asprintf(&stop_date, "0");
 		datoff = datoff + 8;   // was 2
 		break;
-	case 1:									// Start time only. WEF.
+	case 1:		// Start time only. WEF.
 		d1 = apdu->data[datoff + 2];
 		d2 = apdu->data[datoff + 3];
 		d3 = apdu->data[datoff + 4];
@@ -1490,7 +1499,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		asprintf(&stop_date, "0");
 		datoff = datoff + 6;
 		break;
-	case 2:									// End time only. TIL.
+	case 2:		// End time only. TIL.
 		d1 = apdu->data[datoff + 2];
 		d2 = apdu->data[datoff + 3];
 		d3 = apdu->data[datoff + 4];
@@ -1500,7 +1509,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		asprintf(&stop_date, "%02d/%02d %02d:%02d", d1, d2, d3, d4);
 		datoff = datoff + 6;
 		break;
-	case 3:									// Both start and end times. WEF.
+	case 3:		// Both start and end times. WEF.
 		d1 = apdu->data[datoff + 2];
 		d2 = apdu->data[datoff + 3];
 		d3 = apdu->data[datoff + 4];
@@ -1526,16 +1535,9 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		}
 	}
 
-	fprintf(to, "Obj label text: %s  Obj label  : %d  Rep number: %d\n", obj_labelt, obj_label, rep_num);
-	fprintf(to, "Prod ver      : %d  Ovrly recID   : %d  Rec len     : %d  Obj status: %d\n", product_ver, overlay_rec_id,
-			rec_len,obj_status);
-	fprintf(to, "Param flag    : %d  DteTimFmt     : %d  Element flag:  %d  Ovrly opts: %d\n", param_flag, date_time_format,
-			element_flag,overlay_op);
-	fprintf(to, "Obj param val : %d  Obj param type: %d  Vert count: %d\n", obj_par_val, obj_param_type, overlay_vert_cnt);
-
 	switch (geo_overlay_opt) {
 
-	case 3: case 4:	{								// Extended Range 3D Polygon
+	case 3: case 4:	{		// Extended Range 3D Polygon
 
 		int alt_save;
 		alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
@@ -1559,23 +1561,30 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 
 			alt = alt_raw * 100;
 
-			if (alt != alt_save) {   // Multiple altitudes
-				asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, ob_ele, start_date, stop_date, geo_overlay_opt) "
-						"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
-						gr, apdu->product_id, rep_num, alt_save, obj_ele_text, start_date, stop_date, geo_overlay_opt);
+			if (alt != alt_save) {		// Multiple altitudes
+				asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, ob_ele, "
+						"start_date, stop_date, geo_overlay_opt, obj_par_val, obj_param_type, "
+						"object_qualifier, obj_labelt, obj_label ,overlay_rec_id, rec_len, "
+						"obj_status, param_flag, element_flag, overlay_op, overlay_vert_cnt) "
+						"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),"
+						"%d,%d,%d,'%s','%s','%s',%d,%d,%d,%d,'%s',%d,%d,%d,%d,%d,%d,%d,%d)",
+						gr, apdu->product_id, rep_num, alt_save, obj_ele_text, start_date,
+						stop_date, geo_overlay_opt,	obj_par_val, obj_param_type, object_qualifier,
+						obj_labelt, obj_label, overlay_rec_id, rec_len, obj_status, param_flag,
+						element_flag, overlay_op, overlay_vert_cnt);
 
 				PGresult *res = PQexec(conn, postsql);
-					if (PQresultStatus(res) != PGRES_COMMAND_OK){
-						if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
-							fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn), PQresultStatus(res),postsql);
-					}
-					PQclear(res);
+				if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+					if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+						fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+								PQresultStatus(res),postsql);
+				}
+				PQclear(res);
 
 				alt_save = alt;
 				gr[0] = '\0';
-
 			}
-			else if (i == (overlay_vert_cnt - 1)){
+			else if (i == (overlay_vert_cnt - 1)) {
 				asprintf(&coords, " [%f,%f]", coords, lng, lat);
 				strcat(gr, coords);
 			}
@@ -1584,19 +1593,27 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 				strcat(gr, coords);
 			}
 		}
-		asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, ob_ele, start_date, stop_date, geo_overlay_opt) "
-				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
-				gr, apdu->product_id, rep_num, alt, obj_ele_text, start_date, stop_date, geo_overlay_opt);
+		asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, ob_ele, "
+				"start_date, stop_date, geo_overlay_opt, obj_par_val, obj_param_type, "
+				"object_qualifier, obj_labelt, obj_label, overlay_rec_id, rec_len, obj_status, "
+				"param_flag, element_flag, overlay_op, overlay_vert_cnt) "
+				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),"
+				"%d,%d,%d,'%s','%s','%s',%d,%d,%d,%d,'%s',%d,%d,%d,%d,%d,%d,%d,%d)",
+				gr, apdu->product_id, rep_num, alt, obj_ele_text, start_date, stop_date,
+				geo_overlay_opt, obj_par_val, obj_param_type, object_qualifier, obj_labelt,
+				obj_label, overlay_rec_id, rec_len, obj_status, param_flag, element_flag,
+				overlay_op, overlay_vert_cnt);
 
 		PGresult *res = PQexec(conn, postsql);
-			if (PQresultStatus(res) != PGRES_COMMAND_OK){
-				if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
-					fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn), PQresultStatus(res),postsql);
-			}
-			PQclear(res);
+		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+				fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+						PQresultStatus(res),postsql);
+		}
+		PQclear(res);
 	}
 		break;
-	case 7: case 8: {									// Extended Range Circular Prism (7 = MSL,8 = AGL)
+	case 7: case 8: {		// Extended Range Circular Prism (7 = MSL,8 = AGL)
 
 		uint32_t lng_bot_raw;
 		uint32_t lat_bot_raw;
@@ -1655,21 +1672,24 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		r_lng = r_lng_raw * 0.2;
 		r_lat = r_lat_raw * 0.2;
 
-		asprintf(&postsql,"INSERT INTO circles (bot, top, alt_bot, alt_top, alpha, prod_id, rec_count, rep_num,"
-				"rep_year, start_date, stop_date, geo_opt, r_lat, r_lng) VALUES (ST_GeomFromText('POINT ( %f %f)',4326),"
-				"ST_GeomFromText('POINT (%f %f)',4326),%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d,%f,%f)",
-				lng_bot, lat_bot, lng_top, lat_top, alt_bot, alt_top, alpha, apdu->product_id, rec_count,
-				rep_num, report_year, start_date, stop_date, geo_overlay_opt, r_lat, r_lng);
+		asprintf(&postsql,"INSERT INTO circles (bot, top, alt_bot, alt_top, alpha, prod_id, "
+				"rec_count, rep_num, rep_year, start_date, stop_date, geo_opt, r_lat, r_lng) "
+				"VALUES (ST_GeomFromText('POINT ( %f %f)',4326), ST_GeomFromText('POINT (%f %f)',4326),"
+				"%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d,%f,%f)",
+				lng_bot, lat_bot, lng_top, lat_top, alt_bot, alt_top, alpha, apdu->product_id,
+				rec_count, rep_num, report_year, start_date, stop_date, geo_overlay_opt,
+				r_lat, r_lng);
 
 		PGresult *res = PQexec(conn, postsql);
-			if (PQresultStatus(res) != PGRES_COMMAND_OK){
-				if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
-					fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn), PQresultStatus(res),postsql);
-			}
-			PQclear(res);
+		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+				fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+						PQresultStatus(res),postsql);
+		}
+		PQclear(res);
 	}
 	break;
-	case 9:	case 10:								// Extended Range 3D Point (AGL)
+	case 9:	case 10:		// Extended Range 3D Point (AGL)
 	{
 		lng_raw = ((apdu->data[datoff + 0]) << 11) | ((apdu->data[datoff + 1]) << 3) |
 		((apdu->data[datoff + 2]) & 0xE0 >> 5);
@@ -1677,8 +1697,8 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 				(((apdu->data[datoff + 4]) & 0xFC) >> 2);
 		alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
 
-		lng_raw = (~lng_raw & 0x7FFFF) + 1;												// 2's compliment +1
-		lat_raw = (~lat_raw & 0x7FFFF) + 1;												// 2's compliment +1
+		lng_raw = (~lng_raw & 0x7FFFF) + 1;		// 2's compliment +1
+		lat_raw = (~lat_raw & 0x7FFFF) + 1;		// 2's compliment +1
 
 		lat = lat_raw * 0.0006866455078125;
 		lng = (lng_raw * 0.0006866455078125) * - 1;
@@ -1691,20 +1711,28 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 
 		asprintf(&coords, " [%f,%f]", coords, lng, lat);
 		strcat(gr, coords);
-		asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, ob_ele, start_date, stop_date, geo_overlay_opt,stn_call) "
-				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Point\",\"coordinates\": %s }'),4326),%d,%d,%d,'%s','%s','%s',%d,'%s')",
-				gr,apdu->product_id, rep_num, alt, obj_ele_text, start_date, stop_date, geo_overlay_opt,gstn);
+		asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, ob_ele, "
+				"start_date, stop_date, geo_overlay_opt, stn_call, obj_par_val, obj_param_type, "
+				"object_qualifier, obj_labelt, obj_label, overlay_rec_id, rec_len,obj_status, "
+				"param_flag, element_flag, overlay_op, overlay_vert_cnt) "
+				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Point\",\"coordinates\": %s }'),4326),"
+				"%d,%d,%d,'%s','%s','%s',%d,'%s',%d,%d,%d,'%s',%d,%d,%d,%d,%d,%d,%d,%d)",
+				gr, apdu->product_id, rep_num, alt, obj_ele_text, start_date, stop_date,
+				geo_overlay_opt, gstn, obj_par_val, obj_param_type, object_qualifier, obj_labelt,
+				obj_label, overlay_rec_id, rec_len, obj_status, param_flag, element_flag,
+				overlay_op, overlay_vert_cnt);
 
 		PGresult *res = PQexec(conn, postsql);
-			if (PQresultStatus(res) != PGRES_COMMAND_OK){
+			if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 				if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
-					fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn), PQresultStatus(res),postsql);
+					fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+							PQresultStatus(res),postsql);
 			}
 			PQclear(res);
 	}
 		break;
 
-	case 11: case 12:								// Extended Range 3D Polyline
+	case 11: case 12:		// Extended Range 3D Polyline
 		alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
 		alt = alt_raw * 100;
 
@@ -1717,8 +1745,8 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 
 			datoff = datoff + 6;
 
-			lng_raw = (~lng_raw & 0x7FFFF) + 1;										// 2's compliment +1
-			lat_raw = (~lat_raw & 0x7FFFF) + 1;										// 2's compliment +1
+			lng_raw = (~lng_raw & 0x7FFFF) + 1;		// 2's compliment +1
+			lat_raw = (~lat_raw & 0x7FFFF) + 1;		// 2's compliment +1
 
 			lat = lat_raw * 0.0006866455078125;
 			lng = lng_raw * -0.0006866455078125;
@@ -1730,8 +1758,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 
 			alt = alt_raw * 100;
 
-
-			if (i == (overlay_vert_cnt - 1)){
+			if (i == (overlay_vert_cnt - 1)) {
 				asprintf(&coords, " [%f,%f]", coords, lng, lat);
 				strcat(gr, coords);
 			}
@@ -1741,14 +1768,22 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 			}
 		}
 
-		asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, ob_ele, start_date, stop_date, geo_overlay_opt) "
-				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ %s ]}'),4326),%d,%d,%d,'%s','%s','%s',%d)",
-				gr, apdu->product_id, rep_num, alt, obj_ele_text, start_date, stop_date, geo_overlay_opt);
+		asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, ob_ele, "
+				"start_date, stop_date, geo_overlay_opt, stn_call, obj_par_val, obj_param_type, "
+				"object_qualifier, obj_labelt, obj_label, overlay_rec_id, rec_len, obj_status, "
+				"param_flag, element_flag, overlay_op, overlay_vert_cnt) "
+				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ %s ]}'),4326),"
+				"%d,%d,%d,'%s','%s','%s',%d,'%s',%d,%d,%d,'%s',%d,%d,%d,%d,%d,%d,%d,%d)",
+				gr, apdu->product_id, rep_num, alt, obj_ele_text, start_date, stop_date,
+				geo_overlay_opt, gstn, obj_par_val, obj_param_type, object_qualifier, obj_labelt,
+				obj_label, overlay_rec_id, rec_len, obj_status, param_flag, element_flag,
+				overlay_op, overlay_vert_cnt);
 
 		PGresult *res = PQexec(conn, postsql);
-			if (PQresultStatus(res) != PGRES_COMMAND_OK){
+			if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 				if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
-					fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn), PQresultStatus(res),postsql);
+					fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+							PQresultStatus(res),postsql);
 			}
 			PQclear(res);
 
@@ -1823,7 +1858,7 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 				r = p + 1;
 			}
 		}
-		p = strchr(r, ' ');			// *** RTime ***
+		p = strchr(r, ' ');		// *** RTime ***
 		if (p) {
 			*p = 0;
 			rtime = (char *)malloc(strlen(r) + 1);
@@ -1853,7 +1888,7 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 			get_sua_text(sua_text, rtime, rep_num, report_year);
 		}
 		if (apdu->product_id == 8 || apdu->product_id == 11 ||
-				apdu->product_id == 12 || apdu->product_id == 15) {	// 8 11 12 15
+				apdu->product_id == 12 || apdu->product_id == 15) {		// 8 11 12 15
 
 			int length = strlen(r);
 
@@ -1866,7 +1901,7 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 			if (r[length - 1] == '\n')
 				r[length - 1] = '\0';
 
-			for (int i = 0; i <= strlen(r); i++) {	// Remove line feeds
+			for (int i = 0; i <= strlen(r); i++) {		// Remove line feeds
 				if (r[i] == '\n')
 					r[i] = ' ';
 				if (r[i] == '\'')
@@ -1880,11 +1915,12 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 					apdu->product_id, gstn, rtime, rep_num, data_text);
 
 			PGresult *res = PQexec(conn, postsql);
-				if (PQresultStatus(res) != PGRES_COMMAND_OK){
-					if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
-						fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn), PQresultStatus(res),postsql);
-				}
-				PQclear(res);
+			if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+				if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+					fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+							PQresultStatus(res),postsql);
+			}
+			PQclear(res);
 		}
 	}
 //	display_generic_data(apdu->data,apdu->length,to);
@@ -1902,7 +1938,7 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm, FILE *to)
 	prodfillen = (apdu->data[5] & 0x1) | (apdu->data[6]);
 	apdunum = ((apdu->data[7]) << 1) | (apdu->data[8] >> 7);
 
-	int fg = 0;								// Check if report part already stored
+	int fg = 0;		// Check if report part already stored
 	for (int i = 0; i <= seg_count; ++i) {
 		if ((prodid == seg_list[i].seg_prodid) &&
 				(prodfillen == seg_list[i].seg_prolen) &&
@@ -1910,13 +1946,13 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm, FILE *to)
 			++fg;
 		}
 	}
-	if (fg == 0) {								// New report part - add record
+	if (fg == 0) {		// New report part - add record
 		int offx = 0;
 		seg_list[seg_count].seg_prodid = prodid;
 		seg_list[seg_count].seg_prolen = prodfillen;
 		seg_list[seg_count].seg_segnum = apdunum;
 
-		if (apdunum == 1) {						// Contains report number and year
+		if (apdunum == 1) {		// Contains report number and year
 			offx = 20;
 			seg_list[seg_count].seg_text_len = apdu->length - 20;
 			seg_list[seg_count].seg_rpt_num = ((apdu->data[17] << 6) | (apdu->data[18] >> 2));			//7 8
@@ -1934,7 +1970,7 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm, FILE *to)
 		}
 		++seg_count;
 	}
-	fg = 0;									// See if all parts of record are stored
+	fg = 0;		// See if all parts of record are stored
 	for (int i = 0; i <= seg_count; ++i) {
 		for (int j = 1; j <= prodfillen; ++j) {
 			if ((prodid == seg_list[i].seg_prodid) &&
@@ -1944,17 +1980,17 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm, FILE *to)
 			}
 		}
 	}
-	if (fg == prodfillen) {																	// All parts have been stored
+	if (fg == prodfillen) {		// All parts have been stored
 		uint8_t rep_all[2000];
 		int char_cnt = 0;
 
-		for (int i = 0; i <= seg_count; ++i) {												// 1st part
+		for (int i = 0; i <= seg_count; ++i) {		// 1st part
 			if ((seg_list[i].seg_prodid == prodid) &&
 					(seg_list[i].seg_prolen == prodfillen) && (seg_list[i].seg_segnum == 1)) {
-				for (int d = char_cnt; d <= seg_list[i].seg_text_len; ++d) {				// 0 to 550
+				for (int d = char_cnt; d <= seg_list[i].seg_text_len; ++d) {		// 0 to 550
 					rep_all[d] = seg_list[i].seg_data[d];
 				}
-				char_cnt = char_cnt + seg_list[i].seg_text_len;								// 550
+				char_cnt = char_cnt + seg_list[i].seg_text_len;		// 550
 
 				fprintf(fnm, " Report Type     : NOTAM - Segmented\n");
 				fprintf(fnm, " Num of Segments : %d\n", seg_list[i].seg_prolen);
@@ -1962,7 +1998,7 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm, FILE *to)
 				fprintf(fnm, "     Report Year       : 202%d\n ", seg_list[i].seg_rpt_year);
 			}
 		}
-		for (int i = 0; i <= seg_count; ++i) {												// 2nd part
+		for (int i = 0; i <= seg_count; ++i) {		// 2nd part
 			if ((seg_list[i].seg_prodid == prodid) &&
 					(seg_list[i].seg_prolen == prodfillen) && (seg_list[i].seg_segnum == 2)) {
 				for (int d = char_cnt; d <= char_cnt + seg_list[i].seg_text_len; ++d) {
@@ -1971,7 +2007,7 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm, FILE *to)
 				char_cnt = char_cnt + seg_list[i].seg_text_len;
 			}
 		}
-		for (int i = 0; i <= seg_count; ++i) {												// 3rd part
+		for (int i = 0; i <= seg_count; ++i) {		// 3rd part
 			if ((seg_list[i].seg_prodid == prodid) &&
 					(seg_list[i].seg_prolen == prodfillen) && (seg_list[i].seg_segnum == 3)) {
 				for (int d = char_cnt; d <= char_cnt + seg_list[i].seg_text_len; ++d) {
