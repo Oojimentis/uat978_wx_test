@@ -450,7 +450,6 @@ char* tafWeather(char *taf_list)
 				strcat(taf_wx_all, taf_wx);
 			}
 			else if ((strncmp(temp, "TX", 2) == 0) || (strncmp(temp, "TN", 2) == 0)) {
-
 				if (temp[2] == 'M') {
 					strncpy(temp2, temp + 3, 2);
 					temp2[2] = '\0';
@@ -576,7 +575,6 @@ char* tafWeather(char *taf_list)
 				sprintf(taf_wx, " Scheduled ");
 				strcat(taf_wx_all, taf_wx);
 			}
-
 			else if ((strncmp(temp,"FN", 2) == 0) && (strlen(temp) == 7)) {
 				sprintf(taf_wx, " From Fleet Norfolk (%s) ", temp);
 				strcat(taf_wx_all, taf_wx);
@@ -719,9 +717,9 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
 				fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
-						PQresultStatus(res),postsql);
+						PQresultStatus(res), postsql);
 		}
 		PQclear(res);
 	}
