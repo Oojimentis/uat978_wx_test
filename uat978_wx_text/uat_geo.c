@@ -84,8 +84,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 			for (int i = 3; i < apdu->length; ++i) {
 				intensity = apdu->data[i] & 7;
 				runlength = (apdu->data[i] >> 3) + 1;
-				asprintf(&geojson,"INSERT INTO nexrad (coords,prod_id,intensity,block_num,maptime,altitude)"
-						"VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
+				asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num,"
+						"maptime, altitude) VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
 
 				while (runlength-- > 0 && intensity > 1) {
 					t_lat = latN - (y * (latSize / 4.0));
@@ -97,24 +97,22 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						x = 0;
 						y++;
 					}
-					asprintf(&geojson,"%s POINT(%f %f),",geojson,t_lon, t_lat);
-
+					asprintf(&geojson,"%s POINT(%f %f),",geojson, t_lon, t_lat);
 				}
 				if (kount > 0) {
 					klen = strlen(geojson);
-					geojson[klen-1] = ' ';
-					kount =0;
-					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d)",geojson,apdu->product_id,
+					geojson[klen - 1] = ' ';
+					kount = 0;
+					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d)",geojson, apdu->product_id,
 							intensity, block_num, nexrad_time, alt_level);
 
 					PGresult *res = PQexec(conn, postsql);
 					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-						if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+						if (strncmp(PQerrorMessage(conn), "ERROR:  duplicate key", 21) != 0)
 							fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
-									PQresultStatus(res),postsql);
+									PQresultStatus(res), postsql);
 					}
 					PQclear(res);
-
 				}
 			}
 		}
@@ -131,7 +129,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 				ice_prob = (apdu->data[i]) & 7;
 				ice_sev = (apdu->data[i]) >> 3 & 7;
 
-				asprintf(&geojson,"INSERT INTO nexrad (coords,prod_id,intensity,block_num,maptime,altitude,ice_sld,ice_prob)"
+				asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num,"
+						"maptime, altitude, ice_sld, ice_prob) "
 						"VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
 
 				while (num_bins-- > 0 && ice_sev >= 1 && ice_sev < 7) {
@@ -144,23 +143,22 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						x = 0;
 						y++;
 					}
-					asprintf(&geojson,"%s POINT(%f %f),",geojson,t_lon, t_lat);
+					asprintf(&geojson,"%s POINT(%f %f),", geojson, t_lon, t_lat);
 				}
 				if (kount > 0) {
 					klen = strlen(geojson);
-					geojson[klen-1] = ' ';
-					kount =0;
-					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d,%d,%d)",geojson,apdu->product_id, ice_sev,
-							 block_num, nexrad_time, alt_level,ice_sld,ice_prob);
+					geojson[klen - 1] = ' ';
+					kount = 0;
+					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d,%d,%d)", geojson, apdu->product_id, ice_sev,
+							 block_num, nexrad_time, alt_level, ice_sld, ice_prob);
 
 					PGresult *res = PQexec(conn, postsql);
 					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-						if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+						if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
 							fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
-									PQresultStatus(res),postsql);
+									PQresultStatus(res), postsql);
 					}
 					PQclear(res);
-
 				}
 			}
 		}
@@ -179,8 +177,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					num_bins = (apdu->data[i]) + 1;
 				}
 
-				asprintf(&geojson,"INSERT INTO nexrad (coords,prod_id,intensity,block_num,maptime,altitude)"
-						"VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
+				asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num,"
+						"maptime, altitude) VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
 
 				while (num_bins-- > 0 && lgt_cnt >= 1 && lgt_cnt < 7) {
 					t_lat = latN - (y * (latSize / 4.0));
@@ -192,29 +190,28 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						x = 0;
 						y++;
 					}
-					asprintf(&geojson,"%s POINT(%f %f),",geojson,t_lon, t_lat);
+					asprintf(&geojson,"%s POINT(%f %f),", geojson, t_lon, t_lat);
 				}
 				if (kount > 0) {
 					klen = strlen(geojson);
-					geojson[klen-1] = ' ';
-					kount =0;
-					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d)",geojson,apdu->product_id,
+					geojson[klen - 1] = ' ';
+					kount = 0;
+					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d)",geojson, apdu->product_id,
 							lgt_cnt, block_num, nexrad_time, alt_level);
 
 					PGresult *res = PQexec(conn, postsql);
 					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-						if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+						if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
 							fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
-									PQresultStatus(res),postsql);
+									PQresultStatus(res), postsql);
 					}
 					PQclear(res);
-
 				}
 			}
 		}
 		break;
 
-		case 84: case 90: case 91: {
+		case 90: case 91: {
 			int kount = 0;
 
 			for (int i = 3; i < apdu->length; ++i) {
@@ -226,36 +223,85 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					num_bins = (apdu->data[i]) + 1;
 				}
 
-				asprintf(&geojson,"INSERT INTO nexrad (coords,prod_id,intensity,block_num,maptime,altitude)"
-						"VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
+				asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num,"
+						"maptime, altitude) VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
 
-				while (num_bins-- > 0 && edr_enc >= 1 && edr_enc < 14 ) {
+				while (num_bins-- > 0 && edr_enc >= 1 && edr_enc < 15 ) {
 					t_lat = latN - (y * (latSize / 4.0));
 					t_lon = lonW + (x * (lonSize / 32.0));
 					kount++;
 
 					x++;
-					if (x == 32) {
+					if (x >= 32) {
 						x = 0;
 						y++;
 					}
-					asprintf(&geojson,"%s POINT(%f %f),",geojson,t_lon, t_lat);
+					asprintf(&geojson,"%s POINT(%f %f),", geojson, t_lon, t_lat);
 				}
 				if (kount > 0) {
 					klen = strlen(geojson);
-					geojson[klen-1] = ' ';
-					kount =0;
-					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d)",geojson,apdu->product_id,
+					geojson[klen - 1] = ' ';
+					kount = 0;
+					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d)", geojson, apdu->product_id,
 							edr_enc, block_num, nexrad_time, alt_level);
 
 					PGresult *res = PQexec(conn, postsql);
 					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-						if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+						if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
 							fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
-									PQresultStatus(res),postsql);
+									PQresultStatus(res), postsql);
 					}
 					PQclear(res);
+				}
+			}
+		}
+		break;
 
+		case 84: {
+			int kount = 0;
+
+			for (int i = 3; i < apdu->length; ++i) {
+				int flip = 0;
+				edr_enc  = apdu->data[i] & 15;
+				num_bins = (apdu->data[i] >> 4) + 1;
+
+				if (num_bins == 15) {
+					i = i + 1;
+					num_bins = (apdu->data[i]) + 1;
+				}
+
+				asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num,"
+						"maptime, altitude) VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
+
+				while (num_bins-- > 0 && edr_enc >= 1 && edr_enc < 15 ) {
+					t_lat = latN - (y * (latSize / 4.0));
+					t_lon = lonW + (x * (lonSize / 32.0));
+					kount++;
+
+					x++;
+					if (x >= 32) {
+						x = 0;
+						y++;
+					}
+					if (flip % 3 == 0) {		// Reduce resolution.
+						asprintf(&geojson,"%s POINT(%f %f),", geojson, t_lon, t_lat);
+					}
+					flip++;
+				}
+				if (kount > 0) {
+					klen = strlen(geojson);
+					geojson[klen - 1] = ' ';
+					kount = 0;
+					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d)", geojson, apdu->product_id,
+							edr_enc, block_num, nexrad_time, alt_level);
+
+					PGresult *res = PQexec(conn, postsql);
+					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+						if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
+							fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+									PQresultStatus(res), postsql);
+					}
+					PQclear(res);
 				}
 			}
 		}
@@ -319,10 +365,18 @@ void metar_data( Decoded_METAR *Mptr, FILE *to)
 	char temp[10];
 	char windSpeed[10];
 	char windDir[10];
+	char windGust[10];
+	char windVar[10];
 	char altstng[10];
 	char vsbySM[10];
 	char SLP[10];
 	char dew_pt_temp[10];
+	char hrly_precip[10];
+
+	if (Mptr->hourlyPrecip > 1000)
+		sprintf(hrly_precip, "- ");
+	else
+		sprintf(hrly_precip, "%.2f", Mptr->hourlyPrecip);
 
 	if (Mptr->temp > 1000)
 		sprintf(temp, "- ");
@@ -330,12 +384,14 @@ void metar_data( Decoded_METAR *Mptr, FILE *to)
 		Mptr->temp = Mptr->temp * 9/5  + 32;
 		sprintf(temp, "%d", Mptr->temp);
 	}
+
 	if (Mptr->dew_pt_temp > 1000)
 		sprintf(dew_pt_temp, "-");
 	else {
 		Mptr->dew_pt_temp = Mptr->dew_pt_temp * 9/5  + 32;
 		 sprintf(dew_pt_temp, "%d", Mptr->dew_pt_temp);
 	}
+
 	if (Mptr->winData.windSpeed > 1000)
 		sprintf(windSpeed, "-");
 	else
@@ -345,6 +401,16 @@ void metar_data( Decoded_METAR *Mptr, FILE *to)
 		sprintf(windDir, "-");
 	else
 		sprintf(windDir, "%d", Mptr->winData.windDir);
+
+	if (Mptr->winData.windGust > 1000)
+		sprintf(windGust, "-");
+	else
+		sprintf(windGust, "%d", Mptr->winData.windGust);
+
+	if (Mptr->winData.windVRB)
+		sprintf(windVar, "Variable");
+	else
+		sprintf(windVar, " ");
 
 	if (Mptr->inches_altstng > 1000)
 		sprintf(altstng, "-");
@@ -356,23 +422,24 @@ void metar_data( Decoded_METAR *Mptr, FILE *to)
 	else
 		sprintf(vsbySM, "%.2f", Mptr->prevail_vsbySM);
 
-	if (Mptr->SLP > 1000)
+	if (Mptr->SLP > 5000)
 		sprintf(SLP, "-");
 	else
 		sprintf(SLP, "%.2f", Mptr->SLP);
 
 	sprintf(obs_date, "%02d %02d:%02d", Mptr->ob_date, Mptr->ob_hour, Mptr->ob_minute);
 
-	asprintf(&postsql,"INSERT INTO metar (stn_call, ob_date, temp, windsp, winddir, altimeter, visby, dewp) "
-			"VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
-			Mptr->stnid, obs_date, temp, windSpeed,
-			windDir, altstng, vsbySM, dew_pt_temp);
+	asprintf(&postsql,"INSERT INTO metar (stn_call, ob_date, temp, windsp, winddir, altimeter, visby,"
+			"dewp, hrly_precip, slp, windvar, windgust) "
+			"VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+			Mptr->stnid, obs_date, temp, windSpeed,	windDir, altstng, vsbySM, dew_pt_temp,
+			hrly_precip, SLP, windVar, windGust);
 
 	PGresult *res = PQexec(conn, postsql);
 	if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-		if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key",21) != 0)
+		if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
 			fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
-					PQresultStatus(res),postsql);
+					PQresultStatus(res), postsql);
 	}
 	PQclear(res);
 }
