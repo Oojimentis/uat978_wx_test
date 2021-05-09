@@ -1190,31 +1190,50 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				char *tok1;  char *tok2; char *tok3; char *tok4;
 				char winds[91];
 				char *q; char *u;
+				int wal_index = 0;
 
 				strncpy(winds, r, 90);
 				winds[90] = '\0';
 				q = winds;
 				tok1 = strsep(&q, "\0");
 
+				u = strchr(r, '\n');
+				u = u + 2;
+
+				tok3 = strsep(&u, "\0");
+
 				fprintf(filemetar, " Report Name         : %s\n", mtype);
 				fprintf(filemetar, " Data:\n");
+//				struct WindsAloftStruct {
+//					char wal_altitude[7];
+//					char wal_windir[25];
+//					char wal_winspd[7];
+//					char wal_temp[7];
+//				} winds_aloft[9];
 
 				while ( (tok2 = strsep(&tok1, " ")) != NULL) {
-					if (strcmp(tok2, "") != 0) {
+					if ((strcmp(tok2, "") != 0) && (strcmp(tok2,"FT") != 0)){
+
 						fprintf(filemetar, "%-10s", tok2);
+						winds_aloft[wal_index].wal_altitude =tok2;
+						while (strcmp((tok4 = strsep(&tok3, " "))," ") != 0) {
+							if (strcmp(tok4, "") != 0) {
+								winds_aloft[wal_index].wal_windir = tok4;
+
+								fprintf(filemetar, "%-10s", tok4);
+								break;
+							}
+						}
+						wal_index++;
+
 					}
 				}
 				fprintf(filemetar, "\n          ");
 
-				u = strchr(r, '\n');
-				u = u + 2;
-				tok3 = strsep(&u, "\0");
 
-				while ((tok4 = strsep(&tok3, " ")) != NULL) {
-					if (strcmp(tok4, "") != 0) {
-						fprintf(filemetar, "%-10s", tok4);
-					}
-				}
+
+
+
 				fprintf(filemetar, "\n");
 			}
 			strcat(observation, " ");
