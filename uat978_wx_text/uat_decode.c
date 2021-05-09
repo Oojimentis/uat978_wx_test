@@ -1190,6 +1190,10 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				char *tok1;  char *tok2; char *tok3; char *tok4;
 				char winds[91];
 				char *q; char *u;
+				char cpos12[5]; char cpos34[5]; // char* cpos57;
+				int pos12; int pos34;
+//				int windlen;
+
 				int wal_index = 0;
 
 				strncpy(winds, r, 90);
@@ -1218,8 +1222,19 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 						winds_aloft[wal_index].wal_altitude =tok2;
 						while (strcmp((tok4 = strsep(&tok3, " "))," ") != 0) {
 							if (strcmp(tok4, "") != 0) {
-								winds_aloft[wal_index].wal_windir = tok4;
+//								windlen = strlen(tok4);
+								strncpy(cpos12, tok4, 2);
+								pos12 = atoi(cpos12);
+								strncpy(cpos34, tok4 + 2, 2);
+								pos34 = atoi(cpos34);
+								fprintf(stderr,"%d",pos34);
+								if (pos12 == 99)
+									winds_aloft[wal_index].wal_windir = "light var";
 
+								if (pos12 <= 36){
+									sprintf(cpos12,"%d",pos12 * 10);
+									winds_aloft[wal_index].wal_windir = cpos12;
+								}
 								fprintf(filemetar, "%-10s", tok4);
 								break;
 							}

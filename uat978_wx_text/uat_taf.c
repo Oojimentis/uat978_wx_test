@@ -696,10 +696,15 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 					asprintf(&visby, "%s", taf_temp);
 				}
 				else {
-					t_temp = (char *)malloc(strlen(taf_lines) + 1);
-					strcpy(t_temp, taf_lines);
-					temp[temp_len + 1] = '\0';
-					sprintf(taf_lines, "%s %s", temp, t_temp);
+					if (taf_lines != NULL) {
+						t_temp = (char *)malloc(strlen(taf_lines) + 1);
+						strcpy(t_temp, taf_lines);
+						temp[temp_len + 1] = '\0';
+						sprintf(taf_lines, "%s %s", temp, t_temp);
+					}
+					else
+						//strcpy(taf_lines,temp);
+						asprintf(&taf_lines, "%s", temp);
 				}
 // WX sky
 				taf_condx = tafWeather(taf_lines);
