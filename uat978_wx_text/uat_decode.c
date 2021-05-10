@@ -1190,11 +1190,16 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				char *tok1;  char *tok2; char *tok3; char *tok4;
 				char winds[91];
 				char *q; char *u;
-				char cpos12[5]; char cpos34[5]; // char* cpos57;
-				int pos12; int pos34;
-//				int windlen;
+				char cpos12[5]; char cpos34[5];  char cpos57[5];
+				int pos12; int pos34; //int pos57;
+				int windlen;
+				char pos1;
 
 				int wal_index = 0;
+
+				fprintf(filemetar, " Report Name         : %s\n", mtype);
+				fprintf(filemetar, " Data:\n");
+
 
 				strncpy(winds, r, 90);
 				winds[90] = '\0';
@@ -1203,11 +1208,11 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
 				u = strchr(r, '\n');
 				u = u + 2;
+				fprintf(filemetar, "%s\n",winds);
+				fprintf(filemetar, "%s\n",u);
 
 				tok3 = strsep(&u, "\0");
 
-				fprintf(filemetar, " Report Name         : %s\n", mtype);
-				fprintf(filemetar, " Data:\n");
 //				struct WindsAloftStruct {
 //					char wal_altitude[7];
 //					char wal_windir[25];
@@ -1218,24 +1223,84 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				while ( (tok2 = strsep(&tok1, " ")) != NULL) {
 					if ((strcmp(tok2, "") != 0) && (strcmp(tok2,"FT") != 0)){
 
-						fprintf(filemetar, "%-10s", tok2);
+						fprintf(filemetar, "%-10s ", tok2);
 						winds_aloft[wal_index].wal_altitude =tok2;
 						while (strcmp((tok4 = strsep(&tok3, " "))," ") != 0) {
 							if (strcmp(tok4, "") != 0) {
-//								windlen = strlen(tok4);
+								windlen = strlen(tok4);
+								if (tok4[windlen-1] == '\n'){
+									tok4[windlen-1] = '\0';
+									windlen = windlen -1;
+								}
 								strncpy(cpos12, tok4, 2);
+								cpos12[2] = '\0';
+
 								pos12 = atoi(cpos12);
 								strncpy(cpos34, tok4 + 2, 2);
+								cpos34[2] = '\0';
 								pos34 = atoi(cpos34);
-								fprintf(stderr,"%d",pos34);
-								if (pos12 == 99)
+//								fprintf(stderr,"%d",pos34);
+								if (pos12 == 99){
 									winds_aloft[wal_index].wal_windir = "light var";
+									fprintf(filemetar,"Wind Dir: %s ",winds_aloft[wal_index].wal_windir);
+									if (windlen == 7){
+										strncpy(cpos57, tok4 + 4 , 3);
+										cpos57[3] = '\0';
+//										pos57 = atoi(cpos57);
+										strncpy(winds_aloft[wal_index].wal_temp, cpos57,4);
+										fprintf(filemetar,"Temp: %s \n",winds_aloft[wal_index].wal_temp);
+									}
 
+								}
 								if (pos12 <= 36){
 									sprintf(cpos12,"%d",pos12 * 10);
 									winds_aloft[wal_index].wal_windir = cpos12;
+									fprintf(filemetar,"Wind Dir: %s ",winds_aloft[wal_index].wal_windir);
+									strncpy(winds_aloft[wal_index].wal_winspd, cpos34,3);
+									if (windlen == 6){
+										cpos57[0] = '-';
+										cpos57[1] = '\0';
+										strncat(cpos57, tok4 + 4 , 3);
+										cpos57[4] = '\0';
+										strncpy(winds_aloft[wal_index].wal_temp, cpos57,4);
+										fprintf(filemetar,"Temp: %s \n",winds_aloft[wal_index].wal_temp);
+									}
+									else {
+										if (windlen == 7){
+											strncpy(cpos57, tok4 + 4 , 3);
+											cpos57[3] = '\0';
+//											pos57 = atoi(cpos57);
+											strncpy(winds_aloft[wal_index].wal_temp, cpos57,4);
+											fprintf(filemetar,"Temp: %s \n",winds_aloft[wal_index].wal_temp);
+										}
+									}
 								}
-								fprintf(filemetar, "%-10s", tok4);
+								pos1 = cpos12[0];
+								if (pos1 =='7'){
+//									fprintf(stderr,"%d %d",pos34,pos57);
+									sprintf(cpos12,"%d",(pos12 -50) * 10);
+//									strncpy(winds_aloft[wal_index].wal_windir, cpos12,3);
+									winds_aloft[wal_index].wal_windir= cpos12;
+									fprintf(filemetar,"Wind Dir: %s ",winds_aloft[wal_index].wal_windir);
+									sprintf(cpos34,"%d",(pos34 + 100));
+									strncpy(winds_aloft[wal_index].wal_winspd, cpos34,4);
+									fprintf(filemetar,"Wind Dir: %s ",winds_aloft[wal_index].wal_winspd);
+									if (windlen == 6){
+										cpos57[0] = '-';
+										cpos57[1] = '\0';
+										strncat(cpos57, tok4 + 4 , 3);
+										cpos57[4] = '\0';
+										strncpy(winds_aloft[wal_index].wal_temp, cpos57,4);
+										fprintf(filemetar,"Temp: %s \n",winds_aloft[wal_index].wal_temp);
+									}
+									else
+										fprintf(stderr,"WTF?\n");
+								}
+
+
+
+//								fprintf(stderr,"%d %d",pos34,pos57);
+//								fprintf(filemetar, "%-10s", tok4);
 								break;
 							}
 						}
