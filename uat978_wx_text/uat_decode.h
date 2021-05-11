@@ -33,7 +33,7 @@ struct MySegStruct {
 
 struct WindsAloftStruct {
 	char* wal_altitude;
-	char* wal_windir;
+	char wal_windir[50];
 	char wal_winspd[7];
 	char wal_temp[7];
 } winds_aloft[9];
