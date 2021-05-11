@@ -21,7 +21,7 @@ typedef enum { HT_INVALID=0, HT_MAGNETIC, HT_TRUE } heading_type_t;
 typedef enum { CS_INVALID=0, CS_CALLSIGN, CS_SQUAWK } callsign_type_t;
 
 // Segmentation
-struct MySegStruct{
+struct MySegStruct {
 	uint16_t seg_prodid;
 	uint16_t seg_prolen;
 	uint16_t seg_segnum;
@@ -30,6 +30,13 @@ struct MySegStruct{
 	int seg_rpt_year;
 	uint8_t  seg_data[1000];
 } seg_list[50];
+
+struct WindsAloftStruct {
+	char* wal_altitude;
+	char wal_windir[50];
+	char wal_winspd[7];
+	char wal_temp[7];
+} winds_aloft[9];
 
 int seg_count;
 
