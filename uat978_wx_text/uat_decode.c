@@ -1184,19 +1184,18 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				fprintf(filetaf, "\n");
 			}	 // End TAF decode
 
-			if (strncmp(gstn,"KTRI",4) == 0)
-				fprintf(stderr,"test");
+//			if (strncmp(gstn,"KCAR",4) == 0)
+//				fprintf(stderr,"test");
 
 			if (strcmp(mtype, "WINDS") == 0) {
 				char *tok1;  char *tok2;  char *tok3;  char *tok4;
 				char *q;  char *u;
 				char *postsql;
 				char winds[91];
-				char cpos12[5];  char cpos34[5];  char cpos57[5];
+				char cpos12[5];  char cpos34[5];  char cpos57[5]; char cpos12_save[5];
 				char pos1;
 				int pos12;  int pos34;
 				int windlen;
-
 
 				int wal_index = 0;
 
@@ -1234,6 +1233,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 								}
 								strncpy(cpos12, tok4, 2);
 								cpos12[2] = '\0';
+								strncpy(cpos12_save, tok4, 2);
+								cpos12_save[2] = '\0';
 
 								pos12 = atoi(cpos12);
 								strncpy(cpos34, tok4 + 2, 2);
@@ -1272,7 +1273,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 										fprintf(filemetar, "Temp: %s", winds_aloft[wal_index].wal_temp);
 									}
 								}
-								pos1 = cpos12[0];
+								pos1 = cpos12_save[0];
 								if (pos1 >='7' && windlen == 6) {
 									sprintf(cpos12, "%d", (pos12 -50) * 10);
 									sprintf(winds_aloft[wal_index].wal_windir, "%s", cpos12);
