@@ -1717,6 +1717,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 				strcat(gr, coords);
 			}
 		}
+
 		asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, ob_ele, "
 				"start_date, stop_date, geo_overlay_opt, obj_par_val, obj_param_type, "
 				"object_qualifier, obj_labelt, obj_label, overlay_rec_id, rec_len, obj_status, "
