@@ -1906,7 +1906,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 				geo_overlay_opt, gstn, obj_par_val, obj_param_type, object_qualifier, obj_labelt,
 				obj_label, overlay_rec_id, rec_len, obj_status, param_flag, element_flag,
 				overlay_op, overlay_vert_cnt);
-
+// test.
 		PGresult *res = PQexec(conn, postsql);
 			if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 				if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
