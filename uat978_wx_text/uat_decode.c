@@ -333,7 +333,7 @@ static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_yea
 	sua_en_hh[2] = '\0';
 	sua_en_mn[2] = '\0';
 
-	asprintf(&sua_end, "%s/%s/20%s %s:%s", sua_st_mm, sua_st_dd, sua_st_yy, sua_st_hh, sua_st_mn);
+	asprintf(&sua_end, "%s/%s/20%s %s:%s", sua_en_mm, sua_en_dd, sua_en_yy, sua_en_hh, sua_en_mn);
 
 	token = strsep(&Word, "|");
 	low_alt = atoi(strcpy(temp, token));
@@ -1184,19 +1184,18 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				fprintf(filetaf, "\n");
 			}	 // End TAF decode
 
-			if (strncmp(gstn,"KTRI",4) == 0)
-				fprintf(stderr,"test");
+//			if (strncmp(gstn,"KCAR",4) == 0)
+//				fprintf(stderr,"test");
 
 			if (strcmp(mtype, "WINDS") == 0) {
 				char *tok1;  char *tok2;  char *tok3;  char *tok4;
 				char *q;  char *u;
 				char *postsql;
 				char winds[91];
-				char cpos12[5];  char cpos34[5];  char cpos57[5];
+				char cpos12[5];  char cpos34[5];  char cpos57[5]; char cpos12_save[5];
 				char pos1;
 				int pos12;  int pos34;
 				int windlen;
-
 
 				int wal_index = 0;
 
@@ -1234,6 +1233,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 								}
 								strncpy(cpos12, tok4, 2);
 								cpos12[2] = '\0';
+								strncpy(cpos12_save, tok4, 2);
+								cpos12_save[2] = '\0';
 
 								pos12 = atoi(cpos12);
 								strncpy(cpos34, tok4 + 2, 2);
@@ -1272,7 +1273,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 										fprintf(filemetar, "Temp: %s", winds_aloft[wal_index].wal_temp);
 									}
 								}
-								pos1 = cpos12[0];
+								pos1 = cpos12_save[0];
 								if (pos1 >='7' && windlen == 6) {
 									sprintf(cpos12, "%d", (pos12 -50) * 10);
 									sprintf(winds_aloft[wal_index].wal_windir, "%s", cpos12);
@@ -1717,6 +1718,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 				strcat(gr, coords);
 			}
 		}
+
 		asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, ob_ele, "
 				"start_date, stop_date, geo_overlay_opt, obj_par_val, obj_param_type, "
 				"object_qualifier, obj_labelt, obj_label, overlay_rec_id, rec_len, obj_status, "
@@ -1904,7 +1906,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 				geo_overlay_opt, gstn, obj_par_val, obj_param_type, object_qualifier, obj_labelt,
 				obj_label, overlay_rec_id, rec_len, obj_status, param_flag, element_flag,
 				overlay_op, overlay_vert_cnt);
-
+// test.
 		PGresult *res = PQexec(conn, postsql);
 			if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 				if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
