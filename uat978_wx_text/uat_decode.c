@@ -333,7 +333,7 @@ static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_yea
 	sua_en_hh[2] = '\0';
 	sua_en_mn[2] = '\0';
 
-	asprintf(&sua_end, "%s/%s/20%s %s:%s", sua_st_mm, sua_st_dd, sua_st_yy, sua_st_hh, sua_st_mn);
+	asprintf(&sua_end, "%s/%s/20%s %s:%s", sua_en_mm, sua_en_dd, sua_en_yy, sua_en_hh, sua_en_mn);
 
 	token = strsep(&Word, "|");
 	low_alt = atoi(strcpy(temp, token));
