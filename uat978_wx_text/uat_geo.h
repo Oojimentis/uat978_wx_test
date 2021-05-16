@@ -12,9 +12,9 @@
 
 void block_location_graphic(int bn, int ns, int sf, double *latN, double *lonW, double *latSize, double *lonSize);
 
-void graphic_nexrad(const struct fisb_apdu *apdu,FILE *to);
+void graphic_nexrad(const struct fisb_apdu *apdu);
 
-void metar_data( Decoded_METAR *Mptr,FILE *to);
+void metar_data( Decoded_METAR *Mptr);
 
 
 #endif /* UAT_GEO_H_ */

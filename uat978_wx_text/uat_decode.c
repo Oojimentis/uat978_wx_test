@@ -285,24 +285,8 @@ static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_yea
 	airsp_id = atoi(strcpy(temp, token));
 	token = strsep(&Word, "|");
 	strcpy(sua_sch_stat, token);
-// W =		fprintf(filesua, " Schedule Status : %s  Waiting to Start\n", sua_sch_stat);}
-// P =		fprintf(filesua, " Schedule Status : %s Pending Approval\n", sua_sch_stat);}
-// H = 		fprintf(filesua, " Schedule Status : %s Activated for Use\n", sua_sch_stat);}
 	token = strsep(&Word, "|");
 	strcpy(sua_aspc_ty, token);
-// W=		fprintf(filesua, " Airspace Type   : %s Warning Area\n", sua_aspc_ty);}
-// R=		fprintf(filesua, " Airspace Type   : %s Restricted Area\n", sua_aspc_ty);}
-// M=		fprintf(filesua, " Airspace Type   : %s Military Operations Area\n", sua_aspc_ty);}
-//	P=	fprintf(filesua, " Airspace Type   : %s Prohibited Area\n", sua_aspc_ty);}
-// L=		fprintf(filesua, " Airspace Type   : %s Alert Area\n", sua_aspc_ty);}
-// A=		fprintf(filesua, " Airspace Type   : %s ATCAA\n", sua_aspc_ty);}
-// I=		fprintf(filesua, " Airspace Type   : %s Instrument Route\n", sua_aspc_ty);}
-// V=		fprintf(filesua, " Airspace Type   : %s Visual Route\n", sua_aspc_ty);}
-// S=		fprintf(filesua, " Airspace Type   : %s Slow Route\n", sua_aspc_ty);}
-// B=		fprintf(filesua, " Airspace Type   : %s Military Route (Refueling)\n", sua_aspc_ty);}
-//	O=	fprintf(filesua, " Airspace Type   : %s Other\n", sua_aspc_ty);}
-//	T=	fprintf(filesua, " Airspace Type   : %s Refueling Track\n", sua_aspc_ty);}
-
 	token = strsep(&Word, "|");
 	strcpy(sua_aspc_nm, token);
 	token = strsep(&Word, "|");
@@ -341,15 +325,9 @@ static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_yea
 	high_alt = atoi(strcpy(temp, token));
 	token = strsep(&Word, "|");
 	strcpy(sua_sep_rl, token);
-// A=		fprintf(filesua, " Separation Rule : %s Aircraft Rule ", sua_sep_rl);}
-// O=		fprintf(filesua, " Separation Rule : %s Other Rule ", sua_sep_rl);}
-// unspec	fprintf(filesua, " Separation Rule :    Unspecified ");
-
 	token = strsep(&Word, "|");
 	if (token) {
 		strcpy(sua_shp_ind, token);			//13
-// N			fprintf(filesua, " Shape Indicator: %s No Shape Defined\n", sua_shp_ind);}
-// Y			fprintf(filesua, " Shape Indicator: %s Has Shape Defined\n", sua_shp_ind);}
 	}
 	token = strsep(&Word, "|");
 	if (token) {
@@ -411,8 +389,6 @@ static void get_pirep(char *Word)
 	token = strtok(Word, " ");
 	strcpy(pirep_stn, "K");
 	strcat(pirep_stn, token);
-
-//	get_gs_name(pirep_stn);
 
 	time_t current_time = time(NULL);
 	struct tm *tm = localtime(&current_time);
@@ -1036,7 +1012,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
 // ** Graphics - NEXRAD(63,64), Icing(70,71), Cloud Tops(84), Turbulence(90,91), Lightning(103)
 	case 63:	case 64:	case 70:	case 71:	case 84:	case 90:	case 91:	case 103:
-			graphic_nexrad(apdu, to);
+			graphic_nexrad(apdu);
 			break;
 	case 413:		// ** Generic text,DLAC *****************
 	{
@@ -1106,9 +1082,11 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					time_t current_time = time(NULL);
 					struct tm *tm = localtime(&current_time);
 					strftime(buff, sizeof buff, "%D %T", tm);
-					fprintf(filemetar, "Time                 : %s\n", buff);
-					fprintf(filemetar, "WX Station           : %s - %s\n", gstn, gs_ret);
+					if (strcmp(mtype, "METAR") == 0 || strcmp(mtype, "SPECI") == 0) {
+						fprintf(filemetar, "Time                 : %s\n", buff);
+						fprintf(filemetar, "WX Station           : %s - %s\n", gstn, gs_ret);
 					}
+				}
 				r = p + 1;
 			}
 			p = strchr(r, ' ');		// *** RTime ***
@@ -1131,13 +1109,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				char issued[50];
 				int dx;
 
-				fprintf(filemetar, " Report Name         : %s\n", mtype);
-				fprintf(filemetar, " Data:\n%s\n", r);		// *** Text ***
-
 				fprintf(filetaf, "%s %s %s\n", mtype, gstn, gs_ret);
 				fprintf(filetaf, "%s\n\n", r);		// *** Text ***
 				fflush(filetaf);
-				fprintf(to, "station: %s\n", gstn);
 				strncpy(n, time_copy + 4, 1);
 
 				if (strcmp(n, "/") != 0) {
@@ -1206,9 +1180,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					strcpy(winds_aloft[k].wal_temp,"-");
 				}
 
-				fprintf(filemetar, " Report Name         : %s\n", mtype);
-				fprintf(filemetar, " Data:\n");
-
 				strncpy(winds, r, 90);
 				winds[90] = '\0';
 				q = winds;
@@ -1216,13 +1187,10 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
 				u = strchr(r, '\n');
 				u = u + 2;
-				fprintf(filemetar, "%s\n", winds);
-				fprintf(filemetar, "%s\n", u);
-				fprintf(filemetar, "%s   %s\n",time_copy, buff);
+
 				tok3 = strsep(&u, "\0");
 				while ((tok2 = strsep(&tok1, " ")) != NULL) {
 					if ((strcmp(tok2, "") != 0) && (strcmp(tok2,"FT") != 0)) {
-						fprintf(filemetar, "\n%-10s ", tok2);
 						winds_aloft[wal_index].wal_altitude = tok2;
 						while (strcmp((tok4 = strsep(&tok3, " ")), " ") != 0) {
 							if (strcmp(tok4, "") != 0) {
@@ -1242,21 +1210,17 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 								pos34 = atoi(cpos34);
 								if (pos12 == 99) {
 									sprintf(winds_aloft[wal_index].wal_windir, "Light and variable");
-									fprintf(filemetar, "Wind Dir: %s ", winds_aloft[wal_index].wal_windir);
 									if (windlen == 7) {
 										strncpy(cpos57, tok4 + 4, 3);
 										cpos57[3] = '\0';
 										strncpy(winds_aloft[wal_index].wal_temp, cpos57, 4);
-										fprintf(filemetar, "Temp: %s", winds_aloft[wal_index].wal_temp);
 									}
 									break;
 								}
 								if (pos12 <= 36) {
 									sprintf(cpos12, "%d", pos12 * 10);
 									sprintf(winds_aloft[wal_index].wal_windir, "%s", cpos12);
-									fprintf(filemetar, "Wind Dir: %s ", winds_aloft[wal_index].wal_windir);
 									strncpy(winds_aloft[wal_index].wal_winspd, cpos34, 3);
-									fprintf(filemetar, "Wind Spd: %s ", winds_aloft[wal_index].wal_winspd);
 
 									if (windlen == 6) {
 										cpos57[0] = '-';
@@ -1264,44 +1228,36 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 										strncat(cpos57, tok4 + 4, 3);
 										cpos57[4] = '\0';
 										strncpy(winds_aloft[wal_index].wal_temp, cpos57, 4);
-										fprintf(filemetar, "Temp: %s", winds_aloft[wal_index].wal_temp);
 									}
 									else if (windlen == 7) {
 										strncpy(cpos57, tok4 + 4, 3);
 										cpos57[3] = '\0';
 										strncpy(winds_aloft[wal_index].wal_temp, cpos57, 4);
-										fprintf(filemetar, "Temp: %s", winds_aloft[wal_index].wal_temp);
 									}
 								}
 								pos1 = cpos12_save[0];
 								if (pos1 >='7' && windlen == 6) {
 									sprintf(cpos12, "%d", (pos12 -50) * 10);
 									sprintf(winds_aloft[wal_index].wal_windir, "%s", cpos12);
-									fprintf(filemetar, "Wind Dir: %s ", winds_aloft[wal_index].wal_windir);
 									sprintf(cpos34, "%d", (pos34 + 100));
 									strncpy(winds_aloft[wal_index].wal_winspd, cpos34, 4);
-									fprintf(filemetar, "Wind spd: %s ", winds_aloft[wal_index].wal_winspd);
 
 									cpos57[0] = '-';
 									cpos57[1] = '\0';
 									strncat(cpos57, tok4 + 4, 3);
 									cpos57[4] = '\0';
 									strncpy(winds_aloft[wal_index].wal_temp, cpos57, 4);
-									fprintf(filemetar, "Temp: %s", winds_aloft[wal_index].wal_temp);
 								}
 								if (pos1 >='7' && windlen == 7) {
 									sprintf(cpos12, "%d", (pos12 - 50) * 10);
 									sprintf(winds_aloft[wal_index].wal_windir, "%s", cpos12);
-									fprintf(filemetar, "Wind Dir: %s ", winds_aloft[wal_index].wal_windir);
 									sprintf(cpos34, "%d", (pos34 + 100));
 									strncpy(winds_aloft[wal_index].wal_winspd, cpos34, 4);
-									fprintf(filemetar, "Wind spd: %s ", winds_aloft[wal_index].wal_winspd);
 
 									cpos57[0] = '\0';
 									strncat(cpos57, tok4 + 4, 3);
 									cpos57[4] = '\0';
 									strncpy(winds_aloft[wal_index].wal_temp, cpos57, 4);
-									fprintf(filemetar, "Temp: %s", winds_aloft[wal_index].wal_temp);
 								}
 								break;
 							}
@@ -1340,8 +1296,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				}
 				PQclear(res);
 
-				fprintf(filemetar, "\n          ");
-				fprintf(filemetar, "\n");
 			}
 			strcat(observation, " ");
 			strcat(observation, r);
@@ -1358,7 +1312,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				else {
 					print_decoded_metar(Mptr);
 
-					metar_data(Mptr, to);
+					metar_data(Mptr);
 				}
 			}
 			memset(&MetarStruct, 0, sizeof(MetarStruct));
@@ -1526,7 +1480,6 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		rec_offset = 2;
 		const char *text = decode_dlac(apdu->data, 5, rec_offset);
 		strncpy(gstn, text, 5);
-//		get_gs_name(gstn);
 	}
 	else
 		strcpy(gstn, "    ");

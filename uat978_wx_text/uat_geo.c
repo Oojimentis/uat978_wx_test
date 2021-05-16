@@ -12,7 +12,7 @@
 #include "uat_geo.h"
 #include "asprintf.h"
 
-void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
+void graphic_nexrad(const struct fisb_apdu *apdu)
 {
 	char *postsql;
 	char nexrad_time[6];
@@ -308,8 +308,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 		break;
 		}
 	}
-
-	fflush(to);
 }
 
 void block_location_graphic(int bn, int ns, int sf, double *latN, double *lonW, double *latSize, double *lonSize)
@@ -358,7 +356,7 @@ double raw_lat; double raw_lon; double scale;
 	*lonW = raw_lon;
 }
 
-void metar_data( Decoded_METAR *Mptr, FILE *to)
+void metar_data( Decoded_METAR *Mptr)
 {
 	char *postsql;
 	char obs_date[10] = " ";
