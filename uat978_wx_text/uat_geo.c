@@ -76,7 +76,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 		int x = 0;
 		int klen;
 
-
 		block_location_graphic(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
 		switch(apdu->product_id) {
@@ -166,12 +165,11 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 		}
 		break;
 
-		case 103: {
+		case 84: {
 			int kount = 0;
-
+			int bl_cnt = 0;
 			for (int i = 3; i < apdu->length; ++i) {
-//** 			int lgt_pol = apdu->data[i] & 8;
-				lgt_cnt = apdu->data[i] & 7;
+				edr_enc  = apdu->data[i] & 15;
 				num_bins = (apdu->data[i] >> 4) + 1;
 
 				if (num_bins == 15) {
@@ -179,27 +177,75 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 					num_bins = (apdu->data[i]) + 1;
 				}
 
-				asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num,"
-						"maptime, altitude) VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
+				asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num, "
+						"maptime, altitude,seq) VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ ");
 
-				while (num_bins-- > 0 && lgt_cnt >= 1 && lgt_cnt < 7) {
+				while (num_bins-- > 0 && edr_enc >= 1 && edr_enc < 16 ) {
+					bl_cnt++;
+
 					t_lat = latN - (y * (latSize / 4.0));
 					t_lon = lonW + (x * (lonSize / 32.0));
+//						fprintf(stderr, "1 i: %d b: %d tlon: %.7f tlat: %.7f k: %d x: %d y: %d slon: %.7f slat: %.7f elon: %.7f elat: %.7f b %d c: %d\n",
+//								edr_enc, num_bins, t_lon, t_lat, kount, x, y, s_lon, s_lat, e_lon, e_lat, block_num, bl_cnt);
+
 					kount++;
+					if (kount == 1) {
+						s_lat = t_lat;
+						s_lon = t_lon;
+
+						asprintf(&geojson,"%s [%.7f, %.7f],", geojson, s_lon, s_lat);
+
+//							fprintf(stderr, "2 i: %d b: %d tlon: %.7f tlat: %.7f k: %d x: %d y: %d slon: %.7f slat: %.7f elon: %.7f elat: %.7f b %d c: %d\n",
+//								edr_enc, num_bins, t_lon, t_lat, kount, x, y, s_lon, s_lat, e_lon, e_lat, block_num, bl_cnt);
+					}
 
 					x++;
-					if (x == 32) {
+					if (x >= 32) {
+						e_lat = t_lat;
+						e_lon = t_lon;
+
+						asprintf(&geojson,"%s [%.7f, %.7f],", geojson, e_lon, e_lat);
+
+						klen = strlen(geojson);
+						geojson[klen - 1] = ' ';
+
+						asprintf(&postsql,"%s ]}'),4326) ,%d,%d,%d,'%s',%d,%d)", geojson, apdu->product_id,
+								edr_enc, block_num, nexrad_time, alt_level,nex_count);
+
+//							fprintf(stderr, "4 i: %d b: %d tlon: %.7f tlat: %.7f k: %d x: %d y: %d slon: %.7f slat: %.7f elon: %.7f elat: %.7f b %d c: %d\n",
+//								edr_enc, num_bins, t_lon, t_lat, kount, x, y, s_lon, s_lat, e_lon, e_lat, block_num, bl_cnt);
+
+						PGresult *res = PQexec(conn, postsql);
+						if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+							if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
+								fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+										PQresultStatus(res), postsql);
+						}
+						PQclear(res);
+//						fprintf(stderr,"%s\n",postsql);
+						nex_count++;
+						asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num, "
+								"maptime, altitude,seq) VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ ");
+
+						kount = 0;
 						x = 0;
 						y++;
 					}
-					asprintf(&geojson,"%s POINT(%f %f),", geojson, t_lon, t_lat);
 				}
+
 				if (kount > 0) {
+					e_lat = t_lat;
+					e_lon = t_lon;
+
+					asprintf(&geojson,"%s [%.7f, %.7f],", geojson, e_lon, e_lat);
+//						fprintf(stderr, "3 i: %d b: %d tlon: %.7f tlat: %.7f k: %d x: %d y: %d slon: %.7f slat: %.7f elon: %.7f elat: %.7f b %d c: %d\n",
+//								edr_enc, num_bins, t_lon, t_lat, kount, x, y, s_lon, s_lat, e_lon, e_lat, block_num, bl_cnt);
+
 					klen = strlen(geojson);
 					geojson[klen - 1] = ' ';
-					kount = 0;
-					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d)",geojson, apdu->product_id,
-							lgt_cnt, block_num, nexrad_time, alt_level);
+
+					asprintf(&postsql,"%s ]}'),4326) ,%d,%d,%d,'%s',%d,%d)", geojson, apdu->product_id,
+							edr_enc, block_num, nexrad_time, alt_level,nex_count);
 
 					PGresult *res = PQexec(conn, postsql);
 					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -208,6 +254,9 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 									PQresultStatus(res), postsql);
 					}
 					PQclear(res);
+//					fprintf(stderr,"%s\n",postsql);
+					nex_count++;
+					kount = 0;
 				}
 			}
 		}
@@ -259,104 +308,52 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 		}
 		break;
 
-			case 84: {
-				int kount = 0;
-				int bl_cnt = 0;
-				for (int i = 3; i < apdu->length; ++i) {
-					edr_enc  = apdu->data[i] & 15;
-					num_bins = (apdu->data[i] >> 4) + 1;
+		case 103: {
+			int kount = 0;
 
-					if (num_bins == 15) {
-						i = i + 1;
-						num_bins = (apdu->data[i]) + 1;
+			for (int i = 3; i < apdu->length; ++i) {
+//** 			int lgt_pol = apdu->data[i] & 8;
+				lgt_cnt = apdu->data[i] & 7;
+				num_bins = (apdu->data[i] >> 4) + 1;
+
+				if (num_bins == 15) {
+					i = i + 1;
+					num_bins = (apdu->data[i]) + 1;
+				}
+
+				asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num,"
+						"maptime, altitude) VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
+
+				while (num_bins-- > 0 && lgt_cnt >= 1 && lgt_cnt < 7) {
+					t_lat = latN - (y * (latSize / 4.0));
+					t_lon = lonW + (x * (lonSize / 32.0));
+					kount++;
+
+					x++;
+					if (x == 32) {
+						x = 0;
+						y++;
 					}
+					asprintf(&geojson,"%s POINT(%f %f),", geojson, t_lon, t_lat);
+				}
+				if (kount > 0) {
+					klen = strlen(geojson);
+					geojson[klen - 1] = ' ';
+					kount = 0;
+					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d)",geojson, apdu->product_id,
+							lgt_cnt, block_num, nexrad_time, alt_level);
 
-					asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num, "
-							"maptime, altitude,seq) VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ ");
-					//%s ]}'),4326
-
-					while (num_bins-- > 0 && edr_enc >= 1 && edr_enc < 16 ) {
-						bl_cnt++;
-
-						t_lat = latN - (y * (latSize / 4.0));
-						t_lon = lonW + (x * (lonSize / 32.0));
-				fprintf(stderr, "1 i: %d b: %d tlon: %.7f tlat: %.7f k: %d x: %d y: %d slon: %.7f slat: %.7f elon: %.7f elat: %.7f b %d c: %d\n",
-								edr_enc, num_bins, t_lon, t_lat, kount, x, y, s_lon, s_lat, e_lon, e_lat, block_num, bl_cnt);
-
-						kount++;
-						if (kount == 1) {
-							s_lat = t_lat;
-							s_lon = t_lon;
-
-							asprintf(&geojson,"%s [%.7f, %.7f],", geojson, s_lon, s_lat);
-
-							fprintf(stderr, "2 i: %d b: %d tlon: %.7f tlat: %.7f k: %d x: %d y: %d slon: %.7f slat: %.7f elon: %.7f elat: %.7f b %d c: %d\n",
-								edr_enc, num_bins, t_lon, t_lat, kount, x, y, s_lon, s_lat, e_lon, e_lat, block_num, bl_cnt);
-						}
-						nex_count++;
-						x++;
-						if (x >= 32) {
-							e_lat = t_lat;
-							e_lon = t_lon;
-
-							asprintf(&geojson,"%s [%.7f, %.7f],", geojson, e_lon, e_lat);
-							//%s ]}'),4326
-							klen = strlen(geojson);
-							geojson[klen - 1] = ' ';
-
-							asprintf(&postsql,"%s ]}'),4326) ,%d,%d,%d,'%s',%d,%d)", geojson, apdu->product_id,
-									edr_enc, block_num, nexrad_time, alt_level,nex_count);
-
-
-
-					fprintf(stderr, "4 i: %d b: %d tlon: %.7f tlat: %.7f k: %d x: %d y: %d slon: %.7f slat: %.7f elon: %.7f elat: %.7f b %d c: %d\n",
-								edr_enc, num_bins, t_lon, t_lat, kount, x, y, s_lon, s_lat, e_lon, e_lat, block_num, bl_cnt);
-
-							PGresult *res = PQexec(conn, postsql);
-							if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-								if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-									fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
-											PQresultStatus(res), postsql);
-							}
-							PQclear(res);
-
-							asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num, "
-									"maptime, altitude,seq) VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ ");
-
-							kount = 0;
-							x = 0;
-							y++;
-						}
+					PGresult *res = PQexec(conn, postsql);
+					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+						if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
+							fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+									PQresultStatus(res), postsql);
 					}
-
-					if (kount > 0) {
-						e_lat = t_lat;
-						e_lon = t_lon;
-
-						asprintf(&geojson,"%s %.7f %.7f),", geojson, e_lon, e_lat);
-
-						fprintf(stderr, "3 i: %d b: %d tlon: %.7f tlat: %.7f k: %d x: %d y: %d slon: %.7f slat: %.7f elon: %.7f elat: %.7f b %d c: %d\n",
-								edr_enc, num_bins, t_lon, t_lat, kount, x, y, s_lon, s_lat, e_lon, e_lat, block_num, bl_cnt);
-
-						klen = strlen(geojson);
-						geojson[klen - 1] = ' ';
-
-						asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d,%d)", geojson, apdu->product_id,
-								edr_enc, block_num, nexrad_time, alt_level,nex_count);
-
-						PGresult *res = PQexec(conn, postsql);
-						if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-							if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-								fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
-										PQresultStatus(res), postsql);
-						}
-						PQclear(res);
-
-						kount = 0;
-					}
+					PQclear(res);
 				}
 			}
-			break;
+		}
+		break;
 		}
 	}
 }
