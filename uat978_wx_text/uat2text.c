@@ -34,6 +34,7 @@ void handle_frame(frame_type_t type, uint8_t *frame, int len, void *extra)
 int main(int argc, char **argv)
 {
 	seg_count = 0;
+	nex_count = 0;
 
 	char line[75];
 	char pg_user[20];
@@ -80,8 +81,8 @@ int main(int argc, char **argv)
 	}
 
 // Delete table data...
-	asprintf(&postsql,"truncate graphics; truncate metar; truncate nexrad;"
-			"truncate pirep; truncate sigairmet; truncate taf; truncate circles; truncate sua; truncate winds;");
+	asprintf(&postsql,"truncate graphics; truncate metar; truncate nexrad; truncate pirep; "
+			"truncate sigairmet; truncate taf; truncate circles; truncate sua; truncate winds;");
 
 	PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
