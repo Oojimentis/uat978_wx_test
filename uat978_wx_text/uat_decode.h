@@ -39,6 +39,7 @@ struct WindsAloftStruct {
 } winds_aloft[9];
 
 int seg_count;
+int nex_count;
 
 FILE * filemetar;		// 413
 FILE * filenotam;		// Segemented NOTAM
