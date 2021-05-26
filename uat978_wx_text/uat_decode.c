@@ -1926,17 +1926,24 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 			strcpy(notam_name, r);
 			r = p + 1;
 		}
-		if (apdu->product_id == 8)
-			p = strchr(r, '.');
+		if (apdu->product_id == 8) {
+			if (strcmp(notam_name,"NOTAM-TFR") != 0)
+				p = strchr(r, '.');
+		}
 		else
 			p = strchr(r, ' ');
 
 		if (apdu->product_id != 13) {
 			if (p) {
-				*p = 0;
-				strncpy(gstn, r, 5);
-//				get_gs_name(gstn);
-
+				if (strcmp(notam_name,"NOTAM-TFR") != 0) {
+					*p = 0;
+					strncpy(gstn, r, 5);
+//					get_gs_name(gstn);
+				}
+				else {
+					*p = 0;
+					strncpy(gstn,"    ",5);
+				}
 				r = p + 1;
 			}
 		}
