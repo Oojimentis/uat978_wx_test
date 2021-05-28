@@ -386,6 +386,15 @@ static void get_pirep(char *Word)
 	char buff[30];
 	char *postsql;
 
+	int sua_len;
+
+	sua_len = strlen(Word);
+	for (int i = 0; i<sua_len; i++) {
+		if (Word[i] == '\'') {
+			Word[i] = ' ';
+		}
+	}
+
 	token = strtok(Word, " ");
 	strcpy(pirep_stn, "K");
 	strcat(pirep_stn, token);
@@ -1438,7 +1447,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	uint8_t qualifier_flag;
 	uint8_t param_flag;
 	uint8_t rec_app_opt;
-//	uint8_t date_time_format;
+	uint8_t date_time_format;
 	uint8_t element_flag;
 
 	int geo_overlay_opt;
@@ -1559,7 +1568,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	overlay_op = ((apdu->data[datoff + 1]) & 0xC0) >> 6;
 	overlay_vert_cnt = ((apdu->data[datoff + 1]) & 0x3F) + 1;		// Docs say to add 1)
 	rec_app_opt = ((apdu->data[datoff + 0]) & 0xC0) >> 6;
-//	date_time_format = ((apdu->data[datoff + 0]) & 0x30) >> 4;
+	date_time_format = ((apdu->data[datoff + 0]) & 0x30) >> 4;
 
 	switch (rec_app_opt) {
 	case 0:		// No times given. UFN. (record_data[2:],date_time_format)
@@ -1588,19 +1597,30 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		datoff = datoff + 6;
 		break;
 	case 3:		// Both start and end times. WEF.
-		d1 = apdu->data[datoff + 2];
-		d2 = apdu->data[datoff + 3];
-		d3 = apdu->data[datoff + 4];
-		d4 = apdu->data[datoff + 5];
+		if (date_time_format == 3) {
+			d1 = apdu->data[datoff + 2];
+			d2 = apdu->data[datoff + 3];
+			asprintf(&start_date, "%02d:%02d", d1, d2);
+			d1 = apdu->data[datoff + 4];
+			d2 = apdu->data[datoff + 5];
+			asprintf(&stop_date, "%02d:%02d", d1, d2);
+			datoff = datoff + 6;
+		}
+		else {
+			d1 = apdu->data[datoff + 2];
+			d2 = apdu->data[datoff + 3];
+			d3 = apdu->data[datoff + 4];
+			d4 = apdu->data[datoff + 5];
 
-		asprintf(&start_date, "%02d/%02d %02d:%02d", d1, d2, d3, d4);
-		d1 = apdu->data[datoff + 6];
-		d2 = apdu->data[datoff + 7];
-		d3 = apdu->data[datoff + 8];
-		d4 = apdu->data[datoff + 9];
+			asprintf(&start_date, "%02d/%02d %02d:%02d", d1, d2, d3, d4);
+			d1 = apdu->data[datoff + 6];
+			d2 = apdu->data[datoff + 7];
+			d3 = apdu->data[datoff + 8];
+			d4 = apdu->data[datoff + 9];
 
-		asprintf(&stop_date, "%02d/%02d %02d:%02d", d1, d2, d3, d4);
-		datoff = datoff + 10;
+			asprintf(&stop_date, "%02d/%02d %02d:%02d", d1, d2, d3, d4);
+			datoff = datoff + 10;
+		}
 		break;
 	}
 
