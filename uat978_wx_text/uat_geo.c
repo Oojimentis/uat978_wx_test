@@ -185,8 +185,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 
 					t_lat = latN - (y * (latSize / 4.0));
 					t_lon = lonW + (x * (lonSize / 32.0));
-//						fprintf(stderr, "1 i: %d b: %d tlon: %.7f tlat: %.7f k: %d x: %d y: %d slon: %.7f slat: %.7f elon: %.7f elat: %.7f b %d c: %d\n",
-//								edr_enc, num_bins, t_lon, t_lat, kount, x, y, s_lon, s_lat, e_lon, e_lat, block_num, bl_cnt);
 
 					kount++;
 					if (kount == 1) {
@@ -194,9 +192,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 						s_lon = t_lon;
 
 						asprintf(&geojson,"%s [%.7f, %.7f],", geojson, s_lon, s_lat);
-
-//							fprintf(stderr, "2 i: %d b: %d tlon: %.7f tlat: %.7f k: %d x: %d y: %d slon: %.7f slat: %.7f elon: %.7f elat: %.7f b %d c: %d\n",
-//								edr_enc, num_bins, t_lon, t_lat, kount, x, y, s_lon, s_lat, e_lon, e_lat, block_num, bl_cnt);
 					}
 
 					x++;
@@ -212,9 +207,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 						asprintf(&postsql,"%s ]}'),4326) ,%d,%d,%d,'%s',%d,%d)", geojson, apdu->product_id,
 								edr_enc, block_num, nexrad_time, alt_level,nex_count);
 
-//							fprintf(stderr, "4 i: %d b: %d tlon: %.7f tlat: %.7f k: %d x: %d y: %d slon: %.7f slat: %.7f elon: %.7f elat: %.7f b %d c: %d\n",
-//								edr_enc, num_bins, t_lon, t_lat, kount, x, y, s_lon, s_lat, e_lon, e_lat, block_num, bl_cnt);
-
 						PGresult *res = PQexec(conn, postsql);
 						if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 							if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
@@ -222,7 +214,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 										PQresultStatus(res), postsql);
 						}
 						PQclear(res);
-//						fprintf(stderr,"%s\n",postsql);
+
 						nex_count++;
 						asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num, "
 								"maptime, altitude,seq) VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ ");
@@ -238,8 +230,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 					e_lon = t_lon;
 
 					asprintf(&geojson,"%s [%.7f, %.7f],", geojson, e_lon, e_lat);
-//						fprintf(stderr, "3 i: %d b: %d tlon: %.7f tlat: %.7f k: %d x: %d y: %d slon: %.7f slat: %.7f elon: %.7f elat: %.7f b %d c: %d\n",
-//								edr_enc, num_bins, t_lon, t_lat, kount, x, y, s_lon, s_lat, e_lon, e_lat, block_num, bl_cnt);
 
 					klen = strlen(geojson);
 					geojson[klen - 1] = ' ';
@@ -254,7 +244,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 									PQresultStatus(res), postsql);
 					}
 					PQclear(res);
-//					fprintf(stderr,"%s\n",postsql);
+
 					nex_count++;
 					kount = 0;
 				}

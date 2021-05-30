@@ -918,6 +918,8 @@ static const char *get_fisb_product_name(uint16_t product_id)
 	case 13:	return	"SUA Status";
 	case 14:	return	"G-AIRMET";
 	case 15:	return	"Center Weather Advisory (CWAG)";
+	case 16:	return	"Temporary Restricted Area (TRA)";
+	case 17:	return	"Temporary Military Operating Area (TMOA)";
 	case 62:	return	"Individual NEXRAD,Type 3 - 16 Level";
 	case 63:	return	"Regional NEXRAD,Type 4 - 8 Level";
 	case 64:	return	"CONUS NEXRAD,Type 4 - 8 Level";
@@ -1477,9 +1479,25 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 
 	char buff[30];
 
+	uint16_t prodid;
+	uint16_t prodfillen;
+	uint16_t apdunum;
+
+	if (apdu->s_flag) {
+		prodid = ((apdu->data[4] & 0x7) << 7) | (apdu->data[5] >> 1);
+
+		prodfillen = (apdu->data[5] & 0x1) | (apdu->data[6]);
+		apdunum = ((apdu->data[7]) << 1) | (apdu->data[8] >> 7);
+
+		fprintf(stderr,"id: %d  len: %d  apd: %d  pid: %d\n",prodid,prodfillen,apdunum,apdu->product_id);
+		fprintf(stderr,"\n");
+		datoff = datoff + 9;
+	}
+
+
 //	product_ver = ((apdu->data[0]) & 0x0F);
-	rec_count = ((apdu->data[1]) & 0xF0) >> 4;
-	rec_ref = ((apdu->data[5]));
+	rec_count = ((apdu->data[datoff -5]) & 0xF0) >> 4;
+	rec_ref = ((apdu->data[datoff -1]));
 
 	time_t current_time = time(NULL);
 	struct tm *tm = localtime(&current_time);
@@ -1502,7 +1520,8 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	obj_labelt = "  ";
 	if (obj_label_flag == 0) {		// Numeric index.
 		obj_label = ((apdu->data[datoff + 5]) << 8) | (apdu->data[datoff + 6]);		// 11 12
-		datoff = datoff + 7;	}													// datoff=13
+		datoff = datoff + 7;
+	}													// datoff=13
 	else {
 		obj_labelt = decode_dlac(apdu->data, 5, 2);
 		datoff = datoff + 14;
