@@ -24,7 +24,8 @@ static char gs_ret_lng[25];
 
 static void get_graphic(const struct fisb_apdu *apdu, FILE *to);
 static void get_text(const struct fisb_apdu *apdu, FILE *to);
-static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm, FILE *to);
+static void get_seg_text(const struct fisb_apdu *apdu, FILE *to);
+static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to);
 static void get_gs_name(char *Word);
 static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_year);
 static void get_pirep(char *Word);
@@ -988,11 +989,14 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
 		switch (recf) {
 		case 8:		//	Graphic
-			get_graphic(apdu, to);
+			if (apdu->s_flag)		// Segmented graphic
+				get_seg_graph(apdu, to);
+			else	// Text
+				get_graphic(apdu, to);
 			break;
 		case 2:		// Text
 			if (apdu->s_flag)		// Segmented text
-				get_seg_text(apdu, filenotam, to);
+				get_seg_text(apdu, to);
 			else	// Text
 				get_text(apdu, to);
 			break;
@@ -1478,21 +1482,6 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	char gr[2000] = "";
 
 	char buff[30];
-
-	uint16_t prodid;
-	uint16_t prodfillen;
-	uint16_t apdunum;
-
-	if (apdu->s_flag) {
-		prodid = ((apdu->data[4] & 0x7) << 7) | (apdu->data[5] >> 1);
-
-		prodfillen = (apdu->data[5] & 0x1) | (apdu->data[6]);
-		apdunum = ((apdu->data[7]) << 1) | (apdu->data[8] >> 7);
-
-		fprintf(stderr,"id: %d  len: %d  apd: %d  pid: %d\n",prodid,prodfillen,apdunum,apdu->product_id);
-		fprintf(stderr,"\n");
-		datoff = datoff + 9;
-	}
 
 
 //	product_ver = ((apdu->data[0]) & 0x0F);
@@ -2054,104 +2043,297 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 //	display_generic_data(apdu->data,apdu->length,to);
 }
 
-static void get_seg_text(const struct fisb_apdu *apdu, FILE *fnm, FILE *to)
+static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 {
+
+	int geo_overlay_opt;
+	int overlay_op;
+	uint8_t overlay_vert_cnt;
+	uint8_t date_time_format;
+	int d1;	int d2;	int d3;	int d4;
+	uint8_t rec_app_opt;
+	char *start_date;
+	char *stop_date;
+	char *coords;
+	char *gr;
 	uint16_t prodid;
 	uint16_t prodfillen;
 	uint16_t apdunum;
+	uint16_t gseg_rpt_num;
+	uint32_t lat_raw;
+	uint32_t lng_raw;
+	uint32_t alt_raw;
+	int alt;
+	float lat;
+	float lng;
+	char *postsql;
 
-	char buff[30];
+	int rep_all[5000];
+	int rec_cnt = 0;
+	int verts = 0;
+	float fct_f = 0.0006866455078125;
 
-	prodid = ((apdu->data[4] & 0x7) >> 1) | (apdu->data[5] >> 1);
+	asprintf(&gr, "");
+
+	prodid = ((apdu->data[4] & 0x7) << 7) | (apdu->data[5] >> 1);
 	prodfillen = (apdu->data[5] & 0x1) | (apdu->data[6]);
 	apdunum = ((apdu->data[7]) << 1) | (apdu->data[8] >> 7);
 
 	int fg = 0;		// Check if report part already stored
-	for (int i = 0; i <= seg_count; ++i) {
-		if ((prodid == seg_list[i].seg_prodid) &&
-				(prodfillen == seg_list[i].seg_prolen) &&
-				(apdunum == seg_list[i].seg_segnum)) {
+	for (int i = 0; i <= seg_graph_count; ++i) {
+		if ((prodid == seg_graph_list[i].seg_graph_prodid) &&
+				(prodfillen == seg_graph_list[i].seg_graph_prodlen) &&
+				(apdunum == seg_graph_list[i].seg_graph_apdunum)) {
 			++fg;
+			continue;
 		}
 	}
 	if (fg == 0) {		// New report part - add record
 		int offx = 0;
-		seg_list[seg_count].seg_prodid = prodid;
-		seg_list[seg_count].seg_prolen = prodfillen;
-		seg_list[seg_count].seg_segnum = apdunum;
+		seg_graph_list[seg_graph_count].seg_graph_prodid = prodid;
+		seg_graph_list[seg_graph_count].seg_graph_prodlen = prodfillen;
+		seg_graph_list[seg_graph_count].seg_graph_apdunum = apdunum;
+		seg_graph_list[seg_graph_count].seg_graph_len = apdu->length;
+		offx = 15;
 
-		if (apdunum == 1) {		// Contains report number and year
-			offx = 20;
-			seg_list[seg_count].seg_text_len = apdu->length - 20;
-			seg_list[seg_count].seg_rpt_num = ((apdu->data[17] << 6) | (apdu->data[18] >> 2));			//7 8
-			seg_list[seg_count].seg_rpt_year = (((apdu->data[18]) & 0x03) << 5 | ((apdu->data[19]) & 0xF8) >> 3);
-		}
-		else {
-			offx = 15;
-			seg_list[seg_count].seg_text_len = apdu->length - 15;
-			seg_list[seg_count].seg_rpt_num = 0;
-			seg_list[seg_count].seg_rpt_year = 0;
-		}
 		for ( int x = offx; x <= apdu->length; ++x) {
 			int c = apdu->data[x];
-			seg_list[seg_count].seg_data[x - offx] = c;
+			seg_graph_list[seg_graph_count].seg_graph_data[x - offx] = c;
 		}
-		++seg_count;
+		++seg_graph_count;
 	}
+
 	fg = 0;		// See if all parts of record are stored
-	for (int i = 0; i <= seg_count; ++i) {
+	for (int i = 0; i <= seg_graph_count; ++i) {
 		for (int j = 1; j <= prodfillen; ++j) {
-			if ((prodid == seg_list[i].seg_prodid) &&
-					(prodfillen == seg_list[i].seg_prolen) &&
-					(j == seg_list[i].seg_segnum)) {
+			if ((prodid == seg_graph_list[i].seg_graph_prodid) &&
+					(prodfillen == seg_graph_list[i].seg_graph_prodlen) &&
+					(j == seg_graph_list[i].seg_graph_apdunum)) {
+				++fg;
+			}
+		}
+	}
+
+	if (fg == prodfillen) {		// All parts have been stored
+		for (int m = 1; m <= prodfillen; ++m) {
+			for (int i = 0; i <= seg_graph_count; ++i) {
+				if ((prodid == seg_graph_list[i].seg_graph_prodid) &&
+						(prodfillen == seg_graph_list[i].seg_graph_prodlen) &&
+						(m == seg_graph_list[i].seg_graph_apdunum)) {
+					for ( int z = 0; z < (seg_graph_list[i].seg_graph_len - 15); ++z) {
+						int c = seg_graph_list[i].seg_graph_data[z];
+						rep_all[rec_cnt] = c;
+						rec_cnt++;
+					}
+				}
+			}
+		}
+	}
+
+	int offs = 0;
+	if (fg == prodfillen) {
+		while (offs < rec_cnt) {
+			gseg_rpt_num = (((rep_all[offs + 1]) & 0x3F) << 8) | (rep_all[offs + 2]);
+			geo_overlay_opt = (rep_all[offs + 9]) & 0x0F;
+			overlay_op = ((rep_all[offs + 10]) & 0xC0) >> 6;
+			overlay_vert_cnt = ((rep_all[offs + 10]) & 0x3F) + 1;		// Docs say to add 1)
+			rec_app_opt = ((rep_all[offs + 9]) & 0xC0) >> 6;
+			date_time_format = ((rep_all[offs + 9]) & 0x30) >> 4;
+
+			switch (rec_app_opt) {
+			case 0:		// No times given. UFN. (record_data[2:],date_time_format)
+				asprintf(&start_date, "0");
+				asprintf(&stop_date, "0");
+				offs = offs + 8;   // was 2
+				break;
+			case 1:		// Start time only. WEF.
+				d1 = rep_all[offs + 11];
+				d2 = rep_all[offs + 12];
+				d3 = rep_all[offs + 13];
+				d4 = rep_all[offs + 14];
+				asprintf(&start_date, "%02d/%02d %02d:%02d", d1, d2, d3, d4);
+				asprintf(&stop_date, "0");
+				offs = offs + 10;
+				break;
+			case 2:		// End time only. TIL.
+				d1 = rep_all[offs + 11];
+				d2 = rep_all[offs + 12];
+				d3 = rep_all[offs + 13];
+				d4 = rep_all[offs + 14];
+				asprintf(&start_date, "0");
+				asprintf(&stop_date, "%02d/%02d %02d:%02d", d1, d2, d3, d4);
+				offs = offs + 10;
+				break;
+			case 3:		// Both start and end times. WEF.
+				if (date_time_format == 3) {
+					d1 = rep_all[offs + 11];
+					d2 = rep_all[offs + 12];
+					asprintf(&start_date, "%02d:%02d", d1, d2);
+					d1 = rep_all[offs + 13];
+					d2 = rep_all[offs + 14];
+					asprintf(&stop_date, "%02d:%02d", d1, d2);
+					offs = offs + 10;
+				}
+				else {
+					d1 = rep_all[offs + 11];
+					d2 = rep_all[offs + 12];
+					d3 = rep_all[offs + 13];
+					d4 = rep_all[offs + 14];
+					asprintf(&start_date, "%02d/%02d %02d:%02d", d1, d2, d3, d4);
+					d1 = rep_all[offs + 15];
+					d2 = rep_all[offs + 16];
+					d3 = rep_all[offs + 17];
+					d4 = rep_all[offs + 18];
+					asprintf(&stop_date, "%02d/%02d %02d:%02d", d1, d2, d3, d4);
+					offs = offs + 19;
+				}
+			}
+
+			switch (geo_overlay_opt) {
+			case 3: case 4:	{		// Extended Range 3D Polygon
+				int alt_save;
+				alt_raw = (((rep_all[offs + 4]) & 0x03) << 8) | (rep_all[offs + 5]);
+				alt_save = alt_raw * 100;
+
+				for (int i = 0; i < overlay_vert_cnt; i++) {
+					lng_raw = ((rep_all[offs]) << 11) | ((rep_all[offs + 1]) << 3) |
+							((rep_all[offs + 2]) & 0xE0 >> 5);
+					lat_raw = (((rep_all[offs + 2]) & 0x1F) << 14) | ((rep_all[offs + 3]) << 6) |
+							(((rep_all[offs + 4]) & 0xFC) >> 2);
+					alt_raw = (((rep_all[offs + 4]) & 0x03) << 8) | (rep_all[offs + 5]);
+
+					offs = offs + 6;
+
+					lat = fct_f * lat_raw;
+					lng = fct_f * lng_raw;
+					if (lat > 90.0)
+						lat = lat - 180.0;
+					if (lng > 180.0)
+						lng = lng - 360.0;
+
+					alt = alt_raw * 100;
+
+					if (alt != alt_save) {		// Multiple altitudes
+//						alt_save = alt;
+//						gr[0] = '\0';
+					}
+
+					asprintf(&coords, " [%f,%f],", lng, lat);
+					asprintf(&gr, "%s %s", gr,coords);
+					verts ++;
+				}
+			}
+			break;
+			}
+		}
+
+		int verts_len = strlen(gr);
+		gr[verts_len - 1] = ' ';
+
+		asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, start_date, stop_date, "
+				"geo_overlay_opt, overlay_op, overlay_vert_cnt, segmented) "
+				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),"
+				"%d,%d,%d,'%s','%s',%d,%d,%d,1)",
+				gr, apdu->product_id, gseg_rpt_num, alt, start_date, stop_date,	geo_overlay_opt, overlay_op, verts);
+
+		PGresult *res = PQexec(conn, postsql);
+		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
+				fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+						PQresultStatus(res), postsql);
+		}
+		PQclear(res);
+	}
+}
+
+static void get_seg_text(const struct fisb_apdu *apdu, FILE *to)
+{
+	uint16_t prodid;
+	uint16_t prodfillen;
+	uint16_t apdunum;
+	uint8_t rep_all[2000];
+	int char_cnt = 0;
+	uint16_t tseg_rpt_num;
+	char *postsql;
+
+
+	prodid = ((apdu->data[4] & 0x7) << 7) | (apdu->data[5] >> 1);
+	prodfillen = (apdu->data[5] & 0x1) | (apdu->data[6]);
+	apdunum = ((apdu->data[7]) << 1) | (apdu->data[8] >> 7);
+
+	int fg = 0;		// Check if report part already stored
+	for (int i = 0; i <= seg_text_count; ++i) {
+		if ((prodid == seg_text_list[i].seg_text_prodid) &&
+				(prodfillen == seg_text_list[i].seg_text_prodlen) &&
+				(apdunum == seg_text_list[i].seg_text_apdunum)) {
+			++fg;
+			continue;
+		}
+	}
+	if (fg == 0) {		// New report part - add record
+		int offx = 0;
+		seg_text_list[seg_text_count].seg_text_prodid = prodid;
+		seg_text_list[seg_text_count].seg_text_prodlen = prodfillen;
+		seg_text_list[seg_text_count].seg_text_apdunum = apdunum;
+		seg_text_list[seg_text_count].seg_text_len = apdu->length;
+		offx = 15;
+
+		for ( int x = offx; x <= apdu->length; ++x) {
+			int c = apdu->data[x];
+			seg_text_list[seg_text_count].seg_text_data[x - offx] = c;
+		}
+		++seg_text_count;
+	}
+
+	fg = 0;		// See if all parts of record are stored
+	for (int i = 0; i <= seg_text_count; ++i) {
+		for (int j = 1; j <= prodfillen; ++j) {
+			if ((prodid == seg_text_list[i].seg_text_prodid) &&
+					(prodfillen == seg_text_list[i].seg_text_prodlen) &&
+					(j == seg_text_list[i].seg_text_apdunum)) {
 				++fg;
 			}
 		}
 	}
 	if (fg == prodfillen) {		// All parts have been stored
-		uint8_t rep_all[2000];
-		int char_cnt = 0;
-
-		for (int i = 0; i <= seg_count; ++i) {		// 1st part
-			if ((seg_list[i].seg_prodid == prodid) &&
-					(seg_list[i].seg_prolen == prodfillen) && (seg_list[i].seg_segnum == 1)) {
-				for (int d = char_cnt; d <= seg_list[i].seg_text_len; ++d) {		// 0 to 550
-					rep_all[d] = seg_list[i].seg_data[d];
+		for (int m = 1; m <= prodfillen; ++m) {
+			for (int i = 0; i <= seg_text_count; ++i) {
+				if ((prodid == seg_text_list[i].seg_text_prodid) &&
+						(prodfillen == seg_text_list[i].seg_text_prodlen) &&
+						(m == seg_text_list[i].seg_text_apdunum)) {
+					for (int z = 0; z < (seg_text_list[i].seg_text_len - 15); ++z) {
+						int c = seg_text_list[i].seg_text_data[z];
+						rep_all[char_cnt] = c;
+						char_cnt++;
+					}
 				}
-				char_cnt = char_cnt + seg_list[i].seg_text_len;		// 550
-
-				fprintf(fnm, " Report Type     : NOTAM - Segmented\n");
-				fprintf(fnm, " Num of Segments : %d\n", seg_list[i].seg_prolen);
-				fprintf(fnm, " Report Number   : %6d  ", seg_list[i].seg_rpt_num);
-				fprintf(fnm, "     Report Year       : 202%d\n ", seg_list[i].seg_rpt_year);
 			}
 		}
-		for (int i = 0; i <= seg_count; ++i) {		// 2nd part
-			if ((seg_list[i].seg_prodid == prodid) &&
-					(seg_list[i].seg_prolen == prodfillen) && (seg_list[i].seg_segnum == 2)) {
-				for (int d = char_cnt; d <= char_cnt + seg_list[i].seg_text_len; ++d) {
-					rep_all[d] = seg_list[i].seg_data[(d - char_cnt)];
-				}
-				char_cnt = char_cnt + seg_list[i].seg_text_len;
-			}
-		}
-		for (int i = 0; i <= seg_count; ++i) {		// 3rd part
-			if ((seg_list[i].seg_prodid == prodid) &&
-					(seg_list[i].seg_prolen == prodfillen) && (seg_list[i].seg_segnum == 3)) {
-				for (int d = char_cnt; d <= char_cnt + seg_list[i].seg_text_len; ++d) {
-					rep_all[d] = seg_list[i].seg_data[(d - char_cnt)];
-				}
-				char_cnt = char_cnt + seg_list[i].seg_text_len;
-			}
-		}
-		const char *seg_text_all = decode_dlac(rep_all, char_cnt, 0);
-
-		time_t current_time = time(NULL);
-		struct tm *tm = localtime(&current_time);
-		strftime(buff, sizeof buff, "%D %T", tm);
-		fprintf(fnm, "Time            : %s", buff);
-		fprintf(fnm, " Data:\n%s\n\n", seg_text_all);
 	}
-//	display_generic_data(apdu->data,apdu->length,to);
-	fflush(fnm);
+int offs = 0;
+if (fg == prodfillen) {
+		tseg_rpt_num = (((rep_all[offs + 2]) << 6) | (rep_all[offs + 3] & 0xFC) >> 2);
+
+		const char *seg_text_all = decode_dlac(rep_all, char_cnt, 5);
+
+		char *seg_text;
+		asprintf(&seg_text, "%s", seg_text_all);
+
+		for(int i = 0; i < strlen(seg_text); i++) {
+			if( seg_text[i] == '\'')
+				seg_text[i] = ' ';
+		}
+
+		asprintf(&postsql,"INSERT INTO sigairmet (prod_id, rep_num, text_data, stn_call, segmented) "
+				"VALUES (%d,%d,'%s','    ',1)",
+				apdu->product_id, tseg_rpt_num, seg_text);
+
+		PGresult *res = PQexec(conn, postsql);
+		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
+				fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+						PQresultStatus(res), postsql);
+		}
+		PQclear(res);
+	}
 }
