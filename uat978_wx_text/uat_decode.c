@@ -2253,7 +2253,6 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 			break;
 
 			case 11: case 12:		// Extended Range 3D Polyline
-
 				alt_raw = (((rep_all[offs + 4]) & 0x03) << 8) | (rep_all[offs + 5]);
 				alt = alt_raw * 100;
 
