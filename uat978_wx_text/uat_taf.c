@@ -18,13 +18,16 @@ static unsigned long long int getHash(const char* source)
 {
 	unsigned long long int hash = 0;
 
+	char c;
+	int a;
+
 	if (source == NULL) {
 		return 0;
 	}
 
 	while (*source != '\0') {
-		char c = *source++;
-		int a = c - '0';
+		c = *source++;
+		a = c - '0';
 		hash = (hash * 10) + a;
 	}
 	return hash;
@@ -35,10 +38,10 @@ char* daySuffix(int d)		// adds st, nd, rd, th to day number.
 	char *date_suff;
 
 	switch (d) {
-		case 1: case 21: case 31: 	asprintf(&date_suff, "st"); break;
-		case 2: case 22:			asprintf(&date_suff, "nd"); break;
-		case 3: case 23: 			asprintf(&date_suff, "rd"); break;
-		default: 					asprintf(&date_suff, "th"); break;
+	case 1: case 21: case 31: 	asprintf(&date_suff, "st"); break;
+	case 2: case 22:			asprintf(&date_suff, "nd"); break;
+	case 3: case 23: 			asprintf(&date_suff, "rd"); break;
+	default: 					asprintf(&date_suff, "th"); break;
 	}
 
 	return date_suff;
@@ -405,16 +408,16 @@ char* tafWeather(char *taf_list)
 					wx1 = atoi(temp2);
 
 					switch(wx1) {
-						case 0: strcpy(wx_int, "Trace icing"); break;
-						case 1: strcpy(wx_int, "Light mixed icing"); break;
-						case 2: strcpy(wx_int, "Light rime icing in cloud"); break;
-						case 3: strcpy(wx_int, "Light clear icing in precipitation"); break;
-						case 4: strcpy(wx_int, "Moderate mixed icing"); break;
-						case 5: strcpy(wx_int, "Moderate rime Icing In Cloud"); break;
-						case 6: strcpy(wx_int, "Moderate clear icing in precipitation"); break;
-						case 7: strcpy(wx_int, "Severe mixed icing"); break;
-						case 8: strcpy(wx_int, "Severe rime icing in cloud"); break;
-						case 9: strcpy(wx_int, "Severe clear icing in precipitation"); break;
+					case 0: strcpy(wx_int, "Trace icing"); break;
+					case 1: strcpy(wx_int, "Light mixed icing"); break;
+					case 2: strcpy(wx_int, "Light rime icing in cloud"); break;
+					case 3: strcpy(wx_int, "Light clear icing in precipitation"); break;
+					case 4: strcpy(wx_int, "Moderate mixed icing"); break;
+					case 5: strcpy(wx_int, "Moderate rime Icing In Cloud"); break;
+					case 6: strcpy(wx_int, "Moderate clear icing in precipitation"); break;
+					case 7: strcpy(wx_int, "Severe mixed icing"); break;
+					case 8: strcpy(wx_int, "Severe rime icing in cloud"); break;
+					case 9: strcpy(wx_int, "Severe clear icing in precipitation"); break;
 					}
 					strncpy(temp2, temp + 2, 3);
 					temp2[3] = '\0';
@@ -583,7 +586,7 @@ char* tafWeather(char *taf_list)
 				strcat(taf_wx_all, taf_wx);
 			}
 			else if ((strncmp(temp, "5", 1) == 0) && (strlen(temp) == 6)) {
-				units=strlen(temp);
+				units = strlen(temp);
 				if (units == 6) {
 					wx_int[0] = '\0';
 					strncpy(temp2, temp + 1, 1);
@@ -594,16 +597,16 @@ char* tafWeather(char *taf_list)
 						wx1 = atoi(temp2);
 
 						switch(wx1) {
-							case 0: strcpy(wx_int, "No turbulence"); break;
-							case 1: strcpy(wx_int, "Light turbulence"); break;
-							case 2: strcpy(wx_int, "Moderate turbulence in clear air, occasional"); break;
-							case 3: strcpy(wx_int, "Moderate turbulence in clear air, frequent"); break;
-							case 4: strcpy(wx_int, "Moderate turbulence in cloud, occasional"); break;
-							case 5: strcpy(wx_int, "Moderate turbulence in cloud, frequent"); break;
-							case 6: strcpy(wx_int, "Severe turbulence in clear air, occasional"); break;
-							case 7: strcpy(wx_int, "Severe turbulence in clear air, frequent"); break;
-							case 8: strcpy(wx_int, "Severe turbulence in cloud, occasional"); break;
-							case 9: strcpy(wx_int, "Severe turbulence in cloud, frequent"); break;
+						case 0: strcpy(wx_int, "No turbulence"); break;
+						case 1: strcpy(wx_int, "Light turbulence"); break;
+						case 2: strcpy(wx_int, "Moderate turbulence in clear air, occasional"); break;
+						case 3: strcpy(wx_int, "Moderate turbulence in clear air, frequent"); break;
+						case 4: strcpy(wx_int, "Moderate turbulence in cloud, occasional"); break;
+						case 5: strcpy(wx_int, "Moderate turbulence in cloud, frequent"); break;
+						case 6: strcpy(wx_int, "Severe turbulence in clear air, occasional"); break;
+						case 7: strcpy(wx_int, "Severe turbulence in clear air, frequent"); break;
+						case 8: strcpy(wx_int, "Severe turbulence in cloud, occasional"); break;
+						case 9: strcpy(wx_int, "Severe turbulence in cloud, frequent"); break;
 						}
 					}
 					strncpy(temp2, temp + 2, 3);
@@ -654,7 +657,6 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 	int nil = 0;
 	int sw = 0;
 	int temp_len;
-
 
 	current_all[0] = '\0';
 
@@ -729,7 +731,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-				fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+				fprintf(stderr, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 						PQresultStatus(res), postsql);
 		}
 		PQclear(res);
