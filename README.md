@@ -6,16 +6,17 @@ This is my first Github project, so be nice! I am just doing this for my own amu
 
 ## Working on..
 * Website to display AIRMET, G-AIRMET, SIGMET, METAR and NOTAM using Leflet. (https://github.com/Oojimentis/map-978)
-* How to display NEXRAD radar data.
+* G-AIRMET segmented reports WIP.
 
 ## Added
+* Segmented graphical NOTAM reports.
+* Segemented reports added to database.
 * Removed most of the old output text files, as data is now being put into database. (01/01/21)
 * NEXRAD and other radar data captured in database. (12/27/20)
 * Converted sqlite database to PostgreSQL. (01/01/21)
 * WX station and airport lookup via database.
 * METAR decode (libmetar.a)
 * TAF decoded. (01/01/21)
-* Attempt at handling segmented NOTAM-TFR reports
 * Decoding of Cloud Tops, Icing, Lightening, and Turbulence radar graphic reports like nexrad radar in DUMP978
 * SUA and PIREP decode
 * AIRMET, NOTAM, SIGMET, TAF, CWA and Winds aloft text reports.
@@ -47,7 +48,6 @@ gnome-terminal --tab --title="dump978 - rtl:$rtl" -- bash -ic "rtl_sdr -g $gain 
 
 gnome-terminal --tab --title="log.txt" -- bash -ic "multitail -cS dump978 log.txt"
 gnome-terminal --tab --title="metar"   -- bash -ic "multitail -cS dump978 metar.out"
-gnome-terminal --tab --title="notam"   -- bash -ic "multitail -cS dump978 notam.out"
 gnome-terminal --tab --title="taf"     -- bash -ic "multitail -cS dump978 taf.out"
 
 ````
