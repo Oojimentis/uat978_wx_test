@@ -1007,8 +1007,33 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 		}
 	break;
 
-// ** AIRMET 11  -  SIGMET 12  -  SUA 13  -  G-AIRMET 14  -  CWA 15 **************
-	case 11: case 12: case 13: case 14: case 15:
+	case 14:
+		if (apdu->s_flag)
+			recf = apdu->data[9] >> 4;
+		else
+			recf = apdu->data[0] >> 4;
+		switch (recf) {
+		case 8:		//	Graphic
+			if (apdu->s_flag)		// Segmented graphic
+				get_seg_graph(apdu, to);
+			else	// Text
+				get_graphic(apdu, to);
+			break;
+		case 2:		// Text
+			if (apdu->s_flag)		// Segmented text
+				get_seg_text(apdu, to);
+			else	// Text
+				get_text(apdu, to);
+			break;
+		default:
+			fprintf(to, " Record Format   : %d\n", recf);
+			display_generic_data(apdu->data, apdu->length, to);
+			break;
+		}
+	break;
+
+// ** AIRMET 11  -  SIGMET 12  -  SUA 13  -  CWA 15 **************
+	case 11: case 12: case 13: case 15:
 		recf = apdu->data[0] >> 4;
 
 		switch (recf) {
@@ -2073,6 +2098,8 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 	int verts = 0;
 	float fct_f = 0.0006866455078125;
 
+//	int datoff;
+
 	asprintf(&gr, "");
 
 	prodid = ((apdu->data[4] & 0x7) << 7) | (apdu->data[5] >> 1);
@@ -2224,17 +2251,65 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 				}
 			}
 			break;
+
+			case 11: case 12:		// Extended Range 3D Polyline
+
+				alt_raw = (((rep_all[offs + 4]) & 0x03) << 8) | (rep_all[offs + 5]);
+				alt = alt_raw * 100;
+
+				for (int i = 0; i < overlay_vert_cnt; i++) {
+					lng_raw = ((rep_all[offs]) << 11) | ((rep_all[offs + 1]) << 3) |
+							((rep_all[offs + 2]) >> 5);
+					lat_raw = (((rep_all[offs + 2]) & 0x1F) << 14) | ((rep_all[offs + 3]) << 6) |
+							(((rep_all[offs + 4]) & 0xFC) >> 2);
+					alt_raw = (((rep_all[offs + 4]) & 0x03) << 8) | (rep_all[offs + 5]);
+
+					offs = offs + 6;
+
+					lng_raw = (~lng_raw & 0x7FFFF) + 1;		// 2's compliment +1
+					lat_raw = (~lat_raw & 0x7FFFF) + 1;		// 2's compliment +1
+
+					lat = lat_raw * 0.0006866455078125;
+					lng = lng_raw * -0.0006866455078125;
+
+					if (lat > 90.0)
+						lat = 360.0 - lat;
+					if (lng > 180.0)
+						lng = lng - 360.0;
+
+					alt = alt_raw * 100;
+
+					asprintf(&coords, " [%f,%f],", lng, lat);
+					asprintf(&gr, "%s %s", gr,coords);
+				}
+				break;
+			default:
+				fprintf(to,"(seg-graph) unknown geo %d\n",geo_overlay_opt);
 			}
 		}
 
 		int verts_len = strlen(gr);
 		gr[verts_len - 1] = ' ';
 
-		asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, start_date, stop_date, "
-				"geo_overlay_opt, overlay_op, overlay_vert_cnt, segmented) "
-				"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),"
-				"%d,%d,%d,'%s','%s',%d,%d,%d,1)",
-				gr, apdu->product_id, gseg_rpt_num, alt, start_date, stop_date,	geo_overlay_opt, overlay_op, verts);
+		switch (geo_overlay_opt) {
+		case 3: case 4:
+			asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, start_date, stop_date, "
+					"geo_overlay_opt, overlay_op, overlay_vert_cnt, segmented) "
+					"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),"
+					"%d,%d,%d,'%s','%s',%d,%d,%d,1)",
+					gr, apdu->product_id, gseg_rpt_num, alt, start_date, stop_date,	geo_overlay_opt, overlay_op, verts);
+			break;
+		case 11: case 12:
+			asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, "
+					"start_date, stop_date, geo_overlay_opt,  "
+					"overlay_op, overlay_vert_cnt,segmented) "
+					"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ %s ]}'),4326),"
+					"%d,%d,%d,'%s','%s',%d,%d,%d,1)",
+					gr, apdu->product_id, gseg_rpt_num, alt, start_date, stop_date,
+					geo_overlay_opt,
+					overlay_op, overlay_vert_cnt);
+			break;
+		}
 
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
