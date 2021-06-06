@@ -2350,6 +2350,8 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *to)
 	char *postsql;
 	char *seg_text;
 
+	char gstn[5];
+
 	prodid = ((apdu->data[4] & 0x7) << 7) | (apdu->data[5] >> 1);
 	prodfillen = (apdu->data[5] & 0x1) | (apdu->data[6]);
 	apdunum = ((apdu->data[7]) << 1) | (apdu->data[8] >> 7);
@@ -2417,9 +2419,16 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *to)
 				seg_text[i] = ' ';
 		}
 
+		if (strncmp(seg_text,"NOTAM-FDC",9) == 0){
+			strncpy(gstn,seg_text + 10,4);
+			gstn[4] = '\0';
+		}
+		else
+			strncpy(gstn,"   ",5);
+
 		asprintf(&postsql,"INSERT INTO sigairmet (prod_id, rep_num, text_data, stn_call, segmented) "
-				"VALUES (%d,%d,'%s','    ',1)",
-				apdu->product_id, tseg_rpt_num, seg_text);
+				"VALUES (%d,%d,'%s','%s',1)",
+				apdu->product_id, tseg_rpt_num, seg_text, gstn);
 
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
