@@ -7,7 +7,6 @@
 #define UAT_DECODE_H
 
 #include <stdint.h>
-//#include <stdio.h>
 #include "uat.h"
 
 PGconn *conn;
@@ -21,15 +20,24 @@ typedef enum { HT_INVALID=0, HT_MAGNETIC, HT_TRUE } heading_type_t;
 typedef enum { CS_INVALID=0, CS_CALLSIGN, CS_SQUAWK } callsign_type_t;
 
 // Segmentation
-struct MySegStruct {
-	uint16_t seg_prodid;
-	uint16_t seg_prolen;
-	uint16_t seg_segnum;
+struct SegTextStruct {
+	uint16_t seg_text_prodid;
+	uint16_t seg_text_prodlen;
+	uint16_t seg_text_apdunum;
 	int seg_text_len;
-	uint16_t seg_rpt_num;
-	int seg_rpt_year;
-	uint8_t  seg_data[1000];
-} seg_list[50];
+	uint16_t seg_text_rptnum;
+	int seg_text_rptyear;
+	uint8_t  seg_text_data[1000];
+} seg_text_list[50];
+
+struct SegTWGOStruct {
+	uint16_t seg_graph_prodid;
+	uint16_t seg_graph_prodlen;
+	uint16_t seg_graph_apdunum;
+	uint16_t seg_graph_len;
+	uint8_t  seg_graph_data[1000];
+} seg_graph_list[50];
+
 
 struct WindsAloftStruct {
 	char* wal_altitude;
@@ -38,12 +46,11 @@ struct WindsAloftStruct {
 	char wal_temp[7];
 } winds_aloft[9];
 
-int seg_count;
+int seg_graph_count;
+int seg_text_count;
 int nex_count;
 
 FILE * filemetar;		// 413
-FILE * filenotam;		// Segemented NOTAM
-
 FILE * filetaf;			// Debug file for TAF
 FILE * fileconfig;		// Credentials.
 

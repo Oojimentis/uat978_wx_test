@@ -33,7 +33,8 @@ void handle_frame(frame_type_t type, uint8_t *frame, int len, void *extra)
 
 int main(int argc, char **argv)
 {
-	seg_count = 0;
+	seg_text_count = 0;
+	seg_graph_count = 0;
 	nex_count = 0;
 
 	char line[75];
@@ -95,11 +96,6 @@ int main(int argc, char **argv)
 	filemetar = fopen("metar.out", "w");
 	if (filemetar == 0) {
 		fprintf(stderr, "metar.out Error--file could not be opened. \n");
-		exit (1); }
-
-	filenotam = fopen("notam.out", "w");
-	if (filenotam == 0)	{
-		fprintf(stderr, "notam.out Error--file could not be opened. \n");
 		exit (1); }
 
 	filetaf = fopen("taf.out", "w");    // test file for TAF
