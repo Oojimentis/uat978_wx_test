@@ -9,8 +9,8 @@ This is my first Github project, so be nice! I am just doing this for my own amu
 * G-AIRMET segmented reports WIP.
 
 ## Added
-* Segmented graphical NOTAM reports.
-* Segemented reports added to database.
+* Segmented graphical NOTAM reports. (06/05/21)
+* Segemented reports added to database. (06/05/21)
 * Removed most of the old output text files, as data is now being put into database. (01/01/21)
 * NEXRAD and other radar data captured in database. (12/27/20)
 * Converted sqlite database to PostgreSQL. (01/01/21)
