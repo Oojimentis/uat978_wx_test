@@ -165,7 +165,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 		}
 		break;
 
-		case 84: {
+		case 84: case 90: case 91: {
 			int kount = 0;
 			int bl_cnt = 0;
 			for (int i = 3; i < apdu->length; ++i) {
@@ -257,52 +257,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 //					fprintf(stderr,"%s\n",postsql);
 					nex_count++;
 					kount = 0;
-				}
-			}
-		}
-		break;
-
-		case 90: case 91: {
-			int kount = 0;
-
-			for (int i = 3; i < apdu->length; ++i) {
-				edr_enc  = apdu->data[i] & 15;
-				num_bins = (apdu->data[i] >> 4) + 1;
-
-				if (num_bins == 15) {
-					i = i + 1;
-					num_bins = (apdu->data[i]) + 1;
-				}
-
-				asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num,"
-						"maptime, altitude) VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
-
-				while (num_bins-- > 0 && edr_enc >= 1 && edr_enc < 15 ) {
-					t_lat = latN - (y * (latSize / 4.0));
-					t_lon = lonW + (x * (lonSize / 32.0));
-					kount++;
-
-					x++;
-					if (x >= 32) {
-						x = 0;
-						y++;
-					}
-					asprintf(&geojson,"%s POINT(%f %f),", geojson, t_lon, t_lat);
-				}
-				if (kount > 0) {
-					klen = strlen(geojson);
-					geojson[klen - 1] = ' ';
-					kount = 0;
-					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d)", geojson, apdu->product_id,
-							edr_enc, block_num, nexrad_time, alt_level);
-
-					PGresult *res = PQexec(conn, postsql);
-					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-						if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-							fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
-									PQresultStatus(res), postsql);
-					}
-					PQclear(res);
 				}
 			}
 		}
