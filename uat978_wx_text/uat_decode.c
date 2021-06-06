@@ -2092,15 +2092,20 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 	float lat;
 	float lng;
 	char *postsql;
-
+	uint8_t element_flag;
+	uint8_t obj_element;
+//	uint8_t obj_status;
+	uint8_t obj_type;
+//	uint8_t qualifier_flag;
+	char * obj_ele_text;
 	int rep_all[5000];
 	int rec_cnt = 0;
 	int verts = 0;
 	float fct_f = 0.0006866455078125;
 
-//	int datoff;
 
 	asprintf(&gr, "");
+	asprintf(&obj_ele_text, " ");
 
 	prodid = ((apdu->data[4] & 0x7) << 7) | (apdu->data[5] >> 1);
 	prodfillen = (apdu->data[5] & 0x1) | (apdu->data[6]);
@@ -2161,11 +2166,21 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 	if (fg == prodfillen) {
 		while (offs < rec_cnt) {
 			gseg_rpt_num = (((rep_all[offs + 1]) & 0x3F) << 8) | (rep_all[offs + 2]);
+
+			element_flag = ((rep_all[offs + 7]) & 0x80) >> 7;
+			obj_element = (rep_all[offs + 7]) & 0x1F;
+//			obj_status = (rep_all[offs + 8]) & 0x0F;
+			obj_type = (rep_all[offs + 8] & 0xF0) >> 4;
+//			qualifier_flag = ((rep_all[offs + 7]) & 0x40) >> 6;
 			geo_overlay_opt = (rep_all[offs + 9]) & 0x0F;
 			overlay_op = ((rep_all[offs + 10]) & 0xC0) >> 6;
-			overlay_vert_cnt = ((rep_all[offs + 10]) & 0x3F) + 1;		// Docs say to add 1)
+			overlay_vert_cnt = ((rep_all[offs + 10]) & 0x3F) + 1;		// Docs say to add 1
 			rec_app_opt = ((rep_all[offs + 9]) & 0xC0) >> 6;
 			date_time_format = ((rep_all[offs + 9]) & 0x30) >> 4;
+
+			if (element_flag == 1 && obj_type == 14 && apdu->product_id == 14) {
+				strcpy(obj_ele_text, gairspace_element_names[obj_element]);
+			}
 
 			switch (rec_app_opt) {
 			case 0:		// No times given. UFN. (record_data[2:],date_time_format)
@@ -2243,6 +2258,7 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 					if (alt != alt_save) {		// Multiple altitudes
 //						alt_save = alt;
 //						gr[0] = '\0';
+						fprintf(stderr,"**** multiple altitudes\n");
 					}
 
 					asprintf(&coords, " [%f,%f],", lng, lat);
@@ -2280,6 +2296,7 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 
 					asprintf(&coords, " [%f,%f],", lng, lat);
 					asprintf(&gr, "%s %s", gr,coords);
+					verts++;
 				}
 				break;
 			default:
@@ -2293,20 +2310,20 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 		switch (geo_overlay_opt) {
 		case 3: case 4:
 			asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, start_date, stop_date, "
-					"geo_overlay_opt, overlay_op, overlay_vert_cnt, segmented) "
+					"geo_overlay_opt, overlay_op, overlay_vert_cnt, segmented,ob_ele,element_flag) "
 					"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),"
-					"%d,%d,%d,'%s','%s',%d,%d,%d,1)",
-					gr, apdu->product_id, gseg_rpt_num, alt, start_date, stop_date,	geo_overlay_opt, overlay_op, verts);
+					"%d,%d,%d,'%s','%s',%d,%d,%d,1,'%s',%d)",
+					gr, apdu->product_id, gseg_rpt_num, alt, start_date, stop_date,
+					geo_overlay_opt, overlay_op, verts,obj_ele_text,element_flag);
 			break;
 		case 11: case 12:
 			asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, "
 					"start_date, stop_date, geo_overlay_opt,  "
-					"overlay_op, overlay_vert_cnt,segmented) "
+					"overlay_op, overlay_vert_cnt,segmented,ob_ele,element_flag) "
 					"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ %s ]}'),4326),"
-					"%d,%d,%d,'%s','%s',%d,%d,%d,1)",
+					"%d,%d,%d,'%s','%s',%d,%d,%d,1,'%s',%d)",
 					gr, apdu->product_id, gseg_rpt_num, alt, start_date, stop_date,
-					geo_overlay_opt,
-					overlay_op, overlay_vert_cnt);
+					geo_overlay_opt, overlay_op, verts,obj_ele_text,element_flag);
 			break;
 		}
 
