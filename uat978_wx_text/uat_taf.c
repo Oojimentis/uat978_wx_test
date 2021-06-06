@@ -74,10 +74,13 @@ void validDates(char *sd, char *sz, char *ed, char *ez, char *str)
 char* tafWind(char *temp)
 {		// Decode wind/gust.
 	char *taf_wind;
-	char kt[3];
+
 	char d[4], s[4], gs[4];
-	int w_len;
+	char kt[3];
+
 	int kt_int = 0;
+	int w_len;
+
 
 	gs[0] = '\0';
 	w_len = strlen(temp);
@@ -187,16 +190,16 @@ char* tafWeather(char *taf_list)
 	char sd[5], sz[3], ed[5], ez[3];
 	char perc[3];
 
-	int wx1, wx2, wx3;
-	int units;
-	int l;
 	int d;
 	int found;
+	int l;
 	int len_t;
+	int units;
 	int vis_met = 0;
+	int wx1, wx2, wx3;
 
-	float units_f;
 	float fahr;
+	float units_f;
 
 	temp = strsep(&taf_list, " ");
 	taf_wx[0] = '\0';
@@ -630,25 +633,28 @@ return taf_wx_all;
 
 void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 {		// TAF Decode
-	char sd[10], sz[3], ed[5], ez[3];
-	char *dt;
+	char current_all[100];
 	char fsz[5];
+	char mil[1];
+	char sd[10], sz[3], ed[5], ez[3];
 	char taf_t[5];
+	char taf_cld[50];
+	char wind[300];
+
+	char *dt;
+	char *postsql;
+	char *t_temp;
+	char *taf_condx;
 	char *taf_lines;
 	char *taf_temp;
-	char taf_cld[50];
 	char *temp, *temp2;
-	char *t_temp;
-	char *postsql;
-	char current_all[100];
-	char wind[300];
 	char *visby;
-	char *taf_condx;
-	char mil[1];
+
 	int dx;
-	int temp_len;
-	int sw = 0;
 	int nil = 0;
+	int sw = 0;
+	int temp_len;
+
 
 	current_all[0] = '\0';
 

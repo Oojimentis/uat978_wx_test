@@ -14,16 +14,18 @@
 
 void graphic_nexrad(const struct fisb_apdu *apdu)
 {
-	char *postsql;
-	char nexrad_time[6];
 	char *geojson;
+	char *postsql;
 
-	int scale_factor = 1;
+	char nexrad_time[6];
+
+	int alt_level = 0;
+	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
 	int ns_flag = 0;
 	int rle_flag = (apdu->data[0] & 0x80) != 0;
-	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
+	int scale_factor = 1;
 	int wx_alt = (apdu->data[0] & 0x70) >> 4;
-	int alt_level = 0;
+
 
 	switch(apdu->product_id) {
 	case 63: case 64: case 84: case 103:		// ** NEXRAD/Cloud Top/Lightning
@@ -57,24 +59,26 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 
 	if (rle_flag) {		// One bin, 128 values, RLE-encoded
 		double latN = 0;
-		double lonW = 0;
 		double latSize = 0;
+		double lonW = 0;
 		double lonSize = 0;
-		float t_lat, t_lon;
-		float s_lat, s_lon;
-		float e_lat, e_lon;
 
-		int num_bins;
-		int ice_sld;
+		float e_lat, e_lon;
+		float s_lat, s_lon;
+		float t_lat, t_lon;
+
+		int edr_enc;
 		int ice_prob;
 		int ice_sev;
+		int ice_sld;
 		int intensity;
-		int runlength;
-		int lgt_cnt;
-		int edr_enc;
-		int y = 0;
-		int x = 0;
 		int klen;
+		int lgt_cnt;
+		int num_bins;
+		int runlength;
+		int x = 0;
+		int y = 0;
+
 
 		block_location_graphic(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
@@ -351,17 +355,19 @@ double raw_lat; double raw_lon; double scale;
 void metar_data( Decoded_METAR *Mptr)
 {
 	char *postsql;
-	char obs_date[10] = " ";
-	char temp[10];
-	char windSpeed[10];
-	char windDir[10];
-	char windGust[10];
-	char windVar[10];
+
 	char altstng[10];
-	char vsbySM[10];
-	char SLP[10];
 	char dew_pt_temp[10];
 	char hrly_precip[10];
+	char obs_date[10] = " ";
+	char SLP[10];
+	char temp[10];
+	char vsbySM[10];
+	char windDir[10];
+	char windGust[10];
+	char windSpeed[10];
+	char windVar[10];
+
 
 	if (Mptr->hourlyPrecip > 1000)
 		sprintf(hrly_precip, "- ");

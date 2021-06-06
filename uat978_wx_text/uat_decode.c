@@ -23,12 +23,13 @@ static char gs_ret_lat[25];
 static char gs_ret_lng[25];
 
 static void get_graphic(const struct fisb_apdu *apdu, FILE *to);
-static void get_text(const struct fisb_apdu *apdu, FILE *to);
-static void get_seg_text(const struct fisb_apdu *apdu, FILE *to);
-static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to);
 static void get_gs_name(char *Word);
-static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_year);
 static void get_pirep(char *Word);
+static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to);
+static void get_seg_text(const struct fisb_apdu *apdu, FILE *to);
+static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_year);
+static void get_text(const struct fisb_apdu *apdu, FILE *to);
+
 
 // The odd two-string-literals here is to avoid \0x3ABCDEF being interpreted as a single (very large valued) character
 static const char *dlac_alphabet = "\x03" "ABCDEFGHIJKLMNOPQRSTUVWXYZ\x1A\t\x1E\n| !\"#$%&'()*+,-./0123456789:;<=>?";
@@ -215,8 +216,8 @@ static void get_gs_name(char *Word)
 {
 	// Get ground station data from Postgresql database
 
-	char temp_stn[5] = " ";
 	char *postsql;
+	char temp_stn[5] = " ";
 
 	strncpy(temp_stn, Word, 4);
 	strcpy(gs_ret, "not found      ");
@@ -253,32 +254,30 @@ static void get_gs_name(char *Word)
 
 static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_year)
 {		// SUA Decode
-	char *token;
 
-	char sua_sch_stat[2];
-	char sua_aspc_ty[2];
 	char sua_aspc_nm[50];
-
-	char sua_st_tm[11];	char sua_st_yy[3]; 	char sua_st_mm[3]; char sua_st_dd[3];
-	char sua_st_hh[3];	char sua_st_mn[3];
-	char sua_en_tm[11];	char sua_en_yy[3]; 	char sua_en_mm[3]; char sua_en_dd[3];
-	char sua_en_hh[3];	char sua_en_mn[3];
-
+	char sua_aspc_ty[2];
+	char sua_dafif_id[10];	char sua_dafif_nm[50];
+	char sua_en_tm[11];		char sua_en_yy[3]; 	char sua_en_mm[3]; char sua_en_dd[3];
+	char sua_en_hh[3];		char sua_en_mn[3];
+	char sua_nfdc_id[10];	char sua_nfcd_nm[50];
+	char sua_sch_stat[2];
 	char sua_sep_rl[2];
 	char sua_shp_ind[2];
-	char sua_nfdc_id[10];	char sua_nfcd_nm[50];
-	char sua_dafif_id[10];	char sua_dafif_nm[50];
-
-	char *postsql;
+	char sua_st_tm[11];		char sua_st_yy[3]; 	char sua_st_mm[3]; char sua_st_dd[3];
+	char sua_st_hh[3];		char sua_st_mn[3];
 	char temp[10];
 
-	int sched_id;
-	int airsp_id;
-	int low_alt;
-	int high_alt;
-
+	char *postsql;
 	char *sua_start;
 	char *sua_end;
+	char *token;
+
+	int airsp_id;
+	int high_alt;
+	int low_alt;
+	int sched_id;
+
 
 	token = strsep(&Word, "|");
 	sched_id = atoi(strcpy(temp, token));
@@ -366,7 +365,10 @@ static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_yea
 
 static void get_pirep(char *Word)
 {
+	char *postsql;
 	char *token;
+
+	char buff[30];
 	char pirep_stn[5] = "";
 	char pirep_OV[50] = "";		// Location
 	char pirep_TM[15] = ""; 	// DateTime
@@ -383,9 +385,6 @@ static void get_pirep(char *Word)
 	char pirep_RM[100] = ""; 	// Remarks
 	char pirep_TY[30] = "";		// Type urgent/regular
 	char pirep_TI[10] = "";		// Time
-
-	char buff[30];
-	char *postsql;
 
 	int sua_len;
 
@@ -498,9 +497,10 @@ static void uat_display_hdr(const struct uat_adsb_mdb *mdb, FILE *to)
 
 static void uat_decode_sv(uint8_t *frame, struct uat_adsb_mdb *mdb)
 {
+	uint32_t raw_alt;
 	uint32_t raw_lat;
 	uint32_t raw_lon;
-	uint32_t raw_alt;
+
 
 	mdb->has_sv = 1;
 	mdb->nic = (frame[11] & 15);
@@ -1370,10 +1370,12 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
 static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *frame, FILE *to)
 {
-	int tfr;
+
 	int lidflag;
-	int prod_range;
 	int num_crl;
+	int prod_range;
+	int tfr;
+
 	uint16_t prodt;
 	uint16_t repid = 0;
 
@@ -1455,58 +1457,56 @@ void uat_display_uplink_mdb(const struct uat_uplink_mdb *mdb, FILE *to)
 
 static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 {
-	int rec_offset = 11;
+	int alt;
 	int datoff = 6;
-//	int product_ver;
-	int rec_count;
-	int rec_ref;
-	int overlay_rec_id = 0;
+	int d1;	int d2;	int d3;	int d4;
+	int geo_overlay_opt;
 	int obj_label = 0;
 	int obj_label_flag = 0;
+	int obj_param_type = 0;
+	int overlay_op;
+	int overlay_rec_id = 0;
+	int overlay_vert_cnt;
+	//	int product_ver;
+	int rec_count;
+	int rec_offset = 11;
+	int rec_ref;
 
-	char gstn[5];
-	char * obj_ele_text;
-	const char * obj_labelt;
+	uint8_t date_time_format;
+	uint8_t element_flag;
+	uint8_t obj_element;
+	uint8_t obj_status;
+	uint8_t obj_type;
+	uint8_t param_flag;
+	uint8_t qualifier_flag;
+	uint8_t rec_app_opt;
 
+	uint16_t obj_par_val;
 	uint16_t rec_len = 0;
 	uint16_t rep_num = 0;
 	uint16_t report_year = 0;
 
-	uint8_t obj_type;
-	uint8_t obj_element;
-	uint8_t obj_status;
-	uint8_t qualifier_flag;
-	uint8_t param_flag;
-	uint8_t rec_app_opt;
-	uint8_t date_time_format;
-	uint8_t element_flag;
-
-	int geo_overlay_opt;
-	int overlay_op;
-	int overlay_vert_cnt;
-	int d1;	int d2;	int d3;	int d4;
-
+	uint32_t alt_raw;
 	uint32_t lat_raw;
 	uint32_t lng_raw;
-	uint32_t alt_raw;
-	int alt;
+	uint32_t object_qualifier;
+
 	float lat;
 	float lng;
 	float fct_f = 0.000687;
 
-	uint32_t object_qualifier;
-	int obj_param_type = 0;
-	uint16_t obj_par_val;
-
+	char buff[30];
+	char gr[2000] = "";
+	char gstn[5];
 	char qual_text[200];
+
+	char *coords;
+	char *obj_ele_text;
+	char *postsql;
 	char *start_date;
 	char *stop_date;
 
-	char *postsql;
-	char *coords;
-	char gr[2000] = "";
-
-	char buff[30];
+	const char * obj_labelt;
 
 
 //	product_ver = ((apdu->data[0]) & 0x0F);
@@ -1933,25 +1933,26 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 {
 	int rec_offset = 11;
 //	int rep_status;
-	uint16_t rep_num = 0;
 
+	uint16_t rep_num = 0;
+	uint16_t report_year;
+
+	char buff[30];
 	char gstn[5];
 	char prod_name[20];
-	char buff[30];
 	char report_buf[1024];
 
-	char *sua_text;
-	char *rtime;
 	char *data_text;
 	char *notam_name;
 	char *p, *r;
-
 	char *postsql;
+	char *rtime;
+	char *sua_text;
 
 	const char *text = decode_dlac(apdu->data,apdu->length, rec_offset);
 	const char *report = text;
 	const char *next_report;
-	uint16_t report_year;
+
 
 	strcpy(prod_name, "Unknown");
 
@@ -2070,38 +2071,42 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 
 static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 {
-
-	int geo_overlay_opt;
-	int overlay_op;
-	uint8_t overlay_vert_cnt;
-	uint8_t date_time_format;
-	int d1;	int d2;	int d3;	int d4;
-	uint8_t rec_app_opt;
-	char *start_date;
-	char *stop_date;
 	char *coords;
 	char *gr;
-	uint16_t prodid;
-	uint16_t prodfillen;
-	uint16_t apdunum;
-	uint16_t gseg_rpt_num;
-	uint32_t lat_raw;
-	uint32_t lng_raw;
-	uint32_t alt_raw;
-	int alt;
-	float lat;
-	float lng;
+	char *obj_ele_text;
 	char *postsql;
+	char *start_date;
+	char *stop_date;
+
+	int alt;
+	int d1;	int d2;	int d3;	int d4;
+	int geo_overlay_opt;
+	int overlay_op;
+	int rec_cnt = 0;
+	int rep_all[5000];
+	int verts = 0;
+
+	uint8_t date_time_format;
 	uint8_t element_flag;
 	uint8_t obj_element;
 //	uint8_t obj_status;
 	uint8_t obj_type;
+	uint8_t overlay_vert_cnt;
 //	uint8_t qualifier_flag;
-	char * obj_ele_text;
-	int rep_all[5000];
-	int rec_cnt = 0;
-	int verts = 0;
+	uint8_t rec_app_opt;
+
+	uint16_t apdunum;
+	uint16_t gseg_rpt_num;
+	uint16_t prodfillen;
+	uint16_t prodid;
+
+	uint32_t alt_raw;
+	uint32_t lat_raw;
+	uint32_t lng_raw;
+
 	float fct_f = 0.0006866455078125;
+	float lat;
+	float lng;
 
 
 	asprintf(&gr, "");
@@ -2339,12 +2344,15 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 
 static void get_seg_text(const struct fisb_apdu *apdu, FILE *to)
 {
-	uint16_t prodid;
-	uint16_t prodfillen;
-	uint16_t apdunum;
-	uint8_t rep_all[2000];
 	int char_cnt = 0;
+
+	uint8_t rep_all[2000];
+
+	uint16_t apdunum;
+	uint16_t prodfillen;
+	uint16_t prodid;
 	uint16_t tseg_rpt_num;
+
 	char *postsql;
 
 

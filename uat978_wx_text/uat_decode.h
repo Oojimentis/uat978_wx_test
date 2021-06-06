@@ -25,8 +25,6 @@ struct SegTextStruct {
 	uint16_t seg_text_prodlen;
 	uint16_t seg_text_apdunum;
 	int seg_text_len;
-	uint16_t seg_text_rptnum;
-	int seg_text_rptyear;
 	uint8_t  seg_text_data[1000];
 } seg_text_list[50];
 

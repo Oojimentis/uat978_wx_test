@@ -33,15 +33,16 @@ void handle_frame(frame_type_t type, uint8_t *frame, int len, void *extra)
 
 int main(int argc, char **argv)
 {
-	seg_text_count = 0;
-	seg_graph_count = 0;
 	nex_count = 0;
+	seg_graph_count = 0;
+	seg_text_count = 0;
 
-	char line[75];
-	char pg_user[20];
-	char pg_pwd[20];
-	char pg_db[20];
 	char file_path[75];
+	char line[75];
+	char pg_db[20];
+	char pg_pwd[20];
+	char pg_user[20];
+
 	char *postsql;
 
 	fileconfig = fopen("config.txt", "r");
