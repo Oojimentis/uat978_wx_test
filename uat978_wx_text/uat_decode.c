@@ -1482,7 +1482,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	uint8_t qualifier_flag;
 	uint8_t rec_app_opt;
 
-	uint16_t obj_par_val;
+	uint16_t obj_par_val = 0;
 	uint16_t rec_len = 0;
 	uint16_t rep_num = 0;
 	uint16_t report_year = 0;
@@ -1490,7 +1490,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	uint32_t alt_raw;
 	uint32_t lat_raw;
 	uint32_t lng_raw;
-	uint32_t object_qualifier;
+	uint32_t object_qualifier = 0;
 
 	float lat;
 	float lng;
