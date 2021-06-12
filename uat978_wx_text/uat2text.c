@@ -64,6 +64,15 @@ int main(int argc, char **argv)
 			 line[strlen(line) - 1] = '\0';
 			 strcpy(file_path, line);
 		}
+		fgets(line, 2, fileconfig);
+		if (!feof(fileconfig)) {
+			char g[2];
+			strncpy(g,line,1);
+			if (strcmp(g,"N") == 0)
+				print_nexrad = 0;
+			else
+				print_nexrad = 1;
+		}
 	}
 	fclose(fileconfig);
 

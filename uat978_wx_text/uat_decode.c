@@ -1045,8 +1045,10 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 	break;
 // ** Graphics - NEXRAD(63,64), Icing(70,71), Cloud Tops(84), Turbulence(90,91), Lightning(103)
 	case 63:	case 64:	case 70:	case 71:	case 84:	case 90:	case 91:	case 103:
+
+		if (print_nexrad == 1)
 			graphic_nexrad(apdu);
-			break;
+		break;
 	case 413:		// ** Generic text,DLAC *****************
 	{
 		int dx;

@@ -47,6 +47,7 @@ struct WindsAloftStruct {
 int seg_graph_count;
 int seg_text_count;
 int nex_count;
+int print_nexrad;
 
 FILE * filemetar;		// 413
 FILE * filetaf;			// Debug file for TAF
