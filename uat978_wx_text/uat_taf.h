@@ -49,6 +49,7 @@
 #define DRSN		23780
 #define FZFG		26443
 #define FZRA		26557
+#define MIFG   		31743
 #define PLSN		35180
 #define RAPL		36048
 #define RASN		36080
