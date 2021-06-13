@@ -2043,9 +2043,9 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 			data_text = (char *)malloc(strlen(r) + 1);
 			strcpy(data_text, r);
 
-			asprintf(&postsql,"INSERT INTO sigairmet (prod_id, stn_call, rep_time, rep_num, text_data) "
-					"VALUES (%d,'%s','%s',%d,'%s')",
-					apdu->product_id, gstn, rtime, rep_num, data_text);
+			asprintf(&postsql,"INSERT INTO sigairmet (prod_id, stn_call, rep_time, rep_num, text_data, notam_name) "
+					"VALUES (%d,'%s','%s',%d,'%s','%s')",
+					apdu->product_id, gstn, rtime, rep_num, data_text, notam_name);
 
 			PGresult *res = PQexec(conn, postsql);
 			if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -2353,6 +2353,7 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *to)
 	char *seg_text;
 
 	char gstn[5];
+	char notam_name[10];
 
 	prodid = ((apdu->data[4] & 0x7) << 7) | (apdu->data[5] >> 1);
 	prodfillen = (apdu->data[5] & 0x1) | (apdu->data[6]);
@@ -2421,16 +2422,18 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *to)
 				seg_text[i] = ' ';
 		}
 
-		if (strncmp(seg_text,"NOTAM-FDC",9) == 0){
+		strncpy(notam_name,seg_text,9);
+		notam_name[9] = '\0';
+		if (strncmp(notam_name,"NOTAM-FDC",9) == 0) {
 			strncpy(gstn,seg_text + 10,4);
 			gstn[4] = '\0';
 		}
 		else
 			strncpy(gstn,"   ",5);
 
-		asprintf(&postsql,"INSERT INTO sigairmet (prod_id, rep_num, text_data, stn_call, segmented) "
-				"VALUES (%d,%d,'%s','%s',1)",
-				apdu->product_id, tseg_rpt_num, seg_text, gstn);
+		asprintf(&postsql,"INSERT INTO sigairmet (prod_id, rep_num, text_data, stn_call, segmented, notam_name) "
+				"VALUES (%d,%d,'%s','%s',1, '%s')",
+				apdu->product_id, tseg_rpt_num, seg_text, gstn, notam_name);
 
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
