@@ -33,15 +33,16 @@ void handle_frame(frame_type_t type, uint8_t *frame, int len, void *extra)
 
 int main(int argc, char **argv)
 {
-	seg_text_count = 0;
-	seg_graph_count = 0;
 	nex_count = 0;
+	seg_graph_count = 0;
+	seg_text_count = 0;
 
-	char line[75];
-	char pg_user[20];
-	char pg_pwd[20];
-	char pg_db[20];
 	char file_path[75];
+	char line[75];
+	char pg_db[20];
+	char pg_pwd[20];
+	char pg_user[20];
+
 	char *postsql;
 
 	fileconfig = fopen("config.txt", "r");
@@ -62,6 +63,15 @@ int main(int argc, char **argv)
 		if (!feof(fileconfig)) {
 			 line[strlen(line) - 1] = '\0';
 			 strcpy(file_path, line);
+		}
+		fgets(line, 2, fileconfig);
+		if (!feof(fileconfig)) {
+			char g[2];
+			strncpy(g,line,1);
+			if (strcmp(g,"N") == 0)
+				print_nexrad = 0;
+			else
+				print_nexrad = 1;
 		}
 	}
 	fclose(fileconfig);

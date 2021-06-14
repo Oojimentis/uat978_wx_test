@@ -25,8 +25,6 @@ struct SegTextStruct {
 	uint16_t seg_text_prodlen;
 	uint16_t seg_text_apdunum;
 	int seg_text_len;
-	uint16_t seg_text_rptnum;
-	int seg_text_rptyear;
 	uint8_t  seg_text_data[1000];
 } seg_text_list[50];
 
@@ -49,6 +47,7 @@ struct WindsAloftStruct {
 int seg_graph_count;
 int seg_text_count;
 int nex_count;
+int print_nexrad;
 
 FILE * filemetar;		// 413
 FILE * filetaf;			// Debug file for TAF

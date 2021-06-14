@@ -18,13 +18,16 @@ static unsigned long long int getHash(const char* source)
 {
 	unsigned long long int hash = 0;
 
+	char c;
+	int a;
+
 	if (source == NULL) {
 		return 0;
 	}
 
 	while (*source != '\0') {
-		char c = *source++;
-		int a = c - '0';
+		c = *source++;
+		a = c - '0';
 		hash = (hash * 10) + a;
 	}
 	return hash;
@@ -35,10 +38,10 @@ char* daySuffix(int d)		// adds st, nd, rd, th to day number.
 	char *date_suff;
 
 	switch (d) {
-		case 1: case 21: case 31: 	asprintf(&date_suff, "st"); break;
-		case 2: case 22:			asprintf(&date_suff, "nd"); break;
-		case 3: case 23: 			asprintf(&date_suff, "rd"); break;
-		default: 					asprintf(&date_suff, "th"); break;
+	case 1: case 21: case 31: 	asprintf(&date_suff, "st"); break;
+	case 2: case 22:			asprintf(&date_suff, "nd"); break;
+	case 3: case 23: 			asprintf(&date_suff, "rd"); break;
+	default: 					asprintf(&date_suff, "th"); break;
 	}
 
 	return date_suff;
@@ -74,10 +77,13 @@ void validDates(char *sd, char *sz, char *ed, char *ez, char *str)
 char* tafWind(char *temp)
 {		// Decode wind/gust.
 	char *taf_wind;
-	char kt[3];
+
 	char d[4], s[4], gs[4];
-	int w_len;
+	char kt[3];
+
 	int kt_int = 0;
+	int w_len;
+
 
 	gs[0] = '\0';
 	w_len = strlen(temp);
@@ -187,16 +193,16 @@ char* tafWeather(char *taf_list)
 	char sd[5], sz[3], ed[5], ez[3];
 	char perc[3];
 
-	int wx1, wx2, wx3;
-	int units;
-	int l;
 	int d;
 	int found;
+	int l;
 	int len_t;
+	int units;
 	int vis_met = 0;
+	int wx1, wx2, wx3;
 
-	float units_f;
 	float fahr;
+	float units_f;
 
 	temp = strsep(&taf_list, " ");
 	taf_wx[0] = '\0';
@@ -245,6 +251,7 @@ char* tafWeather(char *taf_list)
 		case DRSN:		strcat(taf_wx_all, " Drizzle/snow,"); break;
 		case FZFG:		strcat(taf_wx_all, " Freezing fog,"); break;
 		case FZRA:		strcat(taf_wx_all, " Freezing rain,"); break;
+		case MIFG:		strcat(taf_wx_all, " Shallow fog,"); break;
 		case RAPL:		strcat(taf_wx_all, " Rain/ice pellets,"); break;
 		case RASN:		strcat(taf_wx_all, " Rain/snow,"); break;
 		case SHRA:	case SHRN: 	strcat(taf_wx_all, " Rain showers,"); break;
@@ -402,16 +409,16 @@ char* tafWeather(char *taf_list)
 					wx1 = atoi(temp2);
 
 					switch(wx1) {
-						case 0: strcpy(wx_int, "Trace icing"); break;
-						case 1: strcpy(wx_int, "Light mixed icing"); break;
-						case 2: strcpy(wx_int, "Light rime icing in cloud"); break;
-						case 3: strcpy(wx_int, "Light clear icing in precipitation"); break;
-						case 4: strcpy(wx_int, "Moderate mixed icing"); break;
-						case 5: strcpy(wx_int, "Moderate rime Icing In Cloud"); break;
-						case 6: strcpy(wx_int, "Moderate clear icing in precipitation"); break;
-						case 7: strcpy(wx_int, "Severe mixed icing"); break;
-						case 8: strcpy(wx_int, "Severe rime icing in cloud"); break;
-						case 9: strcpy(wx_int, "Severe clear icing in precipitation"); break;
+					case 0: strcpy(wx_int, "Trace icing"); break;
+					case 1: strcpy(wx_int, "Light mixed icing"); break;
+					case 2: strcpy(wx_int, "Light rime icing in cloud"); break;
+					case 3: strcpy(wx_int, "Light clear icing in precipitation"); break;
+					case 4: strcpy(wx_int, "Moderate mixed icing"); break;
+					case 5: strcpy(wx_int, "Moderate rime Icing In Cloud"); break;
+					case 6: strcpy(wx_int, "Moderate clear icing in precipitation"); break;
+					case 7: strcpy(wx_int, "Severe mixed icing"); break;
+					case 8: strcpy(wx_int, "Severe rime icing in cloud"); break;
+					case 9: strcpy(wx_int, "Severe clear icing in precipitation"); break;
 					}
 					strncpy(temp2, temp + 2, 3);
 					temp2[3] = '\0';
@@ -580,7 +587,7 @@ char* tafWeather(char *taf_list)
 				strcat(taf_wx_all, taf_wx);
 			}
 			else if ((strncmp(temp, "5", 1) == 0) && (strlen(temp) == 6)) {
-				units=strlen(temp);
+				units = strlen(temp);
 				if (units == 6) {
 					wx_int[0] = '\0';
 					strncpy(temp2, temp + 1, 1);
@@ -591,16 +598,16 @@ char* tafWeather(char *taf_list)
 						wx1 = atoi(temp2);
 
 						switch(wx1) {
-							case 0: strcpy(wx_int, "No turbulence"); break;
-							case 1: strcpy(wx_int, "Light turbulence"); break;
-							case 2: strcpy(wx_int, "Moderate turbulence in clear air, occasional"); break;
-							case 3: strcpy(wx_int, "Moderate turbulence in clear air, frequent"); break;
-							case 4: strcpy(wx_int, "Moderate turbulence in cloud, occasional"); break;
-							case 5: strcpy(wx_int, "Moderate turbulence in cloud, frequent"); break;
-							case 6: strcpy(wx_int, "Severe turbulence in clear air, occasional"); break;
-							case 7: strcpy(wx_int, "Severe turbulence in clear air, frequent"); break;
-							case 8: strcpy(wx_int, "Severe turbulence in cloud, occasional"); break;
-							case 9: strcpy(wx_int, "Severe turbulence in cloud, frequent"); break;
+						case 0: strcpy(wx_int, "No turbulence"); break;
+						case 1: strcpy(wx_int, "Light turbulence"); break;
+						case 2: strcpy(wx_int, "Moderate turbulence in clear air, occasional"); break;
+						case 3: strcpy(wx_int, "Moderate turbulence in clear air, frequent"); break;
+						case 4: strcpy(wx_int, "Moderate turbulence in cloud, occasional"); break;
+						case 5: strcpy(wx_int, "Moderate turbulence in cloud, frequent"); break;
+						case 6: strcpy(wx_int, "Severe turbulence in clear air, occasional"); break;
+						case 7: strcpy(wx_int, "Severe turbulence in clear air, frequent"); break;
+						case 8: strcpy(wx_int, "Severe turbulence in cloud, occasional"); break;
+						case 9: strcpy(wx_int, "Severe turbulence in cloud, frequent"); break;
 						}
 					}
 					strncpy(temp2, temp + 2, 3);
@@ -630,25 +637,27 @@ return taf_wx_all;
 
 void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 {		// TAF Decode
-	char sd[10], sz[3], ed[5], ez[3];
-	char *dt;
+	char current_all[100];
 	char fsz[5];
+	char mil[1];
+	char sd[10], sz[3], ed[5], ez[3];
 	char taf_t[5];
+	char taf_cld[50];
+	char wind[300];
+
+	char *dt;
+	char *postsql;
+	char *t_temp;
+	char *taf_condx;
 	char *taf_lines;
 	char *taf_temp;
-	char taf_cld[50];
 	char *temp, *temp2;
-	char *t_temp;
-	char *postsql;
-	char current_all[100];
-	char wind[300];
 	char *visby;
-	char *taf_condx;
-	char mil[1];
+
 	int dx;
-	int temp_len;
-	int sw = 0;
 	int nil = 0;
+	int sw = 0;
+	int temp_len;
 
 	current_all[0] = '\0';
 
@@ -723,7 +732,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-				fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+				fprintf(stderr, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 						PQresultStatus(res), postsql);
 		}
 		PQclear(res);

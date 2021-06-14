@@ -14,22 +14,23 @@
 
 void graphic_nexrad(const struct fisb_apdu *apdu)
 {
-	char *postsql;
-	char nexrad_time[6];
 	char *geojson;
+	char *postsql;
 
-	int scale_factor = 1;
+	char nexrad_time[6];
+
+	int alt_level = 0;
+	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
 	int ns_flag = 0;
 	int rle_flag = (apdu->data[0] & 0x80) != 0;
-	int block_num = ((apdu->data[0] & 0x0f) << 16) | (apdu->data[1] << 8) | (apdu->data[2]);
+	int scale_factor = 1;
 	int wx_alt = (apdu->data[0] & 0x70) >> 4;
-	int alt_level = 0;
+
 
 	switch(apdu->product_id) {
 	case 63: case 64: case 84: case 103:		// ** NEXRAD/Cloud Top/Lightning
 		scale_factor = (apdu->data[0] & 0x30) >> 4;
 		break;
-
 	case 70: case 90:							// ** Icing/Turbulence Low
 		switch(wx_alt) {
 		case 0:		alt_level = 2000;	break;
@@ -42,46 +43,46 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 		case 7:		alt_level = 16000;	break;
 	}
 		break;
-
-	case 71: case 91:							// ** Icing/Turbulence High
-		switch(wx_alt) {
-		case 0:		alt_level = 18000;	break;
-		case 1:		alt_level = 20000;	break;
-		case 2:		alt_level = 22000;	break;
-		case 3:		alt_level = 24000;	break;
-		}
-		break;
+		case 71: case 91:							// ** Icing/Turbulence High
+			switch(wx_alt) {
+			case 0:		alt_level = 18000;	break;
+			case 1:		alt_level = 20000;	break;
+			case 2:		alt_level = 22000;	break;
+			case 3:		alt_level = 24000;	break;
+			}
+			break;
 	}
 
 	sprintf(nexrad_time, "%02d%02d", apdu->hours, apdu->minutes);
 
 	if (rle_flag) {		// One bin, 128 values, RLE-encoded
 		double latN = 0;
-		double lonW = 0;
 		double latSize = 0;
+		double lonW = 0;
 		double lonSize = 0;
-		float t_lat, t_lon;
-		float s_lat, s_lon;
-		float e_lat, e_lon;
 
-		int num_bins;
-		int ice_sld;
+		float e_lat, e_lon;
+		float s_lat, s_lon;
+		float t_lat, t_lon;
+
+		int edr_enc;
 		int ice_prob;
 		int ice_sev;
+		int ice_sld;
 		int intensity;
-		int runlength;
-		int lgt_cnt;
-		int edr_enc;
-		int y = 0;
-		int x = 0;
 		int klen;
+		int lgt_cnt;
+		int num_bins;
+		int runlength;
+		int x = 0;
+		int y = 0;
+		int kount = 0;
+		int bl_cnt = 0;
 
 		block_location_graphic(block_num, ns_flag, scale_factor, &latN, &lonW, &latSize, &lonSize);
 
 		switch(apdu->product_id) {
 		case 63: case 64: {
-			int kount = 0;
-
 			for (int i = 3; i < apdu->length; ++i) {
 				intensity = apdu->data[i] & 7;
 				runlength = (apdu->data[i] >> 3) + 1;
@@ -110,7 +111,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 					PGresult *res = PQexec(conn, postsql);
 					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 						if (strncmp(PQerrorMessage(conn), "ERROR:  duplicate key", 21) != 0)
-							fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+							fprintf(stderr, "(NEXRAD 63)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 									PQresultStatus(res), postsql);
 					}
 					PQclear(res);
@@ -118,10 +119,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 			}
 		}
 		break;
-
 		case 70: case 71: {
-			int kount = 0;
-
 			for (int i = 3; i < apdu->length; ++i) {
 				num_bins = (apdu->data[i] ) + 1;
 				i = i + 1;
@@ -156,7 +154,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 					PGresult *res = PQexec(conn, postsql);
 					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 						if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-							fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+							fprintf(stderr, "(NEXRAD 70)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 									PQresultStatus(res), postsql);
 					}
 					PQclear(res);
@@ -164,10 +162,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 			}
 		}
 		break;
-
 		case 84: case 90: case 91: {
-			int kount = 0;
-			int bl_cnt = 0;
 			for (int i = 3; i < apdu->length; ++i) {
 				edr_enc  = apdu->data[i] & 15;
 				num_bins = (apdu->data[i] >> 4) + 1;
@@ -210,7 +205,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 						PGresult *res = PQexec(conn, postsql);
 						if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 							if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-								fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+								fprintf(stderr, "(NEXRAD1 84 90)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 										PQresultStatus(res), postsql);
 						}
 						PQclear(res);
@@ -240,7 +235,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 					PGresult *res = PQexec(conn, postsql);
 					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 						if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-							fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+							fprintf(stderr, "(NEXRAD2 84 90)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 									PQresultStatus(res), postsql);
 					}
 					PQclear(res);
@@ -251,10 +246,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 			}
 		}
 		break;
-
 		case 103: {
-			int kount = 0;
-
 			for (int i = 3; i < apdu->length; ++i) {
 //** 			int lgt_pol = apdu->data[i] & 8;
 				lgt_cnt = apdu->data[i] & 7;
@@ -290,7 +282,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu)
 					PGresult *res = PQexec(conn, postsql);
 					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 						if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-							fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+							fprintf(stderr, "(NEXRAD 103)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 									PQresultStatus(res), postsql);
 					}
 					PQclear(res);
@@ -351,17 +343,19 @@ double raw_lat; double raw_lon; double scale;
 void metar_data( Decoded_METAR *Mptr)
 {
 	char *postsql;
-	char obs_date[10] = " ";
-	char temp[10];
-	char windSpeed[10];
-	char windDir[10];
-	char windGust[10];
-	char windVar[10];
+
 	char altstng[10];
-	char vsbySM[10];
-	char SLP[10];
 	char dew_pt_temp[10];
 	char hrly_precip[10];
+	char obs_date[10] = " ";
+	char SLP[10];
+	char temp[10];
+	char vsbySM[10];
+	char windDir[10];
+	char windGust[10];
+	char windSpeed[10];
+	char windVar[10];
+
 
 	if (Mptr->hourlyPrecip > 1000)
 		sprintf(hrly_precip, "- ");
@@ -428,7 +422,7 @@ void metar_data( Decoded_METAR *Mptr)
 	PGresult *res = PQexec(conn, postsql);
 	if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 		if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-			fprintf(stderr, "bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+			fprintf(stderr, "(METAR)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 					PQresultStatus(res), postsql);
 	}
 	PQclear(res);
