@@ -1556,7 +1556,6 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	else {
 		object_qualifier = ((apdu->data[datoff + 2]) << 16) | ((apdu->data[datoff + 3]) << 8)
 				| (apdu->data[datoff + 4]);
-		fprintf(to, "ob qualifier: %d\n", object_qualifier);
 
 		strcpy(qual_text, " ");
 		if (apdu->product_id == 14) {
@@ -1594,7 +1593,6 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		}
 		obj_param_type = apdu->data[18] >> 3;							// 18
 		obj_par_val = (apdu->data[18] & 0x7) << 8 | apdu->data[19];		// 19
-		fprintf(to, "ob par value: %d  ob_par_type: %d", obj_par_val, obj_param_type);
 
 		datoff = datoff + 3;	//was 7								// 13 datoff =20
 	}
@@ -1982,7 +1980,6 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 				if (strcmp(notam_name,"NOTAM-TFR") != 0) {
 					*p = 0;
 					strncpy(gstn, r, 5);
-//					get_gs_name(gstn);
 				}
 				else {
 					*p = 0;
