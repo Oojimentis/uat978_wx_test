@@ -19,11 +19,11 @@
 #include "uat_geo.h"
 
 static char gs_ret[80];
-static char gs_ret_lat[25];
-static char gs_ret_lng[25];
+//static char gs_ret_lat[25];
+//static char gs_ret_lng[25];
 
 static void get_graphic(const struct fisb_apdu *apdu, FILE *to);
-static void get_gs_name(char *Word);
+//static void get_gs_name(char *Word);
 static void get_pirep(char *Word);
 static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to);
 static void get_seg_text(const struct fisb_apdu *apdu, FILE *to);
@@ -212,6 +212,7 @@ static const char *info_frame_type_names[16] = {
 	"TIS-B/ADS-R Service Status"
 };
 
+/*
 static void get_gs_name(char *Word)
 {
 	// Get ground station data from Postgresql database
@@ -253,7 +254,7 @@ static void get_gs_name(char *Word)
 
 	return;
 }
-
+*/
 static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_year)
 {		// SUA Decode
 
@@ -971,16 +972,16 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 		get_fisb_product_name(apdu->product_id),
 		get_fisb_product_format(apdu->product_id));
 
-	fprintf(to, " PTime:");
+//	fprintf(to, " PTime:");
 
-	if (apdu->monthday_valid)
-		fprintf(to, "%u/%u ", apdu->month, apdu->day);
+//	if (apdu->monthday_valid)
+//		fprintf(to, "%u/%u ", apdu->month, apdu->day);
 
-	fprintf(to, "%02u:%02u", apdu->hours, apdu->minutes);
-	if (apdu->seconds_valid)
-		fprintf(to, ":%02u", apdu->seconds);
+//	fprintf(to, "%02u:%02u", apdu->hours, apdu->minutes);
+//	if (apdu->seconds_valid)
+//		fprintf(to, ":%02u", apdu->seconds);
 
-	fprintf(to, "\n");
+//	fprintf(to, "\n");
 
 	switch (apdu->product_id) {
 	case 8:		// ** NOTAM **************
@@ -1117,7 +1118,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				*p = 0;
 				strcpy(observation, r);
 				strncpy(mtype, r, 8);
-				fprintf(to, " RType: %s\n", mtype);
+				fprintf(to, " RType: %s ", mtype);
 				r = p + 1;
 			}
 			p = strchr(r, ' ');		// *** RLoc ***
@@ -1135,7 +1136,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					else
 						strncpy(gstn, r, 5);
 
-					get_gs_name(gstn);
+//					get_gs_name(gstn);
 
 					time_t current_time = time(NULL);
 					struct tm *tm = localtime(&current_time);
@@ -1144,9 +1145,12 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 						fprintf(filemetar, "Time                 : %s\n", buff);
 						fprintf(filemetar, "WX Station           : %s - %s\n", gstn, gs_ret);
 					}
+					fprintf(to,"%s\n",gstn);
 				}
 				r = p + 1;
+
 			}
+
 			p = strchr(r, ' ');		// *** RTime ***
 			if (p) {
 				*p = 0;
@@ -1345,9 +1349,12 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				pirep_copy = (char *)malloc(strlen(r) + 1);
 				strcpy(pirep_copy, r);
 				get_pirep(pirep_copy);
+				strcpy(gstn, "K");
+				strcat(gstn, pirep_copy);
+				fprintf(to,"%s\n",gstn);
 			}
 			if (strcmp(mtype, "METAR") == 0 || strcmp(mtype, "SPECI") == 0) {
-				fprintf(to, "Data: %s", observation);
+//				fprintf(to, "Data: %s", observation);
 				if (decode_metar(observation,Mptr) != 0) {
 					fprintf(to, "Error METAR Decode\n"); }
 				else {
@@ -1379,8 +1386,11 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 	uint16_t prodt;
 	uint16_t repid = 0;
 
-	fprintf(to, "\nINFORMATION FRAME:\n Type:  %u (%s)",
+//	fprintf(to, "\nINFORMATION FRAME:\n Type:  %u (%s)",
+//			frame->type, info_frame_type_names[frame->type]);
+	fprintf(to, "\n Type:  %u (%s)",
 			frame->type, info_frame_type_names[frame->type]);
+
 
 	if (frame->length > 0) {
 		if (frame->is_fisb)
@@ -1912,9 +1922,9 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	break;
 	default:
 		fprintf(to, "Unknown Geo type: %d", geo_overlay_opt);
+		display_generic_data(apdu->data,apdu->length,to);
 	}
 }
-//	display_generic_data(apdu->data,apdu->length,to);
 
 static void get_text(const struct fisb_apdu *apdu, FILE *to)
 {
@@ -2039,7 +2049,7 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 			}
 			data_text = (char *)malloc(strlen(r) + 1);
 			strcpy(data_text, r);
-
+			fprintf(to," Station: %s\n",gstn);
 			asprintf(&postsql,"INSERT INTO sigairmet (prod_id, stn_call, rep_time, rep_num, text_data, notam_name) "
 					"VALUES (%d,'%s','%s',%d,'%s','%s')",
 					apdu->product_id, gstn, rtime, rep_num, data_text, notam_name);
@@ -2053,7 +2063,6 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 			PQclear(res);
 		}
 	}
-//	display_generic_data(apdu->data,apdu->length,to);
 }
 
 static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
