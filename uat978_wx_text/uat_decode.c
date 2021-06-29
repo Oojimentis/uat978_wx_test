@@ -218,7 +218,7 @@ static void get_gs_name(char *Word)
 
 	char *postsql;
 	char temp_stn[5] = " ";
-
+//test
 	int rows;
 
 	strncpy(temp_stn, Word, 4);
