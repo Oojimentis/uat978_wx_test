@@ -212,7 +212,6 @@ static const char *info_frame_type_names[16] = {
 	"TIS-B/ADS-R Service Status"
 };
 
-/*
 static void get_gs_name(char *Word)
 {
 	// Get ground station data from Postgresql database
@@ -224,10 +223,8 @@ static void get_gs_name(char *Word)
 
 	strncpy(temp_stn, Word, 4);
 	strcpy(gs_ret, "not found      ");
-	strcpy(gs_ret_lat, "0.0");
-	strcpy(gs_ret_lng, "0.0");
 
-	asprintf(&postsql, "SELECT * FROM stations WHERE stn_call = '%s'", temp_stn);
+	asprintf(&postsql, "SELECT * FROM stations2 WHERE stn_call = '%s'", temp_stn);
 	PGresult *res = PQexec(conn, postsql);
 	if (PQresultStatus(res) != PGRES_TUPLES_OK) {
 		 printf("No data retrieved\n");
@@ -237,8 +234,6 @@ static void get_gs_name(char *Word)
 
 		if (rows == 1) {
 			strcpy(gs_ret, PQgetvalue(res, 0, 2));
-			sprintf(gs_ret_lat, "%s", PQgetvalue(res, 0, 3));
-			sprintf(gs_ret_lng, "%s", PQgetvalue(res, 0, 4));
 		 }
 		else if (rows > 1) {
 			fprintf(stderr, "Multiple entries for %s\n", temp_stn);
@@ -254,7 +249,7 @@ static void get_gs_name(char *Word)
 
 	return;
 }
-*/
+
 static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_year)
 {		// SUA Decode
 
@@ -1136,7 +1131,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					else
 						strncpy(gstn, r, 5);
 
-//					get_gs_name(gstn);
+					get_gs_name(gstn);
 
 					time_t current_time = time(NULL);
 					struct tm *tm = localtime(&current_time);
