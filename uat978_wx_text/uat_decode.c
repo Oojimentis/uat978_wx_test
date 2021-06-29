@@ -224,7 +224,7 @@ static void get_gs_name(char *Word)
 	strncpy(temp_stn, Word, 4);
 	strcpy(gs_ret, "not found      ");
 
-	asprintf(&postsql, "SELECT * FROM stations2 WHERE stn_call = '%s'", temp_stn);
+	asprintf(&postsql, "SELECT * FROM stations WHERE stn_call = '%s'", temp_stn);
 	PGresult *res = PQexec(conn, postsql);
 	if (PQresultStatus(res) != PGRES_TUPLES_OK) {
 		 printf("No data retrieved\n");
