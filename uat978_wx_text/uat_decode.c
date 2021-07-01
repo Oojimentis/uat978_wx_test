@@ -19,11 +19,8 @@
 #include "uat_geo.h"
 
 static char gs_ret[80];
-//static char gs_ret_lat[25];
-//static char gs_ret_lng[25];
 
 static void get_graphic(const struct fisb_apdu *apdu, FILE *to);
-//static void get_gs_name(char *Word);
 static void get_pirep(char *Word);
 static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to);
 static void get_seg_text(const struct fisb_apdu *apdu, FILE *to);
