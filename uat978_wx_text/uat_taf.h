@@ -110,7 +110,7 @@
 #define LFZRASNPL	18446744073675159964u
 #define LSHRAPLSN	77605180
 
-void taf_decode(char *taf_lines, char *issued, char *fsz, char *gstn);
+void taf_decode(char *taf_lines, char *issued, char *fsz, char *gstn, int j);
 
 char* daySuffix(int d);
 

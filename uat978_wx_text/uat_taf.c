@@ -74,6 +74,8 @@ void validDates(char *sd, char *sz, char *ed, char *ez, char *str)
 	ez[2] = '\0';
 }
 
+int err = 0;
+
 char* tafWind(char *temp)
 {		// Decode wind/gust.
 	char *taf_wind;
@@ -92,8 +94,10 @@ char* tafWind(char *temp)
 		strncpy(kt, temp + 5, 2);
 		kt[2]='\0';
 
-		if (strcmp(kt, "KT") != 0)
+		if (strcmp(kt, "KT") != 0) {
 			asprintf(&taf_wind, "1-unknown(%s)", temp);
+			err = 1;
+		}
 		else {
 			strncpy(d, temp, 3);
 			d[3] ='\0';
@@ -105,8 +109,10 @@ char* tafWind(char *temp)
 	else if (w_len == 10) {
 		strncpy(kt, temp + 8, 2);
 		kt[2] = '\0';
-		if (strcmp(kt, "KT") != 0)
+		if (strcmp(kt, "KT") != 0) {
 			asprintf(&taf_wind, "2-unknown(%s)", temp);
+			err = 1;
+		}
 		else {
 			strncpy(d, temp, 3);
 			d[3] = '\0';
@@ -119,6 +125,7 @@ char* tafWind(char *temp)
 	}
 	else {
 		asprintf(&taf_wind, "8-Unknown: %s",temp);
+		err = 1;
 		return taf_wind;
 	}
 	if (strcmp(d, "VRB") == 0)
@@ -176,8 +183,10 @@ void tafVisibilty(char *temp, char *taf_vis, char *temp2)
 	else if(isdigit(temp[0])) {
 		sprintf(taf_vis, "%s meters", temp);
 	}
-	else
+	else {
 		sprintf(taf_vis, " Unknown vis (%s)", temp);
+		err = 1;
+	}
 }
 
 char* tafWeather(char *taf_list)
@@ -432,6 +441,7 @@ char* tafWeather(char *taf_list)
 				}
 				else {
 					sprintf(taf_wx, " (3-unknown %s) ", temp);
+					err = 1;
 					strcat(taf_wx_all, taf_wx);
 				}
 			}
@@ -562,6 +572,7 @@ char* tafWeather(char *taf_list)
 				}
 				else {
 					sprintf(taf_wx, " 6-Unknown (%s)", temp);
+					err = 1;
 					strcat(taf_wx_all, taf_wx);
 				}
 			}
@@ -622,11 +633,13 @@ char* tafWeather(char *taf_list)
 				}
 				else {
 					sprintf(taf_wx, " (4-unknown %s)", temp);
+					err = 1;
 					strcat(taf_wx_all, taf_wx);
 				}
 			}
 			else {
 				sprintf(taf_wx, " 5-Unknown (%s)", temp);
+				err = 1;
 				strcat(taf_wx_all, taf_wx);
 			}
 		}
@@ -635,7 +648,9 @@ char* tafWeather(char *taf_list)
 return taf_wx_all;
 }
 
-void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
+
+
+void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf_line_num)
 {		// TAF Decode
 	char current_all[100];
 	char fsz[5];
@@ -653,6 +668,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 	char *taf_temp;
 	char *temp, *temp2;
 	char *visby;
+	char *forecast;
 
 	int dx;
 	int nil = 0;
@@ -667,6 +683,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 	strncpy(taf_t, taf_lines, 2);
 	taf_t[2] = '\0';
 
+	err= 0;
 	temp = strsep(&taf_lines, " ");
 
 	if ((isdigit(taf_t[0])) && (strlen(temp) != 6) && (temp[4] != 'Z')) {	// (current) 1st line?
@@ -741,11 +758,14 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 		temp = strsep(&taf_lines, " ");
 		validDates(sd, sz, ed, ez, temp);
 		fprintf(filetaf, "Becoming: %s @%s:00z", sd, sz);
+		asprintf(&forecast, "Becoming: %s @%s:00z", sd, sz);
 		fprintf(filetaf, "-%s @%s:00z", ed, ez);
+		asprintf(&forecast,"%s-%s @%s:00z", forecast,ed, ez);
 // Winds
 		temp = strsep(&taf_lines, " ");
 		taf_temp = tafWind(temp);
 		fprintf(filetaf, " Wind: %s", taf_temp);
+		asprintf(&forecast,"%s Wind: %s", forecast,taf_temp);
 // Visibility
 		temp = strsep(&taf_lines, " ");
 		if (temp == 0) {
@@ -758,23 +778,37 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 
 			tafVisibilty(temp, taf_temp, taf_lines);
 			fprintf(filetaf, " Vis: %s", taf_temp);
+			asprintf(&forecast,"%s Vis: %s", forecast,taf_temp);
 		}
-
 		else {
 			if (!taf_lines) {
 				asprintf(&taf_lines, "%s", temp);
 			}
 			else {
-			t_temp = (char *)malloc(strlen(taf_lines) + 1);
-			strcpy(t_temp, taf_lines);
-			temp[temp_len + 1] = '\0';
-			sprintf(taf_lines, "%s %s", temp, t_temp);
+				t_temp = (char *)malloc(strlen(taf_lines) + 1);
+				strcpy(t_temp, taf_lines);
+				temp[temp_len + 1] = '\0';
+				sprintf(taf_lines, "%s %s", temp, t_temp);
 			}
 		}
 // WX sky
 		taf_temp[0] = '\0';
 		taf_condx = tafWeather(taf_lines);
 		fprintf(filetaf, " Condx:%s\n", taf_condx);
+		asprintf(&forecast,"%s Condx:%s", forecast, taf_condx);
+
+		asprintf(&postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number) "
+				"VALUES ('%s','%s','%s',%d, %d)",
+				reptime, gstn, forecast, err, taf_line_num);
+
+		PGresult *res = PQexec(conn, postsql);
+		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
+				fprintf(stderr, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+						PQresultStatus(res), postsql);
+		}
+		PQclear(res);
+
 		temp = strsep(&taf_lines, " ");
 	}
 	else if (strcmp(taf_t, "FM") == 0) {		// FROM
@@ -786,10 +820,12 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 		strncpy(fsz, temp + 4, 4);
 		fsz[4] = '\0';
 		fprintf(filetaf, "From: %s @%sz", sd, fsz);
+		asprintf(&forecast,"From: %s @%sz", sd, fsz);
 // Winds
 		temp = strsep(&taf_lines, " ");
 		taf_temp = tafWind(temp);
 		fprintf(filetaf, " Wind: %s", taf_temp);
+		asprintf(&forecast,"%s Wind: %s", forecast, taf_temp);
 // Visibility
 		temp = strsep(&taf_lines, " ");
 		if (temp) {
@@ -800,25 +836,41 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 
 				tafVisibilty(temp, taf_temp, temp2);
 				fprintf(filetaf, " Vis: %s", taf_temp);
+				asprintf(&forecast,"%s Vis: %s", forecast, taf_temp);
 			}
 		}
 // WX sky
 		taf_temp[0] = '\0';
 		taf_condx = tafWeather(taf_lines);
 		fprintf(filetaf, " Condx:%s\n", taf_condx);
+		asprintf(&forecast,"%s Condx:%s\n", forecast, taf_condx);
+
+		asprintf(&postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number) "
+				"VALUES ('%s','%s','%s',%d, %d)",
+				reptime, gstn, forecast, err, taf_line_num);
+
+		PGresult *res = PQexec(conn, postsql);
+		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
+				fprintf(stderr, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+						PQresultStatus(res), postsql);
+		}
+		PQclear(res);
 	}
 	else if (strcmp(taf_t, "TE") == 0) {	// TEMPO
 		temp = strsep(&taf_lines, " ");
 		validDates(sd, sz, ed, ez, temp);
 		fprintf(filetaf, "Temporary: %s @%s:00z", sd, sz);
+		asprintf(&forecast, "Temporary: %s @%s:00z", sd, sz);
 		fprintf(filetaf, "-%s @%s:00z", ed, ez);
-
+		asprintf(&forecast,"%s-%s @%s:00z", forecast, ed, ez);
 		temp = strsep(&taf_lines, " ");
 		temp_len = strlen(temp);
 
 		if (strncmp(temp + (temp_len - 2), "KT", 2) == 0) {
 			taf_temp = tafWind(temp);
 			fprintf(filetaf, " Wind:%s", taf_temp);
+			asprintf(&forecast,"%s Wind:%s", forecast, taf_temp);
 			temp = strsep(&taf_lines, " ");
 			if (temp != NULL) {
 				temp_len = strlen(temp);
@@ -833,6 +885,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 
 				tafVisibilty(temp, taf_temp, temp2);
 				fprintf(filetaf, " Vis: %s", taf_temp);
+				asprintf(&forecast,"%s Vis: %s", forecast, taf_temp);
 				sw = 1;
 			}
 // WX Sky
@@ -850,26 +903,67 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 				taf_condx = tafWeather(temp);
 			}
 			fprintf(filetaf, " Condx:%s\n", taf_condx);
+			asprintf(&forecast,"%s Condx:%s\n", forecast, taf_condx);
+
+			asprintf(&postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number) "
+					"VALUES ('%s','%s','%s',%d, %d)",
+					reptime, gstn, forecast, err, taf_line_num);
+
+			PGresult *res = PQexec(conn, postsql);
+			if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+				if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
+					fprintf(stderr, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+							PQresultStatus(res), postsql);
+			}
+			PQclear(res);
 		}
 	}
 	else if (strcmp(taf_t, "QN") == 0) {	// Military
 		taf_lines = (char *)malloc(strlen(taf_linzs) + 1);
 		strcpy(taf_lines, taf_linzs);
 		taf_condx = tafWeather(taf_lines);
-				fprintf(filetaf, " Condx:%s\n", taf_condx);
+		fprintf(filetaf, " Condx:%s\n", taf_condx);
+		asprintf(&forecast,"Condx:%s\n", taf_condx);
+
+		asprintf(&postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number) "
+				"VALUES ('%s','%s','%s',%d, %d)",
+				reptime, gstn, forecast, err, taf_line_num);
+
+		PGresult *res = PQexec(conn, postsql);
+		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
+				fprintf(stderr, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+						PQresultStatus(res), postsql);
+		}
+		PQclear(res);
 	}
 	else if (strcmp(taf_t, "VR") == 0) {	// Military?
 		taf_temp = tafWind(temp);
 		fprintf(filetaf, " Wind:%s", taf_temp);
+		asprintf(&forecast," Wind:%s", taf_temp);
 
 		temp = strsep(&taf_lines, " ");
 
 		tafVisibilty(temp, taf_temp, taf_lines);
 		fprintf(filetaf, " Vis: %s", taf_temp);
+		asprintf(&forecast,"%s Vis: %s", forecast, taf_temp);
 		taf_temp[0] = '\0';
 
 		taf_condx = tafWeather(taf_lines);
 		fprintf(filetaf, " Condx:%s\n", taf_condx);
+		asprintf(&forecast,"%s Condx:%s\n", forecast, taf_condx);
+
+		asprintf(&postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number) "
+				"VALUES ('%s','%s','%s',%d, %d)",
+				reptime, gstn, forecast, err, taf_line_num);
+
+		PGresult *res = PQexec(conn, postsql);
+		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
+				fprintf(stderr, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+						PQresultStatus(res), postsql);
+		}
+		PQclear(res);
 	}
 	else if (strlen(temp) == 6 && isdigit(taf_t[0])) {
 		taf_lines = (char *)malloc(strlen(taf_linzs) + 1);
@@ -877,15 +971,54 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn)
 
 		taf_condx = tafWeather(taf_lines);
 		fprintf(filetaf, " Condx:%s\n", taf_condx);
+		asprintf(&forecast,"Condx:%s\n", taf_condx);
+
+		asprintf(&postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number) "
+				"VALUES ('%s','%s','%s',%d, %d)",
+				reptime, gstn, forecast, err, taf_line_num);
+
+		PGresult *res = PQexec(conn, postsql);
+		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
+				fprintf(stderr, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+						PQresultStatus(res), postsql);
+		}
+		PQclear(res);
 	}
 	else if ((strcmp(taf_t, "AM") == 0) || (strcmp(taf_t, "LA") == 0) || (strcmp(taf_t, "SE") == 0)
 			|| (strcmp(taf_t, "AU") == 0)) {
 		fprintf(filetaf, "Other/Remarks: %s\n", taf_linzs);
+		asprintf(&forecast,"Other/Remarks: %s\n", taf_linzs);
+
+		asprintf(&postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number) "
+				"VALUES ('%s','%s','%s',%d, %d)",
+				reptime, gstn, forecast, err, taf_line_num);
+
+		PGresult *res = PQexec(conn, postsql);
+		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
+				fprintf(stderr, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+						PQresultStatus(res), postsql);
+		}
+		PQclear(res);
 	}
 	else {
 		taf_lines = (char *)malloc(strlen(taf_linzs) + 1);
 		strcpy(taf_lines, taf_linzs);
 		taf_condx = tafWeather(taf_lines);
 		fprintf(filetaf, "Condx:%s\n", taf_condx);
+		asprintf(&forecast,"Condx:%s\n", taf_condx);
+
+		asprintf(&postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number) "
+				"VALUES ('%s','%s','%s',%d, %d)",
+				reptime, gstn, forecast, err, taf_line_num);
+
+		PGresult *res = PQexec(conn, postsql);
+		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
+				fprintf(stderr, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+						PQresultStatus(res), postsql);
+		}
+		PQclear(res);
 	}
 }

@@ -1185,7 +1185,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					sprintf(fsz, "%02d%02d", apdu->hours, apdu->minutes);
 					sprintf(taf_copy, "%s %s", time_copy, r);
 				}
-
+				fprintf(filetaf, "fsz: %s\n", fsz);		// *** Text ***
 				int i = 0;
 				int j = 0;
 				while (j == 0) {
@@ -1200,7 +1200,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					}
 				}
 				for (int j = 0; j < i; ++j) {
-					taf_decode(taf_lines[j], issued, fsz, gstn);
+					taf_decode(taf_lines[j], issued, fsz, gstn, j);
 				}
 				fprintf(filetaf, "\n");
 			}	 // End TAF decode
