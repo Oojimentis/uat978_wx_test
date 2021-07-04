@@ -8,6 +8,7 @@ This is my first Github project, so be nice! I am just doing this for my own amu
 * Website to display AIRMET, G-AIRMET, SIGMET, METAR and NOTAM using Leflet. (https://github.com/Oojimentis/map-978)
 
 ## Added
+* TAF forecast lines added to database.
 * Segmented G-AIRMET reports. (6/12/21)
 * Segmented graphical NOTAM reports. (06/05/21)
 * Segemented reports added to database. (06/05/21)
