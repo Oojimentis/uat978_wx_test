@@ -742,9 +742,9 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 			visby = '\0';
 		}
 
-		asprintf(&postsql, "INSERT INTO taf (issued, current, wind, visby, condx, rep_time, stn_call) "
-				"VALUES ('%s','%s','%s','%s','%s','%s','%s')",
-				issued, current_all, wind, visby, taf_condx, reptime, gstn);
+		asprintf(&postsql, "INSERT INTO taf (issued, current, wind, visby, condx, rep_time, stn_call, taf_unknown_fl) "
+				"VALUES ('%s','%s','%s','%s','%s','%s','%s',%d)",
+				issued, current_all, wind, visby, taf_condx, reptime, gstn, err);
 
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
