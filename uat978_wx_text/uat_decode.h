@@ -50,7 +50,6 @@ int nex_count;
 int print_nexrad;
 
 FILE * filemetar;		// 413
-FILE * filetaf;			// Debug file for TAF
 FILE * fileconfig;		// Credentials.
 
 struct uat_adsb_mdb {

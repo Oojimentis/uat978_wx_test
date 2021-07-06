@@ -109,11 +109,6 @@ int main(int argc, char **argv)
 		fprintf(stderr, "metar.out Error--file could not be opened. \n");
 		exit (1); }
 
-	filetaf = fopen("taf.out", "w");    // test file for TAF
-	if (filetaf == 0) {
-		fprintf(stderr, "taf.out Error--file could not be opened. \n");
-		exit (1); }
-
 	struct dump978_reader *reader;
 	int framecount;
 	reader = dump978_reader_new(0, 0);

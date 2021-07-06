@@ -1156,9 +1156,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					strcmp(mtype, "TAF.COR") == 0) {
 				// TAF Decode
 
-				fprintf(filetaf, "%s %s %s\n", mtype, gstn, gs_ret);
-				fprintf(filetaf, "%s\n\n", r);		// *** Text ***
-				fflush(filetaf);
+				fprintf(to, "%s %s %s\n", mtype, gstn, gs_ret);
+				fprintf(to, "%s\n\n", r);		// *** Text ***
+
 				strncpy(n, time_copy + 4, 1);
 
 				if (strcmp(n, "/") != 0) {
@@ -1172,20 +1172,18 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					strncpy(fsz, time_copy + 2, 4);
 					fsz[4] = '\0';
 
-					fprintf(filetaf, "Issued: %s at %sz\n", sd, fsz);
 					sprintf(issued, "%s at %sz", sd, fsz);
 					taf_copy = (char *)malloc(strlen(r) + 1);
 					strcpy(taf_copy, r);
 				}
 				else {
-					fprintf(filetaf, "No issue date ");
 					sprintf(issued, "No issue date ");
 					taf_copy = (char *)malloc(strlen(r) + strlen(r) + 1);
 
 					sprintf(fsz, "%02d%02d", apdu->hours, apdu->minutes);
 					sprintf(taf_copy, "%s %s", time_copy, r);
 				}
-				fprintf(filetaf, "fsz: %s\n", fsz);		// *** Text ***
+
 				int i = 0;
 				int j = 0;
 				while (j == 0) {
@@ -1199,14 +1197,13 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 						i++;
 					}
 				}
+
+//				if (strncmp(gstn,"KNHK",4) == 0)
+//				fprintf(stderr,"test");
 				for (int j = 0; j < i; ++j) {
 					taf_decode(taf_lines[j], issued, fsz, gstn, j);
 				}
-				fprintf(filetaf, "\n");
 			}	 // End TAF decode
-
-//			if (strncmp(gstn,"KCAR",4) == 0)
-//				fprintf(stderr,"test");
 
 			if (strcmp(mtype, "WINDS") == 0) {
 
@@ -1357,7 +1354,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 			}
 			memset(&MetarStruct, 0, sizeof(MetarStruct));
 			fflush(filemetar);
-			fflush(filetaf);
+//			fflush(filetaf);
 		}
 	}
 	break;
