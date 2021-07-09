@@ -1198,7 +1198,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					}
 				}
 
-//				if (strncmp(gstn,"KNHK",4) == 0)
+//				if (strncmp(gstn,"KADW",4) == 0)
 //				fprintf(stderr,"test");
 				for (int j = 0; j < i; ++j) {
 					taf_decode(taf_lines[j], issued, fsz, gstn, j);
