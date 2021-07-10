@@ -19,11 +19,8 @@
 #include "uat_geo.h"
 
 static char gs_ret[80];
-static char gs_ret_lat[25];
-static char gs_ret_lng[25];
 
 static void get_graphic(const struct fisb_apdu *apdu, FILE *to);
-static void get_gs_name(char *Word);
 static void get_pirep(char *Word);
 static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to);
 static void get_seg_text(const struct fisb_apdu *apdu, FILE *to);
@@ -223,8 +220,6 @@ static void get_gs_name(char *Word)
 
 	strncpy(temp_stn, Word, 4);
 	strcpy(gs_ret, "not found      ");
-	strcpy(gs_ret_lat, "0.0");
-	strcpy(gs_ret_lng, "0.0");
 
 	asprintf(&postsql, "SELECT * FROM stations WHERE stn_call = '%s'", temp_stn);
 	PGresult *res = PQexec(conn, postsql);
@@ -236,8 +231,6 @@ static void get_gs_name(char *Word)
 
 		if (rows == 1) {
 			strcpy(gs_ret, PQgetvalue(res, 0, 2));
-			sprintf(gs_ret_lat, "%s", PQgetvalue(res, 0, 3));
-			sprintf(gs_ret_lng, "%s", PQgetvalue(res, 0, 4));
 		 }
 		else if (rows > 1) {
 			fprintf(stderr, "Multiple entries for %s\n", temp_stn);
@@ -384,7 +377,7 @@ static void get_pirep(char *Word)
 	char pirep_WV[30] = "";		// Wind Speed Direction
 	char pirep_TB[50] = "";		// Turbulence
 	char pirep_IC[50] = "";		// Icing
-	char pirep_RM[100] = ""; 	// Remarks
+	char pirep_RM[500] = ""; 	// Remarks
 	char pirep_TY[30] = "";		// Type urgent/regular
 	char pirep_TI[10] = "";		// Time
 
@@ -971,16 +964,16 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 		get_fisb_product_name(apdu->product_id),
 		get_fisb_product_format(apdu->product_id));
 
-	fprintf(to, " PTime:");
+//	fprintf(to, " PTime:");
 
-	if (apdu->monthday_valid)
-		fprintf(to, "%u/%u ", apdu->month, apdu->day);
+//	if (apdu->monthday_valid)
+//		fprintf(to, "%u/%u ", apdu->month, apdu->day);
 
-	fprintf(to, "%02u:%02u", apdu->hours, apdu->minutes);
-	if (apdu->seconds_valid)
-		fprintf(to, ":%02u", apdu->seconds);
+//	fprintf(to, "%02u:%02u", apdu->hours, apdu->minutes);
+//	if (apdu->seconds_valid)
+//		fprintf(to, ":%02u", apdu->seconds);
 
-	fprintf(to, "\n");
+//	fprintf(to, "\n");
 
 	switch (apdu->product_id) {
 	case 8:		// ** NOTAM **************
@@ -1117,7 +1110,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				*p = 0;
 				strcpy(observation, r);
 				strncpy(mtype, r, 8);
-				fprintf(to, " RType: %s\n", mtype);
+				fprintf(to, " RType: %s ", mtype);
 				r = p + 1;
 			}
 			p = strchr(r, ' ');		// *** RLoc ***
@@ -1144,9 +1137,12 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 						fprintf(filemetar, "Time                 : %s\n", buff);
 						fprintf(filemetar, "WX Station           : %s - %s\n", gstn, gs_ret);
 					}
+					fprintf(to,"%s\n",gstn);
 				}
 				r = p + 1;
+
 			}
+
 			p = strchr(r, ' ');		// *** RTime ***
 			if (p) {
 				*p = 0;
@@ -1160,9 +1156,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					strcmp(mtype, "TAF.COR") == 0) {
 				// TAF Decode
 
-				fprintf(filetaf, "%s %s %s\n", mtype, gstn, gs_ret);
-				fprintf(filetaf, "%s\n\n", r);		// *** Text ***
-				fflush(filetaf);
+				fprintf(to, "%s %s %s\n", mtype, gstn, gs_ret);
+				fprintf(to, "%s\n\n", r);		// *** Text ***
+
 				strncpy(n, time_copy + 4, 1);
 
 				if (strcmp(n, "/") != 0) {
@@ -1176,13 +1172,11 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					strncpy(fsz, time_copy + 2, 4);
 					fsz[4] = '\0';
 
-					fprintf(filetaf, "Issued: %s at %sz\n", sd, fsz);
 					sprintf(issued, "%s at %sz", sd, fsz);
 					taf_copy = (char *)malloc(strlen(r) + 1);
 					strcpy(taf_copy, r);
 				}
 				else {
-					fprintf(filetaf, "No issue date ");
 					sprintf(issued, "No issue date ");
 					taf_copy = (char *)malloc(strlen(r) + strlen(r) + 1);
 
@@ -1203,14 +1197,13 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 						i++;
 					}
 				}
-				for (int j = 0; j < i; ++j) {
-					taf_decode(taf_lines[j], issued, fsz, gstn);
-				}
-				fprintf(filetaf, "\n");
-			}	 // End TAF decode
 
-//			if (strncmp(gstn,"KCAR",4) == 0)
+//				if (strncmp(gstn,"KADW",4) == 0)
 //				fprintf(stderr,"test");
+				for (int j = 0; j < i; ++j) {
+					taf_decode(taf_lines[j], issued, fsz, gstn, j);
+				}
+			}	 // End TAF decode
 
 			if (strcmp(mtype, "WINDS") == 0) {
 
@@ -1345,9 +1338,12 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				pirep_copy = (char *)malloc(strlen(r) + 1);
 				strcpy(pirep_copy, r);
 				get_pirep(pirep_copy);
+				strcpy(gstn, "K");
+				strcat(gstn, pirep_copy);
+				fprintf(to,"%s\n",gstn);
 			}
 			if (strcmp(mtype, "METAR") == 0 || strcmp(mtype, "SPECI") == 0) {
-				fprintf(to, "Data: %s", observation);
+//				fprintf(to, "Data: %s", observation);
 				if (decode_metar(observation,Mptr) != 0) {
 					fprintf(to, "Error METAR Decode\n"); }
 				else {
@@ -1358,7 +1354,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 			}
 			memset(&MetarStruct, 0, sizeof(MetarStruct));
 			fflush(filemetar);
-			fflush(filetaf);
+//			fflush(filetaf);
 		}
 	}
 	break;
@@ -1379,8 +1375,11 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 	uint16_t prodt;
 	uint16_t repid = 0;
 
-	fprintf(to, "\nINFORMATION FRAME:\n Type:  %u (%s)",
+//	fprintf(to, "\nINFORMATION FRAME:\n Type:  %u (%s)",
+//			frame->type, info_frame_type_names[frame->type]);
+	fprintf(to, "\n Type:  %u (%s)",
 			frame->type, info_frame_type_names[frame->type]);
+
 
 	if (frame->length > 0) {
 		if (frame->is_fisb)
@@ -1912,9 +1911,9 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	break;
 	default:
 		fprintf(to, "Unknown Geo type: %d", geo_overlay_opt);
+		display_generic_data(apdu->data,apdu->length,to);
 	}
 }
-//	display_generic_data(apdu->data,apdu->length,to);
 
 static void get_text(const struct fisb_apdu *apdu, FILE *to)
 {
@@ -2039,7 +2038,7 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 			}
 			data_text = (char *)malloc(strlen(r) + 1);
 			strcpy(data_text, r);
-
+			fprintf(to," Station: %s\n",gstn);
 			asprintf(&postsql,"INSERT INTO sigairmet (prod_id, stn_call, rep_time, rep_num, text_data, notam_name) "
 					"VALUES (%d,'%s','%s',%d,'%s','%s')",
 					apdu->product_id, gstn, rtime, rep_num, data_text, notam_name);
@@ -2053,7 +2052,6 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 			PQclear(res);
 		}
 	}
-//	display_generic_data(apdu->data,apdu->length,to);
 }
 
 static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)

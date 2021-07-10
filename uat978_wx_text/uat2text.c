@@ -93,7 +93,8 @@ int main(int argc, char **argv)
 
 // Delete table data...
 	asprintf(&postsql,"truncate graphics; truncate metar; truncate nexrad; truncate pirep; "
-			"truncate sigairmet; truncate taf; truncate circles; truncate sua; truncate winds;");
+			"truncate sigairmet; truncate taf; truncate circles; truncate sua; "
+			"truncate winds; truncate taf_forecast;");
 
 	PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -106,11 +107,6 @@ int main(int argc, char **argv)
 	filemetar = fopen("metar.out", "w");
 	if (filemetar == 0) {
 		fprintf(stderr, "metar.out Error--file could not be opened. \n");
-		exit (1); }
-
-	filetaf = fopen("taf.out", "w");    // test file for TAF
-	if (filetaf == 0) {
-		fprintf(stderr, "taf.out Error--file could not be opened. \n");
 		exit (1); }
 
 	struct dump978_reader *reader;
