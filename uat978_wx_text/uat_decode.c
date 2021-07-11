@@ -1186,14 +1186,28 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
 				int i = 0;
 				int j = 0;
+//				char taf_fore[2];
 				while (j == 0) {
 					taf_lines[i] = strsep(&taf_copy, "\n");
+					trimSpaces(taf_lines[i]);
+//					if (i > 0 && strcmp(taf_lines[i], "") != 0) {
+//
+//						strncpy(taf_fore,taf_lines[i],2);
+//						if (strncmp(taf_fore,"BE",2) != 0 && strncmp(taf_fore,"FM",2) != 0 &&
+//								strncmp(taf_fore,"TE",2) != 0) {
+//								sprintf(taf_lines[i-1],"%s %s",taf_lines[i-1], taf_lines[i]);
+//								i--;
+//								fprintf(stderr,"moo\n");
+//						}
+
+
+//					}
 					if (taf_lines[i] == NULL)
 						j = 1;
 					else if (strcmp(taf_lines[i], "") == 0)
 						j = 1;
 					else {
-					trimSpaces(taf_lines[i]);
+//					trimSpaces(taf_lines[i]);
 						i++;
 					}
 				}
