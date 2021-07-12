@@ -35,13 +35,13 @@ static unsigned long long int getHash(const char* source)
 
 char* daySuffix(int d)		// adds st, nd, rd, th to day number.
 {
-	char *date_suff;
+	char *date_suff=" ";
 
 	switch (d) {
-	case 1: case 21: case 31: 	asprintf(&date_suff, "st"); break;
-	case 2: case 22:			asprintf(&date_suff, "nd"); break;
-	case 3: case 23: 			asprintf(&date_suff, "rd"); break;
-	default: 					asprintf(&date_suff, "th"); break;
+	case 1: case 21: case 31: 	date_suff= "st"; break;
+	case 2: case 22:			date_suff= "nd"; break;
+	case 3: case 23: 			date_suff= "rd"; break;
+	default: 					date_suff= "th"; break;
 	}
 
 	return date_suff;
@@ -79,7 +79,8 @@ int err = 0;
 char* tafWind(char *temp)
 {		// Decode wind/gust.
 	char *taf_wind;
-	char *taf_wind_ret;
+	char wind_ret[50];
+	char *taf_wind_ret =wind_ret;
 	char d[4], s[4], gs[4];
 	char kt[3];
 
@@ -95,7 +96,10 @@ char* tafWind(char *temp)
 		kt[2]='\0';
 
 		if (strcmp(kt, "KT") != 0) {
-			asprintf(&taf_wind_ret, "1-unknown(%s)", temp);
+//			asprintf(&taf_wind_ret, "1-unknown(%s)", temp);
+			strcpy(wind_ret,"1-unknown(%");
+			strcat(wind_ret,temp);
+			strcat(wind_ret,")");
 			err = 1;
 		}
 		else {
@@ -110,7 +114,10 @@ char* tafWind(char *temp)
 		strncpy(kt, temp + 8, 2);
 		kt[2] = '\0';
 		if (strcmp(kt, "KT") != 0) {
-			asprintf(&taf_wind_ret, "2-unknown(%s)", temp);
+//			asprintf(&taf_wind_ret, "2-unknown(%s)", temp);
+			strcpy(wind_ret,"2-unknown(%");
+			strcat(wind_ret,temp);
+			strcat(wind_ret,")");
 			err = 1;
 		}
 		else {
@@ -124,7 +131,10 @@ char* tafWind(char *temp)
 		}
 	}
 	else {
-		asprintf(&taf_wind_ret, "8-Unknown: %s",temp);
+//		asprintf(&taf_wind_ret, "8-Unknown: %s",temp);
+		strcpy(wind_ret,"8-unknown(%");
+		strcat(wind_ret,temp);
+		strcat(wind_ret,")");
 		err = 1;
 		return taf_wind_ret;
 	}
@@ -134,13 +144,19 @@ char* tafWind(char *temp)
 		asprintf(&taf_wind, "%s, speed %dkt", d, kt_int);
 	if (strcmp(gs, "\0") == 0) {
 		if (strcmp(temp, "00000KT") == 0)
-			asprintf(&taf_wind_ret, "Calm");
+//			asprintf(&taf_wind_ret, "Calm");
+			strcat(wind_ret,"Calm");
 		else
-			asprintf(&taf_wind_ret, "%s", taf_wind);
+//			asprintf(&taf_wind_ret, "%s", taf_wind);
+			strcat(wind_ret,taf_wind);
 	}
-	else
-		sprintf(taf_wind_ret, "%s, gusts %skt", taf_wind,gs);
-
+	else {
+//		sprintf(taf_wind_ret, "%s, gusts %skt", taf_wind,gs);
+		strcat(wind_ret,taf_wind);
+		strcat(wind_ret,", gusts ");
+		strcat(wind_ret,gs);
+		strcat(wind_ret,"kt");
+	}
 	return taf_wind_ret;
 }
 
