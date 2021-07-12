@@ -32,7 +32,7 @@ void handle_frame(frame_type_t type, uint8_t *frame, int len, void *extra)
 }
 
 int main(int argc, char **argv)
-{
+ {
 	nex_count = 0;
 	seg_graph_count = 0;
 	seg_text_count = 0;

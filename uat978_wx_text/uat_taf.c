@@ -79,7 +79,7 @@ int err = 0;
 char* tafWind(char *temp)
 {		// Decode wind/gust.
 	char *taf_wind;
-
+	char *taf_wind_ret;
 	char d[4], s[4], gs[4];
 	char kt[3];
 
@@ -95,7 +95,7 @@ char* tafWind(char *temp)
 		kt[2]='\0';
 
 		if (strcmp(kt, "KT") != 0) {
-			asprintf(&taf_wind, "1-unknown(%s)", temp);
+			asprintf(&taf_wind_ret, "1-unknown(%s)", temp);
 			err = 1;
 		}
 		else {
@@ -110,7 +110,7 @@ char* tafWind(char *temp)
 		strncpy(kt, temp + 8, 2);
 		kt[2] = '\0';
 		if (strcmp(kt, "KT") != 0) {
-			asprintf(&taf_wind, "2-unknown(%s)", temp);
+			asprintf(&taf_wind_ret, "2-unknown(%s)", temp);
 			err = 1;
 		}
 		else {
@@ -124,24 +124,24 @@ char* tafWind(char *temp)
 		}
 	}
 	else {
-		asprintf(&taf_wind, "8-Unknown: %s",temp);
+		asprintf(&taf_wind_ret, "8-Unknown: %s",temp);
 		err = 1;
-		return taf_wind;
+		return taf_wind_ret;
 	}
 	if (strcmp(d, "VRB") == 0)
 		asprintf(&taf_wind, "Variable, speed %dkt", kt_int);
 	else
-		asprintf(&taf_wind, "%s°, speed %dkt", d, kt_int);
+		asprintf(&taf_wind, "%s, speed %dkt", d, kt_int);
 	if (strcmp(gs, "\0") == 0) {
 		if (strcmp(temp, "00000KT") == 0)
-			asprintf(&taf_wind, "Calm");
+			asprintf(&taf_wind_ret, "Calm");
 		else
-			asprintf(&taf_wind, "%s", taf_wind);
+			asprintf(&taf_wind_ret, "%s", taf_wind);
 	}
 	else
-		asprintf(&taf_wind, "%s, gusts %skt", taf_wind,gs);
+		sprintf(taf_wind_ret, "%s, gusts %skt", taf_wind,gs);
 
-	return taf_wind;
+	return taf_wind_ret;
 }
 
 void tafVisibilty(char *temp, char *taf_vis, char *temp2)
@@ -653,32 +653,35 @@ return taf_wx_all;
 void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf_line_num)
 {		// TAF Decode
 	char current_all[100];
+//	char *current_all;
 	char fsz[5];
 	char mil[1];
 	char sd[10], sz[3], ed[5], ez[3];
 	char taf_t[5];
 	char taf_cld[50];
-	char wind[300];
-
+//	char wind[300];
+	char *wind;
 	char *dt;
-	char *postsql;
+//	char *postsql;
+	char postsql[500];
 	char *t_temp;
 	char *taf_condx;
 	char *taf_lines;
 	char *taf_temp;
 	char *temp, *temp2;
 	char *visby;
-	char *forecast;
 
+//	char fc_curr[500];
+	char hold[500];
+	char fc_curr_wind[50];
 	int dx;
 	int nil = 0;
 	int sw = 0;
 	int temp_len;
+//	current_all[0] = '\0';
 
-	current_all[0] = '\0';
-
-	taf_lines = (char *)malloc(strlen(taf_linzs) + 1);
-	strcpy(taf_lines, taf_linzs);
+//	taf_lines = (char *)malloc(strlen(taf_linzs) + 1);
+	asprintf(&taf_lines,"%s", taf_linzs);
 // Valid dates
 	strncpy(taf_t, taf_lines, 2);
 	taf_t[2] = '\0';
@@ -686,12 +689,25 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 	err= 0;
 	temp = strsep(&taf_lines, " ");
 
+//	hold='\0';
+//	fc_curr_wind='\0';
+
 	if ((isdigit(taf_t[0])) && (strlen(temp) != 6) && (temp[4] != 'Z')) {	// (current) 1st line?
 		mil[0] = temp[4];
 
 		if (mil[0] == '/') {
 			validDates(sd, sz, ed, ez, temp);
-			sprintf(current_all, "%s @%s:00z-%s @%s:00z", sd, sz, ed, ez);
+//			asprintf(&current_all, "%s @%s:00z-%s @%s:00z", sd, sz, ed, ez);
+			strcpy(current_all,sd);
+			strcat(current_all," @");
+			strcat(current_all,sz);
+			strcat(current_all,":00z-");
+			strcat(current_all,ed);
+			strcat(current_all," @");
+			strcat(current_all,ez);
+			strcat(current_all,":00z");
+
+
 			temp = strsep(&taf_lines, " ");
 			if (strncmp(temp, "NIL", 3) == 0) {
 				asprintf(&taf_condx, "Station not active");
@@ -703,8 +719,13 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 // Winds / NIL=
 		if (nil == 0) {
 			taf_temp = tafWind(temp);
-			asprintf(&forecast,"Wind:%s", taf_temp);
-			sprintf(wind, "%s", taf_temp);
+
+			wind = (char *)malloc(strlen(taf_temp) + 1);
+			strcpy(wind, taf_temp);
+//			asprintf(&fc_curr_wind,"Wind:%s", wind);
+			strcpy(fc_curr_wind,"Wind:");
+			strcat(fc_curr_wind,wind);
+
 // Visibility
 			temp = strsep(&taf_lines, " ");
 			if (temp != NULL) {
@@ -715,13 +736,19 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 						temp2 = strsep(&taf_lines, " ");
 
 					tafVisibilty(temp, taf_temp, temp2);
-					asprintf(&forecast,"%s Vis: %s", forecast, taf_temp);
+//					asprintf(&fc_curr1,"%s Vis: %s", fc_curr_wind, taf_temp);
+					strcpy(hold,fc_curr_wind);
+					strcat(hold," Vis: ");
+					strcat(hold,taf_temp);
+
 					asprintf(&visby, "%s", taf_temp);
 				}
 				else {
 					if (taf_lines != NULL) {
-						t_temp = (char *)malloc(strlen(taf_lines) + 1);
-						strcpy(t_temp, taf_lines);
+//						t_temp = (char *)malloc(strlen(taf_lines) + 1);
+
+						asprintf(&t_temp,"%s",taf_lines);
+//						strcpy(t_temp, taf_lines);
 						temp[temp_len + 1] = '\0';
 						sprintf(taf_lines, "%s %s", temp, t_temp);
 					}
@@ -730,23 +757,25 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 				}
 // WX sky
 				taf_condx = tafWeather(taf_lines);
-				asprintf(&forecast,"%s Condx:%s\n", forecast, taf_condx);
+//				asprintf(&fc_curr2,"%s Condx:%s\n", fc_curr1, taf_condx);
+				strcat(hold," Condx: ");
+				strcat(hold,taf_condx);
 			}
 		}
 		else {
-			wind[0] = '\0';
+//			wind[0] = '\0';
 			visby = '\0';
 		}
 
 		if (taf_line_num ==0) {
-		asprintf(&postsql, "INSERT INTO taf (issued, current, wind, visby, condx, rep_time, stn_call, taf_unknown_fl) "
+		sprintf(postsql, "INSERT INTO taf (issued, current, wind, visby, condx, rep_time, stn_call, taf_unknown_fl) "
 				"VALUES ('%s','%s','%s','%s','%s','%s','%s',%d)",
 				issued, current_all, wind, visby, taf_condx, reptime, gstn, err);
 		}
 		else {
-			asprintf(&postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number) "
+			sprintf(postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number) "
 					"VALUES ('%s','%s','%s',%d, %d)",
-					reptime, gstn, forecast, err, taf_line_num);
+					reptime, gstn, hold, err, taf_line_num);
 		}
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -761,17 +790,35 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 		temp = strsep(&taf_lines, " ");
 
 		if (strncmp(temp + 4,"/",1) !=0) {
-			asprintf(&forecast,"Unknown: %s",taf_linzs);
+//			asprintf(&fc_becmg1,"Unknown: %s",taf_linzs);
+			strcpy(hold,"Unknown: ");
+			strcat(hold,taf_linzs);
 			err = 1;
 		}
 		else {
 			validDates(sd, sz, ed, ez, temp);
-			asprintf(&forecast, "Becoming: %s @%s:00z", sd, sz);
-			asprintf(&forecast,"%s-%s @%s:00z", forecast,ed, ez);
-// Winds
+//			asprintf(&fc_becmg2, "Becoming: %s @%s:00z", sd, sz);
+			strcpy(hold,"Becoming: ");
+			strcat(hold,ed);
+			strcat(hold," @");
+			strcat(hold,sz);
+			strcat(hold,":00z-");
+
+//			asprintf(&fc_becmg3,"-%s @%s:00z", ed, ez);
+			strcat(hold,ed);
+			strcat(hold," @");
+			strcat(hold,ez);
+			strcat(hold,":00z");
+
+//			asprintf(&fc_becmg4, "%s %s", fc_becmg2,fc_becmg3);
+
+			// Winds
 			temp = strsep(&taf_lines, " ");
 			taf_temp = tafWind(temp);
-			asprintf(&forecast,"%s Wind: %s", forecast,taf_temp);
+//			asprintf(&fc_becmg6,"%s Wind: %s", fc_becmg5,taf_temp);
+			strcat(hold," Wind: ");
+			strcat(hold,taf_temp);
+
 // Visibility
 			temp = strsep(&taf_lines, " ");
 			if (temp == 0) {
@@ -783,15 +830,18 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 					temp2 = strsep(&taf_lines, " ");
 
 				tafVisibilty(temp, taf_temp, taf_lines);
-				asprintf(&forecast,"%s Vis: %s", forecast,taf_temp);
+//				asprintf(&fc_becmg7,"%s Vis: %s", fc_becmg6,taf_temp);
+				strcat(hold," Vis: ");
+				strcat(hold,taf_temp);
 			}
 			else {
 				if (!taf_lines) {
 					asprintf(&taf_lines, "%s", temp);
 				}
 				else {
-					t_temp = (char *)malloc(strlen(taf_lines) + 1);
-					strcpy(t_temp, taf_lines);
+//					t_temp = (char *)malloc(strlen(taf_lines) + 1);
+					asprintf(&t_temp,"%s",taf_lines);
+//					strcpy(t_temp, taf_lines);
 					temp[temp_len + 1] = '\0';
 					sprintf(taf_lines, "%s %s", temp, t_temp);
 				}
@@ -799,11 +849,14 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 // WX sky
 			taf_temp[0] = '\0';
 			taf_condx = tafWeather(taf_lines);
-			asprintf(&forecast,"%s Condx:%s", forecast, taf_condx);
+//			asprintf(&forecast,"%s Condx:%s", forecast, taf_condx);
+			strcat(hold," Condx:");
+			strcat(hold,taf_condx);
 		}
-		asprintf(&postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number) "
+
+		sprintf(postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number) "
 				"VALUES ('%s','%s','%s',%d, %d)",
-				reptime, gstn, forecast, err, taf_line_num);
+				reptime, gstn, hold, err, taf_line_num);
 
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -823,11 +876,18 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 		sprintf(sd, "%d%s", dx, dt);
 		strncpy(fsz, temp + 4, 4);
 		fsz[4] = '\0';
-		asprintf(&forecast,"From: %s @%sz", sd, fsz);
+//		asprintf(&forecast,"From: %s @%sz", sd, fsz);
+		strcpy(hold,"From: ");
+		strcat(hold,sd);
+		strcat(hold," @");
+		strcat(hold,fsz);
+		strcat(hold,"z");
 // Winds
 		temp = strsep(&taf_lines, " ");
 		taf_temp = tafWind(temp);
-		asprintf(&forecast,"%s Wind: %s", forecast, taf_temp);
+//		asprintf(&forecast,"%s Wind: %s", forecast, taf_temp);
+		strcat(hold," Wind: ");
+		strcat(hold,taf_temp);
 // Visibility
 		temp = strsep(&taf_lines, " ");
 		if (temp) {
@@ -837,17 +897,21 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 					temp2 = strsep(&taf_lines, " ");
 
 				tafVisibilty(temp, taf_temp, temp2);
-				asprintf(&forecast,"%s Vis: %s", forecast, taf_temp);
+//				asprintf(&forecast,"%s Vis: %s", forecast, taf_temp);
+				strcat(hold," Vis: ");
+				strcat(hold,taf_temp);
 			}
 		}
 // WX sky
 		taf_temp[0] = '\0';
 		taf_condx = tafWeather(taf_lines);
-		asprintf(&forecast,"%s Condx:%s\n", forecast, taf_condx);
+//		asprintf(&forecast,"%s Condx:%s\n", forecast, taf_condx);
+		strcat(hold," Condx:");
+		strcat(hold,taf_condx);
 
-		asprintf(&postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number) "
+		sprintf(postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number) "
 				"VALUES ('%s','%s','%s',%d, %d)",
-				reptime, gstn, forecast, err, taf_line_num);
+				reptime, gstn, hold, err, taf_line_num);
 
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -858,16 +922,27 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 		PQclear(res);
 	}
 	else if (strcmp(taf_t, "TE") == 0) {	// TEMPO
+//		char *fc_tempo;
 		temp = strsep(&taf_lines, " ");
 		validDates(sd, sz, ed, ez, temp);
-		asprintf(&forecast, "Temporary: %s @%s:00z", sd, sz);
-		asprintf(&forecast,"%s-%s @%s:00z", forecast, ed, ez);
+		strcpy(hold,"Temporary: ");
+		strcat(hold,sd);
+		strcat(hold," @");
+		strcat(hold,sz);
+		strcat(hold,":00z");
+
+//		asprintf(&fc_tempo, "Temporary: %s @%s:00z", sd, sz);
+//		asprintf(&forecast,"-%s @%s:00z",  ed, ez);
+//		asprintf(&forecast1, "%s %s", fc_tempo,forecast);
+
 		temp = strsep(&taf_lines, " ");
 		temp_len = strlen(temp);
 
 		if (strncmp(temp + (temp_len - 2), "KT", 2) == 0) {
 			taf_temp = tafWind(temp);
-			asprintf(&forecast,"%s Wind:%s", forecast, taf_temp);
+//			asprintf(&forecast,"%s Wind:%s", forecast, taf_temp);
+			strcat(hold," Wind:");
+			strcat(hold,taf_temp);
 			temp = strsep(&taf_lines, " ");
 			if (temp != NULL) {
 				temp_len = strlen(temp);
@@ -881,7 +956,9 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 					temp2 = strsep(&taf_lines, " ");
 
 				tafVisibilty(temp, taf_temp, temp2);
-				asprintf(&forecast,"%s Vis: %s", forecast, taf_temp);
+//				asprintf(&forecast,"%s Vis: %s", forecast, taf_temp);
+				strcat(hold," Vis: ");
+				strcat(hold,taf_temp);
 				sw = 1;
 			}
 // WX Sky
@@ -898,11 +975,13 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 			else {
 				taf_condx = tafWeather(temp);
 			}
-			asprintf(&forecast,"%s Condx:%s\n", forecast, taf_condx);
+//			asprintf(&forecast,"%s Condx:%s", forecast, taf_condx);
+			strcat(hold," Condx:");
+			strcat(hold,taf_condx);
 
-			asprintf(&postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number) "
+			sprintf(postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number) "
 					"VALUES ('%s','%s','%s',%d, %d)",
-					reptime, gstn, forecast, err, taf_line_num);
+					reptime, gstn, hold, err, taf_line_num);
 
 			PGresult *res = PQexec(conn, postsql);
 			if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -912,101 +991,5 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 			}
 			PQclear(res);
 		}
-	}
-	else if (strcmp(taf_t, "QN") == 0) {	// Military
-		taf_lines = (char *)malloc(strlen(taf_linzs) + 1);
-		strcpy(taf_lines, taf_linzs);
-		taf_condx = tafWeather(taf_lines);
-		asprintf(&forecast,"Condx:%s\n", taf_condx);
-
-		asprintf(&postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number) "
-				"VALUES ('%s','%s','%s',%d, %d)",
-				reptime, gstn, forecast, err, taf_line_num);
-
-		PGresult *res = PQexec(conn, postsql);
-		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-				fprintf(stderr, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
-						PQresultStatus(res), postsql);
-		}
-		PQclear(res);
-	}
-	else if (strcmp(taf_t, "VR") == 0) {	// Military?
-		taf_temp = tafWind(temp);
-		asprintf(&forecast," Wind:%s", taf_temp);
-
-		temp = strsep(&taf_lines, " ");
-
-		tafVisibilty(temp, taf_temp, taf_lines);
-		asprintf(&forecast,"%s Vis: %s", forecast, taf_temp);
-		taf_temp[0] = '\0';
-
-		taf_condx = tafWeather(taf_lines);
-		asprintf(&forecast,"%s Condx:%s\n", forecast, taf_condx);
-
-		asprintf(&postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number) "
-				"VALUES ('%s','%s','%s',%d, %d)",
-				reptime, gstn, forecast, err, taf_line_num);
-
-		PGresult *res = PQexec(conn, postsql);
-		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-				fprintf(stderr, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
-						PQresultStatus(res), postsql);
-		}
-		PQclear(res);
-	}
-	else if (strlen(temp) == 6 && isdigit(taf_t[0])) {
-		taf_lines = (char *)malloc(strlen(taf_linzs) + 1);
-		strcpy(taf_lines, taf_linzs);
-
-		taf_condx = tafWeather(taf_lines);
-		asprintf(&forecast,"Condx:%s\n", taf_condx);
-
-		asprintf(&postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number) "
-				"VALUES ('%s','%s','%s',%d, %d)",
-				reptime, gstn, forecast, err, taf_line_num);
-
-		PGresult *res = PQexec(conn, postsql);
-		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-				fprintf(stderr, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
-						PQresultStatus(res), postsql);
-		}
-		PQclear(res);
-	}
-	else if ((strcmp(taf_t, "AM") == 0) || (strcmp(taf_t, "LA") == 0) || (strcmp(taf_t, "SE") == 0)
-			|| (strcmp(taf_t, "AU") == 0)) {
-		asprintf(&forecast,"Other/Remarks: %s\n", taf_linzs);
-
-		asprintf(&postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number) "
-				"VALUES ('%s','%s','%s',%d, %d)",
-				reptime, gstn, forecast, err, taf_line_num);
-
-		PGresult *res = PQexec(conn, postsql);
-		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-				fprintf(stderr, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
-						PQresultStatus(res), postsql);
-		}
-		PQclear(res);
-	}
-	else {
-		taf_lines = (char *)malloc(strlen(taf_linzs) + 1);
-		strcpy(taf_lines, taf_linzs);
-		taf_condx = tafWeather(taf_lines);
-		asprintf(&forecast,"Condx:%s\n", taf_condx);
-
-		asprintf(&postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number) "
-				"VALUES ('%s','%s','%s',%d, %d)",
-				reptime, gstn, forecast, err, taf_line_num);
-
-		PGresult *res = PQexec(conn, postsql);
-		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-				fprintf(stderr, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
-						PQresultStatus(res), postsql);
-		}
-		PQclear(res);
 	}
 }

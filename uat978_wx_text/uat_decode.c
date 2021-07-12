@@ -1056,7 +1056,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 		char *postsql;
 		char *q;
 		char *taf_copy;
-		char *taf_lines[20];
+		char taf_lines[20][200];
 		char *time_copy;
 		char *tok1;  char *tok2;  char *tok3;  char *tok4;
  		char *u;
@@ -1186,29 +1186,52 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
 				int i = 0;
 				int j = 0;
-//				char taf_fore[2];
+				char *wtf;
+				char moo[200];
+				char *moo2;
+				char taf_fore[2];
 				while (j == 0) {
-					taf_lines[i] = strsep(&taf_copy, "\n");
-					trimSpaces(taf_lines[i]);
-//					if (i > 0 && strcmp(taf_lines[i], "") != 0) {
-//
-//						strncpy(taf_fore,taf_lines[i],2);
-//						if (strncmp(taf_fore,"BE",2) != 0 && strncmp(taf_fore,"FM",2) != 0 &&
-//								strncmp(taf_fore,"TE",2) != 0) {
-//								sprintf(taf_lines[i-1],"%s %s",taf_lines[i-1], taf_lines[i]);
-//								i--;
-//								fprintf(stderr,"moo\n");
-//						}
+//					taf_lines[i] = strsep(&taf_copy, "\n");
+					wtf= strsep(&taf_copy, "\n");
 
+					int wtf_len =  strlen(wtf);
 
-//					}
-					if (taf_lines[i] == NULL)
-						j = 1;
-					else if (strcmp(taf_lines[i], "") == 0)
-						j = 1;
+					if (strcmp(wtf, "") != 0) {
+						moo2 = (char *)malloc(strlen(wtf) + 1);
+						strcpy(moo2,wtf);
+						moo2[wtf_len] = '\0';
+						for (int j = 0; j < wtf_len; ++j) {
+							moo[j] = moo2[j];
+						}
+						moo[wtf_len ] = '\0';
+						trimSpaces(moo);
+free(moo2);
+						strcpy(taf_lines[i],moo);
+
+//						trimSpaces(taf_lines[i]);
+						if (i > 0 && strcmp(taf_lines[i], "") != 0) {
+
+							strncpy(taf_fore,taf_lines[i],2);
+							if (strncmp(taf_fore,"BE",2) != 0 && strncmp(taf_fore,"FM",2) != 0 &&
+									strncmp(taf_fore,"TE",2) != 0) {
+									sprintf(taf_lines[i-1],"%s %s",taf_lines[i-1], taf_lines[i]);
+									i--;
+									fprintf(stderr,"moo\n");
+							}
+						}
+						if (taf_lines[i] == NULL) {
+							j = 1;
+						}
+						else if (strcmp(taf_lines[i], "") == 0) {
+							j = 1;
+						}
+						else {
+//							trimSpaces(taf_lines[i]);
+							i++;
+						}
+					}
 					else {
-//					trimSpaces(taf_lines[i]);
-						i++;
+						j=1;
 					}
 				}
 
@@ -1216,6 +1239,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 //				fprintf(stderr,"test");
 				for (int j = 0; j < i; ++j) {
 					taf_decode(taf_lines[j], issued, fsz, gstn, j);
+//					free(taf_lines[j]);
 				}
 			}	 // End TAF decode
 
