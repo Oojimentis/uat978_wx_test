@@ -90,7 +90,7 @@ char* tafWind(char *temp)
 
 	gs[0] = '\0';
 	w_len = strlen(temp);
-
+	strcpy(wind_ret," ");
 	if (w_len == 7) {
 		strncpy(kt, temp + 5, 2);
 		kt[2]='\0';
@@ -676,7 +676,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 	char taf_t[5];
 	char taf_cld[50];
 //	char wind[300];
-	char *wind;
+	char wind[50];
 	char *dt;
 //	char *postsql;
 	char postsql[500];
@@ -736,11 +736,11 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 		if (nil == 0) {
 			taf_temp = tafWind(temp);
 
-			wind = (char *)malloc(strlen(taf_temp) + 1);
+//			wind = (char *)malloc(strlen(taf_temp) + 1);
 			strcpy(wind, taf_temp);
 //			asprintf(&fc_curr_wind,"Wind:%s", wind);
 			strcpy(fc_curr_wind,"Wind:");
-			strcat(fc_curr_wind,wind);
+			strcat(fc_curr_wind,taf_temp);
 
 // Visibility
 			temp = strsep(&taf_lines, " ");
@@ -945,6 +945,11 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 		strcat(hold,sd);
 		strcat(hold," @");
 		strcat(hold,sz);
+		strcat(hold,":00z");
+		strcat(hold," -");
+		strcat(hold,ed);
+		strcat(hold," @");
+		strcat(hold,ez);
 		strcat(hold,":00z");
 
 //		asprintf(&fc_tempo, "Temporary: %s @%s:00z", sd, sz);

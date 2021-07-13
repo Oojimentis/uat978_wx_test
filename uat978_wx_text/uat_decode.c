@@ -1225,7 +1225,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					i++;
 					wtf= strtok(NULL, "\n");
 				}
-
+				fprintf(stderr,"moo\n");
 //				if (strncmp(gstn,"KADW",4) == 0)
 //				fprintf(stderr,"test");
 				for (int j = 0; j < i; ++j) {
