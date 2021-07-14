@@ -1164,7 +1164,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				// TAF Decode
 
 				fprintf(to, "%s %s %s\n", mtype, gstn, gs_ret);
-				fprintf(to, "%s\n\n", r);		// *** Text ***
+//				fprintf(to, "%s\n\n", r);		// *** Text ***
 
 				strncpy(n, time_copy + 4, 1);
 
@@ -1192,45 +1192,41 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				}
 
 				int i = 0;
-				char *wtf;
-				char moo[200];
-//				char *moo2;
-				char taf_fore[2];
-				wtf= strtok(taf_copy, "\n");
-				while (wtf !=NULL) {
-//					int wtf_len =  strlen(wtf);
-				    int count = 0, j, k;
-				    while (wtf[count] == ' ') {
-					        count++;
-				    }
-				    for (j = count, k = 0;  wtf[j] != '\0'; j++, k++) {
-				    	if (wtf[j]== '=')
-				    		moo[k] = '\0';
-				    	else
-				    		moo[k] = wtf[j];
-				    }
-				    moo[k] = '\0';
+				char *taf_token;
+				char taf_temp[200];
+				char taf_type[2];
+				taf_token= strtok(taf_copy, "\n");
+				while (taf_token !=NULL) {
+					int count = 0, j, k;
+					while (taf_token[count] == ' ') {
+						count++;
+					}
+					for (j = count, k = 0; taf_token[j] != '\0'; j++, k++) {
+						if (taf_token[j] == '=')
+							taf_temp[k] = '\0';
+						else
+							taf_temp[k] = taf_token[j];
+					}
+					taf_temp[k] = '\0';
 
-					strcpy(taf_lines[i],moo);
+					strcpy(taf_lines[i], taf_temp);
 
 					if (i > 0 && strcmp(taf_lines[i], "") != 0) {
-						strncpy(taf_fore,taf_lines[i],2);
-						if (strncmp(taf_fore,"BE",2) != 0 && strncmp(taf_fore,"FM",2) != 0 &&
-								strncmp(taf_fore,"TE",2) != 0) {
+						strncpy(taf_type, taf_lines[i], 2);
+						if (strncmp(taf_type, "BE", 2) != 0 && strncmp(taf_type, "FM", 2) != 0 &&
+								strncmp(taf_type, "TE", 2) != 0) {
 							sprintf(taf_lines[i-1],"%s %s",taf_lines[i-1], taf_lines[i]);
 							i--;
-							fprintf(stderr,"moo\n");
 						}
 					}
 					i++;
-					wtf= strtok(NULL, "\n");
+					taf_token= strtok(NULL, "\n");
 				}
-				fprintf(stderr,"moo\n");
-//				if (strncmp(gstn,"KADW",4) == 0)
+
+//				if (strncmp(gstn,"KNYG",4) == 0)
 //				fprintf(stderr,"test");
 				for (int j = 0; j < i; ++j) {
 					taf_decode(taf_lines[j], issued, fsz, gstn, j);
-//					free(taf_lines[j]);
 				}
 			}	 // End TAF decode
 
