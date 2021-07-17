@@ -8,7 +8,7 @@ This is my first Github project, so be nice! I am just doing this for my own amu
 * Website to display AIRMET, G-AIRMET, SIGMET, METAR and NOTAM using Leflet. (https://github.com/Oojimentis/map-978)
 
 ## Added
-* TAF forecast lines added to database.
+* TAF forecast lines added to database. (7/12/21)
 * Segmented G-AIRMET reports. (6/12/21)
 * Segmented graphical NOTAM reports. (06/05/21)
 * Segemented reports added to database. (06/05/21)
@@ -49,7 +49,6 @@ gnome-terminal --tab --title="dump978 - rtl:$rtl" -- bash -ic "rtl_sdr -g $gain 
 
 gnome-terminal --tab --title="log.txt" -- bash -ic "multitail -cS dump978 log.txt"
 gnome-terminal --tab --title="metar"   -- bash -ic "multitail -cS dump978 metar.out"
-gnome-terminal --tab --title="taf"     -- bash -ic "multitail -cS dump978 taf.out"
 
 ````
 
@@ -82,7 +81,7 @@ METAR (Metrological Aviation Report)
 ![METAR](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/metar_screen.png)
 
 NOTAM (Notices to Airmen)
-<br>(Only segmented reports in notam.out - other NOTAM reports sent to database)
+<br>(No longer produced - data added to database)
 ![NOTAM graphic](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/notam_graphic_screen.png)
 ![NOTAM text](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/notam_text_screen.png)
 
@@ -99,7 +98,7 @@ SUA (Special use airspace)
 ![SUA](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/sua_screen.png)
 
 TAF (Terminal Aerodrome Forecast)
-<br>(Decoded data in TAF.OUT for debugging purposes, but also sent to database)
+<br>(NO longer produced - data sent to database)
 ![TAF](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/taf_screen.png)
 
 Winds aloft
