@@ -1,11 +1,11 @@
 # uat978_wx_test
 
-This is a clone of DUMP978 (https://github.com/mutability/dump978) written by Oliver Jowett, that I have expanded upon purely for my own amusement. It uses the METAR decoder library libmetar.a from https://github.com/flightaware/mdsplib (Eric McCarthy eric@limulus.net) and borrows from Christopher Young's Stratux project (https://github.com/cyoung/stratux Copyright (c) 2015-2016 Christopher Young).
+This is a clone of DUMP978 (https://github.com/mutability/dump978) written by Oliver Jowett, that I have expanded upon purely for my own amusement. This version decodes all text, TWGO (Text with Graphical Overlay) and Global Block (NEXRAD) FIS-B reports which are then stored in a PostgreSQL database. This data can be mapped using MAP-978 (https://github.com/Oojimentis/map-978).
+
+Uat978_wx_text uses the METAR decoder library libmetar.a from https://github.com/flightaware/mdsplib (Eric McCarthy eric@limulus.net) and borrows from Christopher Young's Stratux project (https://github.com/cyoung/stratux Copyright (c) 2015-2016 Christopher Young).
 
 This is my first Github project, so be nice! I am just doing this for my own amusement, and the hope that someone more experienced can take it further.
 
-## Working on..
-* Website to display AIRMET, G-AIRMET, SIGMET, METAR and NOTAM using Leflet. (https://github.com/Oojimentis/map-978)
 
 ## Added
 * TAF forecast lines added to database. (7/12/21)
