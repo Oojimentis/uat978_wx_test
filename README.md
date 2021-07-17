@@ -59,48 +59,46 @@ Aircraft
 
 ![Aircraft](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/aircraft_screen.png)
 
-AIRMET (Airmen's meteorological information)
-<br>(No longer produced - data added to database)
-![AIRMET graphic](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/airmet_graphic_screen.png)
-![AIRMET text](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/airmet_text_screen.png)
-
-G-AIRMET (Graphical AIRMET)
-<br>(No longer produced - data added to database)
-![G-AIRMET text](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/g-airmet_screen.png)
-![G-AIRMET](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/g-airmet2_screen.png)
-
-Current report list and 
-service status
-
-![Frame info](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/info_frame_screen.png)
-
-![Service status](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/service_status_screen.png)
-
 METAR (Metrological Aviation Report)
 
 ![METAR](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/metar_screen.png)
 
-NOTAM (Notices to Airmen)
-<br>(No longer produced - data added to database)
-![NOTAM graphic](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/notam_graphic_screen.png)
-![NOTAM text](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/notam_text_screen.png)
+Current Report List:
+![Frame info](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/info_frame_screen.png)
 
-PIREP (Pilot reports)
-<br>(No longer produced - data added to database)
-![PIREP](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/pirep_screen.png)
+service status
+![Service status](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/service_status_screen.png)
 
-SIGMET (Significant Metrological Information)
-<br>(No longer produced - data added to database)
-![SIGMET](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/sigmet_screen.png)
+## Database
 
-SUA (Special use airspace)
-<br>(No longer produced - data added to database)
-![SUA](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/sua_screen.png)
+Examples of data collected: (See https://github.com/Oojimentis/map-978/blob/main/maps/schema.sql for full schema)
 
-TAF (Terminal Aerodrome Forecast)
-<br>(NO longer produced - data sent to database)
-![TAF](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/taf_screen.png)
+METAR:
+![metar](https://user-images.githubusercontent.com/60933475/126044880-57662300-3e44-4dfb-af82-124967a7f17f.png)
+
+AIRMET, CWA, G-AIRMET, NOTAM and SIGMET graphical data:
+![graphics](https://user-images.githubusercontent.com/60933475/126044944-73f0cbfb-a3dd-47a6-9925-cdc399e92a7a.png)
+
+Extended Range Circular Prism data:
+![circles](https://user-images.githubusercontent.com/60933475/126045020-feeec8bd-7bc5-4081-894a-dffe0d8508ad.png)
+
+AIRMET, NOTAM and SIGMET Text Reports:
+![sigairmet](https://user-images.githubusercontent.com/60933475/126045049-d1c285f9-b551-4a1c-8951-2c7c847d4ff5.png)
+
+TAF:
+![taf](https://user-images.githubusercontent.com/60933475/126045061-b5eeb62d-38ad-45c9-bd3d-7d32f7048699.png)
+
+TAF Forecast:
+![taf_forecast](https://user-images.githubusercontent.com/60933475/126045070-74f4a6ae-6fdc-4b30-812f-efc7ccacec7e.png)
+
+PIREP:
+![pirep](https://user-images.githubusercontent.com/60933475/126045085-22640df3-df07-4994-8e0d-223d7ae0d1b3.png)
+
+SUA:
+![sua](https://user-images.githubusercontent.com/60933475/126045101-7864526d-b46f-4a8a-b284-ff34cb532b65.png)
 
 Winds aloft
+![winds](https://user-images.githubusercontent.com/60933475/126045130-e71ef82b-3e6c-48ee-bfcf-b490c36b6f7c.png)
 
-![WINDS](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/winds_screen.png)
+NEXRAD:
+![nexrad](https://user-images.githubusercontent.com/60933475/126045158-a9143d87-7eb4-44ce-9742-58d90166f6e9.png)
