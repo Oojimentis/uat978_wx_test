@@ -67,7 +67,8 @@ Current Report List:
 ![Frame info](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/info_frame_screen.png)
 
 Service status:
-![Service status](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/service_status_screen.png)
+![service](https://user-images.githubusercontent.com/60933475/126045415-5ce4fa66-56b7-4efa-b02f-bc25f57b2bd6.png)
+
 
 ## Database
 
