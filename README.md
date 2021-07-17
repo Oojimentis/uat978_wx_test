@@ -66,7 +66,7 @@ METAR (Metrological Aviation Report)
 Current Report List:
 ![Frame info](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/info_frame_screen.png)
 
-service status
+Service status:
 ![Service status](https://github.com/Oojimentis/uat978_wx_test/blob/master/uat978_wx_text/docs/service_status_screen.png)
 
 ## Database
