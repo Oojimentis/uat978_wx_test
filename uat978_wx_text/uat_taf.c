@@ -572,7 +572,7 @@ char* tafWeather(char *taf_list)
 				if (vis_met == 4) {
 					temp2[0] = '\0';
 					tafVisibilty(temp, temp2, "  ");
-					sprintf(taf_wx, "Vis: %s", temp2);
+					sprintf(taf_wx, "<b>Visibility:</b> %s", temp2);
 					strcat(taf_wx_all, taf_wx);
 				}
 				else if ((strncmp(temp, "SKED", 4) == 0) && (strlen(temp) == 4)) {
@@ -587,7 +587,7 @@ char* tafWeather(char *taf_list)
 			}
 			else if (strncmp(temp, "VRB", 3) == 0) {
 				taf_wind = tafWind(temp);
-				sprintf(taf_wx, "Wind: %s ", taf_wind);
+				sprintf(taf_wx, "<b>Wind:</b> %s ", taf_wind);
 				strcat(taf_wx_all, taf_wx);
 			}
 			else if ((strncmp(temp, "AMD", 3) == 0) && (strlen(temp) == 3)) {
@@ -730,7 +730,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 
 					tafVisibilty(temp, taf_temp, temp2);
 					strcpy(hold, fc_curr_wind);
-					strcat(hold, " Vis: ");
+					strcat(hold, " <b>Visibility:</b> ");
 					strcat(hold, taf_temp);
 
 					asprintf(&visby, "%s", taf_temp);
@@ -746,7 +746,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 				}
 // WX sky
 				taf_condx = tafWeather(taf_lines);
-				strcat(hold, "Condx: ");
+				strcat(hold, "<b>Conditions:</b> ");
 				strcat(hold, taf_condx);
 			}
 		}
@@ -783,7 +783,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 		}
 		else {
 			validDates(sd, sz, ed, ez, temp);
-			strcpy(hold, "Becoming: ");
+			strcpy(hold, "<b>Becoming:</b> ");
 			strcat(hold, ed);
 			strcat(hold, " @");
 			strcat(hold, sz);
@@ -796,7 +796,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 			// Winds
 			temp = strsep(&taf_lines, " ");
 			taf_temp = tafWind(temp);
-			strcat(hold, " Wind: ");
+			strcat(hold, " <b>Wind:</b> ");
 			strcat(hold, taf_temp);
 
 // Visibility
@@ -810,7 +810,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 					temp2 = strsep(&taf_lines, " ");
 
 				tafVisibilty(temp, taf_temp, taf_lines);
-				strcat(hold, " Vis: ");
+				strcat(hold, " <b>Visibility:</b> ");
 				strcat(hold, taf_temp);
 			}
 			else {
@@ -826,7 +826,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 // WX sky
 			taf_temp[0] = '\0';
 			taf_condx = tafWeather(taf_lines);
-			strcat(hold, " Condx: ");
+			strcat(hold, " <b>Conditions:</b> ");
 			strcat(hold, taf_condx);
 		}
 
@@ -852,7 +852,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 		sprintf(sd, "%d%s", dx, dt);
 		strncpy(fsz, temp + 4, 4);
 		fsz[4] = '\0';
-		strcpy(hold, "From: ");
+		strcpy(hold, "<b>From:</b> ");
 		strcat(hold, sd);
 		strcat(hold, " @");
 		strcat(hold, fsz);
@@ -860,7 +860,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 // Winds
 		temp = strsep(&taf_lines, " ");
 		taf_temp = tafWind(temp);
-		strcat(hold, " Wind: ");
+		strcat(hold, " <b>Wind:</b> ");
 		strcat(hold, taf_temp);
 // Visibility
 		temp = strsep(&taf_lines, " ");
@@ -871,14 +871,14 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 					temp2 = strsep(&taf_lines, " ");
 
 				tafVisibilty(temp, taf_temp, temp2);
-				strcat(hold, " Vis: ");
+				strcat(hold, " <b>Visibility:</b> ");
 				strcat(hold, taf_temp);
 			}
 		}
 // WX sky
 		taf_temp[0] = '\0';
 		taf_condx = tafWeather(taf_lines);
-		strcat(hold, " Condx: ");
+		strcat(hold, " <b>Conditions:</b> ");
 		strcat(hold, taf_condx);
 
 		sprintf(postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number, taf_raw) "
@@ -896,7 +896,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 	else if (strcmp(taf_t, "TE") == 0) {	// TEMPO
 		temp = strsep(&taf_lines, " ");
 		validDates(sd, sz, ed, ez, temp);
-		strcpy(hold, "Temporary: ");
+		strcpy(hold, "<b>Temporary:</b> ");
 		strcat(hold, sd);
 		strcat(hold, " @");
 		strcat(hold, sz);
@@ -912,7 +912,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 
 		if (strncmp(temp + (temp_len - 2), "KT", 2) == 0) {
 			taf_temp = tafWind(temp);
-			strcat(hold, " Wind:");
+			strcat(hold, " <b>Wind:</b>");
 			strcat(hold, taf_temp);
 			temp = strsep(&taf_lines, " ");
 			if (temp != NULL) {
@@ -927,7 +927,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 					temp2 = strsep(&taf_lines, " ");
 
 				tafVisibilty(temp, taf_temp, temp2);
-				strcat(hold, " Vis: ");
+				strcat(hold, " <b>Visibility:</b> ");
 				strcat(hold, taf_temp);
 				sw = 1;
 			}
@@ -946,7 +946,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 				taf_condx = tafWeather(temp);
 			}
 
-			strcat(hold, " Condx: ");
+			strcat(hold, " <b>Conditions:</b> ");
 			strcat(hold, taf_condx);
 
 			sprintf(postsql, "INSERT INTO taf_forecast (rep_time, stn_call, forecast, taf_unknown_fl, taf_line_number, taf_raw) "
