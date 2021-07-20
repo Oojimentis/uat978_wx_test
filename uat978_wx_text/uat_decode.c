@@ -1986,6 +1986,7 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 
 		r = report_buf;
 		p = strchr(r, ' ');
+		strncpy(gstn,"    ",5);
 		if (p) {
 			*p = 0;
 			notam_name = (char *)malloc(strlen(r) + 1);
