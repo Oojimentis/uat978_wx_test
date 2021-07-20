@@ -1190,7 +1190,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					sprintf(taf_copy, "%s %s", time_copy, r);
 				}
 
-				fprintf(to,"%s\n",taf_copy);
+				fprintf(to,"Issued %s\n%s\n",issued,taf_copy);
 				int i = 0;
 				char *taf_token;
 				char taf_temp[200];
@@ -1240,7 +1240,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				strcpy(taf_lines[i], taf_hold);
 //				if (strncmp(gstn,"KNYG",4) == 0)
 //				fprintf(stderr,"test");
-				for (int j = 0; j < i; ++j) {
+				for (int j = 0; j <= i; ++j) {
 					taf_decode(taf_lines[j], issued, fsz, gstn, j);
 				}
 			}	 // End TAF decode
