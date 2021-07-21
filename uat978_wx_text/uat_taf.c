@@ -342,10 +342,6 @@ char* tafWeather(char *taf_list)
 						sprintf(taf_wx, "Broken cumulonimbus clouds (%d00ft) ", units);
 						strcat(taf_wx_all, taf_wx);
 					}
-					else {
-						sprintf(taf_wx, "Broken (%s) clouds (%d00ft) ", temp2, units);
-						strcat(taf_wx_all, taf_wx);
-					}
 				}
 				else {
 					sprintf(taf_wx, "Broken clouds (%d00ft) ", units);
@@ -359,10 +355,6 @@ char* tafWeather(char *taf_list)
 					temp2[2] = '\0';
 					if (strcmp(temp2, "CB") == 0) {
 						sprintf(taf_wx, "Few cumulonimbus clouds (%d00ft) ", units);
-						strcat(taf_wx_all, taf_wx);
-					}
-					else {
-						sprintf(taf_wx, "Few (%s) clouds (%d00ft) ", temp2, units);
 						strcat(taf_wx_all, taf_wx);
 					}
 				}
@@ -380,10 +372,6 @@ char* tafWeather(char *taf_list)
 						sprintf(taf_wx, "Overcast cumulonimbus clouds (%d00ft) ", units);
 						strcat(taf_wx_all, taf_wx);
 					}
-					else {
-						sprintf(taf_wx, "Overcast (%s) clouds (%d00ft) ", temp2, units);
-						strcat(taf_wx_all, taf_wx);
-					}
 				}
 				else {
 					sprintf(taf_wx, "Overcast (%d00ft) ", units);
@@ -397,10 +385,6 @@ char* tafWeather(char *taf_list)
 					temp2[2] = '\0';
 					if (strcmp(temp2, "CB") == 0) {
 						sprintf(taf_wx, "Scattered cumulonimbus clouds (%d00ft) ", units);
-						strcat(taf_wx_all, taf_wx);
-					}
-						else {
-						sprintf(taf_wx, "Scattered (%s) clouds (%d00ft) ", temp2, units);
 						strcat(taf_wx_all, taf_wx);
 					}
 				}
