@@ -1191,6 +1191,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				}
 
 				fprintf(to,"Issued %s\n%s\n",issued,taf_copy);
+				if (strncmp(gstn,"KGTB",4) == 0)
+				fprintf(stderr,"test");
+
 				int i = 0;
 				char *taf_token;
 				char taf_temp[200];
@@ -1224,7 +1227,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					taf_temp[k] = '\0';
 
 					if (strncmp(taf_temp, "BE", 2) == 0 || strncmp(taf_temp, "FM", 2) == 0 ||
-							strncmp(taf_temp, "TE", 2) == 0  || i== 0 ){
+							strncmp(taf_temp, "TE", 2) == 0   ){
 						strcpy(taf_lines[i], taf_hold);
 						taf_hold[0] ='\0';
 						strcpy(taf_hold, taf_temp);
