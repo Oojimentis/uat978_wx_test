@@ -354,8 +354,11 @@ char* tafWeather(char *taf_list)
 			else if (strncmp(temp, "AMDS",4) == 0) {
 				strcat(taf_wx_all, "amendments ");
 			}
+			else if (strncmp(temp, "AMENDS",6) == 0) {
+				strcat(taf_wx_all, "amendments ");
+			}
 			else if (strncmp(temp, "LAST",4) == 0) {
-				strcat(taf_wx_all, "last ");
+				strcat(taf_wx_all, "Last: ");
 			}
 			else if ((strncmp(temp, "NO",2) == 0) && (strlen(temp) ==2)) {
 				strcat(taf_wx_all, "no ");
@@ -388,6 +391,12 @@ char* tafWeather(char *taf_list)
 				strcat(taf_wx_all, " ");
 			}
 			else if (strncmp(temp, "TIL",3) == 0) {
+				strcat(taf_wx_all, "until ");
+				temp = strsep(&taf_list, " ");
+				strcat(taf_wx_all, temp);
+				strcat(taf_wx_all, " ");
+			}
+			else if (strncmp(temp, "UNTIL",5) == 0) {
 				strcat(taf_wx_all, "until ");
 				temp = strsep(&taf_list, " ");
 				strcat(taf_wx_all, temp);
