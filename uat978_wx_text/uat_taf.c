@@ -705,6 +705,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 
 // Visibility
 			temp = strsep(&taf_lines, " ");
+			asprintf(&visby, "n/a");
 			if (temp != NULL) {
 				temp_len = strlen(temp);
 				if ((strncmp(temp + (temp_len -2), "SM", 2) == 0) || (temp_len == 1) ||

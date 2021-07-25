@@ -1191,8 +1191,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				}
 
 				fprintf(to,"Issued %s\n%s\n",issued,taf_copy);
-				if (strncmp(gstn,"KGTB",4) == 0)
-				fprintf(stderr,"test");
+//				if (strncmp(gstn,"KGTB",4) == 0)
+//				fprintf(stderr,"test");
 
 				int i = 0;
 				char *taf_token;
