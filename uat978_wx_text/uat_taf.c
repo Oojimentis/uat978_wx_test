@@ -612,11 +612,15 @@ char* tafWeather(char *taf_list)
 				perc[2] = '\0';
 				temp = strsep(&taf_list, " ");
 				validDates(sd, sz, ed, ez, temp);
-
+				sprintf(taf_wx, "%s%% Probability %s %s:00z-%s %s:00z ",perc, sd, sz, ed, ez);
+				strcat(taf_wx_all, taf_wx);
+				temp = strsep(&taf_list, " ");
+				taf_wind = tafWind(temp);
+				strcat(taf_wx_all, "Wind: ");
+				strcat(taf_wx_all, taf_wind);
 				temp = strsep(&taf_list, " ");
 				tafVisibilty(temp, temp2, taf_list);
-				sprintf(taf_wx, "%s%% Probability %s %s:00z-%s %s:00z %s ",
-						perc, sd, sz, ed, ez, temp2);
+				sprintf(taf_wx, " Visibility: %s", temp2);
 				strcat(taf_wx_all, taf_wx);
 			}
 			else if (strlen(temp) == 4) {
