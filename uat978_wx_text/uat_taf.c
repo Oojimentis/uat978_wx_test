@@ -38,10 +38,10 @@ char* daySuffix(int d)		// adds st, nd, rd, th to day number.
 	char *date_suff = " ";
 
 	switch (d) {
-	case 1: case 21: case 31: 	date_suff = "st"; break;
+	case 1: case 21: case 31:	date_suff = "st"; break;
 	case 2: case 22:			date_suff = "nd"; break;
-	case 3: case 23: 			date_suff = "rd"; break;
-	default: 					date_suff = "th"; break;
+	case 3: case 23:			date_suff = "rd"; break;
+	default:					date_suff = "th"; break;
 	}
 
 	return date_suff;
