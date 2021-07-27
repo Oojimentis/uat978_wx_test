@@ -378,6 +378,9 @@ char* tafWeather(char *taf_list)
 			else if (strncmp(temp, "VIS", 3) == 0) {
 				strcat(taf_wx_all, "visibility ");
 			}
+			else if (strncmp(temp, "WX", 2) == 0) {
+				strcat(taf_wx_all, "weather ");
+			}
 			else if (strncmp(temp, "AND", 3) == 0) {
 				strcat(taf_wx_all, "and ");
 			}
