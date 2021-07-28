@@ -387,6 +387,10 @@ char* tafWeather(char *taf_list)
 			else if (strncmp(temp, "WIND", 4) == 0) {
 				strcat(taf_wx_all, "wind ");
 			}
+			else if (strncmp(temp, "(INCMPL)", 8) == 0) {
+				strcat(taf_wx_all, "(Report incomplete)");
+			}
+
 			else if (strncmp(temp, "SENSOR", 6) == 0) {
 				strcat(taf_wx_all, "sensor ");
 			}
@@ -721,6 +725,17 @@ char* tafWeather(char *taf_list)
 				}
 				else {
 					sprintf(taf_wx, "(4-unknown %s) ", temp);
+					err = 1;
+					strcat(taf_wx_all, taf_wx);
+				}
+			}
+			else if (strlen(temp) == 5) {
+				if (temp[4] == 'Z') {
+					strcat(taf_wx_all, temp);
+					strcat(taf_wx_all, " ");
+				}
+				else {
+					sprintf(taf_wx, "9-Unknown (%s) ", temp);
 					err = 1;
 					strcat(taf_wx_all, taf_wx);
 				}
