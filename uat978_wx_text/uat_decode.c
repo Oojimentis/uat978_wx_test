@@ -1418,11 +1418,16 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 	uint16_t prodt;
 	uint16_t repid = 0;
 
+	char buff[30];
+	char *postsql;
+	int text_bit;
+	int graph_bit;
+	int rpt_yr;
+
 //	fprintf(to, "\nINFORMATION FRAME:\n Type:  %u (%s)",
 //			frame->type, info_frame_type_names[frame->type]);
 	fprintf(to, "\n Type:  %u (%s)",
 			frame->type, info_frame_type_names[frame->type]);
-
 
 	if (frame->length > 0) {
 		if (frame->is_fisb)
@@ -1444,6 +1449,11 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 				fprintf(to, "\n");
 			}
 			else if (frame->type == 14) {      // report list
+
+				time_t current_time = time(NULL);
+				struct tm *tm = localtime(&current_time);
+				strftime(buff, sizeof buff, "%D %T", tm);
+
 				prodt = frame->data[0] << 3 | frame->data[1] >> 5;
 				tfr = (frame->data[1] >> 4) & 1;
 				lidflag = (frame->data[1] >> 8) & 1;
@@ -1462,12 +1472,33 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 						fprintf(to, "\n");
 
 					q++;
+					rpt_yr = frame->data[j] & 0x7f;
+					text_bit = (frame->data[j + 1] >> 7 ) & 1;
+					graph_bit = (frame->data[j + 1] >> 6 ) & 1;
 					repid = (frame->data[j + 1] & ((1 << 6 ) - 1)) << 8 |  frame->data[j + 2];
 
-					fprintf(to, "Rpt ID: %d  ", repid);
-						j = j + 3;
+					asprintf(&postsql,"INSERT INTO current (prod_id,rep_time,rep_year,text,graphic,"
+							"rep_num) values (%d,'%s',%d,%d,%d,%d)",prodt,buff,rpt_yr,text_bit,graph_bit,
+							repid);
+
+					PGresult *res = PQexec(conn, postsql);
+					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+						if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
+							fprintf(stderr, "(WINDS) bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+									PQresultStatus(res), postsql);
 					}
-					fprintf(to, "\n");
+					PQclear(res);
+
+
+//					fprintf(stderr,"rep id: %d yr: %d  tb: %d gb: %d",repid,rpt_yr,text_bit,graph_bit);
+
+					fprintf(to, "Rpt ID: %d  ", repid);
+					j = j + 3;
+				}
+				fprintf(to, "\n");
+
+
+
 			}
 			else
 				display_generic_data(frame->data, frame->length, to);
