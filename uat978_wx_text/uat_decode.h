@@ -48,6 +48,7 @@ int seg_graph_count;
 int seg_text_count;
 int nex_count;
 int print_nexrad;
+//int reset_database;
 
 FILE * filemetar;		// 413
 FILE * fileconfig;		// Credentials.

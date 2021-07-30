@@ -10,8 +10,10 @@
 #include <string.h>
 #include "asprintf.h"
 
+#include "parser.h"
+
 #ifndef NULL
-#define NULL   ((void *) 0)
+#define NULL ((void *) 0)
 #endif
 
 void handle_frame(frame_type_t type, uint8_t *frame, int len, void *extra)
@@ -36,47 +38,57 @@ int main(int argc, char **argv)
 	nex_count = 0;
 	seg_graph_count = 0;
 	seg_text_count = 0;
+	int reset_database = 1;
 
 	char file_path[75];
-	char line[75];
 	char pg_db[20];
 	char pg_pwd[20];
 	char pg_user[20];
 
 	char *postsql;
 
-	fileconfig = fopen("config.txt", "r");
-	if (fileconfig == 0)	{
-		fprintf(stderr, "config.txt Error--file could not be opened. \n");
-		exit (1); }
-	else {
-		fgets(line, 75, fileconfig);
-		if (!feof(fileconfig))
-			 strcpy(pg_user,line);
-		fgets(line, 75, fileconfig);
-		if (!feof(fileconfig))
-			strcpy(pg_pwd,line);
-		fgets(line, 75, fileconfig);
-		if (!feof(fileconfig))
-			 strcpy(pg_db,line);
-		fgets(line, 75, fileconfig);
-		if (!feof(fileconfig)) {
-			 line[strlen(line) - 1] = '\0';
-			 strcpy(file_path, line);
-		}
-		fgets(line, 2, fileconfig);
-		if (!feof(fileconfig)) {
-			char g[2];
-			strncpy(g,line,1);
-			if (strcmp(g,"N") == 0)
+
+	print_nexrad = 1;
+
+	config_option_t co;
+	if ((co = read_config_file("config.txt")) == NULL) {
+		perror("read_config_file()");
+		return -1;
+	}
+	while(1) {
+		printf("Key: %s\nValue: %s\n", co->key, co->value);
+		if (strcmp(co->key,"pg_user") == 0)
+			strcpy(pg_user,co->value);
+		else if (strcmp(co->key,"pg_pwd") == 0)
+			strcpy(pg_pwd,co->value);
+		else if (strcmp(co->key,"pg_db") == 0)
+			strcpy(pg_db,co->value);
+		else if (strcmp(co->key,"file_path") == 0)
+			strcpy(file_path,co->value);
+		else if (strcmp(co->key,"print_nexrad") == 0) {
+			if (strcmp(co->value,"N") == 0)
 				print_nexrad = 0;
-			else
+			else if (strcmp(co->value,"Y") == 0)
 				print_nexrad = 1;
+			else
+				fprintf(stderr,"Unknown config Key: %s\nValue: %s\n", co->key, co->value);
+		}
+		else if (strcmp(co->key,"reset_database") == 0) {
+			if (strcmp(co->value,"N") == 0)
+				reset_database = 0;
+			else if (strcmp(co->value,"Y") == 0)
+				reset_database = 1;
+			else
+				fprintf(stderr,"Unknown config Key: %s\nValue: %s\n", co->key, co->value);
+		}
+		if (co->prev != NULL) {
+			co = co->prev;
+		} else {
+			break;
 		}
 	}
-	fclose(fileconfig);
 
-//   Open Postgresql database
+// Open Postgresql database
 	asprintf(&postsql, "user=%s password=%s dbname=%s", pg_user, pg_pwd, pg_db);
 	conn = PQconnectdb(postsql);
 	if (PQstatus(conn) == CONNECTION_BAD) {
@@ -92,17 +104,19 @@ int main(int argc, char **argv)
 	}
 
 // Delete table data...
-	asprintf(&postsql,"truncate graphics; truncate metar; truncate nexrad; truncate pirep; "
-			"truncate sigairmet; truncate taf; truncate circles; truncate sua; "
-			"truncate winds; truncate taf_forecast;");
+	if (reset_database == 1) {
+		asprintf(&postsql,"truncate graphics; truncate metar; truncate nexrad; truncate pirep; "
+				"truncate sigairmet; truncate taf; truncate circles; truncate sua; "
+				"truncate winds; truncate taf_forecast;");
 
-	PGresult *res = PQexec(conn, postsql);
+		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
 				fprintf(stderr, "bad sql %s \nStatus:%d\n", PQerrorMessage(conn),
 						PQresultStatus(res));
 		}
 		PQclear(res);
+	}
 
 	filemetar = fopen("metar.out", "w");
 	if (filemetar == 0) {
