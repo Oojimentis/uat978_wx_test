@@ -1241,7 +1241,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					taf_token= strtok(NULL, "\n");
 				}
 				strcpy(taf_lines[i], taf_hold);
-//				if (strncmp(gstn,"KNYG",4) == 0)
+//				if (strncmp(gstn,"KBAF",4) == 0)
 //				fprintf(stderr,"test");
 				for (int j = 0; j <= i; ++j) {
 					taf_decode(taf_lines[j], issued, fsz, gstn, j);
@@ -1274,7 +1274,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 								windlen = strlen(tok4);
 								if (tok4[windlen-1] == '\n') {
 									tok4[windlen-1] = '\0';
-									windlen = windlen -1;
+									windlen = windlen - 1;
 								}
 								strncpy(cpos12, tok4, 2);
 								cpos12[2] = '\0';

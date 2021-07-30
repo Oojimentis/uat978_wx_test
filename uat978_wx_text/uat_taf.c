@@ -190,8 +190,12 @@ void tafVisibilty(char *temp, char *taf_vis, char *temp2)
 	}
 	else if (strncmp(temp + (len_v - 2), "SM", 2) == 0) {
 		strncpy(vis, temp, len_v - 2);
+		sm=atoi(vis);
 		vis[len_v - 2] = '\0';
-		sprintf(taf_vis, "%s statue miles", vis);
+		if (sm == 1)
+			sprintf(taf_vis, "%s statue mile", vis);
+		else
+			sprintf(taf_vis, "> %d statue miles", sm);
 	}
 	else if (strncmp(temp, "9999", 4) == 0) {
 		sprintf(taf_vis, "Clear");
