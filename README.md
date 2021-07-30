@@ -28,10 +28,25 @@ This is my first Github project, so be nice! I am just doing this for my own amu
 ## Building
 
     > make
-    
+ 
+## Example config file (config.txt)
+
+````
+# postgresql stuff
+pg_user = your_postgres_username
+pg_pwd = postgres_password
+pg_db = database_name
+file_path = /path_to_node_public_directory (not used)
+
+# process NEXRAD - For testing, run time is quicker with NEXRAD off (N)
+print_nexrad = N
+
+# Clean out database at the start of each run
+reset_database = Y
+````
 ## Run
 
-    > rtl_sdr -g 0 -d 0 -f 978000000 -s 2083334 - | ./dump978 | tee  >(./uat2text > slog.txt)
+    > rtl_sdr -g 0 -d 0 -f 978000000 -s 2083334 - | ./dump978 | tee  >(./uat2text > log.txt)
 
 I use a script to launch DUMP978, output position data to DUMP1090, and view some of the output files in tabs using Multitail.
 
