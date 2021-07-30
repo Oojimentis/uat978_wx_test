@@ -56,7 +56,6 @@ int main(int argc, char **argv)
 		return -1;
 	}
 	while(1) {
-		printf("Key: %s\nValue: %s\n", co->key, co->value);
 		if (strcmp(co->key,"pg_user") == 0)
 			strcpy(pg_user,co->value);
 		else if (strcmp(co->key,"pg_pwd") == 0)
