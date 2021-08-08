@@ -181,12 +181,12 @@ static const char *emitter_category_names[40] = {
 
 static const char *emergency_status_names[8] = {
 	"No emergency",
-	"**** General emergency ****",
-	"**** Lifeguard / medical emergency ****",
-	"**** Minimum fuel ****",
-	"**** No communications ****",
-	"**** Unlawful interference ****",
-	"**** Downed aircraft ****",
+	"* General emergency *",
+	"* Lifeguard / medical emergency *",
+	"* Minimum fuel *",
+	"* No communications *",
+	"* Unlawful interference *",
+	"* Downed aircraft *",
 	"reserved"
 };
 
@@ -224,7 +224,7 @@ static void get_gs_name(char *Word)
 	asprintf(&postsql, "SELECT * FROM stations WHERE stn_call = '%s'", temp_stn);
 	PGresult *res = PQexec(conn, postsql);
 	if (PQresultStatus(res) != PGRES_TUPLES_OK) {
-		 printf("No data retrieved\n");
+		 fprintf(stderr, "Station not found: %s\n", temp_stn);
 	}
 	else {
 		rows = PQntuples(res);
@@ -375,7 +375,7 @@ static void get_pirep(char *Word)
 	char pirep_WX[50] = "";		// Weather
 	char pirep_TA[10] = "";		// Temperature
 	char pirep_WV[30] = "";		// Wind Speed Direction
-	char pirep_TB[50] = "";		// Turbulence
+	char pirep_TB[100] = "";	// Turbulence
 	char pirep_IC[50] = "";		// Icing
 	char pirep_RM[500] = ""; 	// Remarks
 	char pirep_TY[30] = "";		// Type urgent/regular
@@ -450,6 +450,7 @@ static void get_pirep(char *Word)
 			strcpy(pirep_RM, token + 3);
 			token = strtok(0, "/");
 			if (token) {
+				strcat(pirep_RM, "/");
 				strcat(pirep_RM, token);
 			}
 			for(int i = 0; i < strlen(pirep_RM); i++) {

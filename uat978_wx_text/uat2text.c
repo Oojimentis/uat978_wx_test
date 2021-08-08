@@ -102,11 +102,21 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Connected to database: %s\n",pg_db);
 	}
 
-// Delete table data...
 	if (reset_database == 1) {
-		asprintf(&postsql,"truncate graphics; truncate metar; truncate nexrad; truncate pirep; "
-				"truncate sigairmet; truncate taf; truncate circles; truncate sua; "
-				"truncate winds; truncate taf_forecast; truncate current");
+		// Reset table data...
+		asprintf(&postsql,
+				"truncate circles; "
+				"truncate current"
+				"truncate graphics; "
+				"truncate metar; "
+				"truncate nexrad; "
+				"truncate pirep; "
+				"truncate sigairmet; "
+				"truncate sua; "
+				"truncate taf; "
+				"truncate taf_forecast; "
+				"truncate winds; "
+				);
 
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
