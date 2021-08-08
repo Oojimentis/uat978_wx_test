@@ -391,8 +391,12 @@ static void get_pirep(char *Word)
 	}
 
 	token = strtok(Word, " ");
-	strcpy(pirep_stn, "K");
-	strcat(pirep_stn, token);
+	if (strlen(token) == 3) {
+		strcpy(pirep_stn, "K");
+		strcat(pirep_stn, token);
+	}
+	else
+		strcat(pirep_stn, token);
 
 	time_t current_time = time(NULL);
 	struct tm *tm = localtime(&current_time);
@@ -1241,7 +1245,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					taf_token= strtok(NULL, "\n");
 				}
 				strcpy(taf_lines[i], taf_hold);
-//				if (strncmp(gstn,"KBAF",4) == 0)
+//				if (strncmp(gstn,"KPOU",4) == 0)
 //				fprintf(stderr,"test");
 				for (int j = 0; j <= i; ++j) {
 					taf_decode(taf_lines[j], issued, fsz, gstn, j);
@@ -1397,7 +1401,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 			}
 			memset(&MetarStruct, 0, sizeof(MetarStruct));
 			fflush(filemetar);
-//			fflush(filetaf);
 		}
 	}
 	break;

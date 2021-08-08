@@ -229,6 +229,7 @@ char* tafWeather(char *taf_list)
 	int units;
 	int vis_met = 0;
 	int wx1, wx2, wx3;
+	int prb_no_wind_vis = 0;
 
 	float fahr;
 	float units_f;
@@ -634,17 +635,22 @@ char* tafWeather(char *taf_list)
 				sprintf(taf_wx, "%s%% Probability %s %s:00z-%s %s:00z ",perc, sd, sz, ed, ez);
 				strcat(taf_wx_all, taf_wx);
 
-
 				temp = strsep(&taf_list, " ");
-				if (strncmp(temp + (strlen(temp) - 2), "SM", 2) != 0) {
+				if (strncmp(temp + (strlen(temp) - 2), "KT", 2) == 0) {
 					taf_wind = tafWind(temp);
 					strcat(taf_wx_all, "Wind: ");
 					strcat(taf_wx_all, taf_wind);
+					strcat(taf_wx_all, " ");
 					temp = strsep(&taf_list, " ");
 				}
-				tafVisibilty(temp, temp2, taf_list);
-				sprintf(taf_wx, " Visibility: %s", temp2);
-				strcat(taf_wx_all, taf_wx);
+				else if (strncmp(temp + (strlen(temp) - 2), "SM", 2) == 0) {
+					tafVisibilty(temp, temp2, taf_list);
+					sprintf(taf_wx, " Visibility: %s", temp2);
+					strcat(taf_wx_all, taf_wx);
+					prb_no_wind_vis = 0;
+				}
+				else
+					prb_no_wind_vis = 1;
 			}
 			else if (strlen(temp) == 4) {
 				vis_met = 0;
@@ -750,7 +756,11 @@ char* tafWeather(char *taf_list)
 				strcat(taf_wx_all, taf_wx);
 			}
 		}
-		temp = strsep(&taf_list, " ");
+
+		if (prb_no_wind_vis == 0)
+			temp = strsep(&taf_list, " ");
+		else
+			prb_no_wind_vis = 0;
 	}
 return taf_wx_all;
 }

@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 	if (reset_database == 1) {
 		asprintf(&postsql,"truncate graphics; truncate metar; truncate nexrad; truncate pirep; "
 				"truncate sigairmet; truncate taf; truncate circles; truncate sua; "
-				"truncate winds; truncate taf_forecast;");
+				"truncate winds; truncate taf_forecast; truncate current");
 
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
