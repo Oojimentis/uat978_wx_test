@@ -1246,8 +1246,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					taf_token= strtok(NULL, "\n");
 				}
 				strcpy(taf_lines[i], taf_hold);
-//				if (strncmp(gstn,"KPOU",4) == 0)
-//				fprintf(stderr,"test");
+//				if (strncmp(gstn,"KMTN",4) == 0)
+//					fprintf(stderr,"test");
 				for (int j = 0; j <= i; ++j) {
 					taf_decode(taf_lines[j], issued, fsz, gstn, j);
 				}
@@ -1493,16 +1493,10 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 					}
 					PQclear(res);
 
-
-//					fprintf(stderr,"rep id: %d yr: %d  tb: %d gb: %d",repid,rpt_yr,text_bit,graph_bit);
-
 					fprintf(to, "Rpt ID: %d  ", repid);
 					j = j + 3;
 				}
 				fprintf(to, "\n");
-
-
-
 			}
 			else
 				display_generic_data(frame->data, frame->length, to);

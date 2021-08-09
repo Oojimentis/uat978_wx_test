@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 		// Reset table data...
 		asprintf(&postsql,
 				"truncate circles; "
-				"truncate current"
+				"truncate current;"
 				"truncate graphics; "
 				"truncate metar; "
 				"truncate nexrad; "

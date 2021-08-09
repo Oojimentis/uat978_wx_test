@@ -38,10 +38,10 @@ char* daySuffix(int d)		// adds st, nd, rd, th to day number.
 	char *date_suff = " ";
 
 	switch (d) {
-	case 1: case 21: case 31:	date_suff = "st"; break;
-	case 2: case 22:			date_suff = "nd"; break;
-	case 3: case 23:			date_suff = "rd"; break;
-	default:					date_suff = "th"; break;
+		case 1: case 21: case 31:	date_suff = "st"; break;
+		case 2: case 22:			date_suff = "nd"; break;
+		case 3: case 23:			date_suff = "rd"; break;
+		default:					date_suff = "th"; break;
 	}
 
 	return date_suff;
@@ -359,87 +359,6 @@ char* tafWeather(char *taf_list)
 					strcat(taf_wx_all, taf_wx);
 				}
 			}
-			else if (strncmp(temp, "AMDS", 4) == 0) {
-				strcat(taf_wx_all, "amendments ");
-			}
-			else if (strncmp(temp, "AMENDS", 6) == 0) {
-				strcat(taf_wx_all, "amendments ");
-			}
-			else if (strncmp(temp, "LAST", 4) == 0) {
-				strcat(taf_wx_all, "Last: ");
-			}
-			else if ((strncmp(temp, "NO", 2) == 0) && (strlen(temp) == 2)) {
-				strcat(taf_wx_all, "no ");
-			}
-			else if (strncmp(temp, "LTD", 3) == 0) {
-				strcat(taf_wx_all, "limited ");
-			}
-			else if (strncmp(temp, "TO", 2) == 0) {
-				strcat(taf_wx_all, "to ");
-			}
-			else if (strncmp(temp, "CLD", 3) == 0) {
-				strcat(taf_wx_all, "cloud ");
-			}
-			else if (strncmp(temp, "VIS", 3) == 0) {
-				strcat(taf_wx_all, "visibility ");
-			}
-			else if (strncmp(temp, "WX", 2) == 0) {
-				strcat(taf_wx_all, "weather ");
-			}
-			else if (strncmp(temp, "AND", 3) == 0) {
-				strcat(taf_wx_all, "and ");
-			}
-			else if (strncmp(temp, "WIND", 4) == 0) {
-				strcat(taf_wx_all, "wind ");
-			}
-			else if (strncmp(temp, "(INCMPL)", 8) == 0) {
-				strcat(taf_wx_all, "(Report incomplete)");
-			}
-
-			else if (strncmp(temp, "SENSOR", 6) == 0) {
-				strcat(taf_wx_all, "sensor ");
-			}
-			else if (strncmp(temp, "METWATCH", 8) == 0) {
-				strcat(taf_wx_all, "Metwatch ");
-				temp = strsep(&taf_list, " ");
-				strcat(taf_wx_all, temp);
-				strcat(taf_wx_all, " ");
-			}
-			else if (strncmp(temp, "TIL", 3) == 0) {
-				strcat(taf_wx_all, "until ");
-				temp = strsep(&taf_list, " ");
-				strcat(taf_wx_all, temp);
-				strcat(taf_wx_all, " ");
-			}
-			else if (strncmp(temp, "UNTIL", 5) == 0) {
-				strcat(taf_wx_all, "until ");
-				temp = strsep(&taf_list, " ");
-				strcat(taf_wx_all, temp);
-				strcat(taf_wx_all, " ");
-			}
-			else if (strncmp(temp, "COR", 3) == 0) {
-				strcat(taf_wx_all, "Corrected ");
-				temp = strsep(&taf_list, " ");
-				strcat(taf_wx_all, temp);
-				strcat(taf_wx_all, " ");
-			}
-			else if (strncmp(temp, "WND", 3) == 0) {
-				strcat(taf_wx_all, "Wind: ");
-				temp = strsep(&taf_list, " ");
-				taf_wind = tafWind(temp);
-				strcat(taf_wx_all, taf_wind);
-			}
-			else if (strncmp(temp, "AFT", 3) == 0) {
-				strcat(taf_wx_all, " after ");
-				temp = strsep(&taf_list, " ");
-				strcat(taf_wx_all,temp);
-				strcat(taf_wx_all," ");
-			}
-			else if (strncmp(temp, "NEXT", 4) == 0) {
-				strcat(taf_wx_all, "next ");
-				temp = strsep(&taf_list, " ");
-				strcat(taf_wx_all,temp);
-			}
 			else if (strncmp(temp, "FEW", 3) == 0) {
 				units = atoi(temp + 3);
 				if (l > 6) {
@@ -488,6 +407,98 @@ char* tafWeather(char *taf_list)
 			else if (strncmp(temp, "SKC", 3) == 0) {
 				sprintf(taf_wx, "Sky clear ");
 				strcat(taf_wx_all, taf_wx);
+			}
+			else if (strncmp(temp, "AFT", 3) == 0) {
+				strcat(taf_wx_all, " after ");
+				temp = strsep(&taf_list, " ");
+				strcat(taf_wx_all,temp);
+				strcat(taf_wx_all," ");
+			}
+			else if ((strncmp(temp, "AMD", 3) == 0) && (strlen(temp) == 3)) {
+				sprintf(taf_wx, "Amendment ");
+				strcat(taf_wx_all, taf_wx);
+			}
+			else if (strncmp(temp, "AMDS", 4) == 0) {
+				strcat(taf_wx_all, "amendments ");
+			}
+			else if (strncmp(temp, "AMENDS", 6) == 0) {
+				strcat(taf_wx_all, "amendments ");
+			}
+			else if (strncmp(temp, "AND", 3) == 0) {
+				strcat(taf_wx_all, "and ");
+			}
+			else if (strncmp(temp, "CLD", 3) == 0) {
+				strcat(taf_wx_all, "cloud ");
+			}
+			else if (strncmp(temp, "COR", 3) == 0) {
+				strcat(taf_wx_all, "Corrected ");
+				temp = strsep(&taf_list, " ");
+				strcat(taf_wx_all, temp);
+				strcat(taf_wx_all, " ");
+			}
+			else if (strncmp(temp, "(INCMPL)", 8) == 0) {
+				strcat(taf_wx_all, "(Report incomplete)");
+			}
+			else if (strncmp(temp, "LAST", 4) == 0) {
+				strcat(taf_wx_all, "Last: ");
+			}
+			else if (strncmp(temp, "LTD", 3) == 0) {
+				strcat(taf_wx_all, "limited ");
+			}
+			else if (strncmp(temp, "METWATCH", 8) == 0) {
+				strcat(taf_wx_all, "Metwatch ");
+				temp = strsep(&taf_list, " ");
+				strcat(taf_wx_all, temp);
+				strcat(taf_wx_all, " ");
+			}
+			else if (strncmp(temp, "NEXT", 4) == 0) {
+				strcat(taf_wx_all, "next ");
+				temp = strsep(&taf_list, " ");
+				strcat(taf_wx_all,temp);
+			}
+			else if ((strncmp(temp, "NO", 2) == 0) && (strlen(temp) == 2)) {
+				strcat(taf_wx_all, "no ");
+			}
+			else if ((strncmp(temp, "NOT", 3) == 0) && (strlen(temp) == 3)) {
+				sprintf(taf_wx, "not ");
+				strcat(taf_wx_all, taf_wx);
+			}
+			else if (strncmp(temp, "SENSOR", 6) == 0) {
+				strcat(taf_wx_all, "sensor ");
+			}
+			else if ((strncmp(temp, "SKED", 4) == 0) && (strlen(temp) == 4)) {
+				sprintf(taf_wx, "Scheduled ");
+				strcat(taf_wx_all, taf_wx);
+			}
+			else if (strncmp(temp, "TIL", 3) == 0) {
+				strcat(taf_wx_all, "until ");
+				temp = strsep(&taf_list, " ");
+				strcat(taf_wx_all, temp);
+				strcat(taf_wx_all, " ");
+			}
+			else if (strncmp(temp, "TO", 2) == 0) {
+				strcat(taf_wx_all, "to ");
+			}
+			else if (strncmp(temp, "UNTIL", 5) == 0) {
+				strcat(taf_wx_all, "until ");
+				temp = strsep(&taf_list, " ");
+				strcat(taf_wx_all, temp);
+				strcat(taf_wx_all, " ");
+			}
+			else if (strncmp(temp, "VIS", 3) == 0) {
+				strcat(taf_wx_all, "visibility ");
+			}
+			else if (strncmp(temp, "WIND", 4) == 0) {
+				strcat(taf_wx_all, "wind ");
+			}
+			else if (strncmp(temp, "WND", 3) == 0) {
+				strcat(taf_wx_all, "Wind: ");
+				temp = strsep(&taf_list, " ");
+				taf_wind = tafWind(temp);
+				strcat(taf_wx_all, taf_wind);
+			}
+			else if (strncmp(temp, "WX", 2) == 0) {
+				strcat(taf_wx_all, "weather ");
 			}
 			else if (strncmp(temp, "QNH", 3) == 0) {
 				strncpy(temp2, temp + 3, 4);
@@ -683,18 +694,6 @@ char* tafWeather(char *taf_list)
 				sprintf(taf_wx, "<b>Wind:</b> %s ", taf_wind);
 				strcat(taf_wx_all, taf_wx);
 			}
-			else if ((strncmp(temp, "AMD", 3) == 0) && (strlen(temp) == 3)) {
-				sprintf(taf_wx, "Amendment ");
-				strcat(taf_wx_all, taf_wx);
-			}
-			else if ((strncmp(temp, "NOT", 3) == 0) && (strlen(temp) == 3)) {
-				sprintf(taf_wx, "not ");
-				strcat(taf_wx_all, taf_wx);
-			}
-			else if ((strncmp(temp, "SKED", 4) == 0) && (strlen(temp) == 4)) {
-				sprintf(taf_wx, "Scheduled ");
-				strcat(taf_wx_all, taf_wx);
-			}
 			else if ((strncmp(temp, "FN", 2) == 0) && (strlen(temp) == 7)) {
 				sprintf(taf_wx, "From Fleet Norfolk (%s) ", temp);
 				strcat(taf_wx_all, taf_wx);
@@ -749,6 +748,17 @@ char* tafWeather(char *taf_list)
 					err = 1;
 					strcat(taf_wx_all, taf_wx);
 				}
+			}
+			else if (strncmp(temp + 4, "/", 1) == 0 && strlen(temp) == 9) {
+				validDates(sd, sz, ed, ez, temp);
+				strcat(taf_wx_all, sd);
+				strcat(taf_wx_all, " @");
+				strcat(taf_wx_all, sz);
+				strcat(taf_wx_all, ":00z-");
+				strcat(taf_wx_all, ed);
+				strcat(taf_wx_all, " @");
+				strcat(taf_wx_all, ez);
+				strcat(taf_wx_all, ":00z");
 			}
 			else {
 				sprintf(taf_wx, "5-Unknown (%s) ", temp);
