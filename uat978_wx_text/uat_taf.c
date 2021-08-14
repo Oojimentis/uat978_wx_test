@@ -100,6 +100,8 @@ char* tafWind(char *temp)
 			strcat(wind_ret, temp);
 			strcat(wind_ret, ") ");
 			err = 1;
+
+			return taf_wind_ret;
 		}
 		else {
 			strncpy(d, temp, 3);
@@ -117,6 +119,8 @@ char* tafWind(char *temp)
 			strcat(wind_ret, temp);
 			strcat(wind_ret, ") ");
 			err = 1;
+
+			return taf_wind_ret;
 		}
 		else {
 			strncpy(d, temp, 3);
@@ -243,7 +247,7 @@ char* tafWeather(char *taf_list)
 		l = strlen(temp);
 
 		switch(getHash(temp)) {
-		case AUTOMATED:	strcat(taf_wx_all, "Autmated ");break;
+		case AUTOMATED:	strcat(taf_wx_all, "Automated ");break;
 		case BC:		strcat(taf_wx_all, "Patches, "); break;
 		case BL:		strcat(taf_wx_all, "Blowing, "); break;
 		case BR:		strcat(taf_wx_all, "Mist, "); break;
