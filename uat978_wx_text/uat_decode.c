@@ -374,7 +374,7 @@ static void get_pirep(char *Word)
 	char pirep_SK[50] = "";		// Cloud
 	char pirep_WX[50] = "";		// Weather
 	char pirep_TA[10] = "";		// Temperature
-	char pirep_WV[30] = "";		// Wind Speed Direction
+	char pirep_WV[50] = "";		// Wind Speed Direction
 	char pirep_TB[100] = "";	// Turbulence
 	char pirep_IC[50] = "";		// Icing
 	char pirep_RM[500] = ""; 	// Remarks
