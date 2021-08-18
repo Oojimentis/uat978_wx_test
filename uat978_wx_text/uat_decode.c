@@ -342,7 +342,7 @@ static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_yea
 		}
 
 	asprintf(&postsql,"INSERT INTO sua (rep_time, rep_year, rep_num, sched_id, airsp_id, sched_status,"
-			"airsp_name, start_time, end_time, low_alt, high_alt, sep_rule, shape_ind,"
+			"airsp_name, start_date, stop_date, low_alt, high_alt, sep_rule, shape_ind,"
 			"nfdc_id, nfdc_name, dafif_id, dafif_name, airsp_type) "
 			"VALUES('%s',%d,%d,%d,%d,'%s','%s','%s','%s',%d,%d,'%s','%s','%s','%s','%s','%s','%s')",
 			rep_time, report_year, rep_num, sched_id, airsp_id, sua_sch_stat, sua_aspc_nm,
@@ -461,7 +461,7 @@ static void get_pirep(char *Word)
 	}
 
 	asprintf(&postsql,"INSERT INTO pirep (rep_type, rep_time, fl_lev, ac_type, cloud, weather, "
-			"temperature, wind_spd_dir, turbulence, icing, remarks, stn_call, location)"
+			"temperature, windsp, turbulence, icing, remarks, stn_call, location)"
 			"VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
 			pirep_TY, pirep_TI, pirep_FL, pirep_TP, pirep_SK, pirep_WX, pirep_TA, pirep_WV,
 			pirep_TB, pirep_IC,	pirep_RM, pirep_stn, pirep_OV);
