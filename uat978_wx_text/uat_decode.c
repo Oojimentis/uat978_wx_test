@@ -2421,7 +2421,9 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *to)
 	char *seg_text;
 
 	char gstn[5];
-	char notam_name[10];
+	char *notam_name;
+
+	asprintf(&notam_name," ");
 
 	prodid = ((apdu->data[4] & 0x7) << 7) | (apdu->data[5] >> 1);
 	prodfillen = (apdu->data[5] & 0x1) | (apdu->data[6]);
@@ -2490,8 +2492,21 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *to)
 				seg_text[i] = ' ';
 		}
 
-		strncpy(notam_name,seg_text,9);
-		notam_name[9] = '\0';
+		char *seg_t2;
+		char *h;
+		char *n = seg_text;
+
+		h = strchr(n, ' ');
+		if (h) {
+			*h = 0;
+			strcpy(notam_name, n);
+			n = h + 1;
+
+			seg_t2 = (char *)malloc(strlen(n) + 1);
+			strcpy(seg_t2, n);
+			asprintf(&seg_text,"%s %s",notam_name,seg_t2);
+		}
+
 		if (strncmp(notam_name,"NOTAM-FDC",9) == 0) {
 			strncpy(gstn,seg_text + 10,4);
 			gstn[4] = '\0';
