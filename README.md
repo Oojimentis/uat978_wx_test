@@ -8,6 +8,7 @@ This is my first Github project, so be nice! I am just doing this for my own amu
 
 
 ## Added
+* Minor bug fixes. Capture of current report lists to database. (08/23/21)
 * TAF forecast lines added to database. (7/12/21)
 * Segmented G-AIRMET reports. (6/12/21)
 * Segmented graphical NOTAM reports. (06/05/21)
