@@ -420,7 +420,7 @@ static void get_pirep(char *Word)
 			strcpy(pirep_TM, token);
 			snprintf(pirep_hr, 3, "%s", pirep_TM + 3);
 			snprintf(pirep_mn, 3, "%s", pirep_TM + 5);
-			sprintf(pirep_TI, "%s%s", pirep_hr, pirep_mn);
+			sprintf(pirep_TI, "%s:%s", pirep_hr, pirep_mn);
 		}
 		else if (strncmp(token, "FL", 2) == 0) {
 			strcpy(pirep_FL, token + 2);
@@ -1069,7 +1069,9 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
 		char buff[30];
 		char cpos12[5];  char cpos34[5];  char cpos57[5]; char cpos12_save[5];
-		char fsz[5];
+		char fsz[6];
+		char fsz_hr[3];
+		char fsz_min[3];
 		char gstn[5];
 		char issued[50];
 		char mtype[9];
@@ -1176,12 +1178,14 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					strncpy(sd, time_copy, 2);
 					sd[2] = '\0';
 					dx = atoi(sd);
-
 					dt = daySuffix(dx);
 
 					sprintf(sd, "%d%s", dx, dt);
-					strncpy(fsz, time_copy + 2, 4);
-					fsz[4] = '\0';
+					strncpy(fsz_hr, time_copy + 2, 2);
+					strncpy(fsz_min, time_copy + 4, 2);
+					fsz_hr[2] = '\0';
+					fsz_min[2] = '\0';
+					sprintf(fsz,"%s:%s",fsz_hr,fsz_min);
 
 					sprintf(issued, "%s at %sz", sd, fsz);
 					taf_copy = (char *)malloc(strlen(r) + 1);
@@ -1254,6 +1258,18 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 			}	 // End TAF decode
 
 			if (strcmp(mtype, "WINDS") == 0) {
+
+				strncpy(sd, time_copy, 2);
+				sd[2] = '\0';
+				dx = atoi(sd);
+				dt = daySuffix(dx);
+				sprintf(sd, "%d%s", dx, dt);
+				strncpy(fsz_hr, time_copy + 2, 2);
+				strncpy(fsz_min, time_copy + 4, 2);
+				fsz_hr[2] = '\0';
+				fsz_min[2] = '\0';
+				sprintf(fsz,"%s:%s",fsz_hr,fsz_min);
+				sprintf(issued, "%s at %sz", sd, fsz);
 
 				for (int k = 0; k < 9; ++k) {
 					winds_aloft[k].wal_altitude = NULL;
@@ -1356,7 +1372,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 						"VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s',"
 						"'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s',"
 						"'%s','%s','%s','%s','%s','%s','%s','%s','%s')",
-						gstn, time_copy, buff,
+						gstn, issued, buff,
 						winds_aloft[0].wal_altitude, winds_aloft[1].wal_altitude, winds_aloft[2].wal_altitude,
 						winds_aloft[3].wal_altitude, winds_aloft[4].wal_altitude, winds_aloft[5].wal_altitude,
 						winds_aloft[6].wal_altitude, winds_aloft[7].wal_altitude, winds_aloft[8].wal_altitude,

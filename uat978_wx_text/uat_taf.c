@@ -14,6 +14,9 @@
 #include "uat_taf.h"
 #include "uat_decode.h"
 
+#define _POSIX_C_SOURCE 200809L
+#include <locale.h>
+
 static unsigned long long int getHash(const char* source)
 {
 	unsigned long long int hash = 0;
@@ -86,7 +89,7 @@ char* tafWind(char *temp)
 
 	int kt_int = 0;
 	int w_len;
-
+	int dir_int = 0;
 
 	gs[0] = '\0';
 	w_len = strlen(temp);
@@ -141,8 +144,10 @@ char* tafWind(char *temp)
 	}
 	if (strcmp(d, "VRB") == 0)
 		asprintf(&taf_wind, "Variable, speed: %dkt", kt_int);
-	else
-		asprintf(&taf_wind, "Direction: %s°, Speed: %dkt", d, kt_int);
+	else {
+		dir_int = atoi(d);
+		asprintf(&taf_wind, "Direction: %d°, Speed: %dkt", dir_int, kt_int);
+	}
 	if (strcmp(gs, "\0") == 0) {
 		if (strcmp(temp, "00000KT") == 0)
 			strcat(wind_ret, "Calm");
@@ -354,12 +359,12 @@ char* tafWeather(char *taf_list)
 					strncpy(temp2, temp + 6, l - 6);
 					temp2[2] = '\0';
 					if (strcmp(temp2, "CB") == 0) {
-						sprintf(taf_wx, "Broken cumulonimbus clouds (%d00ft) ", units);
+						sprintf(taf_wx, "Broken cumulonimbus clouds (%'dft) ", units * 100);
 						strcat(taf_wx_all, taf_wx);
 					}
 				}
 				else {
-					sprintf(taf_wx, "Broken clouds (%d00ft) ", units);
+					sprintf(taf_wx, "Broken clouds (%'dft) ", units * 100);
 					strcat(taf_wx_all, taf_wx);
 				}
 			}
@@ -369,12 +374,12 @@ char* tafWeather(char *taf_list)
 					strncpy(temp2, temp + 6, l - 6);
 					temp2[2] = '\0';
 					if (strcmp(temp2, "CB") == 0) {
-						sprintf(taf_wx, "Few cumulonimbus clouds (%d00ft) ", units);
+						sprintf(taf_wx, "Few cumulonimbus clouds (%'dft) ", units * 100);
 						strcat(taf_wx_all, taf_wx);
 					}
 				}
 				else {
-					sprintf(taf_wx, "Few clouds (%d00ft) ", units);
+					sprintf(taf_wx, "Few clouds (%'dft) ", units * 100);
 					strcat(taf_wx_all, taf_wx);
 				}
 			}
@@ -384,12 +389,12 @@ char* tafWeather(char *taf_list)
 					strncpy(temp2, temp + 6, l - 6);
 					temp2[2] = '\0';
 					if (strcmp(temp2, "CB") == 0) {
-						sprintf(taf_wx, "Overcast cumulonimbus clouds (%d00ft) ", units);
+						sprintf(taf_wx, "Overcast cumulonimbus clouds (%'dft) ", units * 100);
 						strcat(taf_wx_all, taf_wx);
 					}
 				}
 				else {
-					sprintf(taf_wx, "Overcast (%d00ft) ", units);
+					sprintf(taf_wx, "Overcast (%'dft) ", units * 100);
 					strcat(taf_wx_all, taf_wx);
 				}
 			}
@@ -399,12 +404,12 @@ char* tafWeather(char *taf_list)
 					strncpy(temp2, temp + 6 , l - 6);
 					temp2[2] = '\0';
 					if (strcmp(temp2, "CB") == 0) {
-						sprintf(taf_wx, "Scattered cumulonimbus clouds (%d00ft) ", units);
+						sprintf(taf_wx, "Scattered cumulonimbus clouds (%'dft) ", units * 100);
 						strcat(taf_wx_all, taf_wx);
 					}
 				}
 				else {
-					sprintf(taf_wx, "Scattered clouds (%d00ft) ", units);
+					sprintf(taf_wx, "Scattered clouds (%'dft) ", units * 100);
 					strcat(taf_wx_all, taf_wx);
 				}
 			}
@@ -639,7 +644,7 @@ char* tafWeather(char *taf_list)
 				strncpy(temp2, temp + 6, len_t - 6);
 				taf_wind = tafWind(temp2);
 
-				sprintf(taf_wx, "Wind shear @ %dft %s ", units, taf_wind);
+				sprintf(taf_wx, "Wind shear @ %'dft %s ", units, taf_wind);
 				strcat(taf_wx_all, taf_wx);
 			}
 			else if (strncmp(temp, "PROB", 4) == 0) {
@@ -782,7 +787,10 @@ return taf_wx_all;
 void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf_line_num)
 {		// TAF Decode
 	char current_all[100];
-	char fsz[5];
+	char fsz[6];
+	char fsz_hr[3];
+	char fsz_min[3];
+
 	char mil[1];
 	char sd[10], sz[3], ed[5], ez[3];
 	char taf_t[5];
@@ -802,6 +810,8 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 	int nil = 0;
 	int sw = 0;
 	int temp_len;
+
+	setlocale(LC_ALL, "");
 
 	asprintf(&taf_lines, "%s", taf_linzs);
 // Valid dates
@@ -974,8 +984,11 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 		dx = atoi(sd);
 		dt = daySuffix(dx);
 		sprintf(sd, "%d%s", dx, dt);
-		strncpy(fsz, temp + 4, 4);
-		fsz[4] = '\0';
+		strncpy(fsz_hr, temp + 4, 2);
+		fsz_hr[2] = '\0';
+		strncpy(fsz_min, temp + 6, 2);
+		fsz_min[2] = '\0';
+		sprintf(fsz,"%s:%s",fsz_hr,fsz_min);
 		strcpy(hold, "<b>From:</b> ");
 		strcat(hold, sd);
 		strcat(hold, " @");
