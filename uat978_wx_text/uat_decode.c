@@ -1001,7 +1001,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				get_text(apdu, to);
 			break;
 		default:
-			fprintf(to, " Record Format   : %d\n", recf);
+			fprintf(to, " *Record Format   : %d\n", recf);
 			display_generic_data(apdu->data, apdu->length, to);
 			break;
 		}
@@ -1019,7 +1019,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				get_graphic(apdu, to);
 			break;
 		default:
-			fprintf(to, " Record Format   : %d\n", recf);
+			fprintf(to, " *Record Format   : %d\n", recf);
 			display_generic_data(apdu->data, apdu->length, to);
 			break;
 		}
@@ -1036,7 +1036,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 			get_text(apdu, to);
 			break;
 		default:
-			fprintf(to, "Prod: %d -  Record Format: %d \n", apdu->product_id, recf);
+			fprintf(to, "*Prod: %d -  Record Format: %d \n", apdu->product_id, recf);
 			display_generic_data(apdu->data, apdu->length, to);
 			break;
 		}
@@ -1422,7 +1422,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 	}
 	break;
 	default:
-		fprintf(to, "Unknown product!!");
+		fprintf(to, "*Unknown product!!");
 		display_generic_data(apdu->data, apdu->length, to);
 	break;
 	}
