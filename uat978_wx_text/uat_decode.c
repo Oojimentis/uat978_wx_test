@@ -92,7 +92,7 @@ void trimSpaces(char *s)
 		s[j++] = s[i];
 	}
 	s[j] = '\0';
-	for (i = 0; s[i] != '\0'; i++)	{
+	for (i = 0; s[i] != '\0'; i++) {
 		if (s[i] == '=')
 			s[i] = ' ';
 
@@ -464,7 +464,7 @@ static void get_pirep(char *Word)
 			"temperature, windsp, turbulence, icing, remarks, stn_call, location)"
 			"VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
 			pirep_TY, pirep_TI, pirep_FL, pirep_TP, pirep_SK, pirep_WX, pirep_TA, pirep_WV,
-			pirep_TB, pirep_IC,	pirep_RM, pirep_stn, pirep_OV);
+			pirep_TB, pirep_IC, pirep_RM, pirep_stn, pirep_OV);
 
 	PGresult *res = PQexec(conn, postsql);
 	if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -1457,7 +1457,7 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 			if (frame->type == 15) {
 				fprintf(to, " ICAO List: \n");
 
-				int i = 1; int j = 0	;
+				int i = 1; int j = 0;
 				while (i < rec_offset) {
 					if (j % 10 == 0)
 						fprintf(to, "\n");
@@ -1779,7 +1779,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 						"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),"
 						"%d,%d,%d,'%s','%s','%s',%d,%d,%d,%d,'%s',%d,%d,%d,%d,%d,%d,%d,%d)",
 						gr, apdu->product_id, rep_num, alt_save, obj_ele_text, start_date,
-						stop_date, geo_overlay_opt,	obj_par_val, obj_param_type, object_qualifier,
+						stop_date, geo_overlay_opt, obj_par_val, obj_param_type, object_qualifier,
 						obj_labelt, obj_label, overlay_rec_id, rec_len, obj_status, param_flag,
 						element_flag, overlay_op, overlay_vert_cnt);
 
