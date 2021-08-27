@@ -414,10 +414,10 @@ void metar_data( Decoded_METAR *Mptr)
 	sprintf(obs_date, "%02d %02d:%02d", Mptr->ob_date, Mptr->ob_hour, Mptr->ob_minute);
 
 	asprintf(&postsql,"INSERT INTO metar (stn_call, ob_date, temperature, windsp, winddir, altimeter, visby,"
-			"dewp, hrly_precip, slp, windvar, windgust) "
-			"VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+			"dewp, hrly_precip, slp, windvar, windgust, metar_count) "
+			"VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s', %d)",
 			Mptr->stnid, obs_date, temp, windSpeed,	windDir, altstng, vsbySM, dew_pt_temp,
-			hrly_precip, SLP, windVar, windGust);
+			hrly_precip, SLP, windVar, windGust, metar_count);
 
 	PGresult *res = PQexec(conn, postsql);
 	if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -426,4 +426,6 @@ void metar_data( Decoded_METAR *Mptr)
 					PQresultStatus(res), postsql);
 	}
 	PQclear(res);
+
+	metar_count ++;
 }

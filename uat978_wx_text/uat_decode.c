@@ -460,6 +460,9 @@ static void get_pirep(char *Word)
 		}
 	}
 
+	if (strcmp(pirep_stn,"KBDL") == 0)
+		fprintf(stderr,"moo\n");
+
 	asprintf(&postsql,"INSERT INTO pirep (rep_type, rep_time, fl_lev, ac_type, cloud, weather, "
 			"temperature, windsp, turbulence, icing, remarks, stn_call, location)"
 			"VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",

@@ -39,6 +39,7 @@ int main(int argc, char **argv)
 	seg_graph_count = 0;
 	seg_text_count = 0;
 	int reset_database = 1;
+	metar_count = 0;
 
 	char file_path[75];
 	char pg_db[20];
