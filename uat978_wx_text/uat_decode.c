@@ -1138,10 +1138,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
 					get_gs_name(gstn);
 
-//					time_t current_time = time(NULL);
-//					struct tm *tm = localtime(&current_time);
-//					strftime(buff, sizeof buff, "%D %T", tm);
-
 					time_t t;
 					struct tm *tmp;
 					time( &t );
@@ -1168,9 +1164,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 			if (strcmp(mtype, "TAF") == 0 || strcmp(mtype, "TAF.AMD") == 0 ||
 					strcmp(mtype, "TAF.COR") == 0) {
 				// TAF Decode
-
-				fprintf(to, "%s %s %s\n", mtype, gstn, gs_ret);
-//				fprintf(to, "%s\n\n", r);		// *** Text ***
 
 				strncpy(n, time_copy + 4, 1);
 
@@ -1199,7 +1192,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					sprintf(taf_copy, "%s %s", time_copy, r);
 				}
 
-				fprintf(to,"Issued %s\n%s\n",issued,taf_copy);
 //				if (strncmp(gstn,"KGTB",4) == 0)
 //				fprintf(stderr,"test");
 
@@ -1250,8 +1242,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					taf_token= strtok(NULL, "\n");
 				}
 				strcpy(taf_lines[i], taf_hold);
-//				if (strncmp(gstn,"KMTN",4) == 0)
-//					fprintf(stderr,"test");
+
 				for (int j = 0; j <= i; ++j) {
 					taf_decode(taf_lines[j], issued, fsz, gstn, j);
 				}
@@ -1407,7 +1398,6 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				fprintf(to,"%s\n",gstn);
 			}
 			if (strcmp(mtype, "METAR") == 0 || strcmp(mtype, "SPECI") == 0) {
-//				fprintf(to, "Data: %s", observation);
 				if (decode_metar(observation,Mptr) != 0) {
 					fprintf(to, "Error METAR Decode\n"); }
 				else {
@@ -1444,8 +1434,6 @@ static void uat_display_uplink_info_frame(const struct uat_uplink_info_frame *fr
 	int graph_bit;
 	int rpt_yr;
 
-//	fprintf(to, "\nINFORMATION FRAME:\n Type:  %u (%s)",
-//			frame->type, info_frame_type_names[frame->type]);
 	fprintf(to, "\n Type:  %u (%s)",
 			frame->type, info_frame_type_names[frame->type]);
 
@@ -2339,8 +2327,6 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 					alt = alt_raw * 100;
 
 					if (alt != alt_save) {		// Multiple altitudes
-//						alt_save = alt;
-//						gr[0] = '\0';
 						fprintf(stderr,"**** multiple altitudes\n");
 					}
 
