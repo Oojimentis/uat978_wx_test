@@ -340,7 +340,7 @@ double raw_lat; double raw_lon; double scale;
 	*lonW = raw_lon;
 }
 
-void metar_data( Decoded_METAR *Mptr)
+void metar_data( Decoded_METAR *Mptr, char *mtype)
 {
 	char *postsql;
 
@@ -356,6 +356,10 @@ void metar_data( Decoded_METAR *Mptr)
 	char windSpeed[10];
 	char windVar[10];
 
+
+	if (strncmp(mtype,"SPECI",5) == 0) {
+		fprintf(stderr,"%s\n",mtype);
+	}
 
 	if (Mptr->hourlyPrecip > 1000)
 		sprintf(hrly_precip, "- ");
@@ -414,10 +418,10 @@ void metar_data( Decoded_METAR *Mptr)
 	sprintf(obs_date, "%02d %02d:%02d", Mptr->ob_date, Mptr->ob_hour, Mptr->ob_minute);
 
 	asprintf(&postsql,"INSERT INTO metar (stn_call, ob_date, temperature, windsp, winddir, altimeter, visby,"
-			"dewp, hrly_precip, slp, windvar, windgust) "
-			"VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+			"dewp, hrly_precip, slp, windvar, windgust, mtype) "
+			"VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
 			Mptr->stnid, obs_date, temp, windSpeed,	windDir, altstng, vsbySM, dew_pt_temp,
-			hrly_precip, SLP, windVar, windGust);
+			hrly_precip, SLP, windVar, windGust, mtype);
 
 	PGresult *res = PQexec(conn, postsql);
 	if (PQresultStatus(res) != PGRES_COMMAND_OK) {

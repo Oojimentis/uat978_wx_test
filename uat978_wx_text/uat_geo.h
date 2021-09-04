@@ -14,7 +14,7 @@ void block_location_graphic(int bn, int ns, int sf, double *latN, double *lonW, 
 
 void graphic_nexrad(const struct fisb_apdu *apdu);
 
-void metar_data( Decoded_METAR *Mptr);
+void metar_data( Decoded_METAR *Mptr, char *mtype);
 
 
 #endif /* UAT_GEO_H_ */

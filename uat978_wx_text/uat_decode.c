@@ -1403,7 +1403,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				else {
 					print_decoded_metar(Mptr);
 
-					metar_data(Mptr);
+					metar_data(Mptr, mtype);
 				}
 			}
 			memset(&MetarStruct, 0, sizeof(MetarStruct));
