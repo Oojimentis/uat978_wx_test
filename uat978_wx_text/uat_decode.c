@@ -2239,6 +2239,10 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 		while (offs < rec_cnt) {
 			gseg_rpt_num = (((rep_all[offs + 1]) & 0x3F) << 8) | (rep_all[offs + 2]);
 
+			if (gseg_rpt_num == 12739) {
+				fprintf(stderr," moo \n");
+			}
+
 			element_flag = ((rep_all[offs + 7]) & 0x80) >> 7;
 			obj_element = (rep_all[offs + 7]) & 0x1F;
 //			obj_status = (rep_all[offs + 8]) & 0x0F;
@@ -2276,7 +2280,7 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 				d4 = rep_all[offs + 14];
 				asprintf(&start_date, "0");
 				asprintf(&stop_date, "%02d/%02d %02d:%02d", d1, d2, d3, d4);
-				offs = offs + 10;
+				offs = offs + 15;
 				break;
 			case 3:		// Both start and end times. WEF.
 				if (date_time_format == 3) {

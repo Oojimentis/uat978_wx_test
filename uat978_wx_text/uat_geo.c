@@ -357,10 +357,6 @@ void metar_data( Decoded_METAR *Mptr, char *mtype)
 	char windVar[10];
 
 
-	if (strncmp(mtype,"SPECI",5) == 0) {
-		fprintf(stderr,"%s\n",mtype);
-	}
-
 	if (Mptr->hourlyPrecip > 1000)
 		sprintf(hrly_precip, "- ");
 	else
