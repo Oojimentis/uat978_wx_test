@@ -2152,6 +2152,7 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 	int rep_all[5000];
 	int verts = 0;
 	int verts_len;
+	int overlay_rec_count;
 
 	uint8_t date_time_format;
 	uint8_t element_flag;
@@ -2187,7 +2188,8 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 	for (int i = 0; i <= seg_graph_count; ++i) {
 		if ((prodid == seg_graph_list[i].seg_graph_prodid) &&
 				(prodfillen == seg_graph_list[i].seg_graph_prodlen) &&
-				(apdunum == seg_graph_list[i].seg_graph_apdunum)) {
+				(apdu->product_id == seg_graph_list[i].seg_graph_fisbid) &&
+				(apdunum == seg_graph_list[i].seg_graph_apdunum)){
 			++fg;
 			continue;
 		}
@@ -2198,6 +2200,7 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 		seg_graph_list[seg_graph_count].seg_graph_prodlen = prodfillen;
 		seg_graph_list[seg_graph_count].seg_graph_apdunum = apdunum;
 		seg_graph_list[seg_graph_count].seg_graph_len = apdu->length;
+		seg_graph_list[seg_graph_count].seg_graph_fisbid = apdu->product_id;
 		offs = 15;
 
 		for ( int x = offs; x <= apdu->length; ++x) {
@@ -2212,6 +2215,7 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 		for (int j = 1; j <= prodfillen; ++j) {
 			if ((prodid == seg_graph_list[i].seg_graph_prodid) &&
 					(prodfillen == seg_graph_list[i].seg_graph_prodlen) &&
+					(apdu->product_id == seg_graph_list[i].seg_graph_fisbid) &&
 					(j == seg_graph_list[i].seg_graph_apdunum)) {
 				++fg;
 			}
@@ -2223,6 +2227,7 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 			for (int i = 0; i <= seg_graph_count; ++i) {
 				if ((prodid == seg_graph_list[i].seg_graph_prodid) &&
 						(prodfillen == seg_graph_list[i].seg_graph_prodlen) &&
+						(apdu->product_id == seg_graph_list[i].seg_graph_fisbid) &&
 						(m == seg_graph_list[i].seg_graph_apdunum)) {
 					for ( int z = 0; z < (seg_graph_list[i].seg_graph_len - 15); ++z) {
 						c = seg_graph_list[i].seg_graph_data[z];
@@ -2236,12 +2241,15 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 
 	offs = 0;
 	if (fg == prodfillen) {
+
+		overlay_rec_count = ((apdu->data[10]) & 0xF0) >> 4;
+		if (prodid == 286) {
+			fprintf(stderr," moo %d \n",overlay_rec_count);
+		}
+
+
 		while (offs < rec_cnt) {
 			gseg_rpt_num = (((rep_all[offs + 1]) & 0x3F) << 8) | (rep_all[offs + 2]);
-
-			if (gseg_rpt_num == 12739) {
-				fprintf(stderr," moo \n");
-			}
 
 			element_flag = ((rep_all[offs + 7]) & 0x80) >> 7;
 			obj_element = (rep_all[offs + 7]) & 0x1F;
@@ -2340,6 +2348,83 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 				}
 			}
 			break;
+
+			case 7: case 8: {		// Extended Range Circular Prism (7 = MSL,8 = AGL)
+				uint32_t lng_bot_raw;
+				uint32_t lat_bot_raw;
+				uint32_t lng_top_raw;
+				uint32_t lat_top_raw;
+
+				uint32_t alt_bot_raw;
+				uint32_t alt_top_raw;
+				uint32_t r_lng_raw;
+				uint32_t r_lat_raw, alpha;
+				uint32_t alt_bot;
+				uint32_t alt_top;
+
+				float lat_bot, lng_bot, lat_top, lng_top, r_lng, r_lat;
+
+				lng_bot_raw = ((rep_all[offs + 0]) << 10) | ((rep_all[offs + 1]) << 2) |
+						((rep_all[offs + 2]) & 0xC0 >> 6);
+				lat_bot_raw = (((rep_all[offs + 2]) & 0x3F) << 12) | ((rep_all[offs + 3]) << 4) |
+						(((rep_all[offs + 4]) & 0xF0) >> 4);
+
+				lng_top_raw = (((rep_all[offs + 4]) & 0x0F) << 14) | ((rep_all[offs + 5]) << 6) |
+						(((rep_all[offs + 6]) & 0xFC) >> 2);
+				lat_top_raw = (((rep_all[offs + 6]) & 0x03) << 16) | ((rep_all[offs + 7]) << 8) |
+						(rep_all[offs + 8]);
+
+				alt_bot_raw = ((rep_all[offs + 9]) & 0xFE) >> 1;
+				alt_top_raw = (((rep_all[offs + 9]) & 0x01) << 6) | (((rep_all[offs + 10]) & 0xFC) >> 2);
+
+				r_lng_raw = (((rep_all[offs + 10]) & 0x03) << 7) | (((rep_all[offs + 11]) & 0xFE) >> 1);
+				r_lat_raw = (((rep_all[offs + 11]) & 0x01) << 8) | (rep_all[offs + 12]);
+
+				alpha = (rep_all[offs + 13]);
+
+				lng_bot_raw = (~lng_bot_raw & 0x1FFFF) + 1;		// 2's compliment +1
+				lat_bot_raw = (~lat_bot_raw & 0x1FFFF) + 1;		// 2's compliment +1
+				lat_bot = lat_bot_raw * 0.001373;
+				lng_bot = (lng_bot_raw * 0.001373) * -1;
+
+				if (lat_bot > 90.0)
+					lat_bot = (lat_bot - 180.0) * -1;
+				if (lng_bot > 180.0)
+					lng_bot = lng_bot - 360.0;
+
+				lng_top_raw = (~lng_top_raw & 0x1FFFF) + 1;		// 2's compliment +1
+				lat_top_raw = (~lat_top_raw & 0x1FFFF) + 1;		// 2's compliment +1
+				lat_top = lat_top_raw * 0.001373;
+				lng_top = (lng_top_raw * 0.001373) * -1;
+
+				if (lat_top > 90.0)
+					lat_top = (lat_top - 180.0) * -1;
+				if (lng_top > 180.0)
+					lng_top = lng_top - 360.0;
+
+				alt_bot = alt_bot_raw * 5;
+				alt_top = alt_top_raw * 500;
+				r_lng = r_lng_raw * 0.2;
+				r_lat = r_lat_raw * 0.2;
+
+				asprintf(&postsql,"INSERT INTO circles (bot, top, alt_bot, alt_top, alpha, prod_id, "
+						"rec_count, rep_num, rep_year, start_date, stop_date, geo_opt, r_lat, r_lng) "
+						"VALUES (ST_GeomFromText('POINT ( %f %f)',4326), ST_GeomFromText('POINT (%f %f)',4326),"
+						"%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d,%f,%f)",
+						lng_bot, lat_bot, lng_top, lat_top, alt_bot, alt_top, alpha, apdu->product_id,
+						1, gseg_rpt_num, 1, start_date, stop_date, geo_overlay_opt,
+						r_lat, r_lng);
+
+				PGresult *res = PQexec(conn, postsql);
+				if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+					if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
+						fprintf(stderr, "(Graphics 7)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+								PQresultStatus(res), postsql);
+				}
+				PQclear(res);
+			}
+			break;
+
 			case 11: case 12:		// Extended Range 3D Polyline
 				alt_raw = (((rep_all[offs + 4]) & 0x03) << 8) | (rep_all[offs + 5]);
 				alt = alt_raw * 100;

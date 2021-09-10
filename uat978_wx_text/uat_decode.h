@@ -34,6 +34,7 @@ struct SegTWGOStruct {
 	uint16_t seg_graph_apdunum;
 	uint16_t seg_graph_len;
 	uint8_t  seg_graph_data[1000];
+	uint16_t seg_graph_fisbid;
 } seg_graph_list[50];
 
 
