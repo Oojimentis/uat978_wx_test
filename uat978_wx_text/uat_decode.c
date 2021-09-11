@@ -2350,11 +2350,11 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 				}
 
 				asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, start_date, stop_date, "
-						"geo_overlay_opt, overlay_op, overlay_vert_cnt, segmented,ob_ele,element_flag) "
+						"geo_overlay_opt, overlay_op, overlay_vert_cnt, segmented,ob_ele,element_flag, overlay_rec_id) "
 						"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),"
-						"%d,%d,%d,'%s','%s',%d,%d,%d,1,'%s',%d)",
+						"%d,%d,%d,'%s','%s',%d,%d,%d,1,'%s',%d,%d)",
 						gr, apdu->product_id, gseg_rpt_num, alt, start_date, stop_date,
-						geo_overlay_opt, overlay_op, verts,obj_ele_text,element_flag);
+						geo_overlay_opt, overlay_op, verts,obj_ele_text,element_flag, overlay_rec_id);
 
 				PGresult *res = PQexec(conn, postsql);
 				if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -2478,11 +2478,11 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 
 				asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, "
 						"start_date, stop_date, geo_overlay_opt,  "
-						"overlay_op, overlay_vert_cnt,segmented,ob_ele,element_flag) "
+						"overlay_op, overlay_vert_cnt,segmented,ob_ele,element_flag, overlay_rec_id) "
 						"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ %s ]}'),4326),"
-						"%d,%d,%d,'%s','%s',%d,%d,%d,1,'%s',%d)",
+						"%d,%d,%d,'%s','%s',%d,%d,%d,1,'%s',%d,%d)",
 						gr, apdu->product_id, gseg_rpt_num, alt, start_date, stop_date,
-						geo_overlay_opt, overlay_op, verts,obj_ele_text,element_flag);
+						geo_overlay_opt, overlay_op, verts,obj_ele_text,element_flag, overlay_rec_id);
 
 				PGresult *res = PQexec(conn, postsql);
 				if (PQresultStatus(res) != PGRES_COMMAND_OK) {
