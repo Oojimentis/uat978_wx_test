@@ -2153,6 +2153,7 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 	int verts = 0;
 	int verts_len;
 	int overlay_rec_count;
+	int overlay_rec_id;
 
 	uint8_t date_time_format;
 	uint8_t element_flag;
@@ -2250,7 +2251,8 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 
 		while (offs < rec_cnt) {
 			gseg_rpt_num = (((rep_all[offs + 1]) & 0x3F) << 8) | (rep_all[offs + 2]);
-
+			overlay_rec_id = (((rep_all[offs + 4]) & 0x1E) >> 1) + 1;
+			fprintf(stderr," moo %d \n",overlay_rec_id);
 			element_flag = ((rep_all[offs + 7]) & 0x80) >> 7;
 			obj_element = (rep_all[offs + 7]) & 0x1F;
 //			obj_status = (rep_all[offs + 8]) & 0x0F;
@@ -2346,6 +2348,22 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 					asprintf(&gr, "%s %s", gr,coords);
 					verts ++;
 				}
+
+				asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, start_date, stop_date, "
+						"geo_overlay_opt, overlay_op, overlay_vert_cnt, segmented,ob_ele,element_flag) "
+						"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),"
+						"%d,%d,%d,'%s','%s',%d,%d,%d,1,'%s',%d)",
+						gr, apdu->product_id, gseg_rpt_num, alt, start_date, stop_date,
+						geo_overlay_opt, overlay_op, verts,obj_ele_text,element_flag);
+
+				PGresult *res = PQexec(conn, postsql);
+				if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+					if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
+						fprintf(stderr, "(Segmented graphics)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+								PQresultStatus(res), postsql);
+				}
+				PQclear(res);
+
 			}
 			break;
 
@@ -2407,12 +2425,14 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 				r_lng = r_lng_raw * 0.2;
 				r_lat = r_lat_raw * 0.2;
 
+				offs = offs + 14;
+
 				asprintf(&postsql,"INSERT INTO circles (bot, top, alt_bot, alt_top, alpha, prod_id, "
 						"rec_count, rep_num, rep_year, start_date, stop_date, geo_opt, r_lat, r_lng) "
 						"VALUES (ST_GeomFromText('POINT ( %f %f)',4326), ST_GeomFromText('POINT (%f %f)',4326),"
 						"%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d,%f,%f)",
 						lng_bot, lat_bot, lng_top, lat_top, alt_bot, alt_top, alpha, apdu->product_id,
-						1, gseg_rpt_num, 1, start_date, stop_date, geo_overlay_opt,
+						overlay_rec_id, gseg_rpt_num, 1, start_date, stop_date, geo_overlay_opt,
 						r_lat, r_lng);
 
 				PGresult *res = PQexec(conn, postsql);
@@ -2455,6 +2475,23 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 					asprintf(&gr, "%s %s", gr,coords);
 					verts++;
 				}
+
+				asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, "
+						"start_date, stop_date, geo_overlay_opt,  "
+						"overlay_op, overlay_vert_cnt,segmented,ob_ele,element_flag) "
+						"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ %s ]}'),4326),"
+						"%d,%d,%d,'%s','%s',%d,%d,%d,1,'%s',%d)",
+						gr, apdu->product_id, gseg_rpt_num, alt, start_date, stop_date,
+						geo_overlay_opt, overlay_op, verts,obj_ele_text,element_flag);
+
+				PGresult *res = PQexec(conn, postsql);
+				if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+					if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
+						fprintf(stderr, "(Segmented graphics)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+								PQresultStatus(res), postsql);
+				}
+				PQclear(res);
+
 				break;
 			default:
 				fprintf(to,"(seg-graph) unknown geo %d\n",geo_overlay_opt);
@@ -2463,7 +2500,7 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 
 		verts_len = strlen(gr);
 		gr[verts_len - 1] = ' ';
-
+/*
 		switch (geo_overlay_opt) {
 		case 3: case 4:
 			asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, start_date, stop_date, "
@@ -2491,7 +2528,9 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 						PQresultStatus(res), postsql);
 		}
 		PQclear(res);
+*/
 	}
+
 }
 
 static void get_seg_text(const struct fisb_apdu *apdu, FILE *to)
