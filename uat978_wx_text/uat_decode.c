@@ -2486,8 +2486,8 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 
 				PGresult *res = PQexec(conn, postsql);
 				if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-					if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-						fprintf(stderr, "(Segmented graphics)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+					if (strncmp(PQerrorMessage(conn),"ERROR:  This is a duplicate key", 21) != 0)
+						fprintf(stderr, "(Segmented graphics)bad sql %s \nStatatus:%d\n%s\n", PQerrorMessage(conn),
 								PQresultStatus(res), postsql);
 				}
 				PQclear(res);
