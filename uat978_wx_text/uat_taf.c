@@ -10,9 +10,9 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include "asprintf.h"
-
-#include "uat_taf.h"
 #include "uat_decode.h"
+#include "uat_taf.h"
+
 
 #define _POSIX_C_SOURCE 200809L
 #include <locale.h>
@@ -784,7 +784,7 @@ char* tafWeather(char *taf_list)
 return taf_wx_all;
 }
 
-void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf_line_num)
+void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf_line_num, FILE *to)
 {		// TAF Decode
 	char current_all[100];
 	char fsz[6];
@@ -901,7 +901,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-				fprintf(stderr, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+				fprintf(to, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 						PQresultStatus(res), postsql);
 		}
 		PQclear(res);
@@ -971,7 +971,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-				fprintf(stderr, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+				fprintf(to, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 						PQresultStatus(res), postsql);
 		}
 		PQclear(res);
@@ -1025,7 +1025,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-				fprintf(stderr, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+				fprintf(to, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 						PQresultStatus(res), postsql);
 		}
 		PQclear(res);
@@ -1093,7 +1093,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 			PGresult *res = PQexec(conn, postsql);
 			if (PQresultStatus(res) != PGRES_COMMAND_OK) {
 				if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-					fprintf(stderr, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+					fprintf(to, "(TAF)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
 							PQresultStatus(res), postsql);
 			}
 			PQclear(res);
