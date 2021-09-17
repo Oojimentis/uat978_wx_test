@@ -89,7 +89,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 				asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num,"
 						"maptime, altitude) VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
 
-				while (runlength-- > 0 && intensity > 1) {
+//				while (runlength-- > 0 && intensity > 1) {
+				while (runlength-- > 0 ) {
 					t_lat = latN - (y * (latSize / 4.0));
 					t_lon = lonW + (x * (lonSize / 32.0));
 					kount++;
