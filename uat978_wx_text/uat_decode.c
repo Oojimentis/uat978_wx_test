@@ -28,6 +28,30 @@ static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_yea
 static void get_text(const struct fisb_apdu *apdu, FILE *to);
 
 
+char *replace(const char *s, char ch, const char *repl) {
+
+	// Replaces ch with repl in string s
+
+	int count = 0;
+	const char *t;
+	for(t=s; *t; t++)
+		count += (*t == ch);
+
+	size_t rlen = strlen(repl);
+	char *res = malloc(strlen(s) + (rlen-1)*count + 1);
+	char *ptr = res;
+	for(t=s; *t; t++) {
+		if(*t == ch) {
+			memcpy(ptr, repl, rlen);
+			ptr += rlen;
+		} else {
+			*ptr++ = *t;
+		}
+	}
+	*ptr = 0;
+	return res;
+}
+
 // The odd two-string-literals here is to avoid \0x3ABCDEF being interpreted as a single (very large valued) character
 static const char *dlac_alphabet = "\x03" "ABCDEFGHIJKLMNOPQRSTUVWXYZ\x1A\t\x1E\n| !\"#$%&'()*+,-./0123456789:;<=>?";
 
@@ -267,6 +291,7 @@ static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_yea
 	char *sua_start;
 	char *sua_end;
 	char *token;
+	char *res_ret;
 
 	int airsp_id;
 	int high_alt;
@@ -331,6 +356,7 @@ static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_yea
 	token = strsep(&Word, "|");
 	if (token) {
 		strcpy(sua_nfcd_nm, token);			//15
+		res_ret = replace(sua_nfcd_nm, '\'', " ");
 	}
 	token = strsep(&Word, "|");
 	if (token) {
@@ -340,14 +366,11 @@ static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_yea
 	if (token) {
 		strcpy(sua_dafif_nm, token);		//17
 		}
-
-	asprintf(&postsql,"INSERT INTO sua (rep_time, rep_year, rep_num, sched_id, airsp_id, sched_status,"
-			"airsp_name, start_date, stop_date, low_alt, high_alt, sep_rule, shape_ind,"
-			"nfdc_id, nfdc_name, dafif_id, dafif_name, airsp_type) "
-			"VALUES('%s',%d,%d,%d,%d,'%s','%s','%s','%s',%d,%d,'%s','%s','%s','%s','%s','%s','%s')",
-			rep_time, report_year, rep_num, sched_id, airsp_id, sua_sch_stat, sua_aspc_nm,
-			sua_start, sua_end, low_alt, high_alt, sua_sep_rl, sua_shp_ind,
-			sua_nfdc_id, sua_nfcd_nm, sua_dafif_id, sua_dafif_nm, sua_aspc_ty);
+	asprintf(&postsql,"INSERT INTO sua (rep_time, rep_year, rep_num, sched_id, airsp_id, sched_status, "
+			"airsp_name, start_date, stop_date, low_alt, high_alt, sep_rule, shape_ind, nfdc_id, nfdc_name,"
+			"dafif_id, dafif_name, airsp_type) VALUES('%s',%d,%d,%d,%d,'%s','%s','%s','%s',%d,%d,'%s',"
+			"'%s','%s','%s','%s','%s','%s')",
+			rep_time, report_year, rep_num, sched_id, airsp_id, sua_sch_stat, sua_aspc_nm, sua_start, sua_end, low_alt, high_alt, sua_sep_rl, sua_shp_ind, sua_nfdc_id, res_ret, sua_dafif_id, sua_dafif_nm, sua_aspc_ty);
 
 	PGresult *res = PQexec(conn, postsql);
 	if (PQresultStatus(res) != PGRES_COMMAND_OK) {

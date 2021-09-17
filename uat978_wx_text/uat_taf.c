@@ -804,7 +804,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 	char *taf_temp;
 	char *temp, *temp2;
 	char *visby;
-	char hold[500];
+	char hold[2000];
 	char fc_curr_wind[50];
 	int dx;
 	int nil = 0;
