@@ -83,13 +83,14 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 
 		switch(apdu->product_id) {
 		case 63: case 64: {
+
 			for (int i = 3; i < apdu->length; ++i) {
-				intensity = apdu->data[i] & 7;
-				runlength = (apdu->data[i] >> 3) + 1;
+
 				asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num,"
 						"maptime, altitude) VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
+				intensity = apdu->data[i] & 7;
+				runlength = (apdu->data[i] >> 3) + 1;
 
-//				while (runlength-- > 0 && intensity > 1) {
 				while (runlength-- > 0 ) {
 					t_lat = latN - (y * (latSize / 4.0));
 					t_lon = lonW + (x * (lonSize / 32.0));
@@ -102,7 +103,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					}
 					asprintf(&geojson,"%s POINT(%f %f),",geojson, t_lon, t_lat);
 				}
-				if (kount > 0) {
+				if (kount > 0 && intensity > 1) {
 					klen = strlen(geojson);
 					geojson[klen - 1] = ' ';
 					kount = 0;
@@ -133,7 +134,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						"maptime, altitude, ice_sld, ice_prob) "
 						"VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
 
-				while (num_bins-- > 0 && ice_sev >= 1 && ice_sev < 7) {
+				while (num_bins-- > 0 ) {
 					t_lat = latN - (y * (latSize / 4.0));
 					t_lon = lonW + (x * (lonSize / 32.0));
 					kount++;
@@ -145,7 +146,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					}
 					asprintf(&geojson,"%s POINT(%f %f),", geojson, t_lon, t_lat);
 				}
-				if (kount > 0) {
+				if (kount > 0 && ice_sev >= 1 && ice_sev < 7) {
 					klen = strlen(geojson);
 					geojson[klen - 1] = ' ';
 					kount = 0;
@@ -176,7 +177,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 				asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num, "
 						"maptime, altitude,seq) VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ ");
 
-				while (num_bins-- > 0 && edr_enc >= 1 && edr_enc < 16 ) {
+//				while (num_bins-- > 0 && edr_enc >= 1 && edr_enc < 16 ) {
+				while (num_bins-- > 0 ) {
 					bl_cnt++;
 
 					t_lat = latN - (y * (latSize / 4.0));
@@ -261,7 +263,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 				asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num,"
 						"maptime, altitude) VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
 
-				while (num_bins-- > 0 && lgt_cnt >= 1 && lgt_cnt < 7) {
+//				while (num_bins-- > 0 && lgt_cnt >= 1 && lgt_cnt < 7) {
+				while (num_bins-- > 0 ) {
 					t_lat = latN - (y * (latSize / 4.0));
 					t_lon = lonW + (x * (lonSize / 32.0));
 					kount++;

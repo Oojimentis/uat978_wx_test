@@ -1088,7 +1088,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 
 		char *time_copy;
 		char *tok1;  char *tok2;  char *tok3;  char *tok4;
- 		char *u;
+		char *u;
 
 		char buff[30];
 		char cpos12[5];  char cpos34[5];  char cpos57[5]; char cpos12_save[5];
@@ -1760,7 +1760,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 	}
 
 	switch (geo_overlay_opt) {
-	case 3: case 4:	{		// Extended Range 3D Polygon
+	case 3: case 4: {		// Extended Range 3D Polygon
 		alt_raw = (((apdu->data[datoff + 4]) & 0x03) << 8) | (apdu->data[datoff + 5]);
 		alt_save = alt_raw * 100;
 
@@ -1894,12 +1894,12 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		r_lat = r_lat_raw * 0.2;
 
 		asprintf(&postsql,"INSERT INTO circles (bot, top, alt_bot, alt_top, alpha, prod_id, "
-				"rec_count, rep_num, rep_year, start_date, stop_date, geo_opt, r_lat, r_lng) "
+				"rec_count, rep_num, rep_year, start_date, stop_date, geo_opt, r_lat, r_lng, overlay_rec_id) "
 				"VALUES (ST_GeomFromText('POINT ( %f %f)',4326), ST_GeomFromText('POINT (%f %f)',4326),"
-				"%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d,%f,%f)",
+				"%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d,%f,%f,%d)",
 				lng_bot, lat_bot, lng_top, lat_top, alt_bot, alt_top, alpha, apdu->product_id,
 				rec_count, rep_num, report_year, start_date, stop_date, geo_overlay_opt,
-				r_lat, r_lng);
+				r_lat, r_lng, overlay_rec_id);
 
 		PGresult *res = PQexec(conn, postsql);
 		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -1910,7 +1910,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		PQclear(res);
 	}
 	break;
-	case 9:	case 10:		// Extended Range 3D Point (AGL)
+	case 9: case 10:		// Extended Range 3D Point (AGL)
 	{
 		lng_raw = ((apdu->data[datoff + 0]) << 11) | ((apdu->data[datoff + 1]) << 3) |
 		((apdu->data[datoff + 2]) & 0xE0 >> 5);
@@ -2335,7 +2335,7 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 			}
 
 			switch (geo_overlay_opt) {
-			case 3: case 4:	{		// Extended Range 3D Polygon
+			case 3: case 4: {		// Extended Range 3D Polygon
 				alt_raw = (((rep_all[offs + 4]) & 0x03) << 8) | (rep_all[offs + 5]);
 				alt_save = alt_raw * 100;
 
@@ -2398,67 +2398,68 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 				uint32_t alt_top;
 
 				float lat_bot, lng_bot, lat_top, lng_top, r_lng, r_lat;
-
-				lng_bot_raw = ((rep_all[offs + 0]) << 10) | ((rep_all[offs + 1]) << 2) |
-						((rep_all[offs + 2]) & 0xC0 >> 6);
-				lat_bot_raw = (((rep_all[offs + 2]) & 0x3F) << 12) | ((rep_all[offs + 3]) << 4) |
+				for (int i = 0; i < overlay_vert_cnt; i++) {
+					lng_bot_raw = ((rep_all[offs + 0]) << 10) | ((rep_all[offs + 1]) << 2) |
+							((rep_all[offs + 2]) & 0xC0 >> 6);
+					lat_bot_raw = (((rep_all[offs + 2]) & 0x3F) << 12) | ((rep_all[offs + 3]) << 4) |
 						(((rep_all[offs + 4]) & 0xF0) >> 4);
 
-				lng_top_raw = (((rep_all[offs + 4]) & 0x0F) << 14) | ((rep_all[offs + 5]) << 6) |
-						(((rep_all[offs + 6]) & 0xFC) >> 2);
-				lat_top_raw = (((rep_all[offs + 6]) & 0x03) << 16) | ((rep_all[offs + 7]) << 8) |
-						(rep_all[offs + 8]);
+					lng_top_raw = (((rep_all[offs + 4]) & 0x0F) << 14) | ((rep_all[offs + 5]) << 6) |
+							(((rep_all[offs + 6]) & 0xFC) >> 2);
+					lat_top_raw = (((rep_all[offs + 6]) & 0x03) << 16) | ((rep_all[offs + 7]) << 8) |
+							(rep_all[offs + 8]);
 
-				alt_bot_raw = ((rep_all[offs + 9]) & 0xFE) >> 1;
-				alt_top_raw = (((rep_all[offs + 9]) & 0x01) << 6) | (((rep_all[offs + 10]) & 0xFC) >> 2);
+					alt_bot_raw = ((rep_all[offs + 9]) & 0xFE) >> 1;
+					alt_top_raw = (((rep_all[offs + 9]) & 0x01) << 6) | (((rep_all[offs + 10]) & 0xFC) >> 2);
 
-				r_lng_raw = (((rep_all[offs + 10]) & 0x03) << 7) | (((rep_all[offs + 11]) & 0xFE) >> 1);
-				r_lat_raw = (((rep_all[offs + 11]) & 0x01) << 8) | (rep_all[offs + 12]);
+					r_lng_raw = (((rep_all[offs + 10]) & 0x03) << 7) | (((rep_all[offs + 11]) & 0xFE) >> 1);
+					r_lat_raw = (((rep_all[offs + 11]) & 0x01) << 8) | (rep_all[offs + 12]);
 
-				alpha = (rep_all[offs + 13]);
+					alpha = (rep_all[offs + 13]);
 
-				lng_bot_raw = (~lng_bot_raw & 0x1FFFF) + 1;		// 2's compliment +1
-				lat_bot_raw = (~lat_bot_raw & 0x1FFFF) + 1;		// 2's compliment +1
-				lat_bot = lat_bot_raw * 0.001373;
-				lng_bot = (lng_bot_raw * 0.001373) * -1;
+					lng_bot_raw = (~lng_bot_raw & 0x1FFFF) + 1;		// 2's compliment +1
+					lat_bot_raw = (~lat_bot_raw & 0x1FFFF) + 1;		// 2's compliment +1
+					lat_bot = lat_bot_raw * 0.001373;
+					lng_bot = (lng_bot_raw * 0.001373) * -1;
 
-				if (lat_bot > 90.0)
-					lat_bot = (lat_bot - 180.0) * -1;
-				if (lng_bot > 180.0)
-					lng_bot = lng_bot - 360.0;
+					if (lat_bot > 90.0)
+						lat_bot = (lat_bot - 180.0) * -1;
+					if (lng_bot > 180.0)
+						lng_bot = lng_bot - 360.0;
 
-				lng_top_raw = (~lng_top_raw & 0x1FFFF) + 1;		// 2's compliment +1
-				lat_top_raw = (~lat_top_raw & 0x1FFFF) + 1;		// 2's compliment +1
-				lat_top = lat_top_raw * 0.001373;
-				lng_top = (lng_top_raw * 0.001373) * -1;
+					lng_top_raw = (~lng_top_raw & 0x1FFFF) + 1;		// 2's compliment +1
+					lat_top_raw = (~lat_top_raw & 0x1FFFF) + 1;		// 2's compliment +1
+					lat_top = lat_top_raw * 0.001373;
+					lng_top = (lng_top_raw * 0.001373) * -1;
 
-				if (lat_top > 90.0)
-					lat_top = (lat_top - 180.0) * -1;
-				if (lng_top > 180.0)
-					lng_top = lng_top - 360.0;
+					if (lat_top > 90.0)
+						lat_top = (lat_top - 180.0) * -1;
+					if (lng_top > 180.0)
+						lng_top = lng_top - 360.0;
 
-				alt_bot = alt_bot_raw * 5;
-				alt_top = alt_top_raw * 500;
-				r_lng = r_lng_raw * 0.2;
-				r_lat = r_lat_raw * 0.2;
+					alt_bot = alt_bot_raw * 5;
+					alt_top = alt_top_raw * 500;
+					r_lng = r_lng_raw * 0.2;
+					r_lat = r_lat_raw * 0.2;
 
-				offs = offs + 14;
+					offs = offs + 14;
 
-				asprintf(&postsql,"INSERT INTO circles (bot, top, alt_bot, alt_top, alpha, prod_id, "
-						"rec_count, rep_num, rep_year, start_date, stop_date, geo_opt, r_lat, r_lng) "
-						"VALUES (ST_GeomFromText('POINT ( %f %f)',4326), ST_GeomFromText('POINT (%f %f)',4326),"
-						"%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d,%f,%f)",
-						lng_bot, lat_bot, lng_top, lat_top, alt_bot, alt_top, alpha, apdu->product_id,
-						overlay_rec_id, gseg_rpt_num, 1, start_date, stop_date, geo_overlay_opt,
-						r_lat, r_lng);
+					asprintf(&postsql,"INSERT INTO circles (bot, top, alt_bot, alt_top, alpha, prod_id, "
+							"rec_count, rep_num, rep_year, start_date, stop_date, geo_opt, r_lat, r_lng, overlay_rec_id) "
+							"VALUES (ST_GeomFromText('POINT ( %f %f)',4326), ST_GeomFromText('POINT (%f %f)',4326),"
+							"%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d,%f,%f,%d)",
+							lng_bot, lat_bot, lng_top, lat_top, alt_bot, alt_top, alpha, apdu->product_id,
+							i + 1, gseg_rpt_num, 1, start_date, stop_date, geo_overlay_opt,
+							r_lat, r_lng, overlay_rec_id);
 
-				PGresult *res = PQexec(conn, postsql);
-				if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-					if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-						fprintf(to, "(Graphics 7)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
-								PQresultStatus(res), postsql);
+					PGresult *res = PQexec(conn, postsql);
+					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+						if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
+							fprintf(to, "(Graphics 7)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+									PQresultStatus(res), postsql);
+					}
+					PQclear(res);
 				}
-				PQclear(res);
 			}
 			break;
 
@@ -2517,35 +2518,6 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 
 		verts_len = strlen(gr);
 		gr[verts_len - 1] = ' ';
-/*
-		switch (geo_overlay_opt) {
-		case 3: case 4:
-			asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, start_date, stop_date, "
-					"geo_overlay_opt, overlay_op, overlay_vert_cnt, segmented,ob_ele,element_flag) "
-					"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),"
-					"%d,%d,%d,'%s','%s',%d,%d,%d,1,'%s',%d)",
-					gr, apdu->product_id, gseg_rpt_num, alt, start_date, stop_date,
-					geo_overlay_opt, overlay_op, verts,obj_ele_text,element_flag);
-			break;
-		case 11: case 12:
-			asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, "
-					"start_date, stop_date, geo_overlay_opt,  "
-					"overlay_op, overlay_vert_cnt,segmented,ob_ele,element_flag) "
-					"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ %s ]}'),4326),"
-					"%d,%d,%d,'%s','%s',%d,%d,%d,1,'%s',%d)",
-					gr, apdu->product_id, gseg_rpt_num, alt, start_date, stop_date,
-					geo_overlay_opt, overlay_op, verts,obj_ele_text,element_flag);
-			break;
-		}
-
-		PGresult *res = PQexec(conn, postsql);
-		if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-			if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
-				fprintf(stderr, "(Segmented graphics)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
-						PQresultStatus(res), postsql);
-		}
-		PQclear(res);
-*/
 	}
 
 }

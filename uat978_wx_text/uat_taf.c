@@ -92,6 +92,11 @@ char* tafWind(char *temp)
 	int dir_int = 0;
 
 	gs[0] = '\0';
+	if (temp == NULL){
+		strcpy(wind_ret, "1-unknown(temp NULL)");
+		err = 1;
+		return taf_wind_ret;
+	}
 	w_len = strlen(temp);
 	strcpy(wind_ret, "\0");
 	if (w_len == 7) {
