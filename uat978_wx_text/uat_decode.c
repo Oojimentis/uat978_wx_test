@@ -1048,15 +1048,24 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 		}
 	break;
 // ** AIRMET 11  -  SIGMET 12  -  SUA 13  -  CWA 15 **************
-	case 11: case 12: case 13: case 15:
-		recf = apdu->data[0] >> 4;
+	case 11: case 12: case 13: case 15: case 16:  case 17:
+		if (apdu->s_flag)
+			recf = apdu->data[9] >> 4;
+		else
+			recf = apdu->data[0] >> 4;
 
 		switch (recf) {
-		case 8:		// Graphic
-			get_graphic(apdu, to);
+		case 8:		//	Graphic
+			if (apdu->s_flag)		// Segmented graphic
+				get_seg_graph(apdu, to);
+			else	// Text
+				get_graphic(apdu, to);
 			break;
 		case 2:		// Text
-			get_text(apdu, to);
+			if (apdu->s_flag)		// Segmented text
+				get_seg_text(apdu, to);
+			else	// Text
+				get_text(apdu, to);
 			break;
 		default:
 			fprintf(to, "*Prod: %d -  Record Format: %d \n", apdu->product_id, recf);
@@ -2117,7 +2126,8 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 			get_sua_text(sua_text, rtime, rep_num, report_year, to);
 		}
 		if (apdu->product_id == 8 || apdu->product_id == 11 ||
-				apdu->product_id == 12 || apdu->product_id == 15) {		// 8 11 12 15
+				apdu->product_id == 12 || apdu->product_id == 15 ||
+				apdu->product_id == 16 || apdu->product_id == 17) {		// 8 11 12 15
 
 			length = strlen(r);
 
@@ -2126,6 +2136,8 @@ static void get_text(const struct fisb_apdu *apdu, FILE *to)
 			case 11: strcpy(prod_name, "AIRMET"); break;
 			case 12: strcpy(prod_name, "SIGMET"); break;
 			case 15: strcpy(prod_name, "CWA"); break;
+			case 16: strcpy(prod_name, "TRA"); break;
+			case 17: strcpy(prod_name, "TMOA"); break;
 			}
 			if (r[length - 1] == '\n')
 				r[length - 1] = '\0';
@@ -2162,6 +2174,7 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 	char *postsql;
 	char *start_date;
 	char *stop_date;
+	const char *obj_labelt;
 
 	int alt;
 	int alt_save;
@@ -2172,12 +2185,13 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 	int offs;
 	int overlay_op;
 	int rec_cnt = 0;
-	int rep_all[5000];
+	uint8_t rep_all[5000];
 	int verts = 0;
 	int verts_len;
 //	int overlay_rec_count;
 	int overlay_rec_id;
 
+	uint8_t obj_label_flag;
 	uint8_t date_time_format;
 	uint8_t element_flag;
 	uint8_t obj_element;
@@ -2270,6 +2284,21 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 		while (offs < rec_cnt) {
 			gseg_rpt_num = (((rep_all[offs + 1]) & 0x3F) << 8) | (rep_all[offs + 2]);
 			overlay_rec_id = (((rep_all[offs + 4]) & 0x1E) >> 1) + 1;
+
+			obj_label_flag = (rep_all[offs + 4] & 0x01);						// 10
+
+			obj_labelt = "  ";
+			if (obj_label_flag == 1) {		// Numeric index.
+//				obj_label = ((rep_all[offs + 5]) << 8) | (rep_all[offs + 6]);		// 11 12
+//				datoff = datoff + 7;
+//			}													// datoff=13
+//			else {
+				obj_labelt = decode_dlac(rep_all, 9, 5);
+				offs = offs + 7;
+			}
+
+			fprintf(to,"moo %s \n",obj_labelt);
+
 			element_flag = ((rep_all[offs + 7]) & 0x80) >> 7;
 			obj_element = (rep_all[offs + 7]) & 0x1F;
 //			obj_status = (rep_all[offs + 8]) & 0x0F;
@@ -2367,11 +2396,11 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 				}
 
 				asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, start_date, stop_date, "
-						"geo_overlay_opt, overlay_op, overlay_vert_cnt, segmented,ob_ele,element_flag, overlay_rec_id) "
+						"geo_overlay_opt, overlay_op, overlay_vert_cnt, segmented,ob_ele,element_flag, overlay_rec_id,obj_labelt) "
 						"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),"
-						"%d,%d,%d,'%s','%s',%d,%d,%d,1,'%s',%d,%d)",
+						"%d,%d,%d,'%s','%s',%d,%d,%d,1,'%s',%d,%d,'%s')",
 						gr, apdu->product_id, gseg_rpt_num, alt, start_date, stop_date,
-						geo_overlay_opt, overlay_op, verts,obj_ele_text,element_flag, overlay_rec_id);
+						geo_overlay_opt, overlay_op, verts,obj_ele_text,element_flag, overlay_rec_id,obj_labelt);
 
 				PGresult *res = PQexec(conn, postsql);
 				if (PQresultStatus(res) != PGRES_COMMAND_OK) {
