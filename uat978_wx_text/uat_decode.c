@@ -2387,7 +2387,7 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 					alt = alt_raw * 100;
 
 					if (alt != alt_save) {		// Multiple altitudes
-						fprintf(to,"**** Multiple Altitudes\n");
+						fprintf(to,"**** multiple altitudes\n");
 					}
 
 					asprintf(&coords, " [%f,%f],", lng, lat);
