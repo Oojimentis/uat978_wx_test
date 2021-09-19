@@ -965,6 +965,8 @@ static const char *get_fisb_product_format(uint16_t product_id)
 	switch (product_id) {
 	case 8:		case 9:		case 10:	case 11:	case 12:	case 13:	case 14:	case 15:
 		return "Text/Graphic";
+	case 16:		case 17:
+		return "Text/Graphic";
 	case 413:
 		return "Text (DLAC)";
 	case 62:	case 63:	case 64:	case 70:	case 71:
@@ -2297,7 +2299,7 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 				offs = offs + 7;
 			}
 
-			fprintf(to,"moo %s \n",obj_labelt);
+			fprintf(to,"test %s -  %d\n",obj_labelt,gseg_rpt_num);
 
 			element_flag = ((rep_all[offs + 7]) & 0x80) >> 7;
 			obj_element = (rep_all[offs + 7]) & 0x1F;
@@ -2388,6 +2390,25 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 
 					if (alt != alt_save) {		// Multiple altitudes
 						fprintf(to,"**** multiple altitudes\n");
+
+						asprintf(&postsql,"INSERT INTO graphics (coords, prod_id, rep_num, alt, start_date, stop_date, "
+								"geo_overlay_opt, overlay_op, overlay_vert_cnt, segmented,ob_ele,element_flag, overlay_rec_id,obj_labelt) "
+								"VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"Polygon\",\"coordinates\":[[ %s ]]}'),4326),"
+								"%d,%d,%d,'%s','%s',%d,%d,%d,1,'%s',%d,%d,'%s')",
+								gr, apdu->product_id, gseg_rpt_num, alt, start_date, stop_date,
+								geo_overlay_opt, overlay_op, verts,obj_ele_text,element_flag, overlay_rec_id,obj_labelt);
+
+						PGresult *res = PQexec(conn, postsql);
+						if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+							if (strncmp(PQerrorMessage(conn),"ERROR:  duplicate key", 21) != 0)
+								fprintf(to, "(Segmented graphics)bad sql %s \nStatus:%d\n%s\n", PQerrorMessage(conn),
+										PQresultStatus(res), postsql);
+						}
+						PQclear(res);
+
+						alt_save = alt;
+						gr[0] = '\0';
+
 					}
 
 					asprintf(&coords, " [%f,%f],", lng, lat);
