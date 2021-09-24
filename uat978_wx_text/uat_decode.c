@@ -1431,6 +1431,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 				strcat(gstn, pirep_copy);
 				fprintf(to,"%s\n",gstn);
 			}
+
 			if (strcmp(mtype, "METAR") == 0 || strcmp(mtype, "SPECI") == 0) {
 				if (decode_metar(observation,Mptr) != 0) {
 					fprintf(to, "Error METAR Decode\n"); }
@@ -2329,7 +2330,7 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 				d4 = rep_all[offs + 14];
 				asprintf(&start_date, "%02d/%02d %02d:%02d", d1, d2, d3, d4);
 				asprintf(&stop_date, "0");
-				offs = offs + 10;
+				offs = offs + 15;
 				break;
 			case 2:		// End time only. TIL.
 				d1 = rep_all[offs + 11];
@@ -2579,7 +2580,7 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *to)
 	int fg;
 	int offs;
 
-	uint8_t rep_all[2000];
+	uint8_t rep_all[10000];
 
 	uint16_t apdunum;
 	uint16_t prodfillen;
