@@ -1050,18 +1050,21 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 		strcat(hold, ":00z");
 
 		temp = strsep(&taf_lines, " ");
-		temp_len = strlen(temp);
+		if (temp != NULL) {
+			temp_len = strlen(temp);
 
-		if (strncmp(temp + (temp_len - 2), "KT", 2) == 0) {
-			taf_temp = tafWind(temp);
-			strcat(hold, " <b>Wind: </b>");
-			strcat(hold, taf_temp);
-			temp = strsep(&taf_lines, " ");
-			if (temp != NULL) {
-				temp_len = strlen(temp);
-				sw = 1;
+			if (strncmp(temp + (temp_len - 2), "KT", 2) == 0) {
+				taf_temp = tafWind(temp);
+				strcat(hold, " <b>Wind: </b>");
+				strcat(hold, taf_temp);
+				temp = strsep(&taf_lines, " ");
+				if (temp != NULL) {
+					temp_len = strlen(temp);
+					sw = 1;
+				}
 			}
 		}
+
 		if (temp != NULL) {
 			if ((strncmp(temp + (temp_len - 2), "SM", 2) == 0) || (temp_len == 1) ||
 					((temp_len == 4) && isdigit(temp[0]))) {
