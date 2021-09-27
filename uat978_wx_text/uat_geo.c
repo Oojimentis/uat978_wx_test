@@ -41,16 +41,18 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 		case 5:		alt_level = 12000;	break;
 		case 6:		alt_level = 14000;	break;
 		case 7:		alt_level = 16000;	break;
-	}
+		}
 		break;
-		case 71: case 91:							// ** Icing/Turbulence High
-			switch(wx_alt) {
-			case 0:		alt_level = 18000;	break;
-			case 1:		alt_level = 20000;	break;
-			case 2:		alt_level = 22000;	break;
-			case 3:		alt_level = 24000;	break;
-			}
-			break;
+	break;
+	case 71: case 91:							// ** Icing/Turbulence High
+		switch(wx_alt) {
+		case 0:		alt_level = 18000;	break;
+		case 1:		alt_level = 20000;	break;
+		case 2:		alt_level = 22000;	break;
+		case 3:		alt_level = 24000;	break;
+		}
+		break;
+	break;
 	}
 
 	sprintf(nexrad_time, "%02d%02d", apdu->hours, apdu->minutes);
@@ -87,7 +89,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 			for (int i = 3; i < apdu->length; ++i) {
 
 				asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num,"
-						"maptime, altitude) VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
+						"maptime, altitude, seq) VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
 				intensity = apdu->data[i] & 7;
 				runlength = (apdu->data[i] >> 3) + 1;
 
@@ -107,8 +109,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					klen = strlen(geojson);
 					geojson[klen - 1] = ' ';
 					kount = 0;
-					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d)",geojson, apdu->product_id,
-							intensity, block_num, nexrad_time, alt_level);
+					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d,%d)",geojson, apdu->product_id,
+							intensity, block_num, nexrad_time, alt_level, nex_count );
 
 					PGresult *res = PQexec(conn, postsql);
 					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -117,6 +119,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 									PQresultStatus(res), postsql);
 					}
 					PQclear(res);
+					nex_count++;
 				}
 			}
 		}
@@ -131,7 +134,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 				ice_sev = (apdu->data[i]) >> 3 & 7;
 
 				asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num,"
-						"maptime, altitude, ice_sld, ice_prob) "
+						"maptime, altitude, ice_sld, ice_prob, seq) "
 						"VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
 
 				while (num_bins-- > 0 ) {
@@ -150,8 +153,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					klen = strlen(geojson);
 					geojson[klen - 1] = ' ';
 					kount = 0;
-					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d,%d,%d)", geojson, apdu->product_id, ice_sev,
-							 block_num, nexrad_time, alt_level, ice_sld, ice_prob);
+					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d,%d,%d,%d)", geojson, apdu->product_id, ice_sev,
+							 block_num, nexrad_time, alt_level, ice_sld, ice_prob, nex_count);
 
 					PGresult *res = PQexec(conn, postsql);
 					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -160,6 +163,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 									PQresultStatus(res), postsql);
 					}
 					PQclear(res);
+					nex_count++;
 				}
 			}
 		}
@@ -177,7 +181,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 				asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num, "
 						"maptime, altitude,seq) VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ ");
 
-//				while (num_bins-- > 0 && edr_enc >= 1 && edr_enc < 16 ) {
 				while (num_bins-- > 0 ) {
 					bl_cnt++;
 
@@ -257,13 +260,12 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 
 				if (num_bins == 15) {
 					i = i + 1;
-					num_bins = (apdu->data[i]) + 1;
+				num_bins = (apdu->data[i]) + 1;
 				}
 
 				asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num,"
-						"maptime, altitude) VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
+						"maptime, altitude, seq) VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
 
-//				while (num_bins-- > 0 && lgt_cnt >= 1 && lgt_cnt < 7) {
 				while (num_bins-- > 0 ) {
 					t_lat = latN - (y * (latSize / 4.0));
 					t_lon = lonW + (x * (lonSize / 32.0));
@@ -280,8 +282,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					klen = strlen(geojson);
 					geojson[klen - 1] = ' ';
 					kount = 0;
-					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d)",geojson, apdu->product_id,
-							lgt_cnt, block_num, nexrad_time, alt_level);
+					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d,%d)",geojson, apdu->product_id,
+							lgt_cnt, block_num, nexrad_time, alt_level, nex_count);
 
 					PGresult *res = PQexec(conn, postsql);
 					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -290,6 +292,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 									PQresultStatus(res), postsql);
 					}
 					PQclear(res);
+					nex_count++;
 				}
 			}
 		}
