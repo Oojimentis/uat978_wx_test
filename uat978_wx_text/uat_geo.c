@@ -10,13 +10,11 @@
 #include <string.h>
 #include "uat_decode.h"
 #include "uat_geo.h"
-#include "asprintf.h"
 
 void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 {
-	char *geojson;
-	char *postsql;
-
+	char geojson[10000];
+	char postsql[10000];
 	char nexrad_time[6];
 
 	int alt_level = 0;
@@ -25,7 +23,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 	int rle_flag = (apdu->data[0] & 0x80) != 0;
 	int scale_factor = 1;
 	int wx_alt = (apdu->data[0] & 0x70) >> 4;
-
 
 	switch(apdu->product_id) {
 	case 63: case 64: case 84: case 103:		// ** NEXRAD/Cloud Top/Lightning
@@ -85,10 +82,9 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 
 		switch(apdu->product_id) {
 		case 63: case 64: {
-
 			for (int i = 3; i < apdu->length; ++i) {
 
-				asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num,"
+				sprintf(geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num,"
 						"maptime, altitude, seq) VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
 				intensity = apdu->data[i] & 7;
 				runlength = (apdu->data[i] >> 3) + 1;
@@ -103,13 +99,14 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						x = 0;
 						y++;
 					}
-					asprintf(&geojson,"%s POINT(%f %f),",geojson, t_lon, t_lat);
+					sprintf(geojson,"%s POINT(%f %f),",geojson, t_lon, t_lat);
 				}
 				if (kount > 0 && intensity > 1) {
 					klen = strlen(geojson);
 					geojson[klen - 1] = ' ';
 					kount = 0;
-					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d,%d)",geojson, apdu->product_id,
+
+					sprintf(postsql,"%s)',%d,%d,%d,'%s',%d,%d)",geojson, apdu->product_id,
 							intensity, block_num, nexrad_time, alt_level, nex_count );
 
 					PGresult *res = PQexec(conn, postsql);
@@ -133,7 +130,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 				ice_prob = (apdu->data[i]) & 7;
 				ice_sev = (apdu->data[i]) >> 3 & 7;
 
-				asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num,"
+				sprintf(geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num,"
 						"maptime, altitude, ice_sld, ice_prob, seq) "
 						"VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
 
@@ -147,13 +144,13 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						x = 0;
 						y++;
 					}
-					asprintf(&geojson,"%s POINT(%f %f),", geojson, t_lon, t_lat);
+					sprintf(geojson,"%s POINT(%f %f),", geojson, t_lon, t_lat);
 				}
 				if (kount > 0 && ice_sev >= 1 && ice_sev < 7) {
 					klen = strlen(geojson);
 					geojson[klen - 1] = ' ';
 					kount = 0;
-					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d,%d,%d,%d)", geojson, apdu->product_id, ice_sev,
+					sprintf(postsql,"%s)',%d,%d,%d,'%s',%d,%d,%d,%d)", geojson, apdu->product_id, ice_sev,
 							 block_num, nexrad_time, alt_level, ice_sld, ice_prob, nex_count);
 
 					PGresult *res = PQexec(conn, postsql);
@@ -178,7 +175,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					num_bins = (apdu->data[i]) + 1;
 				}
 
-				asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num, "
+				sprintf(geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num, "
 						"maptime, altitude,seq) VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ ");
 
 				while (num_bins-- > 0 ) {
@@ -192,7 +189,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						s_lat = t_lat;
 						s_lon = t_lon;
 
-						asprintf(&geojson,"%s [%.7f, %.7f],", geojson, s_lon, s_lat);
+						sprintf(geojson,"%s [%.7f, %.7f],", geojson, s_lon, s_lat);
 					}
 
 					x++;
@@ -200,12 +197,12 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						e_lat = t_lat;
 						e_lon = t_lon;
 
-						asprintf(&geojson,"%s [%.7f, %.7f],", geojson, e_lon, e_lat);
+						sprintf(geojson,"%s [%.7f, %.7f],", geojson, e_lon, e_lat);
 
 						klen = strlen(geojson);
 						geojson[klen - 1] = ' ';
 
-						asprintf(&postsql,"%s ]}'),4326) ,%d,%d,%d,'%s',%d,%d)", geojson, apdu->product_id,
+						sprintf(postsql,"%s ]}'),4326) ,%d,%d,%d,'%s',%d,%d)", geojson, apdu->product_id,
 								edr_enc, block_num, nexrad_time, alt_level,nex_count);
 
 						PGresult *res = PQexec(conn, postsql);
@@ -217,7 +214,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						PQclear(res);
 
 						nex_count++;
-						asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num, "
+						sprintf(geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num, "
 								"maptime, altitude,seq) VALUES (ST_SetSRID(ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[ ");
 
 						kount = 0;
@@ -230,12 +227,12 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					e_lat = t_lat;
 					e_lon = t_lon;
 
-					asprintf(&geojson,"%s [%.7f, %.7f],", geojson, e_lon, e_lat);
+					sprintf(geojson,"%s [%.7f, %.7f],", geojson, e_lon, e_lat);
 
 					klen = strlen(geojson);
 					geojson[klen - 1] = ' ';
 
-					asprintf(&postsql,"%s ]}'),4326) ,%d,%d,%d,'%s',%d,%d)", geojson, apdu->product_id,
+					sprintf(postsql,"%s ]}'),4326) ,%d,%d,%d,'%s',%d,%d)", geojson, apdu->product_id,
 							edr_enc, block_num, nexrad_time, alt_level,nex_count);
 
 					PGresult *res = PQexec(conn, postsql);
@@ -263,7 +260,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 				num_bins = (apdu->data[i]) + 1;
 				}
 
-				asprintf(&geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num,"
+				sprintf(geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num,"
 						"maptime, altitude, seq) VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
 
 				while (num_bins-- > 0 ) {
@@ -276,13 +273,13 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						x = 0;
 						y++;
 					}
-					asprintf(&geojson,"%s POINT(%f %f),", geojson, t_lon, t_lat);
+					sprintf(geojson,"%s POINT(%f %f),", geojson, t_lon, t_lat);
 				}
 				if (kount > 0) {
 					klen = strlen(geojson);
 					geojson[klen - 1] = ' ';
 					kount = 0;
-					asprintf(&postsql,"%s)',%d,%d,%d,'%s',%d,%d)",geojson, apdu->product_id,
+					sprintf(postsql,"%s)',%d,%d,%d,'%s',%d,%d)",geojson, apdu->product_id,
 							lgt_cnt, block_num, nexrad_time, alt_level, nex_count);
 
 					PGresult *res = PQexec(conn, postsql);
@@ -349,7 +346,7 @@ double raw_lat; double raw_lon; double scale;
 
 void metar_data( Decoded_METAR *Mptr, char *mtype, FILE *to)
 {
-	char *postsql;
+	char postsql[500];
 
 	char altstng[10];
 	char dew_pt_temp[10];
@@ -420,7 +417,7 @@ void metar_data( Decoded_METAR *Mptr, char *mtype, FILE *to)
 
 	sprintf(obs_date, "%02d %02d:%02d", Mptr->ob_date, Mptr->ob_hour, Mptr->ob_minute);
 
-	asprintf(&postsql,"INSERT INTO metar (stn_call, ob_date, temperature, windsp, winddir, altimeter, visby,"
+	sprintf(postsql,"INSERT INTO metar (stn_call, ob_date, temperature, windsp, winddir, altimeter, visby,"
 			"dewp, hrly_precip, slp, windvar, windgust, mtype) "
 			"VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
 			Mptr->stnid, obs_date, temp, windSpeed,	windDir, altstng, vsbySM, dew_pt_temp,
