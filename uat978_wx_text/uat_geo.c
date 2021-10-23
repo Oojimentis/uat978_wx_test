@@ -14,7 +14,8 @@
 void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 {
 	char geojson[10000];
-	char postsql[10000];
+	char geojson_temp[100];
+	char postsql[20000];
 	char nexrad_time[6];
 
 	int alt_level = 0;
@@ -99,7 +100,9 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						x = 0;
 						y++;
 					}
-					sprintf(geojson,"%s POINT(%f %f),",geojson, t_lon, t_lat);
+
+					sprintf(geojson_temp," POINT(%f %f),", t_lon, t_lat);
+					strcat(geojson,geojson_temp);
 				}
 				if (kount > 0 && intensity > 1) {
 					klen = strlen(geojson);
@@ -144,7 +147,9 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						x = 0;
 						y++;
 					}
-					sprintf(geojson,"%s POINT(%f %f),", geojson, t_lon, t_lat);
+
+					sprintf(geojson_temp," POINT(%f %f),", t_lon, t_lat);
+					strcat(geojson,geojson_temp);
 				}
 				if (kount > 0 && ice_sev >= 1 && ice_sev < 7) {
 					klen = strlen(geojson);
@@ -189,7 +194,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						s_lat = t_lat;
 						s_lon = t_lon;
 
-						sprintf(geojson,"%s [%.7f, %.7f],", geojson, s_lon, s_lat);
+						sprintf(geojson_temp," [%.7f, %.7f],",s_lon, s_lat);
+						strcat(geojson,geojson_temp);
 					}
 
 					x++;
@@ -197,7 +203,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						e_lat = t_lat;
 						e_lon = t_lon;
 
-						sprintf(geojson,"%s [%.7f, %.7f],", geojson, e_lon, e_lat);
+						sprintf(geojson_temp," [%.7f, %.7f],",e_lon, e_lat);
+						strcat(geojson,geojson_temp);
 
 						klen = strlen(geojson);
 						geojson[klen - 1] = ' ';
@@ -227,7 +234,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					e_lat = t_lat;
 					e_lon = t_lon;
 
-					sprintf(geojson,"%s [%.7f, %.7f],", geojson, e_lon, e_lat);
+					sprintf(geojson_temp," [%.7f, %.7f],",e_lon, e_lat);
+					strcat(geojson,geojson_temp);
 
 					klen = strlen(geojson);
 					geojson[klen - 1] = ' ';
@@ -273,7 +281,10 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						x = 0;
 						y++;
 					}
-					sprintf(geojson,"%s POINT(%f %f),", geojson, t_lon, t_lat);
+
+					sprintf(geojson_temp," POINT(%f %f),",t_lon, t_lat);
+					strcat(geojson,geojson_temp);
+
 				}
 				if (kount > 0) {
 					klen = strlen(geojson);

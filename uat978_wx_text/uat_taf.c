@@ -802,7 +802,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 	char taf_cld[50];
 	char wind[50];
 	char *dt;
-	char postsql[1000];
+	char postsql[5000];
 	char *t_temp;
 	char *taf_condx;
 	char *taf_lines;
