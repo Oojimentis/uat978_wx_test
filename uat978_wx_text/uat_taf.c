@@ -791,6 +791,9 @@ return taf_wx_all;
 
 void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf_line_num, FILE *to)
 {		// TAF Decode
+
+#define MAX_STR_LEN 1000
+
 	char current_all[100];
 	char fsz[6];
 	char fsz_hr[3];
@@ -802,7 +805,8 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 	char taf_cld[50];
 	char wind[50];
 	char *dt;
-	char postsql[5000];
+//	char postsql[5000];
+	char *postsql = malloc(sizeof(char) * (MAX_STR_LEN + 1));
 	char *t_temp;
 	char *taf_condx;
 	char *taf_lines;
@@ -892,8 +896,9 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 			asprintf(&visby,"n/a");
 			strcpy(wind,"n/a");
 		}
-
+		strcpy(postsql," ");
 		if (taf_line_num ==0) {
+
 			sprintf(postsql, "INSERT INTO taf (issued, current, wind, visby, condx, rep_time, stn_call, taf_unknown_fl, taf_raw) "
 					"VALUES ('%s','%s','%s','%s','%s','%s','%s',%d,'%s')",
 					issued, current_all, wind, visby, taf_condx, reptime, gstn, err, taf_linzs);
@@ -980,7 +985,7 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 						PQresultStatus(res), postsql);
 		}
 		PQclear(res);
-
+		free(postsql);
 		temp = strsep(&taf_lines, " ");
 	}
 	else if (strcmp(taf_t, "FM") == 0) {		// FROM

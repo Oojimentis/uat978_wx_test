@@ -1226,8 +1226,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					sprintf(taf_copy, "%s %s", time_copy, r);
 				}
 
-//				if (strncmp(gstn,"KCEF",4) == 0)
-//				fprintf(stderr,"test");
+				if (strncmp(gstn,"KWRI",4) == 0)
+				fprintf(stderr,"test");
 
 				int i = 0;
 				char *taf_token;
