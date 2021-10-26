@@ -310,6 +310,7 @@ char* tafWeather(char *taf_list)
 		case SHRADZ:	strcat(taf_wx_all, "Showers/rain/drizzle, "); break;
 		case SHRASN:	strcat(taf_wx_all, "Showers/rain/snow, "); break;
 		case TSRAGR:	strcat(taf_wx_all, "Thunder/rain/hail, "); break;
+		case TSRAGS:	strcat(taf_wx_all, "Thunder/rain/small hail, "); break;
 
 		case FZRASNPL:	strcat(taf_wx_all, "Freezing rain/snow/ice pellets, "); break;
 
@@ -805,7 +806,6 @@ void taf_decode(char *taf_linzs,char *issued, char *reptime, char *gstn, int taf
 	char taf_cld[50];
 	char wind[50];
 	char *dt;
-//	char postsql[5000];
 	char *postsql = malloc(sizeof(char) * (MAX_STR_LEN + 1));
 	char *t_temp;
 	char *taf_condx;

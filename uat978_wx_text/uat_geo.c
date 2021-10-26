@@ -254,6 +254,8 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					nex_count++;
 					kount = 0;
 				}
+
+
 			}
 		}
 		break;

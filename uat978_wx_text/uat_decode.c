@@ -1226,8 +1226,8 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 					sprintf(taf_copy, "%s %s", time_copy, r);
 				}
 
-				if (strncmp(gstn,"KWRI",4) == 0)
-				fprintf(stderr,"test");
+//				if (strncmp(gstn,"KWRI",4) == 0)
+//				fprintf(stderr,"test");
 
 				int i = 0;
 				char *taf_token;
@@ -2300,7 +2300,6 @@ static void get_seg_graph(const struct fisb_apdu *apdu, FILE *to)
 				offs = offs + 7;
 			}
 
-			fprintf(to,"test %s -  %d\n",obj_labelt,gseg_rpt_num);
 
 			element_flag = ((rep_all[offs + 7]) & 0x80) >> 7;
 			obj_element = (rep_all[offs + 7]) & 0x1F;
