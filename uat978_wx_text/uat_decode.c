@@ -1006,7 +1006,7 @@ static void uat_display_fisb_frame(const struct fisb_apdu *apdu, FILE *to)
 //	fprintf(to, "\n");
 
 	switch (apdu->product_id) {
-	case 8:		// ** NOTAM **************
+	case 8:		// ** NOTAM *************
 		if (apdu->s_flag)
 			recf = apdu->data[9] >> 4;
 		else
