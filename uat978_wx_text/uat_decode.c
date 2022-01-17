@@ -1718,7 +1718,7 @@ static void get_graphic(const struct fisb_apdu *apdu, FILE *to)
 		asprintf(&stop_date, "0");
 		datoff = datoff + 8;   // was 2
 		break;
-	case 1:		// Start time only. WEF.
+	case 1:		// Start time only. WEF .
 		d1 = apdu->data[datoff + 2];
 		d2 = apdu->data[datoff + 3];
 		d3 = apdu->data[datoff + 4];
