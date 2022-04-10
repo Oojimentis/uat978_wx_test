@@ -27,7 +27,6 @@ static void get_seg_text(const struct fisb_apdu *apdu, FILE *to);
 static void get_sua_text(char *Word, char *rep_time, int rep_num, int report_year, FILE *to);
 static void get_text(const struct fisb_apdu *apdu, FILE *to);
 
-
 char *replace(const char *s, char ch, const char *repl) {
 
 	// Replaces ch with repl in string s
