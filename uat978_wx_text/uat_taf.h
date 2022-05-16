@@ -59,6 +59,7 @@
 #define SHRN		37770
 #define SHSN		37780
 #define SNPL		38348
+#define TSGR   		39764
 #define TSRA		39857
 #define TSSN		39880
 #define VCFG		40143

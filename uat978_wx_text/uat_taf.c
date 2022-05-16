@@ -301,6 +301,7 @@ char* tafWeather(char *taf_list)
 		case SHRA:	case SHRN: 	strcat(taf_wx_all, "Rain showers, "); break;
 		case SHSN:		strcat(taf_wx_all, "Showers/snow, "); break;
 		case SNPL:		case PLSN:	strcat(taf_wx_all, "Snow/ice pellets, "); break;
+		case TSGR:		strcat(taf_wx_all, "Thunder/hail, "); break;
 		case TSRA:		strcat(taf_wx_all, "Thunder/rain, "); break;
 		case TSSN:		strcat(taf_wx_all, "Thunder/snow, "); break;
 
