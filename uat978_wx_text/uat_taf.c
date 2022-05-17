@@ -314,6 +314,7 @@ char* tafWeather(char *taf_list)
 		case TSRAGS:	strcat(taf_wx_all, "Thunder/rain/small hail, "); break;
 
 		case FZRASNPL:	strcat(taf_wx_all, "Freezing rain/snow/ice pellets, "); break;
+		case VCTSRA:	strcat(taf_wx_all, "Thunderstorm/rain in vicinity, "); break;
 
 		case LDZ:		strcat(taf_wx_all, "Light drizzle, "); break;
 		case LPL:		strcat(taf_wx_all, "Light ice pellets, "); break;
@@ -323,7 +324,7 @@ char* tafWeather(char *taf_list)
 		case LFZDZ:		strcat(taf_wx_all, "Light freezing drizzle, "); break;
 		case LFZRA:	case LFRZA:		strcat(taf_wx_all, "Light freezing rain, "); break;
 		case LPLRA:		strcat(taf_wx_all, "Light ice pellets/rain, "); break;
-		case LRADZ:		strcat(taf_wx_all, "Light rain/drizzle, "); break;
+		case LRADZ:	case LDZRA:		strcat(taf_wx_all, "Light rain/drizzle, "); break;
 		case LRAPL:		strcat(taf_wx_all, "Light rain/ice pellets, "); break;
 		case LSHRA:		strcat(taf_wx_all, "Light rain showers, "); break;
 		case LSHSN:		strcat(taf_wx_all, "Light snow shower, "); break;
