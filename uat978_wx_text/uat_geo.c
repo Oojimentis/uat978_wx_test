@@ -6,10 +6,13 @@
  *      Keep graphics together
  */
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include <string.h>
 #include "uat_decode.h"
 #include "uat_geo.h"
+#include "uat_taf.h"
 
 void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 {
@@ -373,6 +376,25 @@ void metar_data( Decoded_METAR *Mptr, char *mtype, FILE *to)
 	char windSpeed[10];
 	char windVar[10];
 
+	int cldhgt[5]= {0,0,0,0,0};
+	int i;
+	char cloud_type[5][5];
+	char wx_obstruct[250];
+
+	wx_obstruct[0] = '\0';
+
+	for (i = 0; Mptr->cloudGroup[i].cloud_type[0] != '\0' && i < 6; i++ )
+	{
+		if (Mptr->cloudGroup[i].cloud_type[0] != '\0') {
+			sprintf(cloud_type[i],"%s", Mptr->cloudGroup[i].cloud_type);
+			cldhgt[i] = atoi(Mptr->cloudGroup[i].cloud_hgt_char);
+		}
+	}
+
+	for (i = 0; Mptr->WxObstruct[i][0] != '\0' && i < 11; i++ )
+	{
+		strcat(wx_obstruct, tafWeather(Mptr->WxObstruct[i]));
+	}
 
 	if (Mptr->hourlyPrecip > 1000)
 		sprintf(hrly_precip, "- ");
@@ -431,10 +453,16 @@ void metar_data( Decoded_METAR *Mptr, char *mtype, FILE *to)
 	sprintf(obs_date, "%02d %02d:%02d", Mptr->ob_date, Mptr->ob_hour, Mptr->ob_minute);
 
 	sprintf(postsql,"INSERT INTO metar (stn_call, ob_date, temperature, windsp, winddir, altimeter, visby,"
-			"dewp, hrly_precip, slp, windvar, windgust, mtype) "
-			"VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+			"dewp, hrly_precip, slp, windvar, windgust, mtype,"
+			"cld_type1, cld_type2, cld_type3, cld_type4, cld_type5,"
+			"cld_hgt1, cld_hgt2, cld_hgt3, cld_hgt4, cld_hgt5, wx_obstruct) "
+			"VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s',"
+			"'%s','%s','%s','%s','%s', %d, %d, %d, %d, %d,'%s')",
 			Mptr->stnid, obs_date, temp, windSpeed,	windDir, altstng, vsbySM, dew_pt_temp,
-			hrly_precip, SLP, windVar, windGust, mtype);
+			hrly_precip, SLP, windVar, windGust, mtype,
+			cloud_type[0], cloud_type[1], cloud_type[2], cloud_type[3], cloud_type[4],
+			cldhgt[0], cldhgt[1], cldhgt[2], cldhgt[3], cldhgt[4], wx_obstruct
+	);
 
 	PGresult *res = PQexec(conn, postsql);
 	if (PQresultStatus(res) != PGRES_COMMAND_OK) {
