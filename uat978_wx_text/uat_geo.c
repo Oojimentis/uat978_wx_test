@@ -6,6 +6,7 @@
  *      Keep graphics together
  */
 
+//#define _POSIX_C_SOURCE 200809L
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -13,6 +14,7 @@
 #include "uat_decode.h"
 #include "uat_geo.h"
 #include "uat_taf.h"
+//#include <locale.h>
 
 void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 {
@@ -376,18 +378,43 @@ void metar_data( Decoded_METAR *Mptr, char *mtype, FILE *to)
 	char windSpeed[10];
 	char windVar[10];
 
-	int cldhgt[5]= {0,0,0,0,0};
 	int i;
-	char cloud_type[5][5];
+	int units;
+	char cloud_type[5][30];
 	char wx_obstruct[250];
-
+	char cloud_temp[5];
+	char chgt_temp[4];
+	char cloud_text[20];
 	wx_obstruct[0] = '\0';
 
 	for (i = 0; Mptr->cloudGroup[i].cloud_type[0] != '\0' && i < 6; i++ )
 	{
 		if (Mptr->cloudGroup[i].cloud_type[0] != '\0') {
-			sprintf(cloud_type[i],"%s", Mptr->cloudGroup[i].cloud_type);
-			cldhgt[i] = atoi(Mptr->cloudGroup[i].cloud_hgt_char);
+			sprintf(cloud_temp,"%s",Mptr->cloudGroup[i].cloud_type);
+
+			strcat(chgt_temp,Mptr->cloudGroup[i].cloud_hgt_char);
+
+			units =atoi(chgt_temp);
+			if (strncmp(cloud_temp, "CLR", 3) == 0) {
+				strcat(cloud_text,"Clear Sky ");
+				units = 0;
+			}
+				else if  (strncmp(cloud_temp, "FEW", 3) == 0)
+					strcat(cloud_text,"Few Clouds ");
+				else if  (strncmp(cloud_temp, "BKN", 3) == 0)
+					strcat(cloud_text,"Broken Clouds ");
+				else if  (strncmp(cloud_temp, "OVC", 3) == 0)
+					strcat(cloud_text,"Overcast ");
+				else if  (strncmp(cloud_temp, "SCT", 3) == 0)
+					strcat(cloud_text,"Scattered Clouds ");
+				else
+					strcat(cloud_text,"Unknown ");
+
+			sprintf(cloud_type[i], "%s (%'dft) ", cloud_text,units * 100);
+//			strcat(cloud_type[i],tafWeather(cloud_temp));
+			cloud_temp[0]='\0';
+			cloud_text[0]='\0';
+			chgt_temp[0]='\0';
 		}
 	}
 
@@ -455,13 +482,13 @@ void metar_data( Decoded_METAR *Mptr, char *mtype, FILE *to)
 	sprintf(postsql,"INSERT INTO metar (stn_call, ob_date, temperature, windsp, winddir, altimeter, visby,"
 			"dewp, hrly_precip, slp, windvar, windgust, mtype,"
 			"cld_type1, cld_type2, cld_type3, cld_type4, cld_type5,"
-			"cld_hgt1, cld_hgt2, cld_hgt3, cld_hgt4, cld_hgt5, wx_obstruct) "
+			" wx_obstruct) "
 			"VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s',"
-			"'%s','%s','%s','%s','%s', %d, %d, %d, %d, %d,'%s')",
+			"'%s','%s','%s','%s','%s','%s')",
 			Mptr->stnid, obs_date, temp, windSpeed,	windDir, altstng, vsbySM, dew_pt_temp,
 			hrly_precip, SLP, windVar, windGust, mtype,
 			cloud_type[0], cloud_type[1], cloud_type[2], cloud_type[3], cloud_type[4],
-			cldhgt[0], cldhgt[1], cldhgt[2], cldhgt[3], cldhgt[4], wx_obstruct
+			wx_obstruct
 	);
 
 	PGresult *res = PQexec(conn, postsql);

@@ -422,7 +422,8 @@ char* tafWeather(char *taf_list)
 					strcat(taf_wx_all, taf_wx);
 				}
 			}
-			else if (strncmp(temp, "SKC", 3) == 0) {
+			else if ((strncmp(temp, "SKC", 3) == 0) || (strncmp(temp,"CLR",3) == 0)) {
+
 				sprintf(taf_wx, "Sky clear ");
 				strcat(taf_wx_all, taf_wx);
 			}
