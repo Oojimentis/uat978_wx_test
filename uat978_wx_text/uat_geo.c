@@ -391,9 +391,7 @@ void metar_data( Decoded_METAR *Mptr, char *mtype, FILE *to)
 	{
 		if (Mptr->cloudGroup[i].cloud_type[0] != '\0') {
 			sprintf(cloud_temp,"%s",Mptr->cloudGroup[i].cloud_type);
-
 			strcat(chgt_temp,Mptr->cloudGroup[i].cloud_hgt_char);
-
 			units =atoi(chgt_temp);
 			if (strncmp(cloud_temp, "CLR", 3) == 0) {
 				strcat(cloud_text,"Clear Sky ");
@@ -407,6 +405,8 @@ void metar_data( Decoded_METAR *Mptr, char *mtype, FILE *to)
 					strcat(cloud_text,"Overcast ");
 				else if  (strncmp(cloud_temp, "SCT", 3) == 0)
 					strcat(cloud_text,"Scattered Clouds ");
+				else if  (strncmp(cloud_temp, "VV", 2) == 0)
+					strcat(cloud_text,"Obscured Sky  ");
 				else
 					strcat(cloud_text,"Unknown ");
 
@@ -450,15 +450,17 @@ void metar_data( Decoded_METAR *Mptr, char *mtype, FILE *to)
 	if (Mptr->winData.windDir > 1000)
 		sprintf(windDir, "-");
 	else
-		sprintf(windDir, "%d", Mptr->winData.windDir);
+		sprintf(windDir, "%d°", Mptr->winData.windDir);
 
 	if (Mptr->winData.windGust > 1000)
 		sprintf(windGust, "-");
 	else
 		sprintf(windGust, "%d", Mptr->winData.windGust);
 
-	if (Mptr->winData.windVRB)
+	if (Mptr->winData.windVRB) {
 		sprintf(windVar, "Variable");
+		sprintf(windDir, "Variable");
+	}
 	else
 		sprintf(windVar, " ");
 
