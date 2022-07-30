@@ -114,7 +114,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					geojson[klen - 1] = ' ';
 					kount = 0;
 
-					sprintf(postsql,"%s)',%d,%d,%d,'%s',%d,%d)",geojson, apdu->product_id,
+					sprintf(postsql,"%s)',%d,%d,%d,'%s',%d,%d)", geojson, apdu->product_id,
 							intensity, block_num, nexrad_time, alt_level, nex_count );
 
 					PGresult *res = PQexec(conn, postsql);
@@ -131,7 +131,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 		break;
 		case 70: case 71: {
 			for (int i = 3; i < apdu->length; ++i) {
-				num_bins = (apdu->data[i] ) + 1;
+				num_bins = (apdu->data[i]) + 1;
 				i = i + 1;
 
 				ice_sld = apdu->data[i] >> 6;
@@ -142,7 +142,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						"maptime, altitude, ice_sld, ice_prob, seq) "
 						"VALUES ('SRID=4326;GEOMETRYCOLLECTION(");
 
-				while (num_bins-- > 0 ) {
+				while (num_bins-- > 0) {
 					t_lat = latN - (y * (latSize / 4.0));
 					t_lon = lonW + (x * (lonSize / 32.0));
 					kount++;
@@ -208,14 +208,14 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						e_lat = t_lat;
 						e_lon = t_lon;
 
-						sprintf(geojson_temp," [%.7f, %.7f],",e_lon, e_lat);
+						sprintf(geojson_temp," [%.7f, %.7f],", e_lon, e_lat);
 						strcat(geojson,geojson_temp);
 
 						klen = strlen(geojson);
 						geojson[klen - 1] = ' ';
 
 						sprintf(postsql,"%s ]}'),4326) ,%d,%d,%d,'%s',%d,%d)", geojson, apdu->product_id,
-								edr_enc, block_num, nexrad_time, alt_level,nex_count);
+								edr_enc, block_num, nexrad_time, alt_level, nex_count);
 
 						PGresult *res = PQexec(conn, postsql);
 						if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -239,14 +239,14 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					e_lat = t_lat;
 					e_lon = t_lon;
 
-					sprintf(geojson_temp," [%.7f, %.7f],",e_lon, e_lat);
+					sprintf(geojson_temp," [%.7f, %.7f],", e_lon, e_lat);
 					strcat(geojson,geojson_temp);
 
 					klen = strlen(geojson);
 					geojson[klen - 1] = ' ';
 
 					sprintf(postsql,"%s ]}'),4326) ,%d,%d,%d,'%s',%d,%d)", geojson, apdu->product_id,
-							edr_enc, block_num, nexrad_time, alt_level,nex_count);
+							edr_enc, block_num, nexrad_time, alt_level, nex_count);
 
 					PGresult *res = PQexec(conn, postsql);
 					if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -259,8 +259,6 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 					nex_count++;
 					kount = 0;
 				}
-
-
 			}
 		}
 		break;
@@ -272,7 +270,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 
 				if (num_bins == 15) {
 					i = i + 1;
-				num_bins = (apdu->data[i]) + 1;
+					num_bins = (apdu->data[i]) + 1;
 				}
 
 				sprintf(geojson,"INSERT INTO nexrad (coords, prod_id, intensity, block_num,"
@@ -289,7 +287,7 @@ void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 						y++;
 					}
 
-					sprintf(geojson_temp," POINT(%f %f),",t_lon, t_lat);
+					sprintf(geojson_temp, " POINT(%f %f),", t_lon, t_lat);
 					strcat(geojson,geojson_temp);
 
 				}
@@ -392,29 +390,29 @@ void metar_data( Decoded_METAR *Mptr, char *mtype, FILE *to)
 		if (Mptr->cloudGroup[i].cloud_type[0] != '\0') {
 			sprintf(cloud_temp,"%s",Mptr->cloudGroup[i].cloud_type);
 			strcat(chgt_temp,Mptr->cloudGroup[i].cloud_hgt_char);
-			units =atoi(chgt_temp);
-			if (strncmp(cloud_temp, "CLR", 3) == 0) {
+			units = atoi(chgt_temp);
+			if (strncmp(cloud_temp, "CLR", 3) == 0 || strncmp(cloud_temp, "SKC", 3) == 0) {
 				strcat(cloud_text,"Clear Sky ");
 				units = 0;
 			}
-				else if  (strncmp(cloud_temp, "FEW", 3) == 0)
-					strcat(cloud_text,"Few Clouds ");
-				else if  (strncmp(cloud_temp, "BKN", 3) == 0)
-					strcat(cloud_text,"Broken Clouds ");
-				else if  (strncmp(cloud_temp, "OVC", 3) == 0)
-					strcat(cloud_text,"Overcast ");
+				else if (strncmp(cloud_temp, "FEW", 3) == 0)
+					strcat(cloud_text, "Few Clouds ");
+				else if (strncmp(cloud_temp, "BKN", 3) == 0)
+					strcat(cloud_text, "Broken Clouds ");
+				else if (strncmp(cloud_temp, "OVC", 3) == 0)
+					strcat(cloud_text, "Overcast ");
 				else if  (strncmp(cloud_temp, "SCT", 3) == 0)
-					strcat(cloud_text,"Scattered Clouds ");
+					strcat(cloud_text, "Scattered Clouds ");
 				else if  (strncmp(cloud_temp, "VV", 2) == 0)
-					strcat(cloud_text,"Obscured Sky  ");
+					strcat(cloud_text, "Obscured Sky  ");
 				else
-					strcat(cloud_text,"Unknown ");
+					strcat(cloud_text, "Unknown ");
 
-			sprintf(cloud_type[i], "%s (%'dft) ", cloud_text,units * 100);
+			sprintf(cloud_type[i], "%s (%'dft) ", cloud_text, units * 100);
 //			strcat(cloud_type[i],tafWeather(cloud_temp));
-			cloud_temp[0]='\0';
-			cloud_text[0]='\0';
-			chgt_temp[0]='\0';
+			cloud_temp[0] = '\0';
+			cloud_text[0] = '\0';
+			chgt_temp[0] = '\0';
 		}
 	}
 
@@ -431,14 +429,14 @@ void metar_data( Decoded_METAR *Mptr, char *mtype, FILE *to)
 	if (Mptr->temp > 1000)
 		sprintf(temp, "- ");
 	else {
-		Mptr->temp = Mptr->temp * 9/5  + 32;
+		Mptr->temp = Mptr->temp * 9/5 + 32;
 		sprintf(temp, "%d", Mptr->temp);
 	}
 
 	if (Mptr->dew_pt_temp > 1000)
 		sprintf(dew_pt_temp, "-");
 	else {
-		Mptr->dew_pt_temp = Mptr->dew_pt_temp * 9/5  + 32;
+		Mptr->dew_pt_temp = Mptr->dew_pt_temp * 9/5 + 32;
 		 sprintf(dew_pt_temp, "%d", Mptr->dew_pt_temp);
 	}
 
