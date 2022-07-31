@@ -362,7 +362,7 @@ double raw_lat; double raw_lon; double scale;
 
 void metar_data( Decoded_METAR *Mptr, char *mtype, FILE *to)
 {
-	char postsql[500];
+	char postsql[800];
 
 	char altstng[10];
 	char dew_pt_temp[10];
