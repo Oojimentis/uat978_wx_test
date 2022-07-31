@@ -6,7 +6,6 @@
  *      Keep graphics together
  */
 
-//#define _POSIX_C_SOURCE 200809L
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -14,7 +13,6 @@
 #include "uat_decode.h"
 #include "uat_geo.h"
 #include "uat_taf.h"
-//#include <locale.h>
 
 void graphic_nexrad(const struct fisb_apdu *apdu, FILE *to)
 {
@@ -377,42 +375,27 @@ void metar_data( Decoded_METAR *Mptr, char *mtype, FILE *to)
 	char windVar[10];
 
 	int i;
-	int units;
 	char cloud_type[5][30];
 	char wx_obstruct[250];
 	char cloud_temp[5];
 	char chgt_temp[4];
-	char cloud_text[20];
+	char cld_text[10];
+
 	wx_obstruct[0] = '\0';
+	cld_text[0] = '\0';
 
 	for (i = 0; Mptr->cloudGroup[i].cloud_type[0] != '\0' && i < 6; i++ )
 	{
 		if (Mptr->cloudGroup[i].cloud_type[0] != '\0') {
 			sprintf(cloud_temp,"%s",Mptr->cloudGroup[i].cloud_type);
 			strcat(chgt_temp,Mptr->cloudGroup[i].cloud_hgt_char);
-			units = atoi(chgt_temp);
-			if (strncmp(cloud_temp, "CLR", 3) == 0 || strncmp(cloud_temp, "SKC", 3) == 0) {
-				strcat(cloud_text,"Clear Sky ");
-				units = 0;
-			}
-				else if (strncmp(cloud_temp, "FEW", 3) == 0)
-					strcat(cloud_text, "Few Clouds ");
-				else if (strncmp(cloud_temp, "BKN", 3) == 0)
-					strcat(cloud_text, "Broken Clouds ");
-				else if (strncmp(cloud_temp, "OVC", 3) == 0)
-					strcat(cloud_text, "Overcast ");
-				else if  (strncmp(cloud_temp, "SCT", 3) == 0)
-					strcat(cloud_text, "Scattered Clouds ");
-				else if  (strncmp(cloud_temp, "VV", 2) == 0)
-					strcat(cloud_text, "Obscured Sky  ");
-				else
-					strcat(cloud_text, "Unknown ");
 
-			sprintf(cloud_type[i], "%s (%'dft) ", cloud_text, units * 100);
-//			strcat(cloud_type[i],tafWeather(cloud_temp));
+			sprintf(cld_text,"%s%s",cloud_temp,chgt_temp);
+			strcat(cloud_type[i],tafWeather(cld_text));
+
 			cloud_temp[0] = '\0';
-			cloud_text[0] = '\0';
 			chgt_temp[0] = '\0';
+			cld_text[0] = '\0';
 		}
 	}
 
