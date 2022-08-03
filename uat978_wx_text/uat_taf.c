@@ -293,6 +293,7 @@ char* tafWeather(char *taf_list)
 		case BCFG:		strcat(taf_wx_all, "Fog patches, "); break;
 		case BLSN:		strcat(taf_wx_all, "Blowing snow, "); break;
 		case DRSN:		strcat(taf_wx_all, "Drizzle/snow, "); break;
+		case FZDZ:		strcat(taf_wx_all, "Freezing drizzle, "); break;
 		case FZFG:		strcat(taf_wx_all, "Freezing fog, "); break;
 		case FZRA:		strcat(taf_wx_all, "Freezing rain, "); break;
 		case MIFG:		strcat(taf_wx_all, "Shallow fog, "); break;
@@ -319,6 +320,7 @@ char* tafWeather(char *taf_list)
 		case LDZ:		strcat(taf_wx_all, "Light drizzle, "); break;
 		case LPL:		strcat(taf_wx_all, "Light ice pellets, "); break;
 		case LRA:		strcat(taf_wx_all, "Light rain, "); break;
+		case LSG:		strcat(taf_wx_all, "Light snow grains, "); break;
 		case LSN:		strcat(taf_wx_all, "Light snow, "); break;
 
 		case LFZDZ:		strcat(taf_wx_all, "Light freezing drizzle, "); break;
@@ -330,6 +332,8 @@ char* tafWeather(char *taf_list)
 		case LSHSN:		strcat(taf_wx_all, "Light snow shower, "); break;
 		case LSNDZ:	case LDZSN:		strcat(taf_wx_all, "Light snow/drizzle, "); break;
 		case LTSRA:		strcat(taf_wx_all, "Light thunder/rain, "); break;
+		case LVCTS:		strcat(taf_wx_all, "Light thunderstorm in vicinity, "); break;
+		case HVCTS:		strcat(taf_wx_all, "Heavy thunderstorm in vicinity, "); break;
 
 		case LFZDZPL:	strcat(taf_wx_all, "Light freezing drizzle/ice pellets, "); break;
 		case LFZDZSN:	strcat(taf_wx_all, "Light freezing snow/drizzle, "); break;

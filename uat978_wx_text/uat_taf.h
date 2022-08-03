@@ -43,12 +43,14 @@
 #define LDZ			18446744073709551558u
 #define LPL			48
 #define LRA			57
+#define LSG   		73
 #define LSN			80
 #define NSW			3389
 
 #define BCFG		20143
 #define BLSN		21180
 #define DRSN		23780
+#define FZDZ		26442
 #define FZFG		26443
 #define FZRA		26557
 #define MIFG   		31743
@@ -65,6 +67,8 @@
 #define VCFG		40143
 #define VCSH		40274
 #define VCTS		40295
+
+
 
 #define HSHRA		18446744073709539373u
 #define HSHSN		18446744073709539396u
@@ -85,6 +89,8 @@
 #define LSNPL		8348
 #define LSNRA		8357
 #define LTSRA		9857
+#define LVCTS		10295
+#define HVCTS		18446744073709541911u
 
 #define FZRAPL		2656048
 #define FZRASN		2656080
