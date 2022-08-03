@@ -456,8 +456,10 @@ char* tafWeather(char *taf_list)
 			else if (strncmp(temp, "COR", 3) == 0) {
 				strcat(taf_wx_all, "Corrected ");
 				temp = strsep(&taf_list, " ");
-				strcat(taf_wx_all, temp);
-				strcat(taf_wx_all, " ");
+				if (temp != NULL) {
+					strcat(taf_wx_all, temp);
+					strcat(taf_wx_all, " ");
+				}
 			}
 			else if (strncmp(temp, "(INCMPL)", 8) == 0) {
 				strcat(taf_wx_all, "(Report incomplete)");
