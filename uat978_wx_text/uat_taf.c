@@ -354,6 +354,7 @@ char* tafWeather(char *taf_list)
 		case LFZRAPLSN:	case LFZRASNPL:	strcat(taf_wx_all, "Light freezing rain/ice pellets/snow, "); break;
 		case LRASN:		case LSNRA: 	strcat(taf_wx_all, "Light rain/snow, "); break;
 
+		case HDZ:		strcat(taf_wx_all, "Heavy drizzle, "); break;
 		case HSN:		strcat(taf_wx_all, "Heavy snow, "); break;
 		case HRA:		strcat(taf_wx_all, "Heavy rain, "); break;
 
