@@ -445,6 +445,9 @@ char* tafWeather(char *taf_list)
 			else if (strncmp(temp, "AMDS", 4) == 0) {
 				strcat(taf_wx_all, "amendments ");
 			}
+			else if (strncmp(temp, "AMEND", 5) == 0) {
+				strcat(taf_wx_all, "amendment ");
+			}
 			else if (strncmp(temp, "AMENDS", 6) == 0) {
 				strcat(taf_wx_all, "amendments ");
 			}
